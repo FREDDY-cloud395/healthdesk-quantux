@@ -1,0 +1,383 @@
+<!DOCTUPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DOC-LAN-006 â PresentaciÃ³n Ejecutiva y Cierre de Proyecto HealthDesk Quantux</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700;800&display=swap');
+
+    :root {
+      --q-navy: #0F1E36;
+      --q-navy-blue: #1E3A5F;
+      --q-teal: #00A896;
+      --q-teal-dark: #00665C;
+      --q-teal-bright: #00C4B4;
+      --q-teal-light: #E6F8F6;
+      --q-gray-bg: #F8FAFC;
+      --q-gray-border: #94A3B8;
+      --q-text-main: #0F172A;
+      --q-text-muted: #475569;
+      --q-green: #10B981;
+      --q-green-light: #D1FAE5;
+      --q-red: #EF4444;
+      --q-red-light: #FEE2E2;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      color: var(--q-text-main);
+      background-color: #334155;
+      line-height: 1.35;
+      font-size: 11px;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .slide-page {
+      width: 297mm;
+      height: 210mm;
+      max-height: 210mm;
+      margin: 20px auto;
+      background: #FFFFFF;
+      padding: 14mm 16mm 12mm 16mm;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    @media print {
+      @page {
+        size: A4 landscape;
+        margin: 0;
+      }
+      body {
+        background: transparent;
+        margin: 0;
+        padding: 0;
+      }
+      .slide-page {
+        width: 297mm !important;
+        height: 210mm !important;
+        max-height: 210mm !important;
+        margin: 0 !important;
+        padding: 14mm 16mm 12mm 16mm !important;
+        box-shadow: none !important;
+        page-break-after: always;
+        break-after: page;
+      }
+      .slide-page:last-child {
+        page-break-after: avoid;
+        break-after: avoid;
+      }
+    }
+
+    .slide-header {
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 2.5px solid var(--q-teal); padding-bottom: 6px; margin-bottom: 12px;
+    }
+    .slide-brand {
+      font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 900; color: var(--q-navy-blue);
+      letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px;
+    }
+    .slide-badge {
+      font-family: 'JetBrains Mono', monospace; font-size: 9px; background: var(--q-teal-light);
+      color: var(--q-teal-dark); padding: 3px 8px; border-radius: 4px; font-weight: 800; border: 1px solid #B2EBF2;
+    }
+
+    .slide-footer {
+      border-top: 1.5px solid #CBD5E1; padding-top: 6px; margin-top: 8px;
+      display: flex; justify-content: space-between; font-size: 9px; color: var(--q-text-muted); font-weight: 500;
+    }
+
+    h2.slide-title {
+      font-family: 'Montserrat', sans-serif; font-size: 17px; font-weight: 800; color: var(--q-navy);
+      margin-bottom: 4px; letter-spacing: -0.3px;
+    }
+    p.slide-subtitle {
+      font-size: 11px; color: var(--q-text-muted); margin-bottom: 12px; font-weight: 500;
+    }
+
+    /* CARDS & GNIDS */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+
+    .card {
+      background: #F8FAFC; border: 1px solid #CBD5E1; border-radius: 6px; padding: 12px;
+    }
+    .card-highlight {
+      background: #FFFFFF; border: 1.5px solid var(--q-teal); border-radius: 6px; padding: 12px;
+      box-shadow: 0 4px 12px rgba(0, 168, 150, 0.08);
+    }
+    .card-title {
+      font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 800; color: var(--q-navy-blue);
+      margin-bottom: 6px; display: flex; align-items: center; gap: 6px;
+    }
+
+    .kpi-num { font-family: 'JetBrains Mono', monospace; font-size: 24px; font-weight: 900; color: var(--q-teal-dark); }
+    .kpi-lbl { font-size: 9.5px; font-weight: 700; color: var(--q-text-muted); text-transform: uppercase; margin-top: 2px; }
+
+    table.slide-table { width: 100%; border-collapse: collapse; margin-top: 6px; font-size: 10px; }
+    table.slide-table th { background: var(--q-navy-blue); color: #FFFFFF; font-family: 'Montserrat', sans-serif; font-weight: 700; text-align: left; padding: 6px 8px; }
+    table.slide-table td { padding: 5px 8px; border-bottom: 1px solid #E2E8F0; }
+    table.slide-table tr:nth-child(even) td { background: #F8FAFC; }
+
+    .cover-slide {
+      background: linear-gradient(135deg, #0F1E36 0%, #1E3A5F 100%);
+      color: #FFFFFF; border-radius: 8px; padding: 32px; height: 100%;
+      display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .cover-brand-title { font-family: 'Montserrat', sans-serif; font-size: 32px; font-weight: 900; letter-spacing: -0.5px; color: #FFFFFF; }
+    .cover-brand-sub { font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 800; color: var(--q-teal-bright); letter-spacing: 3px; }
+    .cover-main-h1 { font-family: 'Montserrat', sans-serif; font-size: 26px; font-weight: 900; line-height: 1.25; margin: 18px 0 10px 0; color: #FFFFFF; }
+    .cover-desc { font-size: 13px; color: #CBD5E1; max-width: 85%; font-weight: 400; line-height: 1.4; }
+
+    .meta-box-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; background: rgba(255, 255, 255, 0.08); border-radius: 6px; padding: 12px; margin-top: 18px; border: 1px solid rgba(255, 255, 255, 0.15); }
+    .meta-item-lbl { font-size: 9px; font-weight: 700; color: var(--q-teal-bright); text-transform: uppercase; margin-bottom: 2px; }
+    .meta-item-val { font-size: 11px; font-weight: 600; color: #FFFFFF; }
+  </style>
+</head>
+<body>
+
+  <!-- ================== SLIDE 1: PORTADA EJECUTIVA ================== -->
+  <div class="slide-page">
+    <div class="cover-slide">
+      <div>
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="font-size: 36px;">ð§©</div>
+          <div>
+            <div class="cover-brand-title">HEALTHDESK QUANTUX</div>
+            <div class="cover-brand-sub">QUANTUX SALUD âª PRESENTACIÃN DE CIERRE</div>
+          </div>
+        </div>
+
+        <h1 class="cover-main-h1">Sistema Integral de Mesa de Ayuda y GestiÃ³n de Soporte Hospitalario</h1>
+        <p class="cover-desc">Defensa tÃ©cnica y funcional del pase a producciÃ³n ante el ComitÃ© Evaluador. ImplementaciÃ³n del Panel Central Unificado en 3 columnas, priorizaciÃ³n mÃ©dica P=IÃU, motor FSMy trazabilidad sanitaria.</p>
+      </div>
+
+      <div>
+        <div class="meta-box-grid">
+          <div>
+            <div class="meta-item-lbl">Solution Owner</div>
+            <div class="meta-item-val">Freddy CortÃ©s (Analista Funcional)</div>
+          </div>
+          <div>
+            <div class="meta-item-lbl">Facilitador TÃ©cnico</div>
+            <div class="meta-item-val">Diego MartÃ­nez</div>
+          </div>
+          <div>
+            <div class="meta-item-lbl">ComitÃ© Evaluador</div>
+            <div class="meta-item-val">P. Sbarbati, D. MartÃ«nez, C. Brizuela, N. SÃ¡nchez</div>
+          </div>
+          <div>
+            <div class="meta-item-lbl">Estado del Proyecto</div>
+            <div class="meta-item-val" style="color: #34D399; font-weight: 800;">100% to Done (78/78 SP)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ================= SLIDE 2: DESEFIO VS SOLUCION ================= -->
+  <div class="slide-page">
+    <div>
+      <div class="slide-header">
+        <div class="slide-brand">â© HEALTHDESK QUANTUX â  DOC-PRE-006</div>
+        <div class="slide-badge">DIAGNÃSTICO &amp; PROPUESTA DE VALOR</div>
+      </div>
+
+      <h2 class="slide-title">Del Caos Operativo a la Excelencia Asistencial Unificada</h2>
+      <p class="slide-subtitle">TransformaciÃ³n integral del soporte tecnolÃ³gico hospitalario para 9 plataformas clÃ«nicas y 14 clientes institucionales.</p>
+
+      <div class="grid-2">
+        <div class="card" style="border-left: 4px solid var(--q-red);">
+          <div class="card-title" style="color: #B91C1C;">â SituaciÃ³n Inicial (ProblemÃ¡tica)</div>
+          <ul style="font-size: 10.5px; color: var(--q-text-muted); margin-left: 16px; line-height: 1.5;">
+            <li><strong>FragmentaciÃ³n Extrema:</strong> Canales dispersos (WhatsApp, emails informales, llamadas de servicio en producción) sin registro centralizado.</li>
+            <li><strong>Demoras CrÃ­ticas en Servicio en Producción:</strong> Bloqueos en QuirÃ³fano o Receta Digital sin detecciÃ³n prioritaria ni derivaciÃ³n inmediata.</li>
+            <li><strong>Falta de Visibilidad:</strong> MÃ©dicos y directores sin estado en tiempo real ni conocimiento del operador asignado.</li>
+            <li><strong>Carencia de AuditorÃ­a:</strong> Sin bitÃ¡cora inmutable exigible ante auditorÃ­as clÃ­nicas y legales.</li>
+          </ul>
+        </div>
+
+        <div class="card-highlight" style="border-left: 4px solid var(--q-teal);">
+          <div class="card-title" style="color: var(--q-teal-dark);">â SoluciÃ³n HealthDesk Quantux</div>
+          <ul style="font-size: 10.5px; color: var(--q-text-muted); margin-left: 16px; line-height: 1.5;">
+            <li><strong>Consola Central de Pantalla Ãnica:</strong> Arquitectura ergonÃ³mica en 3 columnas (Filtros/Bandeja, Detalle/Historial, Acciones FSM).</li>
+            <li><strong>Matriz de PriorizaciÃ³n AutomÃ¡tica (P = I Ã U):</strong> DetecciÃ³n instantÃ¡nea de incidentes P1 CrÃ­ticos en &lt; 30 segundos.</li>
+            <li><strong>Motor de Estados FSM Estricto:</strong> Ciclo regulado (NUEVO &rarr; ASIGNADO &rarr; EN_CURSO &rarr; RESUELTO &rarr; CERRADO).</li>
+            <li><strong>Notificaciones AutomÃ¡ticas &amp; Trazabilidad:</strong> Mails en tiempo real y Caja Negra de AuditorÃ­a inmutable.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="slide-footer">
+      <span>PresentaciÃ³n Ejecutiva â  HealthDesk Quantux</span>
+      <span>Slide 2 de 6</span>
+    </div>
+  </div>
+
+
+  <!-- ================= SLIDE 3: MÃTRICAS Y RESULTADOS SCRUMBAN ================= -->
+  <div class="slide-page">
+    <div>
+      <div class="slide-header>
+        <div class="slide-brand">â© HEALTHDESK QUANTUX â  DOC-PRE-006</div>
+        <div class="slide-badge">MÃTRICAS DE CALIDAD &amp; EFICIENCIA</div>
+      </div>
+
+      <h2 class="slide-title">Resultados de EjecuciÃ³n y Rendimiento TÃ©cnico</h2>
+      <p class="slide-subtitle">Cumplimiento estricto de alcance, cobertura de pruebas automatizadas y tiempos de respuesta de alta disponibilidad.</p>
+
+      <div class="grid-4" style="margin-bottom: 14px;">
+        <div class="card" style="text-align: center;">
+          <div class="kpi-num">78 / 78</div>
+          <div class="kpi-lbl">Story Points Entregados (100%)</div>
+        </div>
+        <div class="card" style="text-align: center;">
+          <div class="kpi-num">35 / 35</div>
+          <div class="kpi-lbl">Historias de Usuario (UIs)</div>
+        </div>
+        <div class="card" style="text-align: center;">
+          <div class="kpi-num" style="color: #10B981;">100%</div>
+          <div class="kpi-lbl">QA Tests E2E Aprobados (7/7)</div>
+        </div>
+        <div class="card" style="text-align: center;">
+          <div class="kpi-num" style="color: var(--q-navy-blue);">6.17 ms</div>
+          <div class="kpi-lbl">Latencia API Promedio (&lt;15ms SLA)</div>
+        </div>
+      </div>
+
+      <table class="slide-table">
+        <thead>
+          <tr>
+            <th>Sprint</th>
+            <th>Objetivo Principal</th>
+            <th>UHs Entregadas</th>
+            <th>Story Points</th>
+            <th>Estado QA</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Sprint 1: FundaciÃ³n</strong></td>
+            <td>Arquitectura Base, FSM, Modelos Relacionales y AutenticaciÃ³n RBAC</td>
+            <td>UH-01 a UH-08</td>
+            <td>18 SP</td>
+            <td><strong style="color: #16A34A;">â 100% Passed</strong></td>
+          </tr>
+          <tr>
+            <td><strong>Sprint 2: Consola Core</strong></td>
+            <td>Panel Central 3 Columnas, Triage N1/N2/N3, Notas y Guardrails</td>
+            <td>UH-09 a UH-18</td>
+            <td>22 SP</td>
+            <td><strong style="color: #16A34A;">â 100% Passed</strong></td>
+          </tr>
+          <tr>
+            <td><strong>Sprint 3: Gobernanza</strong></td>
+            <td>SLA Timers, Caja Negra AuditorÃ­a, Cierre Asistencial y Restricciones</td>
+            <td>UH-19 a UH-30</td>
+            <td>24 SP</td>
+            <td><strong style="color: #16A34A;">â 100% Passed</strong></td>
+          </tr>
+          <tr>
+            <td><strong>Sprint 4: MÃ³dulos Pro</strong></td>
+            <td>Alta Usuarios (UH-31), MÃ©tricas Servicio en Producción (UH-33), CSV (UH-34), Emails (UH-35)</td>
+            <td>UH-31 a UH-35</td>
+            <td>14 SP</td>
+            <td><strong style="color: #16A34A;">â 100% to Done</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+
+    <div class="slide-footer">
+      <span>PresentaciÃ³n Ejecutiva â  HealthDesk Quantux</span>
+      <span>Slide 3 de 6</span>
+    </div>
+  </div>
+
+
+  <!-- ================= SLIDE 4: ARQUITECTURA Y SEGURIDAD ================= -->
+  <div class="slide-page">
+    <div>
+      <div class="slide-header">
+        <div class="slide-brand">â© HEALTHDESK QUANTUX â  DOC-PRE-006</div>
+        <div class="slide-badge">ARQUITECTURA &amp; SEGURIDAD</div>
+      </div>
+
+      <h2 class="slide-title">Arquitectura Robusta y Matriz de Permisos RBAC</h2>
+      <p class="slide-subtitle">DiseÃ±o tÃ©cnico modular, seguro y de cero fricciÃ³n de despliegue para infraestructuras hospitalarias crÃ­ticas.</p>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title">ðï¸ Backend FastAPI &amp; SQLModel</div>
+          <p style="font-size: 10.5px; color: var(--q-text-mmted); line-height: 1.45;">
+            â¢ <strong>Motor AsÃ­ncrono:</strong> FastAPI de alto rendimiento con validaciones nativas Pydantic v2.<br>
+            â¢ <strong>Persistencia ACID:</strong> SQLModel / SQLite con claves forÃ¡neas e integridad referencial.<br>
+            âª <strong>Despacho en Segundo Plano:</strong> Tareas asÃ­ncronas (`BackgroundTasks`) para envÃ­o de correos sin bloqueo.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="card-title">ÉÙ ÓegregaciÃ³n de Roles (RBAC)</div>
+          <p style="font-size: 10.5px; color: var(--q-text-muted); line-height: 1.45;">
+            âª <strong>ð¨ââï¸ Solicitante:</strong> CreaciÃ³n Ã¡gil, seguimiento y control exclusivo de conformidad.<br>
+            âª <strong>ð§ Soporte (N1/N2/N3):</strong> Triage, reasignaciÃ³n especializada, notas internas y guardrails.<br>
+            â¢ <strong>Äï¸ Administrador:</strong> GestiÃ³n de usuarios, mÃ©tricas de servicio en producción y auditorÃ­a.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="card-title">ð¥ Privacidad & Inmutabilidad</div>
+          <p style="font-size: 10.5px; color: var(--q-text-muted); line-height: 1.45;">
+            â¢ <strong>Notas Internas Privadas (â):</strong> Ocultas estrictamente al personal solicitante.<br>
+            â¢ <strong>Caja Negra de AuditorÃ­a:</strong> Registro inmutable de cada cambio de estado y actor.<br>
+            â¢ <strong>Bloqueo CERRADO:</strong> Sellado definitivo sin posibilidad de alteraciÃ³n retroactiva.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="slide-footer">
+      <span>PresentaciÃ³n Ejecutiva â  HealthDesk Quantux</span>
+      <span>Slide 4 de 6</span>
+    </div>
+  </div>
+
+ð´´ôôôôôôôôôôôôôôôôôM1%Ôè1U)<=AIQ%Y<d5<ôôôôôôôôôôôôôôôôô´´ø(ñ¥Ø±ÍÌôÍ±¥µÁø(ñ¥Øø(ñ¥Ø±ÍÌôÍ±¥µ¡È ø(ñ¥Ø±ÍÌôÍ±¥µÉ¹ûz¤!1Q!M,EU9QU`=µAI´ÀÀØð½¥Øø(ñ¥Ø±ÍÌôÍ±¥µùaAI%9
+%UMUI%<µÀì1U)<Éð½¥Øø(ð½¥Øø((ñ È±ÍÌôÍ±¥µÑ¥Ñ±ù±Õ©¼=ÁÉÑ¥Ù¼áÑÉµ¼áÑÉµ¼¸A¹Ñ±±i¹¥ð½ Èø(ñÀ±ÍÌôÍ±¥µÍÕÑ¥Ñ±ùáÁÉ¥¹¥¥°¥¹ÑÕ¥Ñ¥ÙÑ¹Ñ¼ÁÉ°·¥¥¼¸ÕÉ¥½µ¼ÁÉ±½Ì¥¹¹¥É½ÌÍ½Á½ÉÑ¸ð½Àø((ñ¥Ø±ÍÌôÉ¥´Èø(ñ¥Ø±ÍÌôÉµ¡¥¡±¥¡Ðø(ñ¥Ø±ÍÌôÉµÑ¥Ñ±ÍÑå±ô½±½ÈèÙÈ ´µÄµ¹Ùäµ±Õ¤ìûÂ~F£7jW¾â<áÁÉ¥¹¥°M½±¥¥Ñ¹Ñ¼7¥¥¼ð½¥Øø(ñÕ°ÍÑå±ô½¹ÐµÍ¥éèÄÀ¸ÕÁàì½±½ÈèÙÈ ´µÄµÑáÐµµÕÑ¤ìµÉ¥¸µ±ÐèÄÙÁàì±¥¹µ¡¥¡ÐèÄ¸Ôìø(ñ±¤øñÍÑÉ½¹ù±Ñ¸±ÐìÌÀÍÕ¹½Ìèð½ÍÑÉ½¹øM±§Í¸Õ¥A±Ñ½Éµ¡¨¸ñ´ùIÑ¥¥Ñ°ð½´ø¤°%¹ÍÑ¥ÑÕ§Í¸%µÁÑ¼¸ð½±¤ø(ñ±¤øñÍÑÉ½¹ù9½Ñ¥¥§Í¸%¹µ¥Ñèð½ÍÑÉ½¹ø
+½ÉÉ¼ÕÑ½·Ñ¥¼½¹¥Éµ§Í¸½¸»éµÉ¼Ñ¥­Ð¸ð½±¤ø(ñ±¤øñÍÑÉ½¹ù%¹ÑÉ§Í¸¸Y¥Ù¼èð½ÍÑÉ½¹ø§±½¼½¸°½ÁÉ½ÈÍ¥¸Í±¥È±½¹Í½±¸ð½±¤ø(ñ±¤øñÍÑÉ½¹ù
+¥ÉÉ½¸Y±¥§Í¸7¥¥èð½ÍÑÉ½¹ø	½ÓÍ¸ñ´ø
+½¹¥ÉµÈM½±Õ§Í¸ä
+ÉÉÈð½´øÑÉÌÙÉ¥¥È°ÉÍÑ±¥µ¥¹Ñ¼¸ð½±¤ø(ð½Õ°ø(ð½¥Øø((ñ¥Ø±ÍÌôÉµ¡¥¡±¥¡Ðø(ñ¥Ø±ÍÌôÉµÑ¥Ñ±ÍÑå±ô½±½ÈèÙÈ ´µÄµÑ°µÉ¬¤ìûÂ~:áÁÉ¥¹¥°M½Á½ÉÑS¥¹¥¼¡8Ä¼8È¼8Ì¤ð½¥Øø(ñÕ°ÍÑå±ô½¹ÐµÍ¥éèÄÀ¸ÕÁàì½±½ÈèÙÈ ´µÄµÑáÐµµÕÑ¤ìµÉ¥¸µ±ÐèÄÙÁàì±¥¹µ¡¥¡ÐèÄ¸Ôìø(ñ±¤øñÍÑÉ½¹ùÕÑ½Í¥¹§Í¸¸Ä
+±¥èð½ÍÑÉ½¹ø	½ÓÍ¸ñ´øÂ~J/7f«¾â<Q½µÈe·ÞjÛ«xð½´øÁÉÑ½µ¥¹µ¥ÑÕÉ¥¸ð½±¤ø(ñ±¤øñÍÑÉ½¹ùÉ¥Ù§Í¸5Õ±Ñ¥¹¥Ù°èð½ÍÑÉ½¹øIÍ¥¹§Í¸¥°8È¡Á±¥¥½¹Ì¤¼8Ì¡%¹ÉÍÑÉÕÑÕÉ
+±½Õ¤¸ð½±¤ø(ñ±¤øñÍÑÉ½¹ùÕÉÉ¥°
+±¥èð½ÍÑÉ½¹ø=±¥Ñ½É¥áÁ±¥§Í¸Ó¥¹¥ìàÉÑÉÌäÑ¥±]½É­É½Õ¹¸ð½±¤ø(ñ±¤øñÍÑÉ½¹ùáÁ½ÉÑ§Í¸äÕ¥Ñ½Ëµèð½ÍÑÉ½¹øÍÉ
+MX¸Ä±¥ä½¹ÍÕ±Ñ¥Ó½É±°¸ð½±¤ø(ð½Õ°ø(ð½¥Øø(ð½¥Øø(ð½¥Øø((ñ¥Ø±ÍÌôÍ±¥µ½½ÑÈø(ñÍÁ¸ùAÉÍ¹Ñ§Í¸©ÕÑ¥Ù
+!±Ñ¡Í¬EÕ¹ÑÕàð½ÍÁ¸ø(ñÍÁ¸ùM±¥ÔØð½ÍÁ¸ø(ð½¥Øø(ð½¥Øø(((ð´´ôôôôôôôôôôôôôôôôôM1%Øè
+=9
+1UM%=9Ld%
+Q58ôôôôôôôôôôôôôôôôô´´ø(ñ¥Ø±ÍÌôÍ±¥µÁø(ñ¥ØÍÑå±ô¡¥¡ÐèÄÀÀì¥ÍÁ±äè±àì±àµ¥ÉÑ¥½¸è½±Õµ¸ì©ÕÍÑ¥äµ½¹Ñ¹ÐèÍÁµÑÝ¸ìø(ñ¥Øø(ñ¥Ø±ÍÌôÍ±¥µ¡Èø(ñ¥Ø±ÍÌôÍ±¥µÉ¹û~¤!1Q!M,EU9QU`
+=µAI´ÀÀØð½¥Øø(ñ¥Ø±ÍÌôÍ±¥µù%
+Q58µÀìAMAI=U
+
+'M8ôð½¥Øø(ð½¥Øø((ñ È±ÍÌôÍ±¥µÑ¥Ñ±ù
+½¹±ÕÍ¥½¹Ì°%µÁÑ¼9½¥¼ä¥Ñµ¸ÁÉ½§Í¸ð½ Èø(ñÀ±ÍÌôÍ±¥µÍÕÑ¥Ñ±ù1Á±Ñ½ÉµÕµÁ±½¸°ÄÀÀ±½ÌÍÓ¹ÉÌÕ¹¥½¹±Ì°ÍÕÉ¥°ÉÅÕ¥ÑÑÕÉä±¥³­¹¥¸ð½Àø((ñ¥Ø±ÍÌôÉ¥´ÌÍÑå±ôµÉ¥¸µ½ÑÑ½´èÄÉÁàìø(ñ¥Ø±ÍÌôÉÍÑå±ôÑáÐµ±¥¸è¹ÑÈìø(ñ¥ØÍÑå±ô½¹ÐµÍ¥éèÈÁÁàì½¹ÐµÝ¥¡ÐèàÀÀì½±½ÈèÄÁäàÄìø´ÜÀQ¥µÁ¼QÉ¥ð½¥Øø(ñ¥ØÍÑå±ô½¹ÐµÍ¥éèä¸ÕÁàì½±½ÈèÙÈ ´µÄµÑáÐµµÕÑ¤ìµÉ¥¸µÑ½ÀèÑÁàìùAÉ¥½É¥é§Í¸·¥¥@õ'
+TäÕÑ½Í¥¹§Í¸¥¹µ¥Ñ¸ð½¥Øø(ð½¥Øø(ñ¥Ø±ÍÌôÉÍÑå±ôÑáÐµ±¥¸è¹ÑÈìø(ñ¥ØÍÑå±ô½¹ÐµÍ¥éèÈÁÁàì½¹ÐµÝ¥¡ÐèàÀÀì½±½ÈèÙÈ ´µÄµ¹Ùäµ±Õ¤ìøÀ%¹¥¹ÑÌAÉ¥½Ìð½¥Øø(ñ¥ØÍÑå±ô½¹ÐµÍ¥éèä¸ÕÁàì½±½ÈèÙÈ ´µÄµÑáÐµµÕÑ¤ìµÉ¥¸µÑ½ÀèÑÁàìù	¹©Õ¹¥¥½¸±ÉÑÌÉ½©Ì@Ä¸Ñ¥µÁ¼É°¸ð½¥Øø(ð½¥Øø(ñ¥Ø±ÍÌôÉÍÑå±ôÑáÐµ±¥¸è¹ÑÈìø(ñ¥ØÍÑå±ô½¹ÐµÍ¥éèÈÁÁàì½¹ÐµÝ¥¡ÐèàÀÀì½±½ÈèÙÈ ´µÄµÑ°µÉ¬¤ìøÄÀÀÕ¥Ñ±ð½¥Øø(ñ¥ØÍÑå±ô½¹ÐµÍ¥éèä¸ÕÁàì½±½ÈèÙÈ ´µÄµÑáÐµµÕÑ¤ìµÉ¥¸µÑ½ÀèÑÁàìù
+©¹É¥¹µÕÑ±äÑÉé¥±¥áÑÉµ¼áÑÉµ¼¸ð½¥Øø(ð½¥Øø(ð½¥Øø((ñ¥Ø±ÍÌôÉµ¡¥¡±¥¡ÐÍÑå±ôµÉ¥¸µÑ½ÀèÑÁàìø(ñ¥Ø±ÍÌôÉµÑ¥Ñ±ÍÑå±ô½±½ÈèÙÈ ´µÄµ¹Ùä¤ìù¥Ñµ¸°
+½µ¥Ó¤Ù±Õ½ÈèñÍÁ¸ÍÑå±ô½±½ÈèÄÁäàÄìùAI=	<AIAI=U
+
+'M8¡39	MØÄ¸À¤ð½ÍÁ¸øð½¥Øø(ñ¥ØÍÑå±ô¥ÍÁ±äèÉ¥ìÉ¥µÑµÁ±Ñµ½±Õµ¹ÌèÉÁÐ Ð°ÅÈ¤ìÀèÄÁÁàìµÉ¥¸µÑ½ÀèÄÁÁàìÑáÐµ±¥¸è¹ÑÈìø(ñ¥ØÍÑå±ô½ÉÈµÑ½ÀèÄ¸ÕÁàÍ½±¥ÙÈ ´µÄµ¹Ùä¤ìÁ¥¹µÑ½ÀèÑÁàìø(ñÍÑÉ½¹ÍÑå±ô½¹ÐµÍ¥éèÄÁÁàì½±½ÈèÙÈ ´µÄµ¹Ùä¤ìùAÕ±MÉÑ¤ð½ÍÑÉ½¹ø(ñ¥ØÍÑå±ô½¹ÐµÍ¥éèà¸ÕÁàì½±½ÈèÙÈ ´µÄµÑáÐµµÕÑ¤ìù
+±¥Í¥ÍÑ¹¥°ð½¥Øø(ð½¥Øø(ñ¥ØÍÑå±ô½ÉÈµÑ½ÀèÄ¸ÕÁàÍ½±¥ÙÈ ´µÄµ¹Ùä¤ìÁ¥¹µÑ½ÀèÑÁàìø(ñÍÑÉ½¹ÍÑå±ô½¹ÐµÍ¥éèÄÁÁàì½±½ÈèÙÈ ´µÄµ¹Ùä¤ìù¥¼5ÉÓµ¹èð½ÍÑÉ½¹ø(ñ¥ØÍÑå±ô½¹ÐµÍ¥éèà¸ÕÁàì½±½ÈèÙÈ ´µÄµÑáÐµµÕÑ¤ìùÉÅÕ¥ÑÑÕÉS¥¹¥ð½¥Øø(ð½¥Øø(ñ¥ØÍÑå±ô½ÉÈµÑ½ÀèÄ¸ÕÁàÍ½±¥ÙÈ ´µÄµ¹Ùä¤ìÁ¥¹µÑ½ÀèÑÁàìø(ñÍÑÉ½¹ÍÑå±ô½¹ÐµÍ¥éèÄÁÁàì½±½ÈèÙÈ ´µÄµ¹Ùä¤ìù
+É½±¥¹	É¥éÕ±ð½ÍÑÉ½¹ø(ñ¥ØÍÑå±ô½¹ÐµÍ¥éèà¸ÕÁàì½±½ÈèÙÈ ´µÄµÑáÐµµÕÑ¤ìù=ÁÉ¥½¹Ì!½ÍÁ¥Ñ±É¥Ìð½¥Øø(ð½¥Øø(ñ¥ØÍÑå±ô½ÉÈµÑ½ÀèÄ¸ÕÁàÍ½±¥ÙÈ ´µÄµ¹Ùä¤ìÁ¥¹µÑ½ÀèÑÁàìø(ñÍÑÉ½¹ÍÑå±ô½¹ÐµÍ¥éèÄÁÁàì½±½ÈèÙÈ ´µÄµ¹Ùä¤ìù9¥½³ÌO¹¡èð½ÍÑÉ½¹ø(ñ¥ØÍÑå±ô½¹ÐµÍ¥éèà¸ÕÁàì½±½ÈèÙÈ ´µÄµÑáÐµµÕÑ¤ìùMÕÉ¥ä
+½µÁ±¥¹ð½¥Øø(ð½¥Øø(ð½¥Øø(ð½¥Øø(ð½¥Øø((ñ¥Ø±ÍÌôÍ±¥µ½½ÑÈø(ñÍÁ¸ùAÉÍ¹Ñ§Í¸©ÕÑ¥Ù!±Ñ¡Í¬EÕ¹ÑÕàð½ÍÁ¸ø(ñÍÁ¸ùM±¥ØØð½ÍÁ¸ø(ð½¥Øø(ð½¥Øø(ð½¥Øø((ð½½äø(ð½¡Ñµ°ø(

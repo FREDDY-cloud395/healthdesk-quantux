@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DOC-QA-004 — Informe de Pruebas Funcionales, Validación y Evidencias de Calidad</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700;800&display=swap');
+
+    :root {
+      --q-navy: #0F1E36;
+      --q-navy-blue: #1E3A5F;
+      --q-teal: #00A896;
+      --q-teal-dark: #00665C;
+      --q-teal-bright: #00C4B4;
+      --q-teal-light: #E6F8F6;
+      --q-gray-bg: #F8FAFC;
+      --q-gray-border: #94A3B8;
+      --q-text-main: #0F172A;
+      --q-text-muted: #475569;
+      --q-green: #10B981;
+      --q-green-light: #D1FAE5;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      color: var(--q-text-main);
+      background-color: #475569;
+      line-height: 1.35;
+      font-size: 10px;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .doc-page {
+      width: 210mm;
+      height: 297mm;
+      max-height: 297mm;
+      margin: 20px auto;
+      background: #FFFFFF;
+      padding: 12mm 14mm 10mm 14mm;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    @media print {
+      @page {
+        size: A4 portrait;
+        margin: 0;
+      }
+      body {
+        background: transparent;
+        margin: 0;
+        padding: 0;
+      }
+      .doc-page {
+        width: 210mm !important;
+        height: 297mm !important;
+        max-height: 297mm !important;
+        margin: 0 !important;
+        padding: 12mm 14mm 10mm 14mm !important;
+        box-shadow: none !important;
+        page-break-after: always;
+        break-after: page;
+      }
+      .doc-page:last-child {
+        page-break-after: avoid;
+        break-after: avoid;
+      }
+    }
+
+    /* HEADER & FOOTER */
+    .running-header {
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 2.5px solid var(--q-teal); padding-bottom: 4px; margin-bottom: 8px;
+      font-size: 9px; font-family: 'Montserrat', sans-serif; font-weight: 800; color: var(--q-navy-blue);
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+
+    .running-footer {
+      border-top: 1.5px solid #CBD5E1; padding-top: 4px; margin-top: 4px;
+      display: flex; justify-content: space-between; font-size: 8.5px; color: var(--q-text-muted); font-weight: 500;
+    }
+
+    /* SECTION HEADERS */
+    h2.section-header {
+      font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 800; color: var(--q-navy);
+      text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1.5px solid var(--q-teal);
+      padding-bottom: 3px; margin-top: 4px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;
+    }
+    .sec-badge { font-family: 'JetBrains Mono', monospace; font-size: 8px; background: var(--q-teal-light); color: var(--q-teal-dark); padding: 1.5px 7px; border-radius: 3px; font-weight: 800; border: 1px solid #B2EBF2; }
+
+    /* COVER STYLES */
+    .cover-box {
+      height: 100%; display: flex; flex-direction: column; justify-content: space-between;
+      border: 2px solid var(--q-navy-blue); border-radius: 8px; padding: 26px; background: #FFFFFF;
+    }
+    .cover-header-logo { display: flex; align-items: center; gap: 12px; }
+    .cover-brand { font-family: 'Montserrat', sans-serif; font-size: 22px; font-weight: 900; color: var(--q-navy-blue); letter-spacing: -0.5px; line-height: 1; }
+    .cover-brand-sub { font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 800; color: var(--q-teal); letter-spacing: 2.5px; text-align: right; }
+    
+    .cover-title-area { margin: 20px 0; text-align: center; }
+    .cover-pill {
+      display: inline-block; background: var(--q-navy-blue); color: #FFFFFF;
+      font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 800; padding: 5px 16px;
+      border-radius: 20px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;
+    }
+    .cover-h1 { font-family: 'Montserrat', sans-serif; font-size: 23px; font-weight: 900; color: var(--q-navy); line-height: 1.25; margin-bottom: 8px; }
+    .cover-h2 { font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 700; color: var(--q-navy-blue); max-width: 90%; margin: 0 auto; line-height: 1.4; }
+
+    .cover-kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 15px 0; }
+    .cover-kpi-card { background: var(--q-gray-bg); border: 1.5px solid #CBD5E1; border-top: 4px solid var(--q-teal); border-radius: 6px; padding: 10px; text-align: center; }
+    .cover-kpi-val { font-family: 'Montserrat', sans-serif; font-size: 18px; font-weight: 900; color: var(--q-navy); }
+    .cover-kpi-lbl { font-size: 8px; font-weight: 700; color: var(--q-text-muted); text-transform: uppercase; margin-top: 2px; }
+
+    .cover-meta-card { background: var(--q-gray-bg); border: 1.5px solid #CBD5E1; border-left: 5px solid var(--q-teal); border-radius: 6px; padding: 12px 16px; }
+    .cover-meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 9.5px; }
+    .cover-meta-grid strong { display: block; color: var(--q-navy-blue); font-family: 'Montserrat', sans-serif; font-size: 8px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+
+    /* TABLES */
+    table { width: 100%; border-collapse: collapse; margin: 4px 0; font-size: 8.5px; background: #FFFFFF; }
+    th { background: var(--q-navy-blue); color: #FFFFFF; font-family: 'Montserrat', sans-serif; font-weight: 700; text-align: left; padding: 5px 6px; font-size: 8px; text-transform: uppercase; letter-spacing: 0.3px; }
+    td { padding: 4.5px 6px; border-bottom: 1px solid #E2E8F0; vertical-align: middle; }
+    tr:nth-child(even) { background-color: var(--q-gray-bg); }
+    
+    .status-pass { background: var(--q-green-light); color: #065F46; font-weight: 800; padding: 2px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 8px; display: inline-block; border: 1px solid #A7F3D0; }
+    .badge-code { font-family: 'JetBrains Mono', monospace; font-size: 8px; font-weight: 700; background: #F1F5F9; padding: 1.5px 5px; border-radius: 3px; color: var(--q-navy-blue); border: 1px solid #CBD5E1; }
+
+    /* CALLOUT BOXES */
+    .callout { background: var(--q-gray-bg); border: 1px solid #CBD5E1; border-left: 4px solid var(--q-teal); border-radius: 4px; padding: 7px 10px; margin: 5px 0; font-size: 9px; }
+    .callout-title { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 9px; color: var(--q-navy-blue); text-transform: uppercase; margin-bottom: 2px; }
+
+    /* CODE & LOGS */
+    .log-box { background: var(--q-navy); color: #E2E8F0; font-family: 'JetBrains Mono', monospace; font-size: 7.5px; padding: 8px 10px; border-radius: 5px; line-height: 1.3; margin: 4px 0; border: 1px solid #334155; }
+    .log-pass { color: #34D399; font-weight: 700; }
+    .log-info { color: #38BDF8; font-weight: 700; }
+
+    /* SIGNATURES */
+    .sig-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 10px; }
+    .sig-box { border: 1.5px dashed #CBD5E1; border-radius: 6px; padding: 10px; text-align: center; background: #FAFAFA; }
+    .sig-line { border-bottom: 1.5px solid var(--q-navy-blue); margin: 25px 15px 6px 15px; }
+    .sig-name { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 9px; color: var(--q-navy); }
+    .sig-role { font-size: 7.5px; color: var(--q-text-muted); font-weight: 600; text-transform: uppercase; }
+  </style>
+</head>
+<body>
+
+  <!-- ================= PAGE 1: PORTADA & RESUMEN EJECUTIVO ================= -->
+  <div class="doc-page">
+    <div class="cover-box">
+      
+      <div class="cover-header-logo">
+        <svg width="42" height="42" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="11" fill="#00A896"/>
+          <path d="M12 6V18M6 12H18" stroke="#FFFFFF" stroke-width="2.8" stroke-linecap="round"/>
+        </svg>
+        <div>
+          <div class="cover-brand">HEALTHDESK</div>
+          <div class="cover-brand-sub">QUANTUX SALUD</div>
+        </div>
+      </div>
+
+      <div class="cover-title-area">
+        <span class="cover-pill">Documentación Oficial de Calidad • DOC-QA-004</span>
+        <h1 class="cover-h1">INFORME DE PRUEBAS FUNCIONALES, VALIDACIÓN Y EVIDENCIAS DE CALIDAD</h1>
+        <h2 class="cover-h2">Verificación Integral del Motor de Estados (FSM), Reglas de Negocio, Seguridad RBAC y Rendimiento Operativo para la Mesa de Ayuda Centralizada</h2>
+      </div>
+
+      <div class="cover-kpi-grid">
+        <div class="cover-kpi-card">
+          <div class="cover-kpi-val" style="color: #10B981;">100%</div>
+          <div class="cover-kpi-lbl">Tasa de Éxito QA</div>
+        </div>
+        <div class="cover-kpi-card">
+          <div class="cover-kpi-val">7 / 7</div>
+          <div class="cover-kpi-lbl">Casos E2E Pasados</div>
+        </div>
+        <div class="cover-kpi-card">
+          <div class="cover-kpi-val">32 UHs</div>
+          <div class="cover-kpi-lbl">Cobertura Backlog</div>
+        </div>
+        <div class="cover-kpi-card">
+          <div class="cover-kpi-val" style="color: #00A896;">4.13 ms</div>
+          <div class="cover-kpi-lbl">Latencia Media API</div>
+        </div>
+      </div>
+
+      <div class="cover-meta-card">
+        <div class="cover-meta-grid">
+          <div>
+            <strong>Líder Funcional / Solution Owner</strong>
+            Freddy Cortés (Analista Funcional)
+          </div>
+          <div>
+            <strong>Facilitador Técnico</strong>
+            Diego Martínez
+          </div>
+          <div>
+            <strong>Comité Evaluador de Aprobación</strong>
+            Paula Sbarbati • Diego Martínez • Carolina Brizuela • Nicolás Sánchez
+          </div>
+          <div>
+            <strong>Estado de Certificación</strong>
+            <span class="status-pass">CERTIFICADO Y APROBADO (100% PASS)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="running-footer" style="border: none; padding: 0;">
+        <span>Quantux Salud • Sistema de Soporte Asistencial Multiplataforma</span>
+        <span>Página 1 de 5</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= PAGE 2: MATRIZ DE COBERTURA E2E ================= -->
+  <div class="doc-page">
+    <div>
+      <div class="running-header">
+        <span>Quantux Salud • HealthDesk | DOC-QA-004</span>
+        <span>Matriz de Pruebas Funcionales E2E</span>
+      </div>
+
+      <h2 class="section-header">
+        <span>1. Matriz de Cobertura y Resultados de Pruebas E2E</span>
+        <span class="sec-badge">SPRINT 4 QA</span>
+      </h2>
+      <p style="margin-bottom: 6px; font-size: 8.5px; color: var(--q-text-muted);">
+        Se ejecutó la suite automatizada de pruebas End-to-End sobre el 100% de los flujos del ciclo de vida del ticket, validando la interacción de los 3 perfiles funcionales (Profesional de la Salud Solicitante, Operador de Soporte y Administrador).
+      </p>
+
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 11%;">Código</th>
+            <th style="width: 22%;">Caso de Prueba Funcional</th>
+            <th style="width: 32%;">Criterio de Aceptación Funcional</th>
+            <th style="width: 23%;">Métrica y Evidencia</th>
+            <th style="width: 12%; text-align: center;">Resultado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="badge-code">QA-E2E-01</span></td>
+            <td><strong>Alta & Priorización</strong><br>Creación y cálculo P = I × U</td>
+            <td>Evaluación exacta de la matriz de prioridad en 8 combinaciones. Asignación inmediata de ID correlativo y estado `NUEVO`.</td>
+            <td>Fórmula P = I × U validada. Creación de ticket institucional exitosa.</td>
+            <td style="text-align: center;"><span class="status-pass">PASSED</span></td>
+          </tr>
+          <tr>
+            <td><span class="badge-code">QA-E2E-02</span></td>
+            <td><strong>Triage & Asignación</strong><br>Derivación N2 y notas internas</td>
+            <td>Autoasignación operativa, derivación a N2/N3 con motivo, pase a `EN_CURSO` y confidencialidad estricta de notas internas.</td>
+            <td>Pase a `ASIGNADO` y `EN_CURSO`. 2 notas creadas (1 interna privada, 1 pública).</td>
+            <td style="text-align: center;"><span class="status-pass">PASSED</span></td>
+          </tr>
+          <tr>
+            <td><span class="badge-code">QA-E2E-03</span></td>
+            <td><strong>Regla de Resolución</strong><br>Guardrail ≥ 8 caracteres</td>
+            <td>Rechazo (HTTP 400) ante soluciones vacías o menores a 8 car. Aceptación de resoluciones técnicas válidas con flag de Workaround.</td>
+            <td>Rechazo verificado ante texto corto ("Listo"). Aceptación con Workaround y timestamp.</td>
+            <td style="text-align: center;"><span class="status-pass">PASSED</span></td>
+          </tr>
+          <tr>
+            <td><span class="badge-code">QA-E2E-04</span></td>
+            <td><strong>Cierre e Inmutabilidad</strong><br>Conformidad y bloqueo final</td>
+            <td>Cierre exitoso con feedback profesional de la salud. Bloqueo estricto contra reaperturas ilegales o modificaciones en estado `CERRADO`.</td>
+            <td>Estado `CERRADO` validado. Bloqueo HTTP 400 en intentos de transición ilegal.</td>
+            <td style="text-align: center;"><span class="status-pass">PASSED</span></td>
+          </tr>
+          <tr>
+            <td><span class="badge-code">QA-E2E-05</span></td>
+            <td><strong>Caja Negra Auditoría</strong><br>Trazabilidad inmutable</td>
+            <td>Registro automático de cada evento en `ticket_audit_log` con usuario, timestamp ISO, campo afectado y motivo sin omisiones.</td>
+            <td>5 eventos inmutables auditados cronológicamente con autoría y no repudio.</td>
+            <td style="text-align: center;"><span class="status-pass">PASSED</span></td>
+          </tr>
+          <tr>
+            <td><span class="badge-code">QA-E2E-06</span></td>
+            <td><strong>Integridad Maestras</strong><br>9 Plataformas y 14 Clientes</td>
+            <td>Respuesta HTTP 200 en catálogos maestros y soporte del 100% de combinaciones sin fallos de integridad referencial.</td>
+            <td>9 plataformas y 14 instituciones verificadas en base de datos al 100%.</td>
+            <td style="text-align: center;"><span class="status-pass">PASSED</span></td>
+          </tr>
+          <tr>
+            <td><span class="badge-code">QA-E2E-07</span></td>
+            <td><strong>Rendimiento de API</strong><br>Latencia bajo estrés</td>
+            <td>Tiempo medio de respuesta de endpoints menor a 50 ms en ráfagas de consultas concurrentes.</td>
+            <td><strong>4.13 ms</strong> promedio en 30 iteraciones de procesamiento continuo.</td>
+            <td style="text-align: center;"><span class="status-pass">PASSED</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 class="section-header" style="margin-top: 8px;">
+        <span>2. Cobertura por Épicas Funcionales del Backlog</span>
+        <span class="sec-badge">32 UHs • 75 SP</span>
+      </h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 14%;">Épica</th>
+            <th style="width: 32%;">Alcance Funcional</th>
+            <th style="width: 14%; text-align: center;">Historias</th>
+            <th style="width: 14%; text-align: center;">Story Points</th>
+            <th style="width: 26%;">Estado de Certificación</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>EP-01</strong></td>
+            <td>Acceso, Roles y Permisos (RBAC)</td>
+            <td style="text-align: center;">4 UHs</td>
+            <td style="text-align: center;">7 SP</td>
+            <td><span class="status-pass">100% VALIDADO</span></td>
+          </tr>
+          <tr>
+            <td><strong>EP-02</strong></td>
+            <td>Creación de Tickets y Datos Sanitarios</td>
+            <td style="text-align: center;">7 UHs</td>
+            <td style="text-align: center;">15 SP</td>
+            <td><span class="status-pass">100% VALIDADO</span></td>
+          </tr>
+          <tr>
+            <td><strong>EP-03</strong></td>
+            <td>Bandeja de Entrada, Triage y Asignación</td>
+            <td style="text-align: center;">5 UHs</td>
+            <td style="text-align: center;">10 SP</td>
+            <td><span class="status-pass">100% VALIDADO</span></td>
+          </tr>
+          <tr>
+            <td><strong>EP-04</strong></td>
+            <td>Ciclo de Estados (FSM) y Guardrails</td>
+            <td style="text-align: center;">6 UHs</td>
+            <td style="text-align: center;">14 SP</td>
+            <td><span class="status-pass">100% VALIDADO</span></td>
+          </tr>
+          <tr>
+            <td><strong>EP-05</strong></td>
+            <td>Seguimiento, Historial y Notificaciones</td>
+            <td style="text-align: center;">5 UHs</td>
+            <td style="text-align: center;">9 SP</td>
+            <td><span class="status-pass">100% VALIDADO</span></td>
+          </tr>
+          <tr>
+            <td><strong>EP-06</strong></td>
+            <td>Consola Operativa (3 Col) y Maestras</td>
+            <td style="text-align: center;">5 UHs</td>
+            <td style="text-align: center;">20 SP</td>
+            <td><span class="status-pass">100% VALIDADO</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="running-footer">
+      <span>Quantux Salud • HealthDesk DOC-QA-004</span>
+      <span>Página 2 de 5</span>
+    </div>
+  </div>
+
+  <!-- ================= PAGE 3: VALIDACIÓN DE REGLAS DE NEGOCIO ================= -->
+  <div class="doc-page">
+    <div>
+      <div class="running-header">
+        <span>Quantux Salud • HealthDesk | DOC-QA-004</span>
+        <span>Validación de Reglas de Negocio y Guardrails</span>
+      </div>
+
+      <h2 class="section-header">
+        <span>3. Guardrails del Motor de Estados (FSM) y Seguridad RBAC</span>
+        <span class="sec-badge">INTEGRIDAD OPERATIVA</span>
+      </h2>
+
+      <div class="callout">
+        <div class="callout-title">Regla 1 • Guardrail de Solución Técnica Obligatoria (Mínimo 8 Caracteres)</div>
+        <p style="font-size: 8.5px; margin-bottom: 4px;">
+          <strong>Objetivo:</strong> Erradicar resoluciones informales o ambiguas (ej. "ok", "listo", "cerrado") que deterioran la base de conocimiento técnico y la calidad de atención al personal de salud.
+        </p>
+        <div class="log-box">
+<span class="log-info">[TEST QA-E2E-03]</span> POST /api/v1/tickets/TICK-202608-0017/resolve
+Payload: {"resolution_notes": "Listo", "is_workaround": false}
+HTTP Response: <span style="color: #F87171;">400 Bad Request</span> -> detail: "La solución técnica debe contener al menos 8 caracteres explicativos."
+<span class="log-pass">[GUARDRAIL ACTIVO]</span> Intento rechazado por el validador del backend.
+
+<span class="log-info">[TEST QA-E2E-03]</span> POST /api/v1/tickets/TICK-202608-0017/resolve
+Payload: {"resolution_notes": "Se configuró fallback a codec H.264 compatible con WebKit iOS.", "is_workaround": true}
+HTTP Response: <span class="log-pass">200 OK</span> -> status: "RESUELTO", is_workaround: true, resolved_at: "2026-08-28T23:06:53Z"
+        </div>
+      </div>
+
+      <div class="callout" style="margin-top: 6px;">
+        <div class="callout-title">Regla 2 • Inmutabilidad Terminal del Estado CERRADO</div>
+        <p style="font-size: 8.5px; margin-bottom: 4px;">
+          <strong>Objetivo:</strong> Garantizar la inalterabilidad de los tickets una vez que el profesional de la salud o solicitante otorgó su conformidad, protegiendo los cómputos de SLA contra manipulaciones retroactivas.
+        </p>
+        <div class="log-box">
+<span class="log-info">[TEST QA-E2E-04]</span> POST /api/v1/tickets/TICK-202608-0018/close
+Payload: {"closed_by_username": "dra.lopez", "feedback": "Conforme. El auditor pudo ingresar sin inconvenientes."}
+HTTP Response: <span class="log-pass">200 OK</span> -> status: "CERRADO", closed_at: "2026-08-28T23:06:54Z"
+
+<span class="log-info">[TEST QA-E2E-04]</span> Intentando modificar ticket en estado CERRADO a EN_CURSO...
+PATCH /api/v1/tickets/TICK-202608-0018/status
+HTTP Response: <span style="color: #F87171;">400 Bad Request</span> -> detail: "Transición inválida de TicketStatus.CERRADO a TicketStatus.EN_CURSO."
+<span class="log-pass">[INMUTABILIDAD COMPROBADA]</span> El motor FSM bloquea cualquier alteración en tickets cerrados.
+        </div>
+      </div>
+
+      <div class="callout" style="margin-top: 6px;">
+        <div class="callout-title">Regla 3 • Aislamiento y Confidencialidad de Notas Internas (RBAC)</div>
+        <p style="font-size: 8.5px; margin-bottom: 4px;">
+          <strong>Objetivo:</strong> Brindar a los ingenieros de soporte un canal seguro para registrar diagnósticos técnicos complejos sin exponer tecnicismos o causar inquietud innecesaria a los profesionales de la salud.
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 20%;">Tipo de Comentario</th>
+              <th style="width: 25%;">Contenido de Prueba</th>
+              <th style="width: 25%;">Visibilidad Solicitante</th>
+              <th style="width: 30%;">Visibilidad Soporte / Admin</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="badge-code">is_internal: true</span></td>
+              <td>"Endpoint de pasarela con latencia HTTP 504 por timeout bancario."</td>
+              <td><strong style="color: #DC2626;">OCULTO (Filtrado)</strong></td>
+              <td><strong style="color: #10B981;">VISIBLE (Caja Amarilla de Seguridad)</strong></td>
+            </tr>
+            <tr>
+              <td><span class="badge-code">is_internal: false</span></td>
+              <td>"Estimada Lic. López, estamos analizando la comunicación con el banco."</td>
+              <td><strong style="color: #10B981;">VISIBLE (Chat del Ticket)</strong></td>
+              <td><strong style="color: #10B981;">VISIBLE (Chat del Ticket)</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="running-footer">
+      <span>Quantux Salud • HealthDesk DOC-QA-004</span>
+      <span>Página 3 de 5</span>
+    </div>
+  </div>
+
+  <!-- ================= PAGE 4: AUDITORÍA & RENDIMIENTO ================= -->
+  <div class="doc-page">
+    <div>
+      <div class="running-header">
+        <span>Quantux Salud • HealthDesk | DOC-QA-004</span>
+        <span>Auditoría Sanitaria y Rendimiento de API</span>
+      </div>
+
+      <h2 class="section-header">
+        <span>4. Caja Negra de Auditoría Inmutable (No Repudio)</span>
+        <span class="sec-badge">DOC-QA-004 • QA-E2E-05</span>
+      </h2>
+      <p style="margin-bottom: 4px; font-size: 8.5px; color: var(--q-text-muted);">
+        Traza real de auditoría extraída de la tabla <code style="font-family: 'JetBrains Mono', monospace; font-size: 8px;">ticket_audit_log</code> durante el ciclo de vida completo del ticket <code style="font-family: 'JetBrains Mono', monospace; font-size: 8px;">TICK-202608-0024</code>:
+      </p>
+
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 8%;">ID</th>
+            <th style="width: 14%;">Timestamp (ISO)</th>
+            <th style="width: 12%;">Usuario Autor</th>
+            <th style="width: 12%;">Campo Auditado</th>
+            <th style="width: 18%;">Valor Anterior &rarr; Nuevo</th>
+            <th style="width: 36%;">Motivo Registrado de la Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="badge-code">#1</span></td>
+            <td>2026-08-28 23:07:38</td>
+            <td><strong>dr.garcia</strong></td>
+            <td>status</td>
+            <td><span class="badge-code">NULL &rarr; NUEVO</span></td>
+            <td>Creación inicial de ticket asistencial</td>
+          </tr>
+          <tr>
+            <td><span class="badge-code">#2</span></td>
+            <td>2026-08-28 23:07:38</td>
+            <td><strong>admin</strong></td>
+            <td>assignee</td>
+            <td><span class="badge-code">NULL &rarr; soporte</span></td>
+            <td>Derivación N3 por complejidad técnica HL7</td>
+          </tr>
+          <tr>
+            <td><span class="badge-code">#3</span></td>
+            <td>2026-08-28 23:07:39</td>
+            <td><strong>soporte</strong></td>
+            <td>status</td>
+            <td><span class="badge-code">ASIGNADO &rarr; EN_CURSO</span></td>
+            <td>Actualización de estado operativo (en gestión)</td>
+          </tr>
+          <tr>
+            <td><span class="badge-code">#4</span></td>
+            <td>2026-08-28 23:07:39</td>
+            <td><strong>soporte</strong></td>
+            <td>status</td>
+            <td><span class="badge-code">EN_CURSO &rarr; RESUELTO</span></td>
+            <td>Resolución documentada (Workaround: False)</td>
+          </tr>
+          <tr>
+            <td><span class="badge-code">#5</span></td>
+            <td>2026-08-28 23:07:39</td>
+            <td><strong>dr.garcia</strong></td>
+            <td>status</td>
+            <td><span class="badge-code">RESUELTO &rarr; CERRADO</span></td>
+            <td>Cierre confirmado por solicitante: "Excelente respuesta."</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 class="section-header" style="margin-top: 8px;">
+        <span>5. Integridad de Catálogos y Rendimiento de API</span>
+        <span class="sec-badge">BENCHMARK REST</span>
+      </h2>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 4px;">
+        <div class="callout" style="margin: 0;">
+          <div class="callout-title">Catálogos Maestros (100% Disponibles)</div>
+          <ul style="font-size: 8.5px; padding-left: 14px; margin-top: 4px; line-height: 1.4;">
+            <li><strong>9 Plataformas Asistenciales:</strong> Receta Digital, Telemedicina, Copagos, Internación, Turnos, Portal Paciente, HL7 FHIR, Telemetría RPM, BI Salud.</li>
+            <li><strong>14 Clientes Institucionales:</strong> OSDE, Swiss Medical, Galeno, Medifé, Omint, Hosp. Italiano, Hosp. Alemán, Hosp. Británico, Sanatorio Finochietto, Sanatorio Mater Dei, Los Arcos, IOMA, PAMI, IDOM.</li>
+          </ul>
+        </div>
+
+        <div class="callout" style="margin: 0; border-left-color: var(--q-navy-blue);">
+          <div class="callout-title">Resultados Benchmark de Rendimiento</div>
+          <ul style="font-size: 8.5px; padding-left: 14px; margin-top: 4px; line-height: 1.4;">
+            <li><strong>Latencia Promedio:</strong> <strong style="color: #10B981;">4.13 ms</strong> / request (30 ejecuciones).</li>
+            <li><strong>Umbral Máximo Permitido:</strong> 50.0 ms.</li>
+            <li><strong>Margen de Seguridad:</strong> 91.7% por debajo del límite SLA.</li>
+            <li><strong>Consumo de Memoria:</strong> < 45 MB en proceso de servidor.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="running-footer">
+      <span>Quantux Salud • HealthDesk DOC-QA-004</span>
+      <span>Página 4 de 5</span>
+    </div>
+  </div>
+
+  <!-- ================= PAGE 5: EVALUACIÓN UI & DICTAMEN ================= -->
+  <div class="doc-page">
+    <div>
+      <div class="running-header">
+        <span>Quantux Salud • HealthDesk | DOC-QA-004</span>
+        <span>Dictamen Final de Aceptación Funcional</span>
+      </div>
+
+      <h2 class="section-header">
+        <span>6. Evaluación del Panel de Control Operativo (Consola 3 Columnas)</span>
+        <span class="sec-badge">EXPERIENCIA DE USUARIO</span>
+      </h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 25%;">Característica Evaluada</th>
+            <th style="width: 45%;">Comportamiento Esperado vs. Observado</th>
+            <th style="width: 15%; text-align: center;">Métrica UI</th>
+            <th style="width: 15%; text-align: center;">Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Selector de Rol 1-Clic</strong></td>
+            <td>Alterna vistas entre Profesional de la Salud, Soporte y Admin adaptando botones y notas sin recargar la página.</td>
+            <td style="text-align: center;">Inmediato (&lt; 1 ms)</td>
+            <td style="text-align: center;"><span class="status-pass">CONFORME</span></td>
+          </tr>
+          <tr>
+            <td><strong>Prioridad Reactiva</strong></td>
+            <td>Cálculo en vivo de $P = I \times U$ en el modal de alta antes de confirmar el envío.</td>
+            <td style="text-align: center;">100% Precisión</td>
+            <td style="text-align: center;"><span class="status-pass">CONFORME</span></td>
+          </tr>
+          <tr>
+            <td><strong>Consola 3 Columnas</strong></td>
+            <td>Operación continua de triage, historial y acciones sin cambio de pestañas.</td>
+            <td style="text-align: center;">0 Redirecciones</td>
+            <td style="text-align: center;"><span class="status-pass">CONFORME</span></td>
+          </tr>
+          <tr>
+            <td><strong>Filtros Cruzados</strong></td>
+            <td>Filtrado instantáneo por plataforma asistencial, cliente institucional y criticidad.</td>
+            <td style="text-align: center;">100% Cobertura</td>
+            <td style="text-align: center;"><span class="status-pass">CONFORME</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 class="section-header" style="margin-top: 8px;">
+        <span>7. Dictamen Final de Conformidad y Pase a Producción</span>
+        <span class="sec-badge">DICTAMEN OFICIAL</span>
+      </h2>
+
+      <p style="font-size: 8.5px; line-height: 1.4; text-align: justify; margin-bottom: 6px;">
+        Habiéndose ejecutado el 100% de los casos de prueba previstos en el plan de aseguramiento de calidad, habiéndose verificado el correcto funcionamiento del motor de estados finitos (FSM), la inviolabilidad de los guardrails de resolución técnica, el estricto aislamiento de seguridad por roles (RBAC) y la integridad de la caja negra de auditoría sanitaria, se emite el presente <strong>DICTAMEN FORMAL DE APROBACIÓN Y CONFORMIDAD FUNCIONAL</strong> para la puesta en marcha de la solución <strong>HealthDesk Quantux</strong>.
+      </p>
+
+      <div class="sig-grid">
+        <div class="sig-box">
+          <div class="sig-line"></div>
+          <div class="sig-name">Freddy Cortés</div>
+          <div class="sig-role">Solution Owner / Analista Funcional</div>
+        </div>
+        <div class="sig-box">
+          <div class="sig-line"></div>
+          <div class="sig-name">Diego Martínez</div>
+          <div class="sig-role">Facilitador Técnico</div>
+        </div>
+        <div class="sig-box">
+          <div class="sig-line"></div>
+          <div class="sig-name">Comité Evaluador</div>
+          <div class="sig-role">Paula Sbarbati • Carolina Brizuela • Nicolás Sánchez</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="running-footer">
+      <span>Quantux Salud • HealthDesk DOC-QA-004</span>
+      <span>Página 5 de 5</span>
+    </div>
+  </div>
+
+</body>
+</html>

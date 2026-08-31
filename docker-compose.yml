@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  healthdesk-quantux:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: quantux-healthdesk-app
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_ENV=production
+      - SMTP_SERVER=localhost
+      - SMTP_PORT=1025
+    volumes:
+      - healthdesk_data:/app/backend
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/docs"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  healthdesk_data:
+    driver: local
