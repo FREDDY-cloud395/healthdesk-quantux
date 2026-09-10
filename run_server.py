@@ -10,6 +10,14 @@ import webbrowser
 import threading
 from pathlib import Path
 
+# Configurar encoding UTF-8 si es posible
+if sys.platform == 'win32':
+    try:
+        sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+        sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+    except Exception:
+        pass
+
 # Ajustar PYTHONPATH para incluir backend
 ROOT_DIR = Path(__file__).resolve().parent
 BACKEND_DIR = ROOT_DIR / "backend"
@@ -23,7 +31,7 @@ def check_port_free(host: str, port: int) -> bool:
 def open_browser_delayed(url: str, delay: float = 1.5):
     def _target():
         time.sleep(delay)
-        print(f"\n🚀 Abriendo navegador en: {url}\n")
+        print(f"\n>> Abriendo navegador en: {url}\n")
         try:
             webbrowser.open(url)
         except Exception:
@@ -33,7 +41,7 @@ def open_browser_delayed(url: str, delay: float = 1.5):
 
 def main():
     print("=" * 76)
-    print("          HEALTHDESK QUANTUX — QUANTUX SALUD (v2.5.0 ITIL Edition)")
+    print("          HEALTHDESK QUANTUX - QUANTUX SALUD (v2.5.0 ITIL Edition)")
     print("    Sistema de Mesa de Ayuda con Escalamiento ITIL (N1 / N2 / N3)")
     print("=" * 76)
     
@@ -44,9 +52,9 @@ def main():
         from app.db.seed import run_seed
         init_db()
         run_seed()
-        print("  ✓ Base de datos validada y sincronizada correctamente.")
+        print("  [OK] Base de datos validada y sincronizada correctamente.")
     except Exception as e:
-        print(f"  ❌ Error en inicialización de base de datos: {e}")
+        print(f"  [ERROR] Error en inicializacion de base de datos: {e}")
         sys.exit(1)
 
     # 2. Comprobar puerto 8000
@@ -54,19 +62,19 @@ def main():
     port = 8000
     print(f"\n[2/3] Verificando disponibilidad de puerto {port}...")
     if not check_port_free(host, port):
-        print(f"  ⚠️  El puerto {port} está ocupado por otra instancia.")
-        print(f"  Se intentará conectar directamente o reusar el puerto.")
+        print(f"  [WARN] El puerto {port} esta ocupado por otra instancia.")
+        print(f"  Se intentara conectar directamente o reusar el puerto.")
     else:
-        print(f"  ✓ Puerto {port} libre y listo para escuchar.")
+        print(f"  [OK] Puerto {port} libre y listo para escuchar.")
 
     # 3. Lanzar Uvicorn
     cockpit_url = f"http://{host}:{port}/cockpit"
     docs_url = f"http://{host}:{port}/docs"
     
     print("\n[3/3] Iniciando Servidor Uvicorn...")
-    print(f"  📍 Cockpit Operativo:  {cockpit_url}")
-    print(f"  📍 Swagger API Docs:   {docs_url}")
-    print(f"  📍 Configuración ITIL: {cockpit_url}#config")
+    print(f"  * Cockpit Operativo:  {cockpit_url}")
+    print(f"  * Swagger API Docs:   {docs_url}")
+    print(f"  * Configuracion ITIL: {cockpit_url}#config")
     print("\nPresione CTRL+C para detener el servicio.\n" + "-" * 76)
 
     open_browser_delayed(cockpit_url, delay=1.2)
