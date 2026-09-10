@@ -6,7 +6,7 @@ from app.api.endpoints import auth, tickets, masters, users
 app = FastAPI(
     title="HealthDesk Quantux API",
     description="Backend oficial del Sistema Centralizado de Gestión de Tickets de Soporte de Quantux Salud",
-    version="1.0.0"
+    version="2.5.0"
 )
 
 # CORS para permitir conexion desde la UI Cockpit
@@ -17,14 +17,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-@app.middleware("http")
-async def add_cache_control_header(request, call_next):
-    response = await call_next(request)
-    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0"
-    response.headers["Pragma"] = "no-cache"
-    response.headers["Expires"] = "0"
-    return response
 
 # SEED AUTOMATICO AL INICIAR
 @app.on_event("startup")
@@ -95,7 +87,8 @@ def api_status():
         "system": "HealthDesk Quantux",
         "organization": "Quantux Salud",
         "status": "ONLINE",
-        "version": "1.0.0",
+        "version": "2.5.0",
+        "release": "ITIL Tiered Support & Multi-Helpdesk Edition (N1/N2/N3)",
         "cockpit_url": "/cockpit",
         "scrumban_url": "/scrumban",
         "presentacion_url": "/presentacion",

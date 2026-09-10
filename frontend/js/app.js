@@ -16,7 +16,9 @@ const AppState = {
   selectedTicket: null,
   activeDetailTab: 'comments', // 'comments' | 'notifications' | 'audit'
   ticketFilterPreset: 'all', // 'all' | 'mine' | 'new' | 'in_progress' | 'p1' | 'resolved'
-  currentDashInst: ''
+  currentDashInst: '',
+  userFilterLevel: 'all',
+  helpdeskLevels: []
 };
 
 // INICIALIZACIÓN
@@ -38,7 +40,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (!AppState.currentUser) {
     AppState.currentUser = {
       id: 1,
-      username: 'freddy.cortes',
+      username: 'admin',
       full_name: 'Freddy Cortés',
       email: 'fcortes@quantux.salud.ar',
       role: 'ADMIN',
@@ -57,6 +59,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   initEditModalListeners();
   initUserModalListeners();
   initArticleModalListeners();
+  initEscalateModalListeners();
+  initHelpdeskTeamModalListeners();
   initFilterListeners();
   
   updateUserProfileUI();
@@ -65,7 +69,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   await loadMasterData();
   await loadUsersList();
   await loadDashboardMetrics();
-  await loadTickets();
   switchView('tickets');
 });
 
@@ -291,13 +294,14 @@ function switchView(viewName) {
   } else if (viewName === 'tickets') {
     loadTickets();
   } else if (viewName === 'users') {
-    renderUsersDirectory();
+    loadUsersList();
   } else if (viewName === 'articles') {
     loadKnowledgeBase();
   } else if (viewName === 'platforms') {
     renderPlatformsCatalog();
   } else if (viewName === 'config') {
     loadSystemConfig();
+    loadHelpdeskLevelsConfig();
   }
 }
 
@@ -1126,8 +1130,11 @@ function renderTicketList() {
     const isSelected = AppState.selectedTicket && AppState.selectedTicket.id === t.id;
     const priority = (t.priority || 'P3').toUpperCase();
     const status = (t.status || 'NUEVO').toUpperCase();
+    const level = (t.support_level || 'N1').toUpperCase();
     const pClass = `badge-${priority.toLowerCase()}`;
     const sClass = `st-${status}`;
+    const lClass = `badge-tier-${level.toLowerCase()}`;
+    const levelLabels = { 'N1': 'N1 • Triage', 'N2': 'N2 • Especialista', 'N3': 'N3 • Ingeniería' };
     const platName = formatPlatformName(t.platform_code);
     const instName = formatInstitutionName(t.institution_code);
     const sla = calculateTicketSLA(t);
@@ -1137,6 +1144,7 @@ function renderTicketList() {
         <div class="card-top-row">
           <span class="ticket-code">${t.id}</span>
           <div style="display:flex; gap:4px; align-items:center;">
+            <span class="badge-tier ${lClass}" style="font-size:9.5px;">${levelLabels[level] || level}</span>
             <span class="badge-prio ${pClass}">${priority}</span>
             <span class="badge-status ${sClass}">${formatStatusName(status)}</span>
           </div>
@@ -1639,6 +1647,64 @@ function renderTicketDetail(rawTicket) {
         <!-- Inspector Lateral con los 4 Widgets de OSDE PAU (Derecha) -->
         <div class="ticket-inspector-sidebar" style="display:flex; flex-direction:column; gap:14px;">
           
+          <!-- Widget 0: Nivel de Atención ITIL & Escalamiento Multicapa -->
+          <div class="inspector-card" style="background:#FFFFFF; border:1.5px solid #CBD5E1; border-radius:10px; padding:14px; box-shadow:0 1px 3px rgba(0,0,0,0.03);">
+            <div style="font-size:11px; font-weight:800; color:#475569; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+              <span>Nivel de Atención ITIL</span>
+              <span class="badge-tier badge-tier-${(ticket.support_level || 'N1').toLowerCase()}">${ticket.support_level || 'N1'} ACTIVO</span>
+            </div>
+
+            <!-- Stepper ITIL Visual -->
+            <div class="itil-stepper" style="margin-bottom:10px;">
+              <div class="itil-step ${(ticket.support_level || 'N1') === 'N1' ? 'active step-n1' : ''}">
+                <span>🔵 N1</span>
+                <span style="font-size:8.5px; opacity:0.85;">Triage</span>
+              </div>
+              <div class="itil-step-arrow">➔</div>
+              <div class="itil-step ${(ticket.support_level || 'N1') === 'N2' ? 'active step-n2' : ''}">
+                <span>🟣 N2</span>
+                <span style="font-size:8.5px; opacity:0.85;">Especialista</span>
+              </div>
+              <div class="itil-step-arrow">➔</div>
+              <div class="itil-step ${(ticket.support_level || 'N1') === 'N3' ? 'active step-n3' : ''}">
+                <span>🔴 N3</span>
+                <span style="font-size:8.5px; opacity:0.85;">Ingeniería</span>
+              </div>
+            </div>
+
+            <div style="font-size:11px; color:#64748B; margin:6px 0 10px 0; line-height:1.4;">
+              <strong>Mesa Responsable:</strong> ${(ticket.support_level || 'N1') === 'N1' ? 'Mesa Central Asistencial & Triage' : ((ticket.support_level || 'N1') === 'N2' ? `Mesa Especialista ${platName}` : 'Core Dev, Cloud DevOps & DBA')}
+            </div>
+
+            <!-- Botones de Acción de Escalamiento Contextuales -->
+            <div style="display:flex; flex-direction:column; gap:6px;">
+              ${(ticket.support_level || 'N1') === 'N1' ? `
+                <button type="button" class="btn-pri" onclick="openEscalateModal('${ticket.id}', 'N1')" style="font-size:11px; padding:6px 10px; background:#7C3AED; display:flex; align-items:center; justify-content:center; gap:6px;">
+                  <span>⚡ Escalar a Nivel 2 (Especialistas)</span>
+                </button>
+                <button type="button" class="btn-sec" onclick="openEscalateModal('${ticket.id}', 'N1')" style="font-size:10.5px; padding:4px 8px; color:#DC2626; border-color:#FECACA; text-align:center;">
+                  🚨 Escalar directo a Nivel 3 (Falla Crítica)
+                </button>
+              ` : ''}
+
+              ${(ticket.support_level || 'N1') === 'N2' ? `
+                <button type="button" class="btn-pri" onclick="openEscalateModal('${ticket.id}', 'N2')" style="font-size:11px; padding:6px 10px; background:#DC2626; display:flex; align-items:center; justify-content:center; gap:6px;">
+                  <span>⚡ Escalar a Nivel 3 (Ingeniería / DBA)</span>
+                </button>
+                <button type="button" class="btn-sec" onclick="openEscalateModal('${ticket.id}', 'N2')" style="font-size:10.5px; padding:4px 8px; color:#0284C7; border-color:#BFDBFE; text-align:center;">
+                  ↩️ Devolver a Nivel 1 (Triage / Datos Faltantes)
+                </button>
+              ` : ''}
+
+              ${(ticket.support_level || 'N1') === 'N3' ? `
+                <button type="button" class="btn-sec" onclick="openEscalateModal('${ticket.id}', 'N3')" style="font-size:10.5px; padding:5px 8px; color:#7C3AED; border-color:#DDD6FE; text-align:center;">
+                  ↩️ Derivar a Nivel 2 (Configuración Especialista)
+                </button>
+              ` : ''}
+            </div>
+
+          </div>
+
           <!-- Widget 1: 3 Participantes (con botón +) -->
           <div class="inspector-card" style="background:#FFFFFF; border:1px solid #E2E8F0; border-radius:10px; padding:14px; box-shadow:0 1px 3px rgba(0,0,0,0.03);">
             <div style="font-size:11px; font-weight:800; color:#64748B; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center;">
@@ -1945,84 +2011,6 @@ async function actionCloseTicket(ticketId) {
   }
 }
 
-function applyTicketPreset(preset) {
-  AppState.ticketFilterPreset = preset;
-  renderSubNavRibbon('tickets');
-
-  const statusSel = document.getElementById('filter-status');
-  const prioSel = document.getElementById('filter-priority');
-  const searchInput = document.getElementById('search-input');
-
-  if (preset === 'all') {
-    if (statusSel) statusSel.value = '';
-    if (prioSel) prioSel.value = '';
-    if (searchInput) searchInput.value = '';
-  } else if (preset === 'mine') {
-    if (statusSel) statusSel.value = '';
-    if (prioSel) prioSel.value = '';
-    if (searchInput) searchInput.value = AppState.currentUser.username;
-  } else if (preset === 'new') {
-    if (statusSel) statusSel.value = 'NUEVO';
-    if (prioSel) prioSel.value = '';
-  } else if (preset === 'in_progress') {
-    if (statusSel) statusSel.value = 'EN_CURSO';
-    if (prioSel) prioSel.value = '';
-  } else if (preset === 'p1') {
-    if (statusSel) statusSel.value = '';
-    if (prioSel) prioSel.value = 'P1';
-  } else if (preset === 'resolved') {
-    if (statusSel) statusSel.value = 'RESUELTO';
-    if (prioSel) prioSel.value = '';
-  } else if (preset === 'closed') {
-    if (statusSel) statusSel.value = 'CERRADO';
-    if (prioSel) prioSel.value = '';
-  }
-
-  const params = {};
-  if (statusSel && statusSel.value) params.status = statusSel.value;
-  if (prioSel && prioSel.value) params.priority = prioSel.value;
-  if (searchInput && searchInput.value.trim()) params.search = searchInput.value.trim();
-
-  const plat = document.getElementById('filter-platform');
-  const inst = document.getElementById('filter-institution');
-  if (plat && plat.value) params.platform_code = plat.value;
-  if (inst && inst.value) params.institution_code = inst.value;
-
-  loadTickets(params);
-}
-
-// =============================================================================
-// 5. DIRECTORIO DE USUARIOS, ARTÍCULOS Y PLATAFORMAS
-// =============================================================================
-async function loadUsersList() {
-  try {
-    const users = await API.getUsers();
-    AppState.users = users;
-    populateAuthModalAccounts();
-  } catch (err) {
-    console.error('Error cargando usuarios:', err);
-  }
-}
-
-function renderUsersDirectory() {
-  const container = document.getElementById('tbody-users-directory') || document.getElementById('users-table-body');
-  if (!container || !AppState.users) return;
-
-  container.innerHTML = AppState.users.map(u => {
-    const instName = formatInstitutionName(u.institution_code);
-    return `
-      <tr>
-        <td><strong>${u.full_name}</strong></td>
-        <td><code>${u.username}</code></td>
-        <td>${u.email || '-'}</td>
-        <td><span class="badge-status ${u.role === 'ADMIN' ? 'st-asignado' : (u.role === 'SOPORTE' ? 'st-curso' : 'st-nuevo')}">${u.role}</span></td>
-        <td>${instName}</td>
-        <td>${u.department || 'Servicio Asistencial / TI'}</td>
-        <td><span style="color:#10B981; font-weight:700;">🟢 Activo</span></td>
-      </tr>
-    `;
-  }).join('');
-}
 // =============================================================================
 // 5. BASE DE CONOCIMIENTO (DINÁMICA, VERSIONADA Y CON HISTORIAL DE CAMBIOS)
 // =============================================================================
@@ -2751,7 +2739,73 @@ function renderPlatformsCatalog() {
 }
 
 // =============================================================================
-// 7. CONFIGURACIÓN DEL SISTEMA (SLA Y PARÁMETROS GLOBALES)
+// 7. DIRECTORIO DE USUARIOS & ROLES ITIL
+// =============================================================================
+async function loadUsersList() {
+  try {
+    AppState.users = await API.getUsers();
+    renderUsersDirectory();
+    populateAuthModalAccounts();
+  } catch (err) {
+    console.error('Error cargando usuarios:', err);
+  }
+}
+
+function filterUsersByLevel(lvl) {
+  AppState.userFilterLevel = lvl;
+  document.querySelectorAll('[data-user-filter]').forEach(btn => {
+    if (btn.dataset.userFilter === lvl) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  });
+  renderUsersDirectory();
+}
+
+function renderUsersDirectory() {
+  const tbody = document.getElementById('tbody-users-directory');
+  if (!tbody) return;
+
+  let filtered = AppState.users || [];
+  if (AppState.userFilterLevel && AppState.userFilterLevel !== 'all') {
+    if (AppState.userFilterLevel === 'SOLICITANTE') {
+      filtered = filtered.filter(u => u.role === 'SOLICITANTE');
+    } else {
+      filtered = filtered.filter(u => u.support_level === AppState.userFilterLevel || u.role === `SOPORTE_${AppState.userFilterLevel}`);
+    }
+  }
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:#94A3B8; padding:24px 10px;">No se encontraron usuarios para el filtro seleccionado.</td></tr>`;
+    return;
+  }
+
+  const levelBadges = {
+    'N1': '<span class="badge-tier badge-tier-n1">🔵 Nivel 1 • Triage</span>',
+    'N2': '<span class="badge-tier badge-tier-n2">🟣 Nivel 2 • Especialista</span>',
+    'N3': '<span class="badge-tier badge-tier-n3">🔴 Nivel 3 • Ingeniería</span>'
+  };
+
+  tbody.innerHTML = filtered.map(u => {
+    const lvlBadge = levelBadges[u.support_level] || (u.role && u.role.includes('SOPORTE') ? `<span class="badge-tier badge-tier-${(u.support_level||'n1').toLowerCase()}">${u.support_level || 'N1'}</span>` : '<span style="font-size:10.5px; color:#64748B;">No aplica</span>');
+    return `
+      <tr>
+        <td><strong>${u.full_name}</strong></td>
+        <td><code>${u.username}</code></td>
+        <td><a href="mailto:${u.email}" style="color:#2563EB;">${u.email}</a></td>
+        <td><span class="badge-status st-NUEVO" style="font-size:10px;">${u.role}</span></td>
+        <td>${lvlBadge}</td>
+        <td>🏥 ${formatInstitutionName(u.institution_code)}</td>
+        <td>${u.specialty || 'General / Asistencial'}</td>
+        <td><span style="color:#059669; font-weight:800; font-size:11px;">🟢 Activo</span></td>
+      </tr>
+    `;
+  }).join('');
+}
+
+// =============================================================================
+// 8. CONFIGURACIÓN DEL SISTEMA, SLAS & MESAS DE AYUDA ITIL (N1 / N2 / N3)
 // =============================================================================
 async function loadSystemConfig() {
   try {
@@ -2759,7 +2813,7 @@ async function loadSystemConfig() {
     AppState.systemConfig = cfg;
     renderSystemConfig(cfg);
   } catch (err) {
-    console.error('Error cargando configuración:', err);
+    console.error('Error cargando configuración global:', err);
   }
 }
 
@@ -2809,12 +2863,180 @@ async function saveSystemConfig() {
     await API.updateConfig(payload);
     showToast('¡Configuración de SLAs y políticas operativas guardada con éxito!', 'success');
   } catch (err) {
-    showToast('Error al guardar configuración', 'error');
+    showToast('Error al guardar configuración de SLAs', 'error');
   }
 }
 
+async function loadHelpdeskLevelsConfig() {
+  const container = document.getElementById('helpdesk-levels-container');
+  try {
+    const levels = await API.getHelpdeskLevels();
+    AppState.helpdeskLevels = levels;
+    renderHelpdeskLevelsConfig(levels);
+  } catch (err) {
+    console.error('Error cargando configuración de niveles de soporte:', err);
+    if (container) {
+      container.innerHTML = `<div style="color:#EF4444; padding:12px; font-weight:700;">Error al cargar la configuración de niveles de mesa de ayuda.</div>`;
+    }
+  }
+}
+
+function renderHelpdeskLevelsConfig(levels) {
+  const container = document.getElementById('helpdesk-levels-container');
+  if (!container || !levels) return;
+
+  const levelStyles = {
+    'N1': { border: 'card-n1', badgeClass: 'badge-tier-n1', icon: '🔵', title: 'Nivel 1 • Triage & Recepción Asistencial', badgeText: 'N1 • FIRST CONTACT' },
+    'N2': { border: 'card-n2', badgeClass: 'badge-tier-n2', icon: '🟣', title: 'Nivel 2 • Soporte Especializado por Módulo', badgeText: 'N2 • ESPECIALISTAS' },
+    'N3': { border: 'card-n3', badgeClass: 'badge-tier-n3', icon: '🔴', title: 'Nivel 3 • Ingeniería de Software, Cloud & DBA', badgeText: 'N3 • INGENIERÍA' }
+  };
+
+  container.innerHTML = levels.map(lvl => {
+    const style = levelStyles[lvl.code] || levelStyles['N1'];
+    const teams = lvl.teams || [];
+    const operators = lvl.assigned_operators || [];
+
+    return `
+      <div class="level-card ${style.border}" id="level-card-${lvl.code}">
+        
+        <!-- Header de la Tarjeta del Nivel -->
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:4px;">
+          <div>
+            <div class="badge-tier ${style.badgeClass}" style="margin-bottom:4px;">
+              ${style.icon} ${style.badgeText}
+            </div>
+            <h3 style="font-family:'Outfit', sans-serif; font-size:14px; font-weight:800; color:#0F172A; margin:0;">
+              ${lvl.name}
+            </h3>
+          </div>
+          <span style="font-size:11px; font-weight:800; background:#F1F5F9; color:#475569; padding:2px 8px; border-radius:12px;">
+            ${teams.length} Mesas Activas
+          </span>
+        </div>
+
+        <p style="font-size:11.5px; color:#475569; line-height:1.4; margin:0 0 10px 0;">
+          ${lvl.description || 'Nivel de atención del servicio de soporte.'}
+        </p>
+
+        <!-- Parámetros Operativos Editables -->
+        <div style="background:#F8FAFC; border:1px solid #E2E8F0; border-radius:8px; padding:12px; display:flex; flex-direction:column; gap:8px;">
+          <div style="font-size:10.5px; font-weight:800; color:#334155; text-transform:uppercase; letter-spacing:0.3px;">
+            ⚙️ Parámetros del Nivel
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+            <div>
+              <label style="font-size:10px; font-weight:700; color:#64748B; display:block; margin-bottom:2px;">SLA Retención Máx:</label>
+              <input type="text" id="cfg-lvl-${lvl.code}-sla" class="form-control" style="font-size:11.5px; height:30px; font-weight:700;" value="${lvl.retention_sla_max || ''}">
+            </div>
+            <div>
+              <label style="font-size:10px; font-weight:700; color:#64748B; display:block; margin-bottom:2px;">Modo de Despacho:</label>
+              <select id="cfg-lvl-${lvl.code}-dispatch" class="form-control" style="font-size:11px; height:30px; font-weight:700;">
+                <option value="ROUND_ROBIN" ${lvl.dispatch_mode === 'ROUND_ROBIN' ? 'selected' : ''}>🔄 Round Robin</option>
+                <option value="SPECIALTY" ${lvl.dispatch_mode === 'SPECIALTY' ? 'selected' : ''}>🩺 Por Especialidad</option>
+                <option value="WORKLOAD" ${lvl.dispatch_mode === 'WORKLOAD' ? 'selected' : ''}>⚖️ Menor Carga</option>
+                <option value="CRITICALITY" ${lvl.dispatch_mode === 'CRITICALITY' ? 'selected' : ''}>🚨 Severidad P1</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label style="font-size:10px; font-weight:700; color:#64748B; display:block; margin-bottom:2px;">Auto-escalamiento si vence:</label>
+            <select id="cfg-lvl-${lvl.code}-auto" class="form-control" style="font-size:11px; height:30px; font-weight:700;">
+              <option value="" ${!lvl.auto_escalate_target ? 'selected' : ''}>-- Sin auto-escalamiento --</option>
+              <option value="N2" ${lvl.auto_escalate_target === 'N2' ? 'selected' : ''}>🟣 Escalar a Nivel 2 (Especialistas)</option>
+              <option value="N3" ${lvl.auto_escalate_target === 'N3' ? 'selected' : ''}>🔴 Escalar a Nivel 3 (Ingeniería)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Colas / Mesas Especializadas -->
+        <div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <span style="font-size:11px; font-weight:800; color:#334155; text-transform:uppercase;">Mesas Especializadas:</span>
+            <button type="button" class="btn-sec" onclick="openAddTeamModal('${lvl.code}')" style="font-size:10px; padding:2px 6px; font-weight:700;">+ Mesa</button>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:4px;">
+            ${teams.map(t => `
+              <div style="background:#FFFFFF; border:1px solid #E2E8F0; border-radius:6px; padding:6px 10px; display:flex; justify-content:space-between; align-items:center; font-size:11px;">
+                <div>
+                  <strong style="color:#0F172A;">${t.team_name}</strong>
+                  <div style="font-size:10px; color:#64748B;">🕒 ${t.shift || '24/7'} • Resp: ${t.lead || 'Sin Lead'}</div>
+                </div>
+                <span style="font-size:9.5px; font-weight:800; background:#F1F5F9; color:#475569; padding:2px 6px; border-radius:4px;">
+                  ${t.active_operators_count || 1} op.
+                </span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <!-- Operadores Asignados -->
+        <div>
+          <div style="font-size:10.5px; font-weight:800; color:#64748B; text-transform:uppercase; margin-bottom:4px;">
+            Operadores Asignados (${operators.length}):
+          </div>
+          <div style="display:flex; flex-wrap:wrap; gap:4px;">
+            ${operators.map(op => `
+              <span style="font-size:10px; background:#EFF6FF; color:#1E40AF; border:1px solid #DBEAFE; padding:2px 6px; border-radius:12px; font-weight:700;">
+                👤 ${op}
+              </span>
+            `).join('')}
+          </div>
+        </div>
+
+        <!-- Botón Guardar Nivel -->
+        <div style="margin-top:auto; padding-top:8px; border-top:1px solid #F1F5F9; display:flex; justify-content:flex-end;">
+          <button type="button" class="btn-pri" onclick="saveHelpdeskLevelConfig('${lvl.code}')" style="font-size:11px; padding:5px 12px; font-weight:800;">
+            💾 Guardar ${lvl.code}
+          </button>
+        </div>
+
+      </div>
+    `;
+  }).join('');
+}
+
+async function saveHelpdeskLevelConfig(levelCode) {
+  const slaInput = document.getElementById(`cfg-lvl-${levelCode}-sla`);
+  const dispatchInput = document.getElementById(`cfg-lvl-${levelCode}-dispatch`);
+  const autoInput = document.getElementById(`cfg-lvl-${levelCode}-auto`);
+
+  const payload = {
+    retention_sla_max: slaInput ? slaInput.value.trim() : '',
+    dispatch_mode: dispatchInput ? dispatchInput.value : 'ROUND_ROBIN',
+    auto_escalate_target: autoInput ? (autoInput.value || null) : null
+  };
+
+  try {
+    await API.updateHelpdeskLevel(levelCode, payload);
+    showToast(`¡Configuración de ${levelCode} actualizada exitosamente!`, 'success');
+    await loadHelpdeskLevelsConfig();
+  } catch (err) {
+    showToast(`Error al guardar configuración de ${levelCode}`, 'error');
+  }
+}
+
+async function saveAllHelpdeskLevels() {
+  const codes = ['N1', 'N2', 'N3'];
+  for (const code of codes) {
+    const slaInput = document.getElementById(`cfg-lvl-${code}-sla`);
+    const dispatchInput = document.getElementById(`cfg-lvl-${code}-dispatch`);
+    const autoInput = document.getElementById(`cfg-lvl-${code}-auto`);
+    if (slaInput && dispatchInput) {
+      await API.updateHelpdeskLevel(code, {
+        retention_sla_max: slaInput.value.trim(),
+        dispatch_mode: dispatchInput.value,
+        auto_escalate_target: autoInput ? (autoInput.value || null) : null
+      });
+    }
+  }
+  showToast('¡Configuración de todos los niveles N1, N2 y N3 guardada con éxito!', 'success');
+  await loadHelpdeskLevelsConfig();
+}
+
 // =============================================================================
-// 8. MODALES Y FILTROS
+// 9. MODALES DE GESTIÓN, DERIVACIÓN ITIL & OPERADORES
 // =============================================================================
 function initModalListeners() {
   const btnOpen = document.getElementById('btn-open-modal');
@@ -2997,6 +3219,7 @@ function initUserModalListeners() {
         full_name: document.getElementById('user-fullname').value.trim(),
         username: document.getElementById('user-username').value.trim(),
         role: document.getElementById('user-role').value,
+        support_level: document.getElementById('user-support-level') ? document.getElementById('user-support-level').value || null : null,
         email: document.getElementById('user-email').value.trim(),
         institution_code: document.getElementById('user-institution').value
       };
@@ -3015,6 +3238,130 @@ function initUserModalListeners() {
   }
 }
 
+// 9.1 MODAL DE ESCALAMIENTO ITIL (N1 ➔ N2 ➔ N3)
+function openEscalateModal(ticketId, currentLevel) {
+  const modal = document.getElementById('modal-escalate-ticket');
+  if (!modal) return;
+
+  document.getElementById('escalate-ticket-id').value = ticketId;
+  const displayId = document.getElementById('escalate-modal-ticket-id-display');
+  if (displayId) displayId.textContent = ticketId;
+
+  const targetSelect = document.getElementById('escalate-target-level');
+  if (targetSelect) {
+    if (currentLevel === 'N1') targetSelect.value = 'N2';
+    else if (currentLevel === 'N2') targetSelect.value = 'N3';
+    else targetSelect.value = 'N1';
+    
+    // Asignar listener para cambio dinámico de operadores si no está asignado
+    targetSelect.onchange = (e) => onEscalateTargetLevelChange(e.target.value);
+  }
+
+  onEscalateTargetLevelChange(targetSelect ? targetSelect.value : 'N2');
+  const reasonEl = document.getElementById('escalate-reason');
+  if (reasonEl) reasonEl.value = '';
+
+  modal.classList.add('active');
+}
+
+function onEscalateTargetLevelChange(targetLevel) {
+  const opSelect = document.getElementById('escalate-assignee-operator');
+  if (!opSelect) return;
+
+  const eligibleOps = (AppState.users || []).filter(u => u.support_level === targetLevel || u.role === `SOPORTE_${targetLevel}` || u.role === 'ADMIN');
+  opSelect.innerHTML = '<option value="">-- Asignación automática por Despacho del Nivel --</option>' +
+    eligibleOps.map(u => `<option value="${u.username}">👤 ${u.full_name} (@${u.username})</option>`).join('');
+}
+
+function initEscalateModalListeners() {
+  const modal = document.getElementById('modal-escalate-ticket');
+  const btnClose = document.getElementById('modal-escalate-close');
+  const btnCancel = document.getElementById('btn-cancel-escalate-modal');
+  const form = document.getElementById('form-escalate-ticket');
+
+  if (btnClose && modal) btnClose.addEventListener('click', () => modal.classList.remove('active'));
+  if (btnCancel && modal) btnCancel.addEventListener('click', () => modal.classList.remove('active'));
+
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const ticketId = document.getElementById('escalate-ticket-id').value;
+      const targetLevel = document.getElementById('escalate-target-level').value;
+      const assignee = document.getElementById('escalate-assignee-operator').value || null;
+      const reason = document.getElementById('escalate-reason').value.trim();
+
+      const payload = {
+        target_level: targetLevel,
+        assignee_username: assignee,
+        reason: reason,
+        changed_by_username: AppState.currentUser ? AppState.currentUser.username : 'admin'
+      };
+
+      try {
+        await API.escalateTicket(ticketId, payload);
+        modal.classList.remove('active');
+        showToast(`⚡ ¡Ticket #${ticketId} derivado exitosamente al Nivel ${targetLevel}!`, 'success');
+        await loadTickets();
+        await selectTicket(ticketId, true);
+      } catch (err) {
+        showToast('Error al escalar ticket: ' + (err.detail || 'Operación rechazada'), 'error');
+      }
+    });
+  }
+}
+
+// 9.2 MODAL DE NUEVA MESA ESPECIALIZADA POR NIVEL
+function openAddTeamModal(levelCode = 'N2') {
+  const modal = document.getElementById('modal-new-helpdesk-team');
+  if (!modal) return;
+  const targetSel = document.getElementById('team-target-level');
+  if (targetSel) targetSel.value = levelCode;
+  const form = document.getElementById('form-new-helpdesk-team');
+  if (form) form.reset();
+  if (targetSel) targetSel.value = levelCode;
+  modal.classList.add('active');
+}
+
+function initHelpdeskTeamModalListeners() {
+  const modal = document.getElementById('modal-new-helpdesk-team');
+  const btnClose = document.getElementById('modal-new-team-close');
+  const btnCancel = document.getElementById('btn-cancel-team-modal');
+  const form = document.getElementById('form-new-helpdesk-team');
+
+  if (btnClose && modal) btnClose.addEventListener('click', () => modal.classList.remove('active'));
+  if (btnCancel && modal) btnCancel.addEventListener('click', () => modal.classList.remove('active'));
+
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const levelCode = document.getElementById('team-target-level').value;
+      const rawPlats = document.getElementById('team-platforms').value;
+      const platformsList = rawPlats ? rawPlats.split(',').map(s => s.trim().toUpperCase()).filter(Boolean) : [];
+
+      const payload = {
+        team_name: document.getElementById('team-name').value.trim(),
+        shift: document.getElementById('team-shift').value,
+        lead: document.getElementById('team-lead').value.trim() || 'Supervisor del Nivel',
+        platforms: platformsList,
+        active_operators_count: 1
+      };
+
+      try {
+        await API.addTeamToHelpdeskLevel(levelCode, payload);
+        modal.classList.remove('active');
+        form.reset();
+        showToast(`¡Mesa "${payload.team_name}" creada en ${levelCode}!`, 'success');
+        await loadHelpdeskLevelsConfig();
+      } catch (err) {
+        showToast('Error al crear mesa especializada', 'error');
+      }
+    });
+  }
+}
+
+// =============================================================================
+// 10. FILTROS DE BANDEJA & PRESETS ITIL
+// =============================================================================
 function applyTicketPreset(preset) {
   AppState.ticketFilterPreset = preset;
   renderSubNavRibbon('tickets');
@@ -3044,7 +3391,6 @@ function applyTicketPreset(preset) {
     if (filterPrio) filterPrio.value = params.priority;
     if (colFilterPrio) colFilterPrio.value = params.priority;
   } else {
-    // Si el usuario tiene una prioridad seleccionada en el selector desplegable
     const selectedPrio = (filterPrio && filterPrio.value) || (colFilterPrio && colFilterPrio.value);
     if (selectedPrio) {
       params.priority = selectedPrio;
@@ -3059,10 +3405,12 @@ function applyTicketPreset(preset) {
   const plat = document.getElementById('filter-platform');
   const inst = document.getElementById('filter-institution');
   const colInst = document.getElementById('col-filter-institution');
+  const colFilterLevel = document.getElementById('col-filter-level');
   const selectedInst = (inst && inst.value) || (colInst && colInst.value);
 
   if (plat && plat.value) params.platform_code = plat.value;
   if (selectedInst) params.institution_code = selectedInst;
+  if (colFilterLevel && colFilterLevel.value) params.support_level = colFilterLevel.value;
 
   loadTickets(params);
 }
@@ -3076,6 +3424,7 @@ function initFilterListeners() {
   const colFilterInst = document.getElementById('col-filter-institution');
   const filterPrio = document.getElementById('filter-priority');
   const colFilterPrio = document.getElementById('col-filter-priority');
+  const colFilterLevel = document.getElementById('col-filter-level');
   const filterPlat = document.getElementById('filter-platform');
 
   const applyFilters = () => {
@@ -3109,6 +3458,11 @@ function initFilterListeners() {
     const selectedInst = (filterInst && filterInst.value) || (colFilterInst && colFilterInst.value);
     if (selectedInst) {
       params.institution_code = selectedInst;
+    }
+
+    // Filtro de Nivel de Atención ITIL (N1 / N2 / N3)
+    if (colFilterLevel && colFilterLevel.value) {
+      params.support_level = colFilterLevel.value;
     }
 
     // Plataforma
@@ -3156,6 +3510,11 @@ function initFilterListeners() {
     });
   }
 
+  // Filtro de Nivel ITIL
+  if (colFilterLevel) {
+    colFilterLevel.addEventListener('change', applyFilters);
+  }
+
   if (filterPlat) {
     filterPlat.addEventListener('change', applyFilters);
   }
@@ -3186,6 +3545,8 @@ function initFilterListeners() {
 
       const selectedInst = (filterInst && filterInst.value) || (colFilterInst && colFilterInst.value);
       if (selectedInst) url.searchParams.append('institution_code', selectedInst);
+
+      if (colFilterLevel && colFilterLevel.value) url.searchParams.append('support_level', colFilterLevel.value);
 
       window.location.href = url.toString();
     });

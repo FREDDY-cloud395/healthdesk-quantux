@@ -14,6 +14,8 @@ def init_db():
     SQLModel.metadata.create_all(engine)
     with Session(engine) as session:
         for col_def in [
+            "ALTER TABLE users ADD COLUMN support_level TEXT",
+            "ALTER TABLE tickets ADD COLUMN support_level TEXT DEFAULT 'N1'",
             "ALTER TABLE tickets ADD COLUMN attachment_url TEXT",
             "ALTER TABLE kb_articles ADD COLUMN version TEXT DEFAULT 'v1.0'",
             "ALTER TABLE kb_articles ADD COLUMN changelog TEXT DEFAULT 'Versión inicial homologada'",

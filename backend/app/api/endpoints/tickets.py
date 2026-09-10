@@ -54,6 +54,12 @@ class TicketAssignRequest(BaseModel):
     reason: Optional[str] = None
     changed_by_username: str = "soporte"
 
+class TicketEscalateRequest(BaseModel):
+    target_level: SupportLevel  # N1, N2, N3
+    assignee_username: Optional[str] = None
+    reason: str
+    changed_by_username: str = "soporte"
+
 class TicketStatusRequest(BaseModel):
     new_status: TicketStatus
     changed_by_username: str = "soporte"
@@ -110,6 +116,7 @@ def generate_ticket_id(session: Session) -> str:
 def list_tickets(
     status: Optional[TicketStatus] = None,
     priority: Optional[PriorityLevel] = None,
+    support_level: Optional[SupportLevel] = None,
     platform_code: Optional[str] = None,
     institution_code: Optional[str] = None,
     requester_username: Optional[str] = None,
@@ -122,6 +129,8 @@ def list_tickets(
         query = query.where(Ticket.status == status)
     if priority:
         query = query.where(Ticket.priority == priority)
+    if support_level:
+        query = query.where(Ticket.support_level == support_level)
     if platform_code:
         query = query.where(Ticket.platform_code == platform_code)
     if institution_code:
@@ -472,6 +481,66 @@ def assign_ticket(ticket_id: str, req: TicketAssignRequest, background_tasks: Ba
     lvl_val = req.support_level.value if hasattr(req.support_level, 'value') else str(req.support_level or "N1")
     background_tasks.add_task(notify_ticket_assigned, ticket, req.assignee_username, lvl_val)
     
+    return ticket
+
+# 4.1 ESCALAR NIVEL DE ATENCIÓN (ITIL N1 ➔ N2 ➔ N3)
+@router.patch("/{ticket_id}/escalate", response_model=Ticket)
+@router.post("/{ticket_id}/escalate", response_model=Ticket)
+def escalate_ticket(ticket_id: str, req: TicketEscalateRequest, background_tasks: BackgroundTasks, session: Session = Depends(get_session)):
+    ticket = session.get(Ticket, ticket_id)
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket no encontrado.")
+    
+    old_level = ticket.support_level.value if hasattr(ticket.support_level, 'value') else str(ticket.support_level or "N1")
+    new_level = req.target_level.value if hasattr(req.target_level, 'value') else str(req.target_level)
+    
+    old_assignee = ticket.assignee_username
+    ticket.support_level = req.target_level
+    if req.assignee_username:
+        ticket.assignee_username = req.assignee_username
+    
+    if ticket.status == TicketStatus.NUEVO:
+        ticket.status = TicketStatus.ASIGNADO
+    
+    ticket.updated_at = datetime.utcnow()
+    session.add(ticket)
+    
+    # Registro en Auditoría Forense
+    session.add(TicketAuditLog(
+        ticket_id=ticket_id,
+        changed_by_username=req.changed_by_username,
+        field_changed="support_level",
+        old_value=f"Nivel {old_level}",
+        new_value=f"Nivel {new_level}",
+        change_reason=f"Escalamiento operativo: {req.reason}"
+    ))
+    
+    if req.assignee_username and req.assignee_username != old_assignee:
+        session.add(TicketAuditLog(
+            ticket_id=ticket_id,
+            changed_by_username=req.changed_by_username,
+            field_changed="assignee",
+            old_value=old_assignee,
+            new_value=req.assignee_username,
+            change_reason=f"Reasignación por escalamiento a {new_level}"
+        ))
+    
+    # Comentario interno de auditoría en la conversación
+    comment_text = f"🔄 **ESCALAMIENTO DE NIVEL ITIL**\n• Nivel previo: **{old_level}** ➔ Nuevo nivel: **{new_level}**\n• Operador asignado: **{req.assignee_username or 'En cola de mesa'}**\n• Justificación: {req.reason}"
+    session.add(TicketComment(
+        ticket_id=ticket_id,
+        author_username=req.changed_by_username,
+        message=comment_text,
+        is_internal=True,
+        created_at=datetime.utcnow()
+    ))
+    
+    session.commit()
+    session.refresh(ticket)
+    
+    if req.assignee_username:
+        background_tasks.add_task(notify_ticket_assigned, ticket, req.assignee_username, new_level)
+        
     return ticket
 
 # 5. PASO 3 • GESTIONAR ESTADO

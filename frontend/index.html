@@ -54,6 +54,138 @@
       gap: 12px !important;
       min-width: 0 !important;
     }
+    
+    /* ESTILOS DE NIVELES DE ATENCIÓN ITIL (N1 / N2 / N3) */
+    .badge-tier {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-weight: 800;
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 4px;
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+    }
+    .badge-tier-n1 {
+      background: #EFF6FF;
+      color: #0284C7;
+      border: 1px solid #BFDBFE;
+    }
+    .badge-tier-n2 {
+      background: #F5F3FF;
+      color: #7C3AED;
+      border: 1px solid #DDD6FE;
+    }
+    .badge-tier-n3 {
+      background: #FEF2F2;
+      color: #DC2626;
+      border: 1px solid #FECACA;
+    }
+
+    /* STEPPER ITIL HORIZONTAL */
+    .itil-stepper {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin: 8px 0;
+      padding: 6px;
+      background: #F8FAFC;
+      border-radius: 8px;
+      border: 1px solid #E2E8F0;
+    }
+    .itil-step {
+      flex: 1;
+      text-align: center;
+      padding: 6px 4px;
+      border-radius: 6px;
+      font-size: 10.5px;
+      font-weight: 700;
+      color: #64748B;
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      transition: all 0.2s ease;
+    }
+    .itil-step.active {
+      font-weight: 800;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+    .itil-step.active.step-n1 {
+      background: #EFF6FF;
+      color: #0284C7;
+      border-color: #93C5FD;
+    }
+    .itil-step.active.step-n2 {
+      background: #F5F3FF;
+      color: #7C3AED;
+      border-color: #C4B5FD;
+    }
+    .itil-step.active.step-n3 {
+      background: #FEF2F2;
+      color: #DC2626;
+      border-color: #FCA5A5;
+    }
+    .itil-step-arrow {
+      color: #94A3B8;
+      font-size: 11px;
+      font-weight: 800;
+      user-select: none;
+    }
+
+    /* PÍLDORAS DE FILTRO */
+    .filter-tab-pill {
+      border: 1px solid #CBD5E1;
+      background: #FFFFFF;
+      color: #475569;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.15s ease;
+    }
+    .filter-tab-pill:hover {
+      background: #F1F5F9;
+      color: #0F172A;
+    }
+    .filter-tab-pill.active {
+      background: #0F172A;
+      color: #FFFFFF;
+      border-color: #0F172A;
+    }
+
+    /* TARJETAS DE NIVELES EN CONFIGURACIÓN */
+    .level-card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .level-card {
+      background: #FFFFFF;
+      border-radius: 10px;
+      border: 1.5px solid #E2E8F0;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .level-card:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    .level-card.card-n1 { border-top: 4px solid #0284C7; }
+    .level-card.card-n2 { border-top: 4px solid #7C3AED; }
+    .level-card.card-n3 { border-top: 4px solid #DC2626; }
+
     @media (max-width: 768px) {
       .cockpit-container {
         display: flex !important;
@@ -63,6 +195,9 @@
       .ticket-detail-grid {
         grid-template-columns: 1fr !important;
         overflow-y: auto !important;
+      }
+      .level-card-grid {
+        grid-template-columns: 1fr !important;
       }
     }
   </style>
@@ -93,7 +228,7 @@
             </div>
             <div class="brand-info">
               <div class="brand-name">QUANTUX<span>SALUD</span></div>
-              <div class="brand-sub">MESA DE AYUDA • v1.0</div>
+              <div class="brand-sub">MESA DE AYUDA • v2.5 ITIL</div>
             </div>
           </div>
           <button class="sidebar-close-btn" id="btn-sidebar-close" aria-label="Cerrar Menú">&times;</button>
@@ -461,13 +596,20 @@
                   <span style="font-size: 11px; font-weight: 800; color: #475569; text-transform: uppercase; letter-spacing: 0.5px;">Bandeja</span>
                   <span class="badge-count" id="ticket-count-badge" style="background: #E2E8F0; color: #334155; font-size: 10px; font-weight: 800; padding: 1px 6px; border-radius: 10px;">0</span>
                 </div>
-                <div style="display: flex; align-items: center; gap: 6px;">
+                <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                  <!-- Selector Nivel de Atención ITIL (N1 / N2 / N3) -->
+                  <select id="col-filter-level" style="font-size: 10.5px; font-weight: 700; color: #1E293B; background: #F8FAFC; border: 1px solid #CBD5E1; border-radius: 4px; padding: 2px 5px; outline: none; cursor: pointer; max-width: 120px;" title="Filtrar por Nivel de Atención ITIL">
+                    <option value="">🏢 Todos Niveles</option>
+                    <option value="N1">🔵 N1 • Triage</option>
+                    <option value="N2">🟣 N2 • Especialista</option>
+                    <option value="N3">🔴 N3 • Ingeniería</option>
+                  </select>
                   <!-- Selector Sede -->
-                  <select id="col-filter-institution" style="font-size: 10.5px; font-weight: 700; color: #1E293B; background: #F8FAFC; border: 1px solid #CBD5E1; border-radius: 4px; padding: 2px 5px; outline: none; cursor: pointer; max-width: 125px;" title="Filtrar por Institución">
-                    <option value="">🏥 Todas las Sedes</option>
+                  <select id="col-filter-institution" style="font-size: 10.5px; font-weight: 700; color: #1E293B; background: #F8FAFC; border: 1px solid #CBD5E1; border-radius: 4px; padding: 2px 5px; outline: none; cursor: pointer; max-width: 115px;" title="Filtrar por Institución">
+                    <option value="">🏥 Todas Sedes</option>
                   </select>
                   <!-- Selector Prioridad -->
-                  <select id="col-filter-priority" style="font-size: 10.5px; font-weight: 700; color: #1E293B; background: #F8FAFC; border: 1px solid #CBD5E1; border-radius: 4px; padding: 2px 5px; outline: none; cursor: pointer; max-width: 115px;" title="Filtrar por Nivel de Prioridad ITIL">
+                  <select id="col-filter-priority" style="font-size: 10.5px; font-weight: 700; color: #1E293B; background: #F8FAFC; border: 1px solid #CBD5E1; border-radius: 4px; padding: 2px 5px; outline: none; cursor: pointer; max-width: 105px;" title="Filtrar por Nivel de Prioridad ITIL">
                     <option value="">⚡ Prioridad</option>
                     <option value="P1">🚨 P1 Crítica</option>
                     <option value="P2">⚠️ P2 Alta</option>
@@ -498,10 +640,23 @@
         <section class="app-view" id="view-users">
           <div class="dashboard-scroll">
             <div class="dashboard-toolbar">
-              <span style="font-weight: 800; font-size: 13px; color: var(--q-text-dark);">👥 Directorio General de Personal Asistencial y Soporte</span>
+              <div>
+                <span style="font-weight: 800; font-size: 14px; color: var(--q-text-dark);">👥 Directorio General de Personal Asistencial y Soporte</span>
+                <div style="font-size: 11px; color: var(--q-text-muted); margin-top: 2px;">Gestione operadores por nivel de atención ITIL (N1, N2, N3) y profesionales solicitantes.</div>
+              </div>
               <button class="btn-sidebar-new" id="btn-open-user-modal" style="width: auto; padding: 6px 14px;">
                 <span>➕</span> Dar de Alta Usuario
               </button>
+            </div>
+
+            <!-- Píldoras de Filtro por Nivel de Atención -->
+            <div style="display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; align-items: center;">
+              <span style="font-size: 11px; font-weight: 800; color: #64748B; text-transform: uppercase;">Filtrar por Nivel:</span>
+              <button class="filter-tab-pill active" data-user-filter="all" onclick="filterUsersByLevel('all')">Todos los Usuarios</button>
+              <button class="filter-tab-pill" data-user-filter="N1" onclick="filterUsersByLevel('N1')">🔵 Nivel 1 • Triage</button>
+              <button class="filter-tab-pill" data-user-filter="N2" onclick="filterUsersByLevel('N2')">🟣 Nivel 2 • Especialistas</button>
+              <button class="filter-tab-pill" data-user-filter="N3" onclick="filterUsersByLevel('N3')">🔴 Nivel 3 • Ingeniería</button>
+              <button class="filter-tab-pill" data-user-filter="SOLICITANTE" onclick="filterUsersByLevel('SOLICITANTE')">🩺 Médicos y Solicitantes</button>
             </div>
 
             <div class="chart-card">
@@ -513,6 +668,7 @@
                       <th>Usuario</th>
                       <th>Correo Electrónico</th>
                       <th>Rol / Perfil</th>
+                      <th>Nivel ITIL</th>
                       <th>Institución / Sede</th>
                       <th>Especialidad / Área</th>
                       <th>Estado</th>
@@ -699,7 +855,67 @@
               </button>
             </div>
 
-            <!-- Grilla Principal de Parámetros Editables -->
+            <!-- SECCIÓN PRINCIPAL: MESAS DE AYUDA Y NIVELES DE ATENCIÓN ITIL (N1 / N2 / N3) -->
+            <div style="background: #FFFFFF; border: 1.5px solid #CBD5E1; border-radius: 12px; padding: 18px; margin-bottom: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.03);">
+              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px solid #E2E8F0;">
+                <div>
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 18px;">🏢</span>
+                    <span style="font-weight: 800; font-size: 15px; color: #0F172A;">Mesas de Ayuda & Niveles de Atención ITIL (N1 / N2 / N3)</span>
+                    <span style="background: #EFF6FF; color: #0284C7; font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 12px; border: 1px solid #BFDBFE;">ESTÁNDAR ASISTENCIAL</span>
+                  </div>
+                  <p style="font-size: 12px; color: #64748B; margin: 4px 0 0 0;">
+                    Configure tiempos de retención máxima (SLA), modos de despacho inteligente, colas especializadas y reglas de escalamiento automático entre niveles.
+                  </p>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                  <button type="button" class="btn-sec" onclick="openAddTeamModal()" style="font-size: 11.5px; padding: 6px 12px; font-weight: 700; display: flex; align-items: center; gap: 5px;">
+                    <span>➕ Nueva Mesa Especializada</span>
+                  </button>
+                  <button type="button" class="btn-pri" onclick="saveAllHelpdeskLevels()" style="font-size: 11.5px; padding: 6px 14px; font-weight: 800; display: flex; align-items: center; gap: 5px;">
+                    <span>💾 Guardar Todos los Niveles</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- FLUJO OPERATIVO ITIL VISUAL (WORKFLOW RIBBON) -->
+              <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px; padding: 12px 16px; margin-bottom: 16px;">
+                <div style="font-size: 10.5px; font-weight: 800; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
+                  🔄 Circuito de Escalamiento Asistencial Multicapa
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; align-items: center;">
+                  
+                  <div style="background: #FFFFFF; border: 1px solid #BFDBFE; border-left: 4px solid #0284C7; padding: 8px 12px; border-radius: 6px;">
+                    <div style="font-size: 11px; font-weight: 800; color: #0284C7;">1. NIVEL 1 • TRIAGE</div>
+                    <div style="font-size: 10px; color: #64748B; margin-top: 2px;">Diagnóstico primario • SLA &le; 30m</div>
+                  </div>
+
+                  <div style="text-align: center; color: #94A3B8; font-weight: 800; font-size: 14px;">➔</div>
+
+                  <div style="background: #FFFFFF; border: 1px solid #DDD6FE; border-left: 4px solid #7C3AED; padding: 8px 12px; border-radius: 6px;">
+                    <div style="font-size: 11px; font-weight: 800; color: #7C3AED;">2. NIVEL 2 • ESPECIALISTAS</div>
+                    <div style="font-size: 10px; color: #64748B; margin-top: 2px;">HIS, Firma PKI, HL7 • SLA &le; 4h</div>
+                  </div>
+
+                  <div style="text-align: center; color: #94A3B8; font-weight: 800; font-size: 14px;">➔</div>
+
+                  <div style="background: #FFFFFF; border: 1px solid #FECACA; border-left: 4px solid #DC2626; padding: 8px 12px; border-radius: 6px;">
+                    <div style="font-size: 11px; font-weight: 800; color: #DC2626;">3. NIVEL 3 • INGENIERÍA</div>
+                    <div style="font-size: 10px; color: #64748B; margin-top: 2px;">Core Dev, DevOps, DBA • SLA &le; 8h</div>
+                  </div>
+
+                </div>
+              </div>
+
+              <!-- CONTENEDOR DINÁMICO DE LAS 3 TARJETAS DE NIVELES (N1, N2, N3) -->
+              <div class="level-card-grid" id="helpdesk-levels-container">
+                <!-- Se inyecta dinámicamente desde loadHelpdeskLevelsConfig() -->
+                <div style="text-align: center; padding: 20px; color: #64748B;">Cargando configuración de niveles de soporte...</div>
+              </div>
+
+            </div>
+
+            <!-- Grilla Secundaria de Parámetros Globales -->
             <div class="charts-grid-2x2" style="margin-bottom: 16px;">
               
               <!-- MÓDULO 1: UMBRALES DE SLA ASISTENCIAL (EDITABLES) -->
@@ -1249,9 +1465,20 @@
             </div>
           </div>
 
-          <div class="form-group">
-            <label class="form-label" for="user-email">Correo Electrónico *</label>
-            <input type="email" id="user-email" class="form-control" placeholder="mtorres@institucion.com" required>
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label" for="user-email">Correo Electrónico *</label>
+              <input type="email" id="user-email" class="form-control" placeholder="mtorres@institucion.com" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="user-support-level">Nivel de Soporte ITIL</label>
+              <select id="user-support-level" class="form-control">
+                <option value="">No aplica (Solicitante / Admin)</option>
+                <option value="N1">🔵 Nivel 1 (Triage / Mesa Central)</option>
+                <option value="N2">🟣 Nivel 2 (Especialista por Módulo)</option>
+                <option value="N3">🔴 Nivel 3 (Ingeniería / Cloud DBA)</option>
+              </select>
+            </div>
           </div>
 
           <div class="form-group">
@@ -1265,6 +1492,112 @@
         <div class="modal-footer">
           <button type="button" class="btn-sec" id="btn-cancel-user-modal">Cancelar</button>
           <button type="submit" class="btn-pri" id="btn-submit-user">Crear Usuario</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL ESCALAMIENTO ITIL (N1 ➔ N2 ➔ N3) -->
+  <div class="modal-overlay" id="modal-escalate-ticket">
+    <div class="modal-box" style="max-width: 520px; border-radius: 12px;">
+      <div class="modal-header" style="background: #0F172A; color: #FFFFFF; padding: 14px 20px;">
+        <span class="modal-title" style="display: flex; align-items: center; gap: 8px; font-size: 14px;">
+          <span>⚡ Escalar / Derivar Ticket a Nivel Superior</span>
+        </span>
+        <button class="modal-close-btn" id="modal-escalate-close" style="color: #94A3B8;">&times;</button>
+      </div>
+
+      <form id="form-escalate-ticket">
+        <input type="hidden" id="escalate-ticket-id">
+        <div class="modal-body" style="padding: 18px 20px;">
+          
+          <div style="background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; font-size: 11.5px; color: #1E40AF;">
+            <strong>Ticket #<span id="escalate-modal-ticket-id-display"></span></strong>: Modifique el nivel de atención para transferir el caso a los especialistas correspondientes bajo trazabilidad forense.
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="escalate-target-level" style="font-weight: 800;">Nivel de Soporte Destino *</label>
+            <select id="escalate-target-level" class="form-control" required onchange="onEscalateTargetLevelChange(this.value)">
+              <option value="N2">🟣 Nivel 2 • Soporte Especializado por Plataforma (SLA 4h)</option>
+              <option value="N3">🔴 Nivel 3 • Ingeniería de Software, Cloud DevOps & DBA (SLA 8h)</option>
+              <option value="N1">🔵 Nivel 1 • Triage y Recepción Asistencial (SLA 30m)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="escalate-assignee-operator">Asignar a Operador / Lead del Nivel (Opcional)</label>
+            <select id="escalate-assignee-operator" class="form-control">
+              <option value="">-- Asignación automática por Despacho del Nivel --</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="escalate-reason" style="font-weight: 800;">Justificación Técnica del Escalamiento *</label>
+            <textarea id="escalate-reason" class="form-control" rows="3" placeholder="Detalle el diagnóstico realizado en el nivel actual y el motivo por el cual requiere intervención del siguiente nivel..." required minlength="5"></textarea>
+          </div>
+
+        </div>
+
+        <div class="modal-footer" style="padding: 12px 20px; background: #F8FAFC; border-top: 1px solid #E2E8F0;">
+          <button type="button" class="btn-sec" id="btn-cancel-escalate-modal">Cancelar</button>
+          <button type="submit" class="btn-pri" id="btn-submit-escalate" style="background: #7C3AED;">⚡ Confirmar Escalamiento</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL ALTA DE MESA DE AYUDA ESPECIALIZADA -->
+  <div class="modal-overlay" id="modal-new-helpdesk-team">
+    <div class="modal-box" style="max-width: 500px; border-radius: 12px;">
+      <div class="modal-header">
+        <span class="modal-title" style="display: flex; align-items: center; gap: 8px;">
+          <span>➕ Crear Nueva Mesa Especializada</span>
+        </span>
+        <button class="modal-close-btn" id="modal-new-team-close">&times;</button>
+      </div>
+
+      <form id="form-new-helpdesk-team">
+        <div class="modal-body" style="padding: 18px 20px;">
+          
+          <div class="form-group">
+            <label class="form-label" for="team-target-level">Nivel de Soporte ITIL *</label>
+            <select id="team-target-level" class="form-control" required>
+              <option value="N1">🔵 Nivel 1 - Triage Asistencial</option>
+              <option value="N2" selected>🟣 Nivel 2 - Especialistas por Plataforma</option>
+              <option value="N3">🔴 Nivel 3 - Ingeniería y Cloud</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="team-name">Nombre de la Mesa / Cola *</label>
+            <input type="text" id="team-name" class="form-control" placeholder="Ej: Mesa de Guardia Radiología y PACS" required>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label" for="team-shift">Turno / Guardia</label>
+              <select id="team-shift" class="form-control">
+                <option value="24/7 Rotativo">24/7 Rotativo</option>
+                <option value="Lun a Vie 08:00 - 20:00">Lun a Vie 08:00 - 20:00</option>
+                <option value="Guardia Pasiva Nocturna">Guardia Pasiva Nocturna</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="team-lead">Líder / Supervisor</label>
+              <input type="text" id="team-lead" class="form-control" placeholder="Ej: Dr. / Ing. Responsable">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="team-platforms">Plataformas que atiende (códigos sep. por coma)</label>
+            <input type="text" id="team-platforms" class="form-control" placeholder="Ej: HIS_CORE, RECETA_DIGITAL">
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-sec" id="btn-cancel-team-modal">Cancelar</button>
+          <button type="submit" class="btn-pri" id="btn-submit-team">Guardar Mesa</button>
         </div>
       </form>
     </div>

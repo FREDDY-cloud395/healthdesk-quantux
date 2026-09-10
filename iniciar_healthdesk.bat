@@ -1,10 +1,10 @@
 @echo off
-title HealthDesk Quantux - Sistema Integral de Mesa de Ayuda
+title HealthDesk Quantux v2.5.0 - Sistema Integral de Mesa de Ayuda
 color 0B
 cls
-echo =============================================================================
-echo                    HEALTHDESK QUANTUX - QUANTUX SALUD
-echo           Sistema Integral de Mesa de Ayuda y Soporte Hospitalario
+echo ============================================================================
+echo           HEALTHDESK QUANTUX — QUANTUX SALUD (v2.5.0 ITIL Edition)
+echo      Sistema Integral de Mesa de Ayuda y Soporte Hospitalario N1/N2/N3
 echo ============================================================================
 echo.
 echo [1/3] Verificando entorno Python...
@@ -17,21 +17,14 @@ if %ERRORLEVEL% NEQ 0 (
 )
 echo [OK] Python detectado correctamente.
 echo.
-echo [2/3] Iniciando Servidor Backend FastAPI en http://127.0.0.1:8000...
-cd /d "%~dp0backend"
-start "" cmd /c "python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload"
-timeout /t 2 /nobreak >nul
+echo [2/3] Liberando puerto 8000 en caso de instancias colgadas previas...
+for /f "tokens=5" %%a in ('netstat -aon ^| findstr :8000 ^| findstr LISTENING') do (
+    echo [INFO] Cerrando proceso previo en puerto 8000 (PID %%a)...
+    taskkill /F /PID %%a >nul 2>&1
+)
+echo [OK] Puerto 8000 disponible.
 echo.
-echo [3/3] Abriendo Consola Central de Gestion en el navegador...
-start "" "http://127.0.0.1:8000/cockpit"
-echo.
-echo ============================================================================
-echo  HEALTHDESK QUANTUX ESTA EN EJECUCION EXITOSA
-echo.
-echo  - Consola Central:  http://127.0.0.1:8000/cockpit
-echo  - Swagger API Docs: http://127.0.0.1:8000/docs
-echo.
-echo  Para detener el servidor, cierre la ventana secundaria de Uvicorn.
-echo ===========================================================================
-echo.
+echo [3/3] Iniciando Sistema y Cockpit Central...
+cd /d "%~dp0"
+python run_server.py
 pause

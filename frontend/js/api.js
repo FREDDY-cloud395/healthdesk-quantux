@@ -272,7 +272,18 @@ const API = {
     return res.json();
   },
 
-  // 5. CONFIGURACIÓN DEL SISTEMA
+  // 4.1 ESCALAMIENTO ITIL (N1 ➔ N2 ➔ N3)
+  async escalateTicket(ticketId, payload) {
+    const res = await fetch(`${API_BASE}/api/v1/tickets/${ticketId}/escalate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw await res.json();
+    return res.json();
+  },
+
+  // 5. CONFIGURACIÓN DEL SISTEMA & NIVELES DE ATENCIÓN (N1/N2/N3)
   async getConfig() {
     const res = await fetch(`${API_BASE}/api/v1/config`);
     if (!res.ok) throw await res.json();
@@ -282,6 +293,38 @@ const API = {
   async updateConfig(payload) {
     const res = await fetch(`${API_BASE}/api/v1/config`, {
       method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw await res.json();
+    return res.json();
+  },
+
+  async getHelpdeskLevels() {
+    const res = await fetch(`${API_BASE}/api/v1/config/levels`);
+    if (!res.ok) throw await res.json();
+    return res.json();
+  },
+
+  async getHelpdeskLevel(levelCode) {
+    const res = await fetch(`${API_BASE}/api/v1/config/levels/${levelCode}`);
+    if (!res.ok) throw await res.json();
+    return res.json();
+  },
+
+  async updateHelpdeskLevel(levelCode, payload) {
+    const res = await fetch(`${API_BASE}/api/v1/config/levels/${levelCode}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw await res.json();
+    return res.json();
+  },
+
+  async addTeamToHelpdeskLevel(levelCode, payload) {
+    const res = await fetch(`${API_BASE}/api/v1/config/levels/${levelCode}/teams`, {
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });

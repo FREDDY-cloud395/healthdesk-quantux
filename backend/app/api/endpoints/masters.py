@@ -774,3 +774,232 @@ def update_system_config(req: SystemConfigUpdate):
         **_system_config
     }
 
+
+# =============================================================================
+# GESTIÓN DE MESAS DE AYUDA Y NIVELES DE ATENCIÓN (ITIL N1, N2, N3)
+# =============================================================================
+
+_helpdesk_levels_config = {
+    "N1": {
+        "code": "N1",
+        "name": "Nivel 1 • Mesa Central, Recepción & Triage",
+        "short_name": "N1 Triage",
+        "badge_label": "N1 • Triage",
+        "description": "Atención de primera línea, recepción multicanal, categorización ITIL, validación de credenciales médicas y restablecimiento básico de acceso.",
+        "badge_color": "#0284C7",
+        "badge_bg": "#EFF6FF",
+        "border_color": "#BFDBFE",
+        "max_retention_minutes": 30,
+        "max_retention_label": "30 minutos",
+        "assignment_mode": "ROUND_ROBIN",  # ROUND_ROBIN | SPECIALTY | WORKLOAD | MANUAL
+        "auto_escalate_enabled": True,
+        "auto_escalate_target": "N2",
+        "covered_platforms": ["CAT_CONSULTORIO_DIGITAL", "CAT_RECETA", "CAT_TELEMEDICINA", "CAT_AFILIADOS_PORTAL", "CAT_CARTILLA_TURNOS"],
+        "assigned_teams": [
+            {
+                "id": "team_n1_central",
+                "name": "Mesa Central Asistencial & Triage",
+                "lead": "Laura Benítez",
+                "operators_count": 8,
+                "shift": "24/7 Rotativo",
+                "platforms": ["CAT_CONSULTORIO_DIGITAL", "CAT_RECETA", "CAT_TELEMEDICINA"]
+            },
+            {
+                "id": "team_n1_pacientes",
+                "name": "Mesa de Atención a Afiliados y Turnos",
+                "lead": "Carlos Recepción",
+                "operators_count": 4,
+                "shift": "Lunes a Viernes 08:00 - 20:00",
+                "platforms": ["CAT_AFILIADOS_PORTAL", "CAT_CARTILLA_TURNOS"]
+            }
+        ],
+        "escalation_rules": [
+            {"condition": "Tiempo en N1 > 30 min sin resolución", "action": "Auto-escalar a N2 Especialista", "target": "N2"},
+            {"condition": "Ticket P1 Crítico (Corte total de servicio)", "action": "Escalar inmediatamente a N3", "target": "N3"},
+            {"condition": "Error de firma digital o receta bloqueada", "action": "Derivar a Mesa N2 Receta", "target": "N2"}
+        ],
+        "operators": [
+            {"username": "soporte", "name": "Laura Benítez", "role": "Operadora de Soporte N1", "status": "ONLINE", "active_tickets": 3},
+            {"username": "triage.n1", "name": "Carlos Triage", "role": "Operador N1", "status": "ONLINE", "active_tickets": 2},
+            {"username": "mesa.recepcion", "name": "Martín Recepción", "role": "Operador N1", "status": "BUSY", "active_tickets": 5}
+        ]
+    },
+    "N2": {
+        "code": "N2",
+        "name": "Nivel 2 • Soporte Especializado por Plataforma Asistencial",
+        "short_name": "N2 Especialistas",
+        "badge_label": "N2 • Especialista",
+        "description": "Diagnóstico funcional avanzado, resolución de inconsistencias en recetas electrónicas, configuración de convenios, validación de agendas y sincronización PACS.",
+        "badge_color": "#7C3AED",
+        "badge_bg": "#F5F3FF",
+        "border_color": "#DDD6FE",
+        "max_retention_minutes": 240,
+        "max_retention_label": "4 horas",
+        "assignment_mode": "SPECIALTY",
+        "auto_escalate_enabled": True,
+        "auto_escalate_target": "N3",
+        "covered_platforms": ["CAT_RECETA", "CAT_HIS_CORE", "CAT_COPAGOS_PAGOS", "CAT_INTERNACION_DOM", "CAT_REGISTRO_INTEROP", "CAT_RPM_MONITOREO"],
+        "assigned_teams": [
+            {
+                "id": "team_n2_his",
+                "name": "Mesa Especialista HIS & Consultorio Digital",
+                "lead": "Dr. Fernando Ruiz",
+                "operators_count": 6,
+                "shift": "Guardia Activa 08:00 - 22:00",
+                "platforms": ["CAT_CONSULTORIO_DIGITAL", "CAT_HIS_CORE"]
+            },
+            {
+                "id": "team_n2_receta",
+                "name": "Mesa Especialista Receta & Firma Digital (PKI)",
+                "lead": "Lic. Carlos Paez",
+                "operators_count": 5,
+                "shift": "24/7 Guardia Farmacéutica",
+                "platforms": ["CAT_RECETA"]
+            },
+            {
+                "id": "team_n2_interop",
+                "name": "Mesa Interoperabilidad HL7/FHIR & Financiadores",
+                "lead": "Ing. Sofía Valenzuela",
+                "operators_count": 4,
+                "shift": "Lunes a Viernes 09:00 - 18:00",
+                "platforms": ["CAT_REGISTRO_INTEROP", "CAT_COPAGOS_PAGOS"]
+            }
+        ],
+        "escalation_rules": [
+            {"condition": "Tiempo en N2 > 4 horas sin diagnóstico", "action": "Escalar a N3 Ingeniería", "target": "N3"},
+            {"condition": "Bug de software validado en API o base de datos", "action": "Crear Issue y derivar a N3 Core Dev", "target": "N3"},
+            {"condition": "Falla masiva de WebService externo (OSDE/Swiss)", "action": "Activar protocolo N3 Contingencia", "target": "N3"}
+        ],
+        "operators": [
+            {"username": "sofia.esp", "name": "Ing. Sofía Valenzuela", "role": "Especialista Interoperabilidad N2", "status": "ONLINE", "active_tickets": 2},
+            {"username": "carlos.receta", "name": "Lic. Carlos Paez", "role": "Especialista Receta Digital N2", "status": "ONLINE", "active_tickets": 4},
+            {"username": "fernando.his", "name": "Dr. Fernando Ruiz", "role": "Especialista HIS Core N2", "status": "ONLINE", "active_tickets": 1}
+        ]
+    },
+    "N3": {
+        "code": "N3",
+        "name": "Nivel 3 • Ingeniería de Software, Infraestructura Cloud & DBA",
+        "short_name": "N3 Ingeniería",
+        "badge_label": "N3 • Ingeniería",
+        "description": "Corrección de código en repositorios, optimización de consultas SQL, clúster de servidores Kubernetes, seguridad de certificados SSL/PKI y gestión con proveedores externos.",
+        "badge_color": "#DC2626",
+        "badge_bg": "#FEF2F2",
+        "border_color": "#FECACA",
+        "max_retention_minutes": 480,
+        "max_retention_label": "8 horas",
+        "assignment_mode": "CRITICALITY",
+        "auto_escalate_enabled": False,
+        "auto_escalate_target": None,
+        "covered_platforms": ["ALL"],
+        "assigned_teams": [
+            {
+                "id": "team_n3_dev",
+                "name": "Equipo Core Dev & Arquitectura de Software",
+                "lead": "Freddy Cortés (Solution Owner)",
+                "operators_count": 4,
+                "shift": "On-Call Incidentes Críticos",
+                "platforms": ["ALL"]
+            },
+            {
+                "id": "team_n3_infra",
+                "name": "Equipo DevOps, Cloud & Base de Datos",
+                "lead": "Ing. Martín DBA",
+                "operators_count": 3,
+                "shift": "24/7 Monitoreo de Infraestructura",
+                "platforms": ["ALL"]
+            }
+        ],
+        "escalation_rules": [
+            {"condition": "Incidente P1 Crítico sin resolución técnica", "action": "Activar Comité de Crisis y Solution Owner", "target": "ADMIN"},
+            {"condition": "Caída de nodo primario de base de datos", "action": "Ejecutar Failover a Nodo Secundario", "target": "N3"}
+        ],
+        "operators": [
+            {"username": "admin", "name": "Freddy Cortés", "role": "Solution Owner & Lead Architect N3", "status": "ONLINE", "active_tickets": 1},
+            {"username": "dev.lead", "name": "Ing. Martín Dev", "role": "Senior Backend Developer N3", "status": "ONLINE", "active_tickets": 2},
+            {"username": "dba.master", "name": "Ing. Valeria DBA", "role": "Database Administrator N3", "status": "STANDBY", "active_tickets": 0}
+        ]
+    }
+}
+
+class HelpdeskLevelUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    max_retention_minutes: Optional[int] = None
+    assignment_mode: Optional[str] = None
+    auto_escalate_enabled: Optional[bool] = None
+    auto_escalate_target: Optional[str] = None
+    covered_platforms: Optional[List[str]] = None
+
+class HelpdeskTeamCreate(BaseModel):
+    name: str
+    lead: str
+    operators_count: int = 1
+    shift: str = "Lunes a Viernes 09:00 - 18:00"
+    platforms: Optional[List[str]] = None
+
+@router.get("/config/levels")
+def get_all_helpdesk_levels():
+    return list(_helpdesk_levels_config.values())
+
+@router.get("/config/levels/{level_code}")
+def get_helpdesk_level(level_code: str):
+    code = level_code.upper()
+    if code not in _helpdesk_levels_config:
+        raise HTTPException(status_code=404, detail=f"Nivel de atención '{level_code}' no existe.")
+    return _helpdesk_levels_config[code]
+
+@router.put("/config/levels/{level_code}")
+def update_helpdesk_level(level_code: str, req: HelpdeskLevelUpdate):
+    code = level_code.upper()
+    if code not in _helpdesk_levels_config:
+        raise HTTPException(status_code=404, detail=f"Nivel de atención '{level_code}' no existe.")
+    
+    lvl = _helpdesk_levels_config[code]
+    if req.name is not None:
+        lvl["name"] = req.name
+    if req.description is not None:
+        lvl["description"] = req.description
+    if req.max_retention_minutes is not None:
+        lvl["max_retention_minutes"] = req.max_retention_minutes
+        if req.max_retention_minutes >= 60:
+            lvl["max_retention_label"] = f"{req.max_retention_minutes // 60} horas"
+        else:
+            lvl["max_retention_label"] = f"{req.max_retention_minutes} minutos"
+    if req.assignment_mode is not None:
+        lvl["assignment_mode"] = req.assignment_mode
+    if req.auto_escalate_enabled is not None:
+        lvl["auto_escalate_enabled"] = req.auto_escalate_enabled
+    if req.auto_escalate_target is not None:
+        lvl["auto_escalate_target"] = req.auto_escalate_target
+    if req.covered_platforms is not None:
+        lvl["covered_platforms"] = req.covered_platforms
+        
+    return {
+        "status": "success",
+        "message": f"Configuración del {lvl['name']} actualizada correctamente.",
+        "level": lvl
+    }
+
+@router.post("/config/levels/{level_code}/teams")
+def add_team_to_level(level_code: str, team: HelpdeskTeamCreate):
+    code = level_code.upper()
+    if code not in _helpdesk_levels_config:
+        raise HTTPException(status_code=404, detail=f"Nivel de atención '{level_code}' no existe.")
+    
+    import uuid
+    new_team = {
+        "id": f"team_{code.lower()}_{uuid.uuid4().hex[:6]}",
+        "name": team.name,
+        "lead": team.lead,
+        "operators_count": team.operators_count,
+        "shift": team.shift,
+        "platforms": team.platforms or ["CAT_RECETA", "CAT_CONSULTORIO_DIGITAL"]
+    }
+    _helpdesk_levels_config[code]["assigned_teams"].append(new_team)
+    return {
+        "status": "success",
+        "message": f"Mesa '{team.name}' añadida con éxito al {code}.",
+        "team": new_team
+    }
+
+

@@ -5,7 +5,7 @@ from typing import List, Optional
 from datetime import datetime
 
 from app.db.session import get_session
-from app.models.entities import User, UserRole
+from app.models.entities import User, UserRole, SupportLevel
 
 router = APIRouter()
 
@@ -14,14 +14,30 @@ class UserCreateRequest(BaseModel):
     full_name: str
     email: str
     role: UserRole = UserRole.SOLICITANTE
+    support_level: Optional[SupportLevel] = None
 
 @router.get("", response_model=List[User])
-def list_users(session: Session = Depends(get_session)):
-    return session.exec(select(User)).all()
+def list_users(
+    role: Optional[UserRole] = None,
+    support_level: Optional[SupportLevel] = None,
+    session: Session = Depends(get_session)
+):
+    query = select(User)
+    if role:
+        query = query.where(User.role == role)
+    if support_level:
+        query = query.where(User.support_level == support_level)
+    return session.exec(query).all()
 
 @router.get("/operators", response_model=List[User])
-def list_support_operators(session: Session = Depends(get_session)):
-    return session.exec(select(User).where((User.role == UserRole.SOPORTE) | (User.role == UserRole.ADMIN))).all()
+def list_support_operators(
+    level: Optional[SupportLevel] = None,
+    session: Session = Depends(get_session)
+):
+    query = select(User).where((User.role == UserRole.SOPORTE) | (User.role == UserRole.ADMIN))
+    if level:
+        query = query.where(User.support_level == level)
+    return session.exec(query).all()
 
 @router.post("", response_model=User)
 def create_user(req: UserCreateRequest, session: Session = Depends(get_session)):
@@ -37,11 +53,19 @@ def create_user(req: UserCreateRequest, session: Session = Depends(get_session))
     if len(req.full_name.strip()) < 3:
         raise HTTPException(status_code=400, detail="El nombre completo debe tener al menos 3 caracteres.")
     
+    # Asignar nivel por defecto según rol
+    lvl = req.support_level
+    if not lvl and req.role == UserRole.SOPORTE:
+        lvl = SupportLevel.N1
+    elif not lvl and req.role == UserRole.ADMIN:
+        lvl = SupportLevel.N3
+
     new_user = User(
         username=req.username.strip().lower(),
         full_name=req.full_name.strip(),
         email=req.email.strip().lower(),
         role=req.role,
+        support_level=lvl,
         created_at=datetime.utcnow()
     )
     session.add(new_user)

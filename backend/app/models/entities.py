@@ -60,6 +60,7 @@ class User(SQLModel, table=True):
     full_name: str
     email: str
     role: UserRole = Field(default=UserRole.SOLICITANTE)
+    support_level: Optional[SupportLevel] = Field(default=None)
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 class Platform(SQLModel, table=True):
