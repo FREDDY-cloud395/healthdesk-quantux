@@ -1,5 +1,5 @@
 """
-HealthDesk Quantux - Robust Server Launcher (v2.5.0 ITIL Edition)
+HealthDesk Quantux - Robust Server Launcher (v3.0.0 Senior UX Edition)
 Ejecuta migraciones automáticas, verifica la base de datos e inicia FastAPI / Uvicorn.
 """
 import sys

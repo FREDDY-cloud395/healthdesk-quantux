@@ -552,6 +552,7 @@ def create_article(req: ArticleCreateRequest, session: Session = Depends(get_ses
     )
     session.add(history)
     session.commit()
+    session.refresh(article)
     
     return article
 
@@ -668,6 +669,7 @@ def promote_ticket_to_article(
     )
     session.add(history)
     session.commit()
+    session.refresh(article)
     return article
 
 @router.post("/articles/{article_id}/view")

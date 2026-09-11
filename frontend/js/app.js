@@ -1118,9 +1118,10 @@ function renderTicketList() {
 
   if (!AppState.tickets || AppState.tickets.length === 0) {
     container.innerHTML = `
-      <div style="text-align:center; padding:30px 10px; color:#94A3B8;">
-        <div style="font-size:32px; margin-bottom:8px;">📭</div>
-        <p>No se encontraron solicitudes con los filtros aplicados.</p>
+      <div style="text-align:center; padding:40px 14px; color:#94A3B8;">
+        <div style="font-size:36px; margin-bottom:10px;">📭</div>
+        <div style="font-size:13px; font-weight:700; color:#475569;">No hay solicitudes con estos filtros</div>
+        <div style="font-size:11.5px; color:#94A3B8; margin-top:4px;">Pruebe cambiando el filtro de estado o sede.</div>
       </div>
     `;
     return;
@@ -1131,32 +1132,29 @@ function renderTicketList() {
     const priority = (t.priority || 'P3').toUpperCase();
     const status = (t.status || 'NUEVO').toUpperCase();
     const level = (t.support_level || 'N1').toUpperCase();
-    const pClass = `badge-${priority.toLowerCase()}`;
-    const sClass = `st-${status}`;
-    const lClass = `badge-tier-${level.toLowerCase()}`;
-    const levelLabels = { 'N1': 'N1 • Triage', 'N2': 'N2 • Especialista', 'N3': 'N3 • Ingeniería' };
     const platName = formatPlatformName(t.platform_code);
     const instName = formatInstitutionName(t.institution_code);
-    const sla = calculateTicketSLA(t);
+    const timeAgo = formatDateFriendly(t.created_at);
 
     return `
-      <div class="ticket-card-item ${isSelected ? 'selected' : ''}" onclick="selectTicket('${t.id}', true)">
-        <div class="card-top-row">
-          <span class="ticket-code">${t.id}</span>
-          <div style="display:flex; gap:4px; align-items:center;">
-            <span class="badge-tier ${lClass}" style="font-size:9.5px;">${levelLabels[level] || level}</span>
-            <span class="badge-prio ${pClass}">${priority}</span>
-            <span class="badge-status ${sClass}">${formatStatusName(status)}</span>
+      <div class="ticket-card-clean prio-${priority.toLowerCase()} ${isSelected ? 'selected' : ''}" onclick="selectTicket('${t.id}', true)">
+        <div class="card-row-top">
+          <div class="card-id-prio">
+            <span class="prio-chip prio-chip-${priority.toLowerCase()}">${priority}</span>
+            <span class="ticket-id-clean">#${t.id}</span>
           </div>
+          <span class="ticket-time-clean">${timeAgo}</span>
         </div>
-        <div class="ticket-card-title">${t.title}</div>
-        <div class="ticket-card-meta">
-          <span>🩺 ${platName}</span>
-          <span>🏥 ${instName}</span>
-        </div>
-        <div style="margin-top:6px; display:flex; justify-content:space-between; align-items:center; font-size:10px; border-top:1px dashed #F1F5F9; padding-top:4px;">
-          <span style="color:${sla.badgeColor}; font-weight:700;">⏱️ SLA: ${sla.statusText}</span>
-          <span style="color:#64748B;">${sla.timeRemainingText}</span>
+        <div class="ticket-subject-clean">${t.title}</div>
+        <div class="card-row-bottom">
+          <div class="card-tags-group">
+            <span class="pill-tag" title="${platName}">🩺 ${platName}</span>
+            <span class="pill-tag" title="${instName}">🏥 ${instName}</span>
+          </div>
+          <div class="card-status-group">
+            <span class="badge-tier badge-tier-${level.toLowerCase()}" style="font-size:9.5px; padding:2px 6px;">${level}</span>
+            <span class="badge-status st-${status}" style="font-size:9.5px; padding:2px 6px;">${formatStatusName(status)}</span>
+          </div>
         </div>
       </div>
     `;
@@ -1175,7 +1173,6 @@ async function selectTicket(ticketId, userTriggered = false) {
       topTitle.textContent = `SOLICITUD #${ticket.id}`;
     }
 
-    // En pantallas móviles, cambiar automáticamente a la columna de detalle
     if (userTriggered && window.innerWidth <= 768) {
       switchMobileCockpitTab('col-detail');
     }
@@ -1186,641 +1183,169 @@ async function selectTicket(ticketId, userTriggered = false) {
 
 function renderTicketDetail(rawTicket) {
   const container = document.getElementById('ticket-detail-container');
-  if (!container || !rawTicket) return;
+  if (!container) return;
 
-  const ticket = rawTicket.ticket ? { ...rawTicket.ticket, ...rawTicket } : rawTicket;
-  const priority = (ticket.priority || 'P3').toUpperCase();
+  if (!rawTicket) {
+    container.innerHTML = `
+      <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; color:#94A3B8; text-align:center; padding:40px 20px;">
+        <div style="font-size:48px; margin-bottom:12px; opacity:0.8;">📋</div>
+        <h3 style="font-size:16px; font-weight:800; color:#334155; margin-bottom:6px;">Seleccione una Solicitud</h3>
+        <p style="font-size:12.5px; color:#64748B; max-width:320px;">Haga clic en una solicitud de la bandeja izquierda para ver su diagnóstico, actividad y trazabilidad.</p>
+      </div>
+    `;
+    return;
+  }
+
+  const ticket = rawTicket;
   const status = (ticket.status || 'NUEVO').toUpperCase();
-  const ticketType = (ticket.ticket_type || 'INCIDENTE').toUpperCase();
-  const pClass = `badge-${priority.toLowerCase()}`;
-  const sClass = `st-${status}`;
+  const priority = (ticket.priority || 'P3').toUpperCase();
+  const level = (ticket.support_level || 'N1').toUpperCase();
   const platName = formatPlatformName(ticket.platform_code);
   const instName = formatInstitutionName(ticket.institution_code);
   const sla = calculateTicketSLA(ticket);
 
-  const prioLabels = {
-    'P1': 'P1 - Crítica (SLA 2h)',
-    'P2': 'P2 - Alta (SLA 8h)',
-    'P3': 'P3 - Media (SLA 24h)',
-    'P4': 'P4 - Baja (SLA 48h)',
-    'P5': 'P5 - Planificada (SLA 72h)'
-  };
-  const prioLabel = prioLabels[priority] || priority;
-
-  // Acciones operativas FSM contextuales
-  let actionsHtml = '';
-  if (status === 'NUEVO') {
-    actionsHtml = `
-      <div class="detail-action-card" style="background:#F0FDFA; border:1px solid #99F6E4; border-radius:8px; padding:12px; margin-bottom:12px;">
-        <div style="font-size:12px; font-weight:800; color:#0F766E; margin-bottom:8px; display:flex; align-items:center; justify-content:space-between;">
-          <span style="display:flex; align-items:center; gap:6px;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-            <strong>Gestión Inmediata del Ticket (Estado: Nuevo)</strong>
-          </span>
-          <span style="font-size:10px; background:#CCFBF1; color:#0F766E; font-weight:800; padding:2px 8px; border-radius:4px; border:1px solid #99F6E4;">SIN ASIGNAR</span>
-        </div>
-        <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
-          <button class="btn-pri" style="background:#0D9488; font-size:11.5px; padding:7px 14px; font-weight:700; white-space:nowrap; display:flex; align-items:center; gap:5px;" onclick="actionAssignSelf('${ticket.id}')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-            <span>Auto-Asignarme</span>
-          </button>
-          <div style="display:flex; gap:6px; align-items:center; flex:1; min-width:200px;">
-            <select id="action-assignee" class="form-control" style="font-size:11px; padding:6px 8px; flex:1; min-width:0;">
-              <option value="">Asignar a operador...</option>
-              ${AppState.operators.map(op => `<option value="${op.username}" ${op.username === ticket.assignee_username ? 'selected' : ''}>${op.full_name} (${op.role})</option>`).join('')}
-            </select>
-            <select id="action-support-level" class="form-control" style="font-size:11px; padding:6px 8px; width:90px; flex-shrink:0;">
-              <option value="N1" ${ticket.support_level === 'N1' ? 'selected' : ''}>Nivel N1</option>
-              <option value="N2" ${ticket.support_level === 'N2' ? 'selected' : ''}>Nivel N2</option>
-              <option value="N3" ${ticket.support_level === 'N3' ? 'selected' : ''}>Nivel N3</option>
-            </select>
-            <button class="btn-sec" style="font-size:11px; padding:6px 12px; font-weight:700; white-space:nowrap;" onclick="actionAssignOperator('${ticket.id}')">
-              Asignar
-            </button>
-          </div>
-        </div>
-      </div>
-    `;
-  } else if (status === 'ASIGNADO') {
-    actionsHtml = `
-      <div class="detail-action-card" style="background:#EFF6FF; border:1px solid #BFDBFE; border-radius:8px; padding:12px; margin-bottom:12px;">
-        <div style="font-size:12px; font-weight:800; color:#1E40AF; margin-bottom:8px; display:flex; align-items:center; justify-content:space-between;">
-          <span style="display:flex; align-items:center; gap:6px;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-            <strong>Gestión Operativa de Incidente (Estado: Asignado)</strong>
-          </span>
-          <span style="font-size:10px; background:#DBEAFE; color:#1E40AF; font-weight:800; padding:2px 8px; border-radius:4px; border:1px solid #BFDBFE;">ASIGNADO A: ${ticket.assignee_username}</span>
-        </div>
-        <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
-          <button class="btn-pri" style="background:#2563EB; font-size:11.5px; padding:7px 14px; font-weight:700; white-space:nowrap; display:flex; align-items:center; gap:5px;" onclick="actionStartProgress('${ticket.id}')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-            <span>Iniciar Diagnóstico (En Curso)</span>
-          </button>
-          <div style="display:flex; gap:6px; align-items:center; flex:1; min-width:200px;">
-            <select id="action-assignee" class="form-control" style="font-size:11px; padding:6px 8px; flex:1; min-width:0;">
-              <option value="">Reasignar operador...</option>
-              ${AppState.operators.map(op => `<option value="${op.username}" ${op.username === ticket.assignee_username ? 'selected' : ''}>${op.full_name} (${op.role})</option>`).join('')}
-            </select>
-            <select id="action-support-level" class="form-control" style="font-size:11px; padding:6px 8px; width:90px; flex-shrink:0;">
-              <option value="N1" ${ticket.support_level === 'N1' ? 'selected' : ''}>Nivel N1</option>
-              <option value="N2" ${ticket.support_level === 'N2' ? 'selected' : ''}>Nivel N2</option>
-              <option value="N3" ${ticket.support_level === 'N3' ? 'selected' : ''}>Nivel N3</option>
-            </select>
-            <button class="btn-sec" style="font-size:11px; padding:6px 12px; font-weight:700; white-space:nowrap;" onclick="actionAssignOperator('${ticket.id}')">
-              Reasignar
-            </button>
-          </div>
-        </div>
-      </div>
-    `;
-  } else if (status === 'EN_CURSO') {
-    actionsHtml = `
-      <div class="detail-action-card" style="background:#F8FAFC; border:1px solid #CBD5E1; border-radius:8px; padding:12px; margin-bottom:12px;">
-        <div style="font-size:12px; font-weight:800; color:var(--q-navy); margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;">
-          <span style="display:flex; align-items:center; gap:6px;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px; color:var(--q-teal);"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
-            <span>Registrar Solución Técnica Obligatoria</span>
-          </span>
-          <span style="font-size:10px; background:#FEF3C7; color:#B45309; padding:2px 6px; border-radius:4px; font-weight:700;">EN CURSO</span>
-        </div>
-        <div style="display:flex; flex-direction:column; gap:8px;">
-          <textarea id="action-res-notes" class="form-control" rows="2" placeholder="Describa la solución técnica aplicada (mínimo 8 caracteres obligatorios)..." style="font-size:11.5px;"></textarea>
-          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-            <label style="font-size:11px; color:#475569; display:flex; align-items:center; gap:5px; cursor:pointer;">
-              <input type="checkbox" id="action-is-workaround">
-              <span><strong>Solución Temporal (Workaround)</strong></span>
-            </label>
-            <div style="display:flex; gap:6px;">
-              <button class="btn-pri" style="background:#10B981; font-size:11.5px; padding:6px 14px; font-weight:700; display:flex; align-items:center; gap:5px;" onclick="actionResolveTicket('${ticket.id}')">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:13px;height:13px;"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>Marcar como Resuelto</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
-  } else if (status === 'RESUELTO') {
-    actionsHtml = `
-      <div class="detail-action-card" style="background:#ECFDF5; border:1.5px solid #10B981; border-radius:8px; padding:12px; margin-bottom:12px;">
-        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px;">
-          <div>
-            <div style="font-size:12.5px; font-weight:800; color:#065F46; display:flex; align-items:center; gap:6px;">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-              <span>Solución Técnica Registrada</span>
-            </div>
-            <div style="font-size:11.5px; color:#047857; margin-top:4px; background:#FFFFFF; padding:8px 10px; border-radius:6px; border:1px solid #A7F3D0;">
-              ${ticket.resolution_notes || 'Inconveniente solucionado correctamente.'}
-              ${ticket.is_workaround ? '<div style="margin-top:4px; font-size:10.5px; color:#D97706; font-weight:700;">⚠️ Registrado como Workaround / Solución Temporal</div>' : ''}
-            </div>
-          </div>
-        </div>
-        <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-          <span style="font-size:11px; color:#047857;">¿El sistema funciona correctamente en su puesto?</span>
-          <button class="btn-pri" style="background:#059669; font-size:11.5px; padding:6px 16px; font-weight:700; display:flex; align-items:center; gap:5px;" onclick="actionCloseTicket('${ticket.id}')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:13px;height:13px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-            <span>Validar Conformidad y Cerrar Solicitud</span>
-          </button>
-        </div>
-      </div>
-    `;
-  } else if (status === 'CERRADO') {
-    actionsHtml = `
-      <div class="detail-action-card" style="background:#F1F5F9; border:1px solid #CBD5E1; border-radius:8px; padding:10px 12px; margin-bottom:12px; display:flex; align-items:center; justify-content:space-between;">
-        <div style="display:flex; align-items:center; gap:8px;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px; color:#64748B;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-          <div>
-            <div style="font-size:12px; font-weight:800; color:#334155;">Ticket Cerrado con Conformidad Registrada</div>
-            <div style="font-size:10.5px; color:#64748B;">Archivado e inmutable. Registro de auditoría legal preservado.</div>
-          </div>
-        </div>
-        <span style="font-size:10px; font-weight:700; color:#059669; background:#DCFCE7; padding:3px 8px; border-radius:4px;">100% CONFORMIDAD</span>
-      </div>
-    `;
-  }
-
-  // Datos de participantes (Solicitante y Agente)
   const reqUser = (AppState.users || []).find(u => u.username === ticket.requester_username);
   const reqFullName = reqUser ? reqUser.full_name : (ticket.requester_name || ticket.requester_username || 'Solicitante Asistencial');
-  const reqInitials = reqFullName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'SO';
 
   const asgUser = (AppState.operators || []).find(u => u.username === ticket.assignee_username) || (AppState.users || []).find(u => u.username === ticket.assignee_username);
-  const asgFullName = asgUser ? asgUser.full_name : (ticket.assignee_username || 'Sin Operador Asignado');
-  const asgInitials = asgUser ? asgUser.full_name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : (ticket.assignee_username ? ticket.assignee_username.substring(0,2).toUpperCase() : '--');
+  const asgFullName = asgUser ? asgUser.full_name : (ticket.assignee_username ? `@${ticket.assignee_username}` : 'Sin Asignar');
 
-  // Artículos de Base de Conocimiento Sugeridos
-  // Artículos de Base de Conocimiento Sugeridos
-  const kbSuggestions = (AppState.kbArticles || []).filter(a => !ticket.platform_code || a.platform_code === ticket.platform_code || a.category === 'CLINICO').slice(0, 2);
-
-  // Helper para determinar el banner contextual según Estado y Prioridad (colores exactos de configuración)
-  let bannerBg = '#EFF6FF';
-  let bannerBorder = '#BFDBFE';
-  let bannerTextColor = '#1E40AF';
-  let bannerBadgeBg = '#FFFFFF';
-  let bannerBadgeBorder = '#93C5FD';
-  let bannerBadgeColor = '#2563EB';
-  let bannerIcon = '🔷';
-  let bannerBadge = 'P3 MEDIO';
-  let bannerSub = 'Incidente Asistencial Local • SLA 24h';
-
-  if (status === 'CERRADO') {
-    bannerBg = '#F1F5F9';
-    bannerBorder = '#CBD5E1';
-    bannerTextColor = '#334155';
-    bannerBadgeBg = '#FFFFFF';
-    bannerBadgeBorder = '#94A3B8';
-    bannerBadgeColor = '#475569';
-    bannerIcon = '🔒';
-    bannerBadge = 'CERRADO';
-    bannerSub = 'Solicitud Cerrada y Archivada • 100% Conformidad Registrada';
-  } else if (status === 'RESUELTO') {
-    bannerBg = '#ECFDF5';
-    bannerBorder = '#A7F3D0';
-    bannerTextColor = '#065F46';
-    bannerBadgeBg = '#FFFFFF';
-    bannerBadgeBorder = '#6EE7B7';
-    bannerBadgeColor = '#059669';
-    bannerIcon = '✅';
-    bannerBadge = 'SOLUCIONADO';
-    bannerSub = 'Solución Técnica Aplicada • Pendiente Validación del Solicitante';
-  } else if (priority === 'P1') {
-    bannerBg = '#FEF2F2';
-    bannerBorder = '#FECACA';
-    bannerTextColor = '#991B1B';
-    bannerBadgeBg = '#FFFFFF';
-    bannerBadgeBorder = '#FCA5A5';
-    bannerBadgeColor = '#DC2626';
-    bannerIcon = '🚨';
-    bannerBadge = 'P1 CRÍTICO';
-    bannerSub = 'Incidente Crítico Asistencial • Compromiso Operativo Inmediato (SLA 2h)';
-  } else if (priority === 'P2') {
-    bannerBg = '#FFFBEB';
-    bannerBorder = '#FDE68A';
-    bannerTextColor = '#92400E';
-    bannerBadgeBg = '#FFFFFF';
-    bannerBadgeBorder = '#FCD34D';
-    bannerBadgeColor = '#D97706';
-    bannerIcon = '⚠️';
-    bannerBadge = 'P2 ALTO';
-    bannerSub = 'Prioridad Alta Asistencial • Afectación con Contingencia Activa (SLA 8h)';
-  } else if (priority === 'P3') {
-    bannerBg = '#EFF6FF';
-    bannerBorder = '#BFDBFE';
-    bannerTextColor = '#1E40AF';
-    bannerBadgeBg = '#FFFFFF';
-    bannerBadgeBorder = '#93C5FD';
-    bannerBadgeColor = '#2563EB';
-    bannerIcon = '🔷';
-    bannerBadge = 'P3 MEDIO';
-    bannerSub = 'Prioridad Media Asistencial • Incidente Local en Puesto (SLA 24h)';
-  } else if (priority === 'P4') {
-    bannerBg = '#F8FAFC';
-    bannerBorder = '#E2E8F0';
-    bannerTextColor = '#475569';
-    bannerBadgeBg = '#FFFFFF';
-    bannerBadgeBorder = '#CBD5E1';
-    bannerBadgeColor = '#64748B';
-    bannerIcon = '⚪';
-    bannerBadge = 'P4 BAJO';
-    bannerSub = 'Prioridad Baja • Consulta Funcional / Capacitación (SLA 48h)';
-  } else if (priority === 'P5') {
-    bannerBg = '#EEF2FF';
-    bannerBorder = '#C7D2FE';
-    bannerTextColor = '#4338CA';
-    bannerBadgeBg = '#FFFFFF';
-    bannerBadgeBorder = '#A5B4FC';
-    bannerBadgeColor = '#6366F1';
-    bannerIcon = '📅';
-    bannerBadge = 'P5 PLANIFICADO';
-    bannerSub = 'Solicitud Planificada • Gestión de Accesos y Permisos (SLA 72h)';
+  if (!AppState.activeDetailTab) {
+    AppState.activeDetailTab = 'comments';
   }
 
-  // Status Tab Label y Estilos
-  let statusTabLabel = '⏳ Esperando al agente';
-  let statusTabBg = '#EFF6FF';
-  let statusTabColor = '#1D4ED8';
-  let statusTabBorder = '#BFDBFE';
-
-  if (status === 'ASIGNADO') {
-    statusTabLabel = '👤 Asignado a Soporte';
-    statusTabBg = '#EFF6FF';
-    statusTabColor = '#1D4ED8';
-    statusTabBorder = '#BFDBFE';
+  // Generar Botones de Acción Contextuales Limpios
+  let actionsToolbarHtml = '';
+  if (status === 'NUEVO') {
+    actionsToolbarHtml = `
+      <button class="btn-action-primary" onclick="actionAssignSelf('${ticket.id}')">
+        👤 Auto-Asignarme
+      </button>
+      <button class="btn-action-secondary" onclick="openReassignModal('${ticket.id}')">
+        👥 Asignar Operador...
+      </button>
+      <button class="btn-action-escalate" onclick="openEscalateModal('${ticket.id}', '${level}')">
+        ⚡ Escalar Nivel ITIL...
+      </button>
+      <button class="btn-action-secondary" onclick="openEditTicketModal('${ticket.id}')">
+        ✏️ Editar
+      </button>
+    `;
+  } else if (status === 'ASIGNADO') {
+    actionsToolbarHtml = `
+      <button class="btn-action-primary" onclick="actionStartProgress('${ticket.id}')">
+        ▶ Iniciar Diagnóstico
+      </button>
+      <button class="btn-action-resolve" onclick="openResolveModal('${ticket.id}')">
+        ✅ Resolver Ticket...
+      </button>
+      <button class="btn-action-secondary" onclick="openReassignModal('${ticket.id}')">
+        👥 Reasignar...
+      </button>
+      <button class="btn-action-escalate" onclick="openEscalateModal('${ticket.id}', '${level}')">
+        ⚡ Escalar Nivel...
+      </button>
+    `;
   } else if (status === 'EN_CURSO') {
-    statusTabLabel = '⚙️ En Diagnóstico';
-    statusTabBg = '#FEF3C7';
-    statusTabColor = '#B45309';
-    statusTabBorder = '#FDE68A';
+    actionsToolbarHtml = `
+      <button class="btn-action-resolve" onclick="openResolveModal('${ticket.id}')">
+        ✅ Registrar Solución & Resolver
+      </button>
+      <button class="btn-action-secondary" onclick="openReassignModal('${ticket.id}')">
+        👥 Reasignar...
+      </button>
+      <button class="btn-action-escalate" onclick="openEscalateModal('${ticket.id}', '${level}')">
+        ⚡ Escalar Nivel...
+      </button>
+    `;
   } else if (status === 'RESUELTO') {
-    statusTabLabel = '✅ Solucionado';
-    statusTabBg = '#ECFDF5';
-    statusTabColor = '#065F46';
-    statusTabBorder = '#A7F3D0';
+    actionsToolbarHtml = `
+      <button class="btn-action-resolve" onclick="actionCloseTicket('${ticket.id}')">
+        🔒 Cerrar con Conformidad (100%)
+      </button>
+      <button class="btn-action-secondary" onclick="actionStartProgress('${ticket.id}')">
+        ↩️ Reabrir Incidente
+      </button>
+      <button class="btn-action-escalate" onclick="promoteCurrentTicketToKB('${ticket.id}')">
+        📚 Promover a Base de Conocimiento
+      </button>
+    `;
   } else if (status === 'CERRADO') {
-    statusTabLabel = '🔒 Solicitud Cerrada';
-    statusTabBg = '#F1F5F9';
-    statusTabColor = '#334155';
-    statusTabBorder = '#CBD5E1';
+    actionsToolbarHtml = `
+      <span style="font-size:12px; font-weight:800; color:#059669; background:#ECFDF5; border:1px solid #A7F3D0; padding:6px 12px; border-radius:8px;">
+        🔒 Incidente Cerrado con Conformidad
+      </span>
+      <button class="btn-action-escalate" onclick="promoteCurrentTicketToKB('${ticket.id}')">
+        📚 Ver / Publicar en Base de Conocimiento
+      </button>
+    `;
   }
 
-  // Render HTML con Cockpit Amigable OSDE PAU
+  const commentsCount = (ticket.comments || []).filter(c => !c.is_internal).length;
+  const internalCount = (ticket.comments || []).filter(c => c.is_internal).length;
+  const totalComments = (ticket.comments || []).length;
+  const auditCount = (ticket.audit_logs || []).length;
+
   container.innerHTML = `
-    <div style="display:flex; flex-direction:column; height:100%; overflow:hidden; background:#F8FAFC;">
+    <div class="detail-container-clean">
       
-      <!-- Banner Dinámico por Estado y Prioridad Asignada (Paleta Oficial de Configuración) -->
-      <div style="background:${bannerBg}; border-bottom:1px solid ${bannerBorder}; color:${bannerTextColor}; padding:9px 16px; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:space-between; flex-shrink:0;">
-        <div style="display:flex; align-items:center; gap:8px; min-width:0;">
-          <span style="font-size:14px; flex-shrink:0;">${bannerIcon}</span>
-          <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-weight:800;">#${ticket.id} - ${ticket.title}</span>
-          <span style="opacity:0.88; font-size:11px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-weight:600;">• ${bannerSub}</span>
-        </div>
-        <span style="background:${bannerBadgeBg}; border:1px solid ${bannerBadgeBorder}; color:${bannerBadgeColor}; padding:3px 10px; border-radius:4px; font-size:10.5px; font-weight:800; white-space:nowrap; margin-left:8px; text-transform:uppercase; letter-spacing:0.4px;">${bannerBadge}</span>
-      </div>
-
-      <!-- 1. BARRA SUPERIOR DE ESTADO Y PESTAÑAS (ESTILO OSDE PAU) -->
-      <div style="background:#FFFFFF; border-bottom:1px solid #E2E8F0; padding:10px 18px; display:flex; justify-content:space-between; align-items:center; flex-shrink:0;">
-        <div style="display:flex; align-items:center; gap:8px;">
-          <button class="btn-table-action mobile-only-btn" onclick="switchMobileCockpitTab('col-list')" style="display:none; padding:3px 8px;">
-            ← Volver
-          </button>
-          
-          <!-- Pestaña 1: Estado Actual -->
-          <div class="tkt-tab-pill active" style="background:${statusTabBg}; color:${statusTabColor}; border:1px solid ${statusTabBorder}; font-weight:800; font-size:12px; padding:5px 12px; border-radius:6px;">
-            ${statusTabLabel}
+      <!-- 1. Encabezado Limpio y Ejecutivo -->
+      <div class="detail-header-card">
+        <div class="detail-top-bar">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="prio-chip prio-chip-${priority.toLowerCase()}" style="font-size:11px; padding:3px 8px;">${priority}</span>
+            <span style="font-family:'JetBrains Mono'; font-weight:800; font-size:13px; color:#475569;">#${ticket.id}</span>
+            <span style="font-size:11.5px; color:#94A3B8; font-weight:600;">• ${formatDateTime(ticket.created_at)}</span>
           </div>
 
-          <!-- Pestaña 2: Métricas de SLA -->
-          <div class="tkt-tab-pill" onclick="switchDetailTab('audit')" style="background:#F8FAFC; color:#64748B; font-weight:700; font-size:12px; padding:5px 12px; border-radius:6px; cursor:pointer;">
-            📊 Métricas de SLA
+          <div style="display:flex; align-items:center; gap:6px;">
+            <span style="font-size:11px; font-weight:700; color:${sla.badgeColor}; background:${sla.badgeBg}; padding:3px 8px; border-radius:6px; border:1px solid ${sla.badgeColor}33;">
+              ⏱️ SLA: ${sla.statusText} (${sla.timeRemainingText})
+            </span>
+            <span class="badge-tier badge-tier-${level.toLowerCase()}" style="font-size:10.5px; padding:3px 8px;">${level}</span>
+            <span class="badge-status st-${status}" style="font-size:10.5px; padding:3px 8px;">${formatStatusName(status)}</span>
           </div>
         </div>
 
-        <!-- Menú de Acciones ⋮ -->
-        <div style="position:relative; display:inline-block;">
-          <button class="btn-sec" onclick="toggleTicketActionMenu('${ticket.id}')" style="padding:4px 10px; font-weight:800; font-size:14px; line-height:1; border-radius:6px; background:#F8FAFC; border:1px solid #CBD5E1; color:#334155; cursor:pointer;" title="Más opciones de gestión">⋮</button>
-          <div class="tkt-dropdown-menu" id="tkt-action-menu-${ticket.id}" style="right:0; top:32px; min-width:230px;">
-            <a href="javascript:void(0)" class="tkt-dropdown-item" onclick="actionAssignSelf('${ticket.id}')">👤 Auto-asignarme como agente</a>
-            ${status === 'NUEVO' || status === 'ASIGNADO' ? `<a href="javascript:void(0)" class="tkt-dropdown-item" onclick="actionStartProgress('${ticket.id}')">⚙️ Iniciar Diagnóstico</a>` : ''}
-            ${status === 'EN_CURSO' ? `<a href="javascript:void(0)" class="tkt-dropdown-item" onclick="document.getElementById('action-res-notes') ? document.getElementById('action-res-notes').focus() : null">✅ Registrar Solución</a>` : ''}
-            ${status === 'NUEVO' ? `<a href="javascript:void(0)" class="tkt-dropdown-item" onclick="openEditTicketModal('${ticket.id}')">✏️ Editar Solicitud</a>` : ''}
-            <div class="tkt-dropdown-divider"></div>
-            <a href="javascript:void(0)" class="tkt-dropdown-item" onclick="window.print()">🖨️ Imprimir Ficha del Ticket</a>
-            <a href="javascript:void(0)" class="tkt-dropdown-item" onclick="navigator.clipboard.writeText('${ticket.id}'); showToast('ID copiado al portapapeles', 'success');">📋 Copiar ID del Ticket</a>
-          </div>
+        <h1 class="detail-title-h1">${ticket.title}</h1>
+
+        <div class="detail-meta-pills">
+          <span class="detail-meta-item">
+            👤 <strong>Solicitante:</strong> ${reqFullName} (${instName})
+          </span>
+          <span class="detail-meta-item">
+            🩺 <strong>Plataforma:</strong> ${platName}
+          </span>
+          <span class="detail-meta-item">
+            👨‍💻 <strong>Asignado a:</strong> ${asgFullName}
+          </span>
+        </div>
+
+        <!-- Barra de Acciones FSM -->
+        <div class="detail-actions-toolbar">
+          ${actionsToolbarHtml}
         </div>
       </div>
 
-      <!-- 2. TIRA DE PROPIEDADES EN 6 COLUMNAS (PROPERTIES STRIP) -->
-      <div style="background:#FAFAFC; border-bottom:1px solid #E2E8F0; padding:10px 18px; display:grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap:12px; align-items:center; flex-shrink:0;">
-        <div>
-          <div style="font-size:10px; font-weight:700; color:#64748B; text-transform:uppercase; letter-spacing:0.3px;">Prioridad</div>
-          <div style="font-size:12px; font-weight:800; color:#0F172A; margin-top:2px;">
-            <span class="badge-prio ${pClass}" style="font-size:10px; padding:2px 7px;">${prioLabel}</span>
-          </div>
-        </div>
-        <div>
-          <div style="font-size:10px; font-weight:700; color:#64748B; text-transform:uppercase; letter-spacing:0.3px;">Tipo</div>
-          <div style="font-size:12px; font-weight:700; color:#334155; margin-top:2px;">${ticketType}</div>
-        </div>
-        <div>
-          <div style="font-size:10px; font-weight:700; color:#64748B; text-transform:uppercase; letter-spacing:0.3px;">Origen</div>
-          <div style="font-size:12px; font-weight:700; color:#0F766E; margin-top:2px;">🌐 Web / Portal</div>
-        </div>
-        <div>
-          <div style="font-size:10px; font-weight:700; color:#64748B; text-transform:uppercase; letter-spacing:0.3px;">Primera Respuesta</div>
-          <div style="font-size:12px; font-weight:700; color:#334155; margin-top:2px;">${priority === 'P1' ? '15 min' : '1 hora'}</div>
-        </div>
-        <div>
-          <div style="font-size:10px; font-weight:700; color:#64748B; text-transform:uppercase; letter-spacing:0.3px;">Usuario VIP</div>
-          <div style="font-size:12px; font-weight:700; color:${priority === 'P1' ? '#DC2626' : '#64748B'}; margin-top:2px;">${priority === 'P1' ? 'SÍ (Médico Guardia)' : 'NO'}</div>
-        </div>
-        <div>
-          <div style="font-size:10px; font-weight:700; color:#64748B; text-transform:uppercase; letter-spacing:0.3px;">Plataforma</div>
-          <div style="font-size:12px; font-weight:700; color:#2563EB; margin-top:2px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;" title="${platName}">🩺 ${platName}</div>
-        </div>
+      <!-- 2. Barra de Pestañas de Navegación -->
+      <div class="detail-tabs-bar">
+        <button class="detail-tab-btn-clean ${AppState.activeDetailTab === 'comments' ? 'active' : ''}" onclick="switchDetailTab('comments')">
+          💬 Actividad & Notas (${totalComments})
+        </button>
+        <button class="detail-tab-btn-clean ${AppState.activeDetailTab === 'technical' ? 'active' : ''}" onclick="switchDetailTab('technical')">
+          📋 Ficha Técnica & Diagnóstico
+        </button>
+        <button class="detail-tab-btn-clean ${AppState.activeDetailTab === 'audit' ? 'active' : ''}" onclick="switchDetailTab('audit')">
+          📜 Historial & Trazabilidad (${auditCount})
+        </button>
+        <button class="detail-tab-btn-clean ${AppState.activeDetailTab === 'kb' ? 'active' : ''}" onclick="switchDetailTab('kb')">
+          📚 Base de Conocimiento Sugerida
+        </button>
       </div>
 
-      <!-- 3. CONTENIDO PRINCIPAL DIVIDIDO EN 2 COLUMNAS (CANVAS CENTRAL + INSPECTOR LATERAL) -->
-      <div class="ticket-detail-grid" style="flex:1; overflow-y:auto; padding:16px;">
-        
-        <!-- Canvas Central de Atención (Izquierda) -->
-        <div class="ticket-main-canvas" style="display:flex; flex-direction:column; gap:14px;">
-          
-          <!-- Tarjeta del Caso con Identidad del Cliente (Estilo OSDE PAU) -->
-          <div class="card" style="padding:18px; background:#FFFFFF; border:1px solid #E2E8F0; border-radius:10px; box-shadow:0 1px 3px rgba(0,0,0,0.03);">
-            
-            <!-- Encabezado del Cliente con Avatar y Badge -->
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; padding-bottom:12px; border-bottom:1px solid #F1F5F9;">
-              <div style="display:flex; align-items:center; gap:12px;">
-                <div style="width:42px; height:42px; border-radius:50%; background:#0D9488; color:#FFFFFF; font-weight:800; font-size:14px; display:flex; align-items:center; justify-content:center; flex-shrink:0; letter-spacing:0.5px;">
-                  ${reqInitials}
-                </div>
-                <div>
-                  <div style="display:flex; align-items:center; gap:8px;">
-                    <span style="font-size:13.5px; font-weight:800; color:#0F172A; text-transform:uppercase; letter-spacing:0.3px;">${reqFullName}</span>
-                    <span style="background:#CCFBF1; color:#0F766E; font-size:10px; font-weight:800; padding:2px 7px; border-radius:4px; border:1px solid #99F6E4;">CLIENTE</span>
-                  </div>
-                  <div style="font-size:11px; color:#64748B; margin-top:2px;">
-                    Registrado en ${instName} • ${formatDateFriendly(ticket.created_at)}
-                  </div>
-                </div>
-              </div>
-              <span style="font-family:'JetBrains Mono'; font-weight:800; font-size:12px; color:#64748B; background:#F1F5F9; padding:4px 8px; border-radius:6px;">${ticket.id}</span>
-            </div>
-
-            <!-- Título y Detalle del Inconveniente -->
-            <h1 style="font-family:'Outfit', sans-serif; font-size:16px; font-weight:800; color:#0F172A; margin:0 0 10px 0; line-height:1.35;">
-              ${ticket.title || 'Sin Título'}
-            </h1>
-
-            <div style="margin-bottom:8px;">
-              <div style="font-size:11.5px; font-weight:800; color:#475569; margin-bottom:6px;">Detalle del inconveniente:</div>
-              <div style="font-size:12.5px; color:#1E293B; line-height:1.6; background:#F8FAFC; padding:14px 16px; border-radius:8px; border:1px solid #E2E8F0; white-space:pre-wrap;">${ticket.description || 'Sin descripción detallada'}</div>
-            </div>
-
-            <!-- Evidencia o Adjunto si existe -->
-            ${ticket.attachment_url ? `
-              <div style="margin-top:12px; padding:10px 14px; background:#EFF6FF; border:1px solid #BFDBFE; border-radius:8px; display:flex; align-items:center; justify-content:space-between;">
-                <span style="font-size:11.5px; color:#1E40AF; display:flex; align-items:center; gap:6px;">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
-                  <strong>Evidencia / Adjunto:</strong>
-                  <a href="${ticket.attachment_url}" target="_blank" rel="noopener noreferrer" style="color:#2563EB; text-decoration:underline; word-break:break-all;">${ticket.attachment_url}</a>
-                </span>
-              </div>
-            ` : ''}
-          </div>
-
-          <!-- Acciones Operativas FSM Contextuales -->
-          ${actionsHtml}
-
-          <!-- Promover a Base de Conocimiento si el ticket está resuelto o cerrado -->
-          ${(ticket.status === 'RESUELTO' || ticket.status === 'CERRADO') ? `
-            <div style="background:#F0FDFA; border:1px solid #99F6E4; border-radius:10px; padding:12px 16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; box-shadow:0 1px 2px rgba(0,0,0,0.02);">
-              <div style="display:flex; align-items:center; gap:10px;">
-                <div style="font-size:22px;">💡</div>
-                <div>
-                  <div style="font-size:12.5px; font-weight:800; color:#0F766E;">Conocimiento Reutilizable Homologado</div>
-                  <div style="font-size:11px; color:#115E59; margin-top:2px;">Este incidente cuenta con solución técnica confirmada. Puede incorporarlo al repositorio general de procedimientos con control de versiones.</div>
-                </div>
-              </div>
-              <button type="button" class="btn-pri" onclick="promoteCurrentTicketToKB('${ticket.id}')" style="font-size:11.5px; padding:6px 14px; background:#0D9488; display:inline-flex; align-items:center; gap:6px;">
-                <span>📚 Promover a Base de Conocimiento</span>
-              </button>
-            </div>
-          ` : ''}
-
-          <!-- Hilo de Conversación, Notas Internas y Auditoría -->
-          <div class="card" style="background:#FFFFFF; border:1px solid #E2E8F0; border-radius:10px; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 1px 3px rgba(0,0,0,0.03);">
-            <div style="display:flex; background:#F8FAFC; border-bottom:1px solid #E2E8F0;">
-              <button class="activity-tab-btn ${AppState.activeDetailTab === 'comments' ? 'active' : ''}" onclick="switchDetailTab('comments')">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                <span>Conversación (${(ticket.comments || []).filter(c => !c.is_internal).length})</span>
-              </button>
-              <button class="activity-tab-btn ${AppState.activeDetailTab === 'internal' ? 'active' : ''}" onclick="switchDetailTab('internal')">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                <span>Notas Internas (${(ticket.comments || []).filter(c => c.is_internal).length})</span>
-              </button>
-              <button class="activity-tab-btn ${AppState.activeDetailTab === 'audit' ? 'active' : ''}" onclick="switchDetailTab('audit')">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                <span>Auditoría Forense (${(ticket.audit_logs || []).length})</span>
-              </button>
-            </div>
-
-            <div style="padding:14px; min-height:100px; max-height:300px; overflow-y:auto;" id="detail-tab-content">
-              ${renderDetailTabContent(ticket)}
-            </div>
-
-            <div style="padding:12px 14px; background:#FFFFFF; border-top:1px solid #E2E8F0; display:flex; flex-direction:column; gap:8px;">
-              <div style="display:flex; gap:8px;">
-                <input type="text" id="input-comment" class="form-control" placeholder="Escribir mensaje para el solicitante o equipo..." style="flex:1; font-size:12px; height:34px; padding:6px 12px;" onkeydown="if(event.key==='Enter') submitComment('${ticket.id}')">
-                <button class="btn-pri" id="btn-send-comment" onclick="submitComment('${ticket.id}')" style="padding:6px 16px; font-size:12px; font-weight:700;">Enviar</button>
-              </div>
-              <label style="font-size:11px; color:#475569; display:flex; align-items:center; gap:6px; cursor:pointer;">
-                <input type="checkbox" id="check-is-internal"> 
-                <span><strong>Nota Privada Interna</strong> (Confidencial para operadores, no visible para solicitante)</span>
-              </label>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- Inspector Lateral con los 4 Widgets de OSDE PAU (Derecha) -->
-        <div class="ticket-inspector-sidebar" style="display:flex; flex-direction:column; gap:14px;">
-          
-          <!-- Widget 0: Nivel de Atención ITIL & Escalamiento Multicapa -->
-          <div class="inspector-card" style="background:#FFFFFF; border:1.5px solid #CBD5E1; border-radius:10px; padding:14px; box-shadow:0 1px 3px rgba(0,0,0,0.03);">
-            <div style="font-size:11px; font-weight:800; color:#475569; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
-              <span>Nivel de Atención ITIL</span>
-              <span class="badge-tier badge-tier-${(ticket.support_level || 'N1').toLowerCase()}">${ticket.support_level || 'N1'} ACTIVO</span>
-            </div>
-
-            <!-- Stepper ITIL Visual -->
-            <div class="itil-stepper" style="margin-bottom:10px;">
-              <div class="itil-step ${(ticket.support_level || 'N1') === 'N1' ? 'active step-n1' : ''}">
-                <span>🔵 N1</span>
-                <span style="font-size:8.5px; opacity:0.85;">Triage</span>
-              </div>
-              <div class="itil-step-arrow">➔</div>
-              <div class="itil-step ${(ticket.support_level || 'N1') === 'N2' ? 'active step-n2' : ''}">
-                <span>🟣 N2</span>
-                <span style="font-size:8.5px; opacity:0.85;">Especialista</span>
-              </div>
-              <div class="itil-step-arrow">➔</div>
-              <div class="itil-step ${(ticket.support_level || 'N1') === 'N3' ? 'active step-n3' : ''}">
-                <span>🔴 N3</span>
-                <span style="font-size:8.5px; opacity:0.85;">Ingeniería</span>
-              </div>
-            </div>
-
-            <div style="font-size:11px; color:#64748B; margin:6px 0 10px 0; line-height:1.4;">
-              <strong>Mesa Responsable:</strong> ${(ticket.support_level || 'N1') === 'N1' ? 'Mesa Central Asistencial & Triage' : ((ticket.support_level || 'N1') === 'N2' ? `Mesa Especialista ${platName}` : 'Core Dev, Cloud DevOps & DBA')}
-            </div>
-
-            <!-- Botones de Acción de Escalamiento Contextuales -->
-            <div style="display:flex; flex-direction:column; gap:6px;">
-              ${(ticket.support_level || 'N1') === 'N1' ? `
-                <button type="button" class="btn-pri" onclick="openEscalateModal('${ticket.id}', 'N1')" style="font-size:11px; padding:6px 10px; background:#7C3AED; display:flex; align-items:center; justify-content:center; gap:6px;">
-                  <span>⚡ Escalar a Nivel 2 (Especialistas)</span>
-                </button>
-                <button type="button" class="btn-sec" onclick="openEscalateModal('${ticket.id}', 'N1')" style="font-size:10.5px; padding:4px 8px; color:#DC2626; border-color:#FECACA; text-align:center;">
-                  🚨 Escalar directo a Nivel 3 (Falla Crítica)
-                </button>
-              ` : ''}
-
-              ${(ticket.support_level || 'N1') === 'N2' ? `
-                <button type="button" class="btn-pri" onclick="openEscalateModal('${ticket.id}', 'N2')" style="font-size:11px; padding:6px 10px; background:#DC2626; display:flex; align-items:center; justify-content:center; gap:6px;">
-                  <span>⚡ Escalar a Nivel 3 (Ingeniería / DBA)</span>
-                </button>
-                <button type="button" class="btn-sec" onclick="openEscalateModal('${ticket.id}', 'N2')" style="font-size:10.5px; padding:4px 8px; color:#0284C7; border-color:#BFDBFE; text-align:center;">
-                  ↩️ Devolver a Nivel 1 (Triage / Datos Faltantes)
-                </button>
-              ` : ''}
-
-              ${(ticket.support_level || 'N1') === 'N3' ? `
-                <button type="button" class="btn-sec" onclick="openEscalateModal('${ticket.id}', 'N3')" style="font-size:10.5px; padding:5px 8px; color:#7C3AED; border-color:#DDD6FE; text-align:center;">
-                  ↩️ Derivar a Nivel 2 (Configuración Especialista)
-                </button>
-              ` : ''}
-            </div>
-
-          </div>
-
-          <!-- Widget 1: 3 Participantes (con botón +) -->
-          <div class="inspector-card" style="background:#FFFFFF; border:1px solid #E2E8F0; border-radius:10px; padding:14px; box-shadow:0 1px 3px rgba(0,0,0,0.03);">
-            <div style="font-size:11px; font-weight:800; color:#64748B; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center;">
-              <span>3 Participantes</span>
-              <span style="cursor:pointer; font-size:14px; font-weight:800; color:#2563EB;" title="Añadir participante">+</span>
-            </div>
-
-            <div style="display:flex; flex-direction:column; gap:10px;">
-              
-              <!-- 1. Cliente / Solicitante -->
-              <div class="participant-item" style="display:flex; align-items:center; gap:10px;">
-                <div class="avatar-circle" style="background:#0D9488; color:#FFF; width:34px; height:34px; font-size:11.5px;">
-                  ${reqInitials}
-                </div>
-                <div class="participant-info" style="min-width:0; flex:1;">
-                  <div class="participant-name" style="font-size:12px; font-weight:800; color:#0F172A; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${reqFullName}</div>
-                  <div class="participant-sub" style="font-size:10.5px; color:#64748B;">Cliente @ ${instName}</div>
-                </div>
-              </div>
-
-              <!-- 2. Agente Asignado -->
-              <div class="participant-item" style="display:flex; align-items:center; gap:10px;">
-                <div class="avatar-circle" style="background:${ticket.assignee_username ? '#2563EB' : '#94A3B8'}; color:#FFF; width:34px; height:34px; font-size:11.5px;">
-                  ${asgInitials}
-                </div>
-                <div class="participant-info" style="min-width:0; flex:1;">
-                  <div class="participant-name" style="font-size:12px; font-weight:800; color:#0F172A; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${asgFullName}</div>
-                  <div class="participant-sub" style="font-size:10.5px; color:#64748B;">Agente @ Soporte (Nivel ${ticket.support_level || 'N1'})</div>
-                </div>
-              </div>
-
-              <!-- 3. Mesa de Ayuda Especializada -->
-              <div class="participant-item" style="display:flex; align-items:center; gap:10px;">
-                <div class="avatar-circle" style="background:#0F172A; color:#FFF; width:34px; height:34px; font-size:11.5px;">
-                  👥
-                </div>
-                <div class="participant-info" style="min-width:0; flex:1;">
-                  <div class="participant-name" style="font-size:12px; font-weight:800; color:#0F172A; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Soporte ${platName}</div>
-                  <div class="participant-sub" style="font-size:10.5px; color:#059669; font-weight:700;">🟢 Mesa de ayuda activa</div>
-                </div>
-              </div>
-
-            </div>
-          </div>
-
-          <!-- Widget 2: Control de SLA & Métricas -->
-          <div class="inspector-card" style="background:#FFFFFF; border:1px solid #E2E8F0; border-radius:10px; padding:14px; box-shadow:0 1px 3px rgba(0,0,0,0.03);">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-              <span style="font-size:11px; font-weight:800; color:#64748B; text-transform:uppercase; letter-spacing:0.5px;">Control de SLA</span>
-              <span style="font-size:10px; font-weight:800; padding:2px 6px; border-radius:4px; background:${sla.badgeBg}; color:${sla.badgeColor}; border:1px solid ${sla.badgeColor}33;">${sla.statusText}</span>
-            </div>
-
-            <div style="font-size:16px; font-weight:800; color:${sla.badgeColor}; margin-bottom:6px;">
-              ${sla.timeRemainingText}
-            </div>
-
-            <div style="margin-bottom:8px;">
-              <div style="display:flex; justify-content:space-between; font-size:10.5px; font-weight:700; color:#64748B; margin-bottom:3px;">
-                <span>Consumo SLA</span>
-                <span>${sla.percent}%</span>
-              </div>
-              <div style="height:6px; width:100%; background:#E2E8F0; border-radius:3px; overflow:hidden;">
-                <div style="height:100%; width:${sla.percent}%; background:${sla.badgeColor}; transition:width 0.3s ease;"></div>
-              </div>
-            </div>
-
-            <div style="font-size:11px; color:#64748B; border-top:1px solid #F1F5F9; padding-top:6px; display:flex; flex-direction:column; gap:2px;">
-              <div>Objetivo: <strong style="color:#0F172A;">${sla.maxHours}h resolución</strong></div>
-              <div>Límite: <strong style="color:#0F172A;">${sla.deadlineFormatted}</strong></div>
-            </div>
-          </div>
-
-          <!-- Widget 3: Base de Conocimiento Sugerida -->
-          <div class="inspector-card" style="background:#FFFFFF; border:1px solid #E2E8F0; border-radius:10px; padding:14px; box-shadow:0 1px 3px rgba(0,0,0,0.03);">
-            <div style="font-size:11px; font-weight:800; color:#64748B; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
-              <span>Base de Conocimiento</span>
-              <span>📚</span>
-            </div>
-            
-            ${kbSuggestions.length > 0 ? `
-              <div style="display:flex; flex-direction:column; gap:6px;">
-                ${kbSuggestions.map(kb => `
-                  <div style="padding:8px; background:#F8FAFC; border:1px solid #E2E8F0; border-radius:6px; cursor:pointer;" onclick="switchView('knowledge'); filterKBCategory('${kb.category || 'CLINICO'}');">
-                    <div style="font-size:11.5px; font-weight:700; color:#2563EB; line-height:1.3;">${kb.title}</div>
-                    <div style="font-size:10.5px; color:#64748B; margin-top:3px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${kb.content ? kb.content.substring(0, 60) + '...' : 'Guía de resolución técnica'}</div>
-                  </div>
-                `).join('')}
-              </div>
-            ` : `
-              <div style="font-size:11px; color:#94A3B8; font-style:italic;">No hay guías específicas asociadas.</div>
-            `}
-          </div>
-
-          <!-- Widget 4: Datos del Prestador / Institución -->
-          <div class="inspector-card" style="background:#FFFFFF; border:1px solid #E2E8F0; border-radius:10px; padding:14px; box-shadow:0 1px 3px rgba(0,0,0,0.03);">
-            <div style="font-size:11px; font-weight:800; color:#64748B; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px;">
-              Datos Clínicos y Sede
-            </div>
-            <div style="display:flex; flex-direction:column; gap:6px; font-size:11.5px;">
-              <div style="display:flex; justify-content:space-between;">
-                <span style="color:#64748B;">Institución:</span>
-                <strong style="color:#0F172A;">${instName}</strong>
-              </div>
-              <div style="display:flex; justify-content:space-between;">
-                <span style="color:#64748B;">Servicio:</span>
-                <strong style="color:#0F172A;">Guardia Externa / Asistencial</strong>
-              </div>
-              <div style="display:flex; justify-content:space-between;">
-                <span style="color:#64748B;">Criticidad ITIL:</span>
-                <strong style="color:${priority === 'P1' ? '#DC2626' : '#0F172A'};">${priority === 'P1' ? 'P1 - Alta Criticidad' : 'Estándar'}</strong>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
+      <!-- 3. Contenedor de Contenido de la Pestaña Activa -->
+      <div class="detail-tab-content-area" id="detail-tab-content">
+        ${renderDetailTabContent(ticket)}
       </div>
 
     </div>
@@ -1835,67 +1360,281 @@ function switchDetailTab(tabName) {
 }
 
 function renderDetailTabContent(ticket) {
+  const platName = formatPlatformName(ticket.platform_code);
+  const instName = formatInstitutionName(ticket.institution_code);
+  const sla = calculateTicketSLA(ticket);
+
   if (AppState.activeDetailTab === 'comments') {
-    const comments = (ticket.comments || []).filter(c => !c.is_internal);
+    const comments = ticket.comments || [];
+    
+    let commentsListHtml = '';
     if (comments.length === 0) {
-      return `
-        <div style="text-align:center; color:#64748B; padding:16px 10px; font-size:11px; background:#F8FAFC; border-radius:6px; border:1px dashed #CBD5E1;">
-          <div style="font-size:16px; margin-bottom:2px;">💬</div>
-          <div style="font-weight:700; color:#334155;">Canal de comunicación abierto</div>
-          <div style="font-size:10px; color:#94A3B8; margin-top:2px;">Escriba un mensaje para el solicitante usando el campo inferior.</div>
+      commentsListHtml = `
+        <div style="text-align:center; color:#64748B; padding:30px 10px; font-size:12px; background:#FFFFFF; border-radius:10px; border:1px dashed #CBD5E1; margin-bottom:16px;">
+          <div style="font-size:24px; margin-bottom:6px;">💬</div>
+          <div style="font-weight:700; color:#334155;">Sin comentarios aún</div>
+          <div style="font-size:11px; color:#94A3B8; margin-top:2px;">Utilice el recuadro inferior para responder al solicitante o agregar una nota interna.</div>
+        </div>
+      `;
+    } else {
+      commentsListHtml = `
+        <div class="chat-stream-clean">
+          ${comments.map(c => {
+            const isInternal = c.is_internal;
+            const isRequester = c.author_username === ticket.requester_username;
+            const bubbleClass = isInternal ? 'chat-bubble-internal' : (isRequester ? 'chat-bubble-requester' : 'chat-bubble-agent');
+
+            return `
+              <div class="chat-bubble ${bubbleClass}">
+                <div class="chat-bubble-header">
+                  <span style="display:flex; align-items:center; gap:6px;">
+                    ${isInternal ? '🔒 <strong>Nota Privada Interna</strong> •' : ''}
+                    <strong>👤 ${c.author_username}</strong>
+                  </span>
+                  <span style="opacity:0.75;">${formatDateTime(c.created_at)}</span>
+                </div>
+                <div style="white-space:pre-wrap;">${c.message}</div>
+              </div>
+            `;
+          }).join('')}
         </div>
       `;
     }
-    return comments.map(c => `
-      <div style="margin-bottom:8px; padding:8px 10px; border-radius:6px; background:#FFFFFF; border:1px solid #E2E8F0;">
-        <div style="display:flex; justify-content:space-between; font-size:10px; color:#64748B; margin-bottom:4px;">
-          <strong>👤 ${c.author_username}</strong>
-          <span>${formatDateTime(c.created_at)}</span>
+
+    return `
+      <div style="display:flex; flex-direction:column; height:100%;">
+        ${commentsListHtml}
+
+        <!-- Caja de Respuesta Rápida -->
+        <div class="chat-input-box" style="margin-top:auto;">
+          <textarea id="input-comment" class="form-control" rows="3" placeholder="Escriba un mensaje para el solicitante o una nota de trabajo para el equipo..." style="font-size:12.5px;"></textarea>
+          
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+            <label style="font-size:11.5px; color:#475569; display:flex; align-items:center; gap:6px; cursor:pointer;">
+              <input type="checkbox" id="check-is-internal" style="width:15px; height:15px; accent-color:#00A896;"> 
+              <span><strong>Nota Privada Interna</strong> (Visible solo para operadores)</span>
+            </label>
+            <button class="btn-action-primary" id="btn-send-comment" onclick="submitComment('${ticket.id}')">
+              <span>Enviar Mensaje</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:13px;height:13px;"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            </button>
+          </div>
         </div>
-        <div style="font-size:11.5px; color:#1E293B; line-height:1.4;">${c.message}</div>
       </div>
-    `).join('');
-  } else if (AppState.activeDetailTab === 'internal') {
-    const internalNotes = (ticket.comments || []).filter(c => c.is_internal);
-    if (internalNotes.length === 0) {
-      return `
-        <div style="text-align:center; color:#92400E; padding:16px 10px; font-size:11px; background:#FEF3C7; border-radius:6px; border:1px dashed #FCD34D;">
-          <div style="font-size:16px; margin-bottom:2px;">🔒</div>
-          <div style="font-weight:700; color:#78350F;">Sin notas internas privadas</div>
-          <div style="font-size:10px; color:#B45309; margin-top:2px;">Marque la casilla "Nota Privada Interna" para registrar notas confidenciales de equipo.</div>
+    `;
+  } else if (AppState.activeDetailTab === 'technical') {
+    return `
+      <div class="diagnostic-grid-clean">
+        
+        <!-- Tarjeta 1: Solicitante & Sede -->
+        <div class="info-card-clean">
+          <div class="info-card-clean-title">
+            <span>👤</span>
+            <span>Datos del Solicitante</span>
+          </div>
+          <div class="info-field-row">
+            <span class="info-field-label">Nombre:</span>
+            <span class="info-field-val">${ticket.requester_name || ticket.requester_username}</span>
+          </div>
+          <div class="info-field-row">
+            <span class="info-field-label">Usuario:</span>
+            <span class="info-field-val"><code>@${ticket.requester_username}</code></span>
+          </div>
+          <div class="info-field-row">
+            <span class="info-field-label">Institución / Sede:</span>
+            <span class="info-field-val">🏥 ${instName}</span>
+          </div>
+          <div class="info-field-row">
+            <span class="info-field-label">Email de Notificación:</span>
+            <span class="info-field-val"><a href="mailto:${ticket.requester_email || ''}" style="color:#2563EB;">${ticket.requester_email || 'Sin email'}</a></span>
+          </div>
         </div>
-      `;
-    }
-    return internalNotes.map(c => `
-      <div style="margin-bottom:8px; padding:8px 10px; border-radius:6px; background:#FEF3C7; border:1px solid #FCD34D;">
-        <div style="display:flex; justify-content:space-between; font-size:10px; color:#92400E; margin-bottom:4px;">
-          <strong>🔒 👤 ${c.author_username} (Nota Privada)</strong>
-          <span>${formatDateTime(c.created_at)}</span>
+
+        <!-- Tarjeta 2: Clasificación & SLA ITIL -->
+        <div class="info-card-clean">
+          <div class="info-card-clean-title">
+            <span>🩺</span>
+            <span>Clasificación Asistencial & SLA</span>
+          </div>
+          <div class="info-field-row">
+            <span class="info-field-label">Plataforma Afectada:</span>
+            <span class="info-field-val">${platName}</span>
+          </div>
+          <div class="info-field-row">
+            <span class="info-field-label">Tipo de Solicitud:</span>
+            <span class="info-field-val">${ticket.ticket_type || 'INCIDENTE'}</span>
+          </div>
+          <div class="info-field-row">
+            <span class="info-field-label">Impacto Asistencial:</span>
+            <span class="info-field-val">${ticket.impact || 'MEDIO'}</span>
+          </div>
+          <div class="info-field-row">
+            <span class="info-field-label">Urgencia:</span>
+            <span class="info-field-val">${ticket.urgency || 'MEDIO'}</span>
+          </div>
+          <div class="info-field-row">
+            <span class="info-field-label">Nivel de Soporte ITIL:</span>
+            <span class="info-field-val"><span class="badge-tier badge-tier-${(ticket.support_level || 'N1').toLowerCase()}">${ticket.support_level || 'N1'}</span></span>
+          </div>
         </div>
-        <div style="font-size:11.5px; color:#78350F; line-height:1.4;">${c.message}</div>
+
+        <!-- Tarjeta 3: Diagnóstico Detallado & Evidencia -->
+        <div class="info-card-clean" style="grid-column: 1 / -1;">
+          <div class="info-card-clean-title">
+            <span>📝</span>
+            <span>Descripción del Problema & Evidencia</span>
+          </div>
+          <div style="font-size:12.5px; color:#1E293B; line-height:1.5; white-space:pre-wrap; background:#F8FAFC; padding:12px 14px; border-radius:8px; border:1px solid #E2E8F0;">${ticket.description || 'Sin descripción ingresada.'}</div>
+          
+          ${ticket.attachment_url ? `
+            <div style="margin-top:10px; display:flex; align-items:center; justify-content:space-between; background:#EFF6FF; border:1px solid #BFDBFE; padding:8px 12px; border-radius:8px;">
+              <span style="font-size:12px; color:#1E40AF;"><strong>🔗 Evidencia Adjunta:</strong> ${ticket.attachment_url}</span>
+              <a href="${ticket.attachment_url}" target="_blank" rel="noopener noreferrer" class="btn-action-primary" style="font-size:11px; padding:4px 10px; text-decoration:none;">
+                Abrir Enlace
+              </a>
+            </div>
+          ` : ''}
+        </div>
+
+        <!-- Tarjeta 4: Solución Técnica (si existe) -->
+        ${ticket.resolution_notes ? `
+          <div class="info-card-clean" style="grid-column: 1 / -1; border-color:#86EFAC; background:#F0FDF4;">
+            <div class="info-card-clean-title" style="color:#065F46; border-bottom-color:#A7F3D0;">
+              <span>✅</span>
+              <span>Solución Técnica Registrada</span>
+            </div>
+            ${ticket.root_cause ? `
+              <div class="info-field-row" style="margin-bottom:6px;">
+                <span class="info-field-label" style="color:#047857;">Diagnóstico / Causa Raíz:</span>
+                <span class="info-field-val" style="color:#065F46;">${ticket.root_cause}</span>
+              </div>
+            ` : ''}
+            <div style="font-size:12.5px; color:#065F46; line-height:1.5; white-space:pre-wrap; background:#FFFFFF; padding:12px 14px; border-radius:8px; border:1px solid #A7F3D0;">${ticket.resolution_notes}</div>
+            <div style="font-size:11px; color:#059669; margin-top:6px; display:flex; justify-content:space-between;">
+              <span><strong>Resuelto por:</strong> 👤 ${ticket.resolved_by_username || 'Operador'}</span>
+              <span>${ticket.is_workaround ? '⚠️ Solución Temporal (Workaround)' : '🟢 Solución Definitiva'}</span>
+            </div>
+          </div>
+        ` : ''}
+
       </div>
-    `).join('');
+    `;
   } else if (AppState.activeDetailTab === 'audit') {
     const logs = ticket.audit_logs || [];
     if (logs.length === 0) {
       return `
-        <div style="text-align:center; color:#64748B; padding:16px 10px; font-size:11px; background:#F8FAFC; border-radius:6px; border:1px dashed #CBD5E1;">
-          <div style="font-size:16px; margin-bottom:2px;">📜</div>
-          <div style="font-weight:700; color:#334155;">Sin registros de auditoría adicionales</div>
-          <div style="font-size:10px; color:#94A3B8; margin-top:2px;">Los cambios de estado y reasignaciones se registrarán aquí automáticamente.</div>
+        <div style="text-align:center; color:#64748B; padding:30px 10px; font-size:12px; background:#FFFFFF; border-radius:10px; border:1px dashed #CBD5E1;">
+          <div style="font-size:24px; margin-bottom:6px;">📜</div>
+          <div style="font-weight:700; color:#334155;">Sin eventos de auditoría registrados</div>
+          <div style="font-size:11px; color:#94A3B8; margin-top:2px;">Los cambios de estado y derivaciones se registrarán aquí con sello de tiempo.</div>
         </div>
       `;
     }
-    return logs.map(l => `
-      <div style="margin-bottom:6px; padding:6px 10px; background:#FFFFFF; border-radius:6px; border:1px solid #E2E8F0; font-size:10.5px;">
-        <div style="display:flex; justify-content:space-between; color:#64748B;">
-          <strong>Campo: ${l.field_changed}</strong>
-          <span>${formatDateTime(l.created_at)}</span>
-        </div>
-        <div style="color:#1E293B; margin-top:2px;">${l.change_reason || 'Modificación de registro'} (por: 👤 ${l.changed_by_username})</div>
+
+    return `
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        ${logs.map(l => `
+          <div style="background:#FFFFFF; border:1px solid #E2E8F0; border-radius:8px; padding:12px 16px; display:flex; justify-content:space-between; align-items:flex-start; gap:12px;">
+            <div>
+              <div style="font-size:12.5px; font-weight:800; color:#0F172A;">
+                ${l.change_reason || `Modificación del campo: ${l.field_changed}`}
+              </div>
+              <div style="font-size:11.5px; color:#64748B; margin-top:2px;">
+                Operador: <strong>👤 ${l.changed_by_username}</strong>
+              </div>
+            </div>
+            <span style="font-size:11px; color:#94A3B8; font-family:'JetBrains Mono'; white-space:nowrap;">
+              ${formatDateTime(l.created_at)}
+            </span>
+          </div>
+        `).join('')}
       </div>
-    `).join('');
+    `;
+  } else if (AppState.activeDetailTab === 'kb') {
+    const suggestions = (AppState.kbArticles || []).filter(a => !ticket.platform_code || a.platform_code === ticket.platform_code || a.category === 'CLINICO').slice(0, 4);
+
+    return `
+      <div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
+          <div>
+            <div style="font-size:13.5px; font-weight:800; color:#0F172A;">Artículos & Procedimientos Homologados</div>
+            <div style="font-size:11.5px; color:#64748B;">Guías de resolución recomendadas para la plataforma <strong>${platName}</strong>.</div>
+          </div>
+          <button class="btn-action-primary" onclick="promoteCurrentTicketToKB('${ticket.id}')">
+            ➕ Crear Artículo a partir de este Ticket
+          </button>
+        </div>
+
+        ${suggestions.length === 0 ? `
+          <div style="text-align:center; padding:30px 10px; background:#FFFFFF; border-radius:10px; border:1px dashed #CBD5E1; color:#64748B;">
+            <div style="font-size:24px; margin-bottom:6px;">📚</div>
+            <div style="font-weight:700;">No hay artículos específicos aún para ${platName}</div>
+            <div style="font-size:11px; color:#94A3B8; margin-top:2px;">Puede crear el primer protocolo homologado para este módulo asistencial.</div>
+          </div>
+        ` : `
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:12px;">
+            ${suggestions.map(art => `
+              <div class="info-card-clean" style="cursor:pointer;" onclick="openViewArticleModal(${art.id})">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                  <span class="badge-tier badge-tier-n2" style="font-size:9.5px;">${art.category || 'General'}</span>
+                  <span style="font-size:10px; color:#64748B;">${art.version || 'v1.0'}</span>
+                </div>
+                <div style="font-size:13px; font-weight:800; color:#0F172A; line-height:1.3;">${art.title}</div>
+                <div style="font-size:11.5px; color:#64748B; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${art.content}</div>
+                <div style="font-size:11px; color:#00A896; font-weight:700; margin-top:auto;">Ver Protocolo Completo ➔</div>
+              </div>
+            `).join('')}
+          </div>
+        `}
+      </div>
+    `;
   }
+}
+
+function openResolveModal(ticketId) {
+  const modal = document.getElementById('modal-resolve-ticket');
+  if (!modal) return;
+  const t = AppState.selectedTicket;
+  if (!t) return;
+  
+  document.getElementById('resolve-ticket-id').value = ticketId;
+  const disp = document.getElementById('resolve-ticket-id-display');
+  if (disp) disp.textContent = ticketId;
+  
+  const rootEl = document.getElementById('resolve-root-cause');
+  if (rootEl) rootEl.value = t.root_cause || '';
+  
+  const notesEl = document.getElementById('resolve-notes');
+  if (notesEl) notesEl.value = t.resolution_notes || '';
+  
+  const workEl = document.getElementById('resolve-is-workaround');
+  if (workEl) workEl.checked = t.is_workaround || false;
+  
+  modal.classList.add('active');
+}
+
+function openReassignModal(ticketId) {
+  const modal = document.getElementById('modal-reassign-ticket');
+  if (!modal) return;
+  const t = AppState.selectedTicket;
+  if (!t) return;
+  
+  document.getElementById('reassign-ticket-id').value = ticketId;
+  const disp = document.getElementById('reassign-ticket-id-display');
+  if (disp) disp.textContent = ticketId;
+  
+  const selOp = document.getElementById('reassign-operator-select');
+  if (selOp) {
+    selOp.innerHTML = '<option value="">Seleccione operador disponible...</option>' + 
+      AppState.operators.map(op => `<option value="${op.username}" ${op.username === t.assignee_username ? 'selected' : ''}>${op.full_name} (${op.role} - ${op.support_level || 'N1'})</option>`).join('');
+  }
+  
+  const selLvl = document.getElementById('reassign-level-select');
+  if (selLvl) {
+    selLvl.value = t.support_level || 'N1';
+  }
+  
+  modal.classList.add('active');
 }
 
 async function submitComment(ticketId) {
@@ -3105,6 +2844,112 @@ function initModalListeners() {
         switchView('tickets');
       } catch (err) {
         showToast('Error al crear la solicitud: ' + (err.detail || 'Verifique los campos requeridos'), 'error');
+      }
+    });
+  }
+
+  // Modal Resolver Ticket (Senior UX v3.0)
+  const modalResolve = document.getElementById('modal-resolve-ticket');
+  const btnCloseResolve = document.getElementById('modal-resolve-close');
+  const btnCancelResolve = document.getElementById('btn-cancel-resolve-modal');
+  const formResolve = document.getElementById('form-resolve-ticket');
+
+  if (btnCloseResolve && modalResolve) {
+    btnCloseResolve.addEventListener('click', () => modalResolve.classList.remove('active'));
+  }
+  if (btnCancelResolve && modalResolve) {
+    btnCancelResolve.addEventListener('click', () => modalResolve.classList.remove('active'));
+  }
+  if (formResolve) {
+    formResolve.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const ticketId = document.getElementById('resolve-ticket-id').value;
+      const rootCause = document.getElementById('resolve-root-cause').value.trim();
+      const notes = document.getElementById('resolve-notes').value.trim();
+      const isWorkaround = document.getElementById('resolve-is-workaround').checked;
+      const publishKb = document.getElementById('resolve-publish-kb').checked;
+
+      if (notes.length < 8) {
+        showToast('La solución técnica debe contener al menos 8 caracteres explicativos', 'error');
+        return;
+      }
+
+      try {
+        await API.resolveTicket(ticketId, {
+          root_cause: rootCause || null,
+          resolution_notes: notes,
+          is_workaround: isWorkaround,
+          resolved_by_username: AppState.currentUser ? AppState.currentUser.username : 'admin'
+        });
+
+        if (publishKb && AppState.selectedTicket) {
+          try {
+            await API.createArticle({
+              title: `[Solución] ${AppState.selectedTicket.title}`,
+              category: 'General',
+              content: `1. CAUSA RAÍZ:\n${rootCause || 'Diagnóstico operativo'}\n\n2. PROCEDIMIENTO TÉCNICO:\n${notes}\n\n3. RESULTADO:\nSolución confirmada y homologada.`,
+              tags: `${ticketId}, resolucion, itil`,
+              version: 'v1.0',
+              changelog: `Creado desde ticket #${ticketId}`,
+              author_username: AppState.currentUser ? AppState.currentUser.username : 'admin'
+            });
+            showToast('📚 ¡Protocolo publicado también en la Base de Conocimiento!', 'success');
+          } catch (kberr) {
+            console.error('Error auto-publicando KB:', kberr);
+          }
+        }
+
+        modalResolve.classList.remove('active');
+        showToast(`✅ ¡Solicitud #${ticketId} marcada como solucionada!`, 'success');
+        await loadTickets();
+        await selectTicket(ticketId, true);
+        await loadDashboardMetrics(AppState.currentDashInst);
+      } catch (err) {
+        showToast('Error al resolver solicitud: ' + (err.detail || err.message || 'Verifique los datos'), 'error');
+      }
+    });
+  }
+
+  // Modal Reasignar Ticket (Senior UX v3.0)
+  const modalReassign = document.getElementById('modal-reassign-ticket');
+  const btnCloseReassign = document.getElementById('modal-reassign-close');
+  const btnCancelReassign = document.getElementById('btn-cancel-reassign-modal');
+  const formReassign = document.getElementById('form-reassign-ticket');
+
+  if (btnCloseReassign && modalReassign) {
+    btnCloseReassign.addEventListener('click', () => modalReassign.classList.remove('active'));
+  }
+  if (btnCancelReassign && modalReassign) {
+    btnCancelReassign.addEventListener('click', () => modalReassign.classList.remove('active'));
+  }
+  if (formReassign) {
+    formReassign.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const ticketId = document.getElementById('reassign-ticket-id').value;
+      const op = document.getElementById('reassign-operator-select').value;
+      const lvl = document.getElementById('reassign-level-select').value;
+      const reason = document.getElementById('reassign-reason').value.trim() || `Derivación a nivel ${lvl}`;
+
+      if (!op) {
+        showToast('Seleccione un operador para derivar la solicitud', 'error');
+        return;
+      }
+
+      try {
+        await API.assignTicket(ticketId, {
+          assignee_username: op,
+          support_level: lvl,
+          reason: reason,
+          changed_by_username: AppState.currentUser ? AppState.currentUser.username : 'admin'
+        });
+
+        modalReassign.classList.remove('active');
+        showToast(`👥 ¡Solicitud #${ticketId} reasignada a @${op} (${lvl})!`, 'success');
+        await loadTickets();
+        await selectTicket(ticketId, true);
+        await loadDashboardMetrics(AppState.currentDashInst);
+      } catch (err) {
+        showToast('Error al reasignar solicitud: ' + (err.detail || err.message || 'Error en servidor'), 'error');
       }
     });
   }

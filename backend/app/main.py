@@ -6,7 +6,7 @@ from app.api.endpoints import auth, tickets, masters, users
 app = FastAPI(
     title="HealthDesk Quantux API",
     description="Backend oficial del Sistema Centralizado de Gestión de Tickets de Soporte de Quantux Salud",
-    version="2.5.0"
+    version="3.0.0"
 )
 
 # CORS para permitir conexion desde la UI Cockpit

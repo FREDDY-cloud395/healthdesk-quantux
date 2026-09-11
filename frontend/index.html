@@ -1497,6 +1497,100 @@
     </div>
   </div>
 
+  <!-- MODAL RESOLUCIÓN TÉCNICA Y CIERRE (SENIOR UX) -->
+  <div class="modal-overlay" id="modal-resolve-ticket">
+    <div class="modal-box modal-box-senior" style="max-width: 540px;">
+      <div class="modal-header modal-header-senior">
+        <span class="modal-title" style="display: flex; align-items: center; gap: 8px;">
+          <span>✅ Registrar Solución Técnica y Resolver</span>
+        </span>
+        <button class="modal-close-btn" id="modal-resolve-close">&times;</button>
+      </div>
+
+      <form id="form-resolve-ticket">
+        <input type="hidden" id="resolve-ticket-id">
+        <div class="modal-body modal-body-senior">
+          
+          <div style="background: #ECFDF5; border: 1px solid #A7F3D0; border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; font-size: 11.5px; color: #065F46;">
+            <strong>Ticket #<span id="resolve-ticket-id-display"></span></strong>: Ingrese el diagnóstico definitivo y la solución aplicada para restablecer el servicio asistencial.
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="resolve-root-cause" style="font-weight: 700;">Diagnóstico / Causa Raíz Identificada</label>
+            <input type="text" id="resolve-root-cause" class="form-control" placeholder="Ej: Servicio de firma digital no sincronizado / Bloqueo de sesión..." style="font-size: 12.5px;">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="resolve-notes" style="font-weight: 800;">Solución Técnica Aplicada *</label>
+            <textarea id="resolve-notes" class="form-control" rows="4" placeholder="Describa el procedimiento realizado para solucionar la incidencia (mínimo 8 caracteres obligatorios)..." required minlength="8" style="font-size: 12.5px;"></textarea>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 12px; padding: 10px 12px; background: #F8FAFC; border-radius: 8px; border: 1px solid #E2E8F0;">
+            <label style="font-size: 12px; color: #334155; display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" id="resolve-is-workaround" style="width: 16px; height: 16px; accent-color: #00A896;">
+              <span><strong>Solución Temporal (Workaround)</strong> • Requiere pase a ingeniería para corrección definitiva.</span>
+            </label>
+
+            <label style="font-size: 12px; color: #0F766E; display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" id="resolve-publish-kb" checked style="width: 16px; height: 16px; accent-color: #00A896;">
+              <span><strong>📚 Publicar en Base de Conocimiento</strong> • Guardar esta solución como guía reutilizable.</span>
+            </label>
+          </div>
+
+        </div>
+
+        <div class="modal-footer modal-footer-senior">
+          <button type="button" class="btn-sec" id="btn-cancel-resolve-modal">Cancelar</button>
+          <button type="submit" class="btn-pri" id="btn-submit-resolve" style="background: #10B981;">✅ Confirmar y Resolver Ticket</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL REASIGNACIÓN DE OPERADOR Y NIVEL (SENIOR UX) -->
+  <div class="modal-overlay" id="modal-reassign-ticket">
+    <div class="modal-box modal-box-senior" style="max-width: 480px;">
+      <div class="modal-header modal-header-senior">
+        <span class="modal-title" style="display: flex; align-items: center; gap: 8px;">
+          <span>👤 Reasignar Operador & Nivel ITIL</span>
+        </span>
+        <button class="modal-close-btn" id="modal-reassign-close">&times;</button>
+      </div>
+
+      <form id="form-reassign-ticket">
+        <input type="hidden" id="reassign-ticket-id">
+        <div class="modal-body modal-body-senior">
+          
+          <div style="background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; font-size: 11.5px; color: #1E40AF;">
+            <strong>Ticket #<span id="reassign-ticket-id-display"></span></strong>: Asigne el caso al especialista adecuado según el nivel de atención requerido.
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="reassign-operator-select" style="font-weight: 800;">Operador Responsable *</label>
+            <select id="reassign-operator-select" class="form-control" required style="font-size: 12.5px;">
+              <option value="">Seleccione operador disponible...</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="reassign-level-select" style="font-weight: 800;">Nivel de Soporte ITIL</label>
+            <select id="reassign-level-select" class="form-control" style="font-size: 12.5px;">
+              <option value="N1">🔵 Nivel 1 (Triage y Mesa Central)</option>
+              <option value="N2">🟣 Nivel 2 (Especialista de Plataforma)</option>
+              <option value="N3">🔴 Nivel 3 (Ingeniería y Cloud / DBA)</option>
+            </select>
+          </div>
+
+        </div>
+
+        <div class="modal-footer modal-footer-senior">
+          <button type="button" class="btn-sec" id="btn-cancel-reassign-modal">Cancelar</button>
+          <button type="submit" class="btn-pri" id="btn-submit-reassign">Guardar Asignación</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- MODAL ESCALAMIENTO ITIL (N1 ➔ N2 ➔ N3) -->
   <div class="modal-overlay" id="modal-escalate-ticket">
     <div class="modal-box" style="max-width: 520px; border-radius: 12px;">

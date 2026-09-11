@@ -2370,3 +2370,548 @@ html, body {
   border-color: #86EFAC;
 }
 
+/* =============================================================================
+   HEALTHDESK QUANTUX v3.0 - SENIOR FRIENDLY & CLEAN DESIGN SYSTEM
+   ============================================================================= */
+
+/* 1. Cockpit Clean Layout */
+.cockpit-container {
+  display: grid !important;
+  grid-template-columns: 360px minmax(0, 1fr) !important;
+  gap: 14px !important;
+  padding: 12px 16px !important;
+  height: 100% !important;
+  overflow: hidden !important;
+  width: 100% !important;
+  background: #F8FAFC !important;
+}
+
+.cockpit-column {
+  min-width: 0 !important;
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  border-radius: 12px !important;
+  background: #FFFFFF !important;
+  border: 1px solid #E2E8F0 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* 2. Inbox Column Header */
+.inbox-header-clean {
+  padding: 12px 14px;
+  background: #FFFFFF;
+  border-bottom: 1px solid #E2E8F0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.inbox-title-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.inbox-title-text {
+  font-family: 'Outfit', sans-serif;
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #1E293B;
+  letter-spacing: 0.3px;
+}
+
+.inbox-count-pill {
+  background: #EFF6FF;
+  color: #2563EB;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 12px;
+  border: 1px solid #BFDBFE;
+}
+
+/* 3. Ticket Cards in Inbox */
+.ticket-list-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: #F8FAFC;
+}
+
+.ticket-card-clean {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-left: 4px solid #CBD5E1;
+  border-radius: 10px;
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+}
+
+.ticket-card-clean:hover {
+  transform: translateY(-1px);
+  border-color: #CBD5E1;
+  box-shadow: 0 4px 8px -1px rgba(0, 0, 0, 0.08);
+}
+
+.ticket-card-clean.selected {
+  background: #F0FDFA;
+  border-color: #00A896;
+  border-left-width: 5px;
+  box-shadow: 0 0 0 2px rgba(0, 168, 150, 0.15), 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+/* Priority Left Borders */
+.ticket-card-clean.prio-p1 { border-left-color: #EF4444 !important; }
+.ticket-card-clean.prio-p2 { border-left-color: #F59E0B !important; }
+.ticket-card-clean.prio-p3 { border-left-color: #3B82F6 !important; }
+.ticket-card-clean.prio-p4 { border-left-color: #64748B !important; }
+.ticket-card-clean.prio-p5 { border-left-color: #8B5CF6 !important; }
+
+.card-row-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-id-prio {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.prio-chip {
+  font-size: 10px;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.prio-chip-p1 { background: #FEF2F2; color: #DC2626; border: 1px solid #FECACA; }
+.prio-chip-p2 { background: #FFFBEB; color: #D97706; border: 1px solid #FDE68A; }
+.prio-chip-p3 { background: #EFF6FF; color: #2563EB; border: 1px solid #BFDBFE; }
+.prio-chip-p4 { background: #F8FAFC; color: #64748B; border: 1px solid #E2E8F0; }
+.prio-chip-p5 { background: #F5F3FF; color: #7C3AED; border: 1px solid #DDD6FE; }
+
+.ticket-id-clean {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748B;
+}
+
+.ticket-time-clean {
+  font-size: 10.5px;
+  color: #94A3B8;
+  font-weight: 600;
+}
+
+.ticket-subject-clean {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #1E293B;
+  line-height: 1.38;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card-row-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2px;
+  gap: 6px;
+}
+
+.card-tags-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  overflow: hidden;
+}
+
+.pill-tag {
+  font-size: 10.5px;
+  color: #475569;
+  background: #F1F5F9;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 110px;
+}
+
+.card-status-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+/* 4. Ticket Detail View & Tabs */
+.detail-container-clean {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  background: #FFFFFF;
+}
+
+.detail-header-card {
+  padding: 16px 22px 14px 22px;
+  background: #FFFFFF;
+  border-bottom: 1px solid #E2E8F0;
+  flex-shrink: 0;
+}
+
+.detail-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.detail-title-h1 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 17px;
+  font-weight: 800;
+  color: #0F172A;
+  line-height: 1.3;
+  margin-bottom: 8px;
+}
+
+.detail-meta-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 11.5px;
+  color: #475569;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.detail-meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.detail-actions-toolbar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  padding-top: 12px;
+  border-top: 1px solid #F1F5F9;
+}
+
+.btn-action-primary {
+  background: #00A896;
+  color: #FFFFFF;
+  border: none;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 7px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 2px rgba(0, 168, 150, 0.2);
+}
+
+.btn-action-primary:hover {
+  background: #028090;
+  transform: translateY(-1px);
+}
+
+.btn-action-secondary {
+  background: #F8FAFC;
+  color: #334155;
+  border: 1px solid #CBD5E1;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 7px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.btn-action-secondary:hover {
+  background: #E2E8F0;
+  color: #0F172A;
+}
+
+.btn-action-escalate {
+  background: #F5F3FF;
+  color: #7C3AED;
+  border: 1px solid #DDD6FE;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 7px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.btn-action-escalate:hover {
+  background: #7C3AED;
+  color: #FFFFFF;
+}
+
+.btn-action-resolve {
+  background: #ECFDF5;
+  color: #059669;
+  border: 1px solid #A7F3D0;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 7px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.btn-action-resolve:hover {
+  background: #10B981;
+  color: #FFFFFF;
+}
+
+/* 5. Detail Tabs Bar */
+.detail-tabs-bar {
+  display: flex;
+  background: #F8FAFC;
+  border-bottom: 1px solid #E2E8F0;
+  padding: 0 18px;
+  flex-shrink: 0;
+  gap: 4px;
+}
+
+.detail-tab-btn-clean {
+  padding: 12px 16px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748B;
+  background: transparent;
+  border: none;
+  border-bottom: 2.5px solid transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  transition: all 0.15s ease;
+}
+
+.detail-tab-btn-clean:hover {
+  color: #1E293B;
+  background: rgba(0,0,0,0.02);
+}
+
+.detail-tab-btn-clean.active {
+  color: #00A896;
+  border-bottom-color: #00A896;
+  font-weight: 800;
+}
+
+.detail-tab-content-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 24px;
+  background: #F8FAFC;
+}
+
+/* 6. Conversation Tab Stream */
+.chat-stream-clean {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.chat-bubble {
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  max-width: 85%;
+  position: relative;
+}
+
+.chat-bubble-requester {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  align-self: flex-start;
+  color: #1E293B;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+}
+
+.chat-bubble-agent {
+  background: #F0FDFA;
+  border: 1px solid #CCFBF1;
+  align-self: flex-end;
+  color: #0F766E;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+}
+
+.chat-bubble-internal {
+  background: #FFFBEB;
+  border: 1px dashed #FCD34D;
+  align-self: stretch;
+  max-width: 100%;
+  color: #92400E;
+}
+
+.chat-bubble-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  gap: 12px;
+}
+
+.chat-input-box {
+  background: #FFFFFF;
+  border: 1px solid #CBD5E1;
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+/* 7. Diagnostic & Medical Cards (2-Column Grid) */
+.diagnostic-grid-clean {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.info-card-clean {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 10px;
+  padding: 16px 18px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.info-card-clean-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  color: #0F172A;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #F1F5F9;
+}
+
+.info-field-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  gap: 8px;
+}
+
+.info-field-label {
+  color: #64748B;
+  font-weight: 600;
+}
+
+.info-field-val {
+  color: #1E293B;
+  font-weight: 700;
+  text-align: right;
+}
+
+/* 8. Modern Modals */
+.modal-overlay {
+  backdrop-filter: blur(4px);
+  background: rgba(15, 23, 42, 0.6) !important;
+}
+
+.modal-box-senior {
+  background: #FFFFFF;
+  border-radius: 14px;
+  width: 90%;
+  max-width: 540px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  animation: modalFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: scale(0.96) translateY(8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modal-header-senior {
+  background: #0F172A;
+  color: #FFFFFF;
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header-senior h3 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.modal-body-senior {
+  padding: 20px 22px;
+  background: #FFFFFF;
+  max-height: 75vh;
+  overflow-y: auto;
+}
+
+.modal-footer-senior {
+  padding: 14px 22px;
+  background: #F8FAFC;
+  border-top: 1px solid #E2E8F0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+

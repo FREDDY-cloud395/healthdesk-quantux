@@ -4,6 +4,28 @@ Todos los cambios notables en este proyecto están documentados en este archivo 
 
 ---
 
+## [3.0.0] - 2026-09-11 (Senior UX & Clean Usability Overhaul Edition)
+
+### ✨ Rediseño Integral de Experiencia de Usuario (Senior UX / UI)
+- **Bandeja de Tickets Despejada y Limpia (`.ticket-card-clean`):**
+  - Reemplazo de tarjetas sobrecargadas con insignias confusas por un diseño espacioso de 3 líneas jerárquicas.
+  - Acento visual de prioridad sutil en el borde izquierdo (`prio-p1` a `prio-p5`) con chips legibles y ordenados.
+  - Identificación instantánea de ID, título truncado a 2 líneas, plataforma, institución, tiempo transcurrido y estado del ticket.
+- **Detalle de Ticket Estructurado en Pestañas Especializadas:**
+  - **Cabecera Ejecutiva:** Título destacado, badges institucionales/plataforma, indicador de SLA con barra de tiempo restante y barra de acciones rápidas contextuales.
+  - **💬 Actividad & Notas:** Flujo de conversación limpio tipo chat que separa mensajes del solicitante y notas internas privadas con selector visual y caja de respuesta ergonómica inferior.
+  - **📋 Ficha Técnica & Diagnóstico:** Cuadrícula de 2 columnas con tarjetas de información técnica: Solicitante y Contacto, Plataforma y SLAs, Diagnóstico y Evidencias (con preview de adjuntos), y Solución Técnica Registrada.
+  - **📜 Historial & Trazabilidad:** Línea de tiempo cronológica inmutable con registro forense de todas las acciones y cambios de estado.
+  - **📚 Base de Conocimiento Sugerida:** Sugerencias automáticas de artículos y protocolos homologados según la plataforma afectada, más botón para promover a la KB.
+- **Modales de Acción Dedicados (Reducción de Carga Cognitiva):**
+  - `Modal Resolver Ticket (#modal-resolve-ticket)`: Captura limpia de causa raíz, procedimiento de solución, flag de workaround y opción de auto-publicación en la KB.
+  - `Modal Reasignar Ticket (#modal-reassign-ticket)`: Selector ergonómico de operador y nivel ITIL (N1, N2, N3) con motivo de derivación.
+  - `Modal Escalamiento ITIL (#modal-escalate-ticket)`: Flujo guiado para escalamientos entre niveles con visualización de SLA objetivo.
+- **Micro-interacciones y Animaciones Fluidas:**
+  - Transiciones suaves `fadeInUp` y `slideIn`, feedback háptico/visual en botones de acción y selector intuitivo de pestañas con `aria-selected`.
+
+---
+
 ## [2.5.0] - 2026-09-10 (ITIL Tiered Support & Multi-Helpdesk Edition)
 
 ### ✨ Novedades & Funcionalidades Principales
