@@ -691,69 +691,38 @@
         <section class="app-view active" id="view-tickets">
           <div class="users-board-wrapper">
             
-            <!-- Toolbar Principal de la Mesa de Ayuda (Fijo Permanente) -->
-            <div class="dashboard-toolbar" style="flex-direction: column; align-items: stretch; gap: 12px;">
-              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                <div>
-                  <h2 style="margin: 0; font-size: 15px; font-weight: 800; color: #0F172A; display: flex; align-items: center; gap: 8px;">
-                    <span>🎧 Centro de Gestión de Solicitudes y Tickets</span>
-                    <span class="user-badge-role role-badge-admin" id="tickets-badge-total" style="font-size: 11px;">143 Solicitudes</span>
-                  </h2>
-                  <div style="font-size: 11.5px; color: #64748B; margin-top: 2px;">
-                    Mesa de ayuda asistencial ITIL: Triage N1, Especialistas N2, Ingeniería N3 y SLA HealthTech.
-                  </div>
-                </div>
-                <div style="display: flex; gap: 8px; align-items: center;">
-                  <button type="button" class="btn-pri" onclick="openNewTicketModal()" style="display: flex; align-items: center; gap: 6px; font-size: 12px; padding: 7px 16px; border-radius: 8px; background: #00A896; border-color: #00A896; color: #FFF; font-weight: 800; cursor: pointer;">
-                    <span>➕</span> Dar de Alta Solicitud
-                  </button>
-                </div>
-              </div>
-
-              <!-- Píldoras de Filtro Rápido ITIL (Vistas Rápidas) -->
-              <div style="display: flex; gap: 6px; border-top: 1px solid #F1F5F9; padding-top: 10px; overflow-x: auto; align-items: center;">
-                <span style="font-size: 11px; font-weight: 800; color: #64748B; text-transform: uppercase; margin-right: 4px;">Filtrar:</span>
-                <button type="button" class="filter-tab-pill active" id="qv-all" onclick="selectQuickView('ALL')">Todos los Tickets</button>
-                <button type="button" class="filter-tab-pill" id="qv-mine" onclick="selectQuickView('MINE')">👤 Asignados a Mí <span class="qv-pill-count" id="qv-count-mine">0</span></button>
-                <button type="button" class="filter-tab-pill" id="qv-unassigned" onclick="selectQuickView('UNASSIGNED')">⚪ Sin Asignar <span class="qv-pill-count" id="qv-count-unassigned">0</span></button>
-                <button type="button" class="filter-tab-pill pill-p1-alert" id="qv-p1" onclick="selectQuickView('P1')">🚨 Críticos P1 <span class="qv-pill-count" id="qv-count-p1">0</span></button>
-                <button type="button" class="filter-tab-pill" id="qv-n1" onclick="selectQuickView('N1')">🔵 Nivel 1 • Guardia</button>
-                <button type="button" class="filter-tab-pill" id="qv-resolved" onclick="selectQuickView('RESOLVED')">✅ Resueltos / Archivados</button>
-              </div>
-
-              <!-- Fila Secundaria: Filtros Desplegables de Precisión -->
-              <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 6px 10px; margin-top: 2px;">
-                <select id="tkt-filter-inst" class="invgate-filter-select" onchange="onFilterChange()" title="Filtrar por Institución">
-                  <option value="">🏥 Todas las Instituciones</option>
-                </select>
-                <select id="tkt-filter-platform" class="invgate-filter-select" onchange="onFilterChange()" title="Filtrar por Plataforma / Módulo">
-                  <option value="">💻 Todas las Plataformas</option>
-                </select>
-                <select id="tkt-filter-level" class="invgate-filter-select" onchange="onFilterChange()" title="Filtrar por Nivel de Soporte">
-                  <option value="">⚡ Todos los Niveles</option>
-                  <option value="N1">N1 • Mesa Guardia</option>
-                  <option value="N2">N2 • Especialistas</option>
-                  <option value="N3">N3 • Ingeniería</option>
-                </select>
-                <select id="tkt-filter-status" class="invgate-filter-select" onchange="onFilterChange()" title="Filtrar por Estado Operativo">
-                  <option value="ACTIVE">📊 Activos (En gestión)</option>
-                  <option value="ALL">📊 Todos (Inc. Resueltos)</option>
-                  <option value="NUEVO">🟢 Nuevos</option>
-                  <option value="ASIGNADO">🔵 Asignados</option>
-                  <option value="EN_CURSO">🟡 En Curso</option>
-                  <option value="RESUELTO">✅ Resueltos</option>
-                  <option value="CERRADO">🔒 Cerrados</option>
-                </select>
-                <select id="tkt-filter-period" class="invgate-filter-select" onchange="onFilterChange()" title="Filtrar por Período de Creación">
-                  <option value="all">📅 Todas las Fechas</option>
-                  <option value="today">📅 Hoy (Guardia)</option>
-                  <option value="7days">📅 Últimos 7 Días</option>
-                  <option value="30days">📅 Últimos 30 Días</option>
-                </select>
-                <button type="button" class="invgate-btn-tool" id="btn-refresh-tickets" onclick="resetBoardFilters()" title="Restablecer filtros y refrescar bandeja" style="padding: 0 10px; height: 32px; display: flex; align-items: center; justify-content: center; background: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 6px; cursor: pointer; transition: all 0.2s ease;">
-                  <svg id="svg-refresh-icon" viewBox="0 0 24 24" fill="none" stroke="#334155" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px; transition: transform 0.45s ease;"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
-                </button>
-              </div>
+            <!-- Barra de Filtros Limpia de Mesa de Ayuda -->
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 8px; padding: 8px 12px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
+              <select id="tkt-filter-inst" class="invgate-filter-select" onchange="onFilterChange()" title="Filtrar por Institución">
+                <option value="">🏥 Todas las Instituciones</option>
+              </select>
+              <select id="tkt-filter-platform" class="invgate-filter-select" onchange="onFilterChange()" title="Filtrar por Plataforma / Módulo">
+                <option value="">💻 Todas las Plataformas</option>
+              </select>
+              <select id="tkt-filter-level" class="invgate-filter-select" onchange="onFilterChange()" title="Filtrar por Nivel de Soporte">
+                <option value="">⚡ Todos los Niveles</option>
+                <option value="N1">N1 • Mesa Guardia</option>
+                <option value="N2">N2 • Especialistas</option>
+                <option value="N3">N3 • Ingeniería</option>
+              </select>
+              <select id="tkt-filter-status" class="invgate-filter-select" onchange="onFilterChange()" title="Filtrar por Estado Operativo">
+                <option value="ACTIVE">📊 Activos (En gestión)</option>
+                <option value="ALL">📊 Todos (Inc. Resueltos)</option>
+                <option value="NUEVO">🟢 Nuevos</option>
+                <option value="ASIGNADO">🔵 Asignados</option>
+                <option value="EN_CURSO">🟡 En Curso</option>
+                <option value="RESUELTO">✅ Resueltos</option>
+                <option value="CERRADO">🔒 Cerrados</option>
+              </select>
+              <select id="tkt-filter-period" class="invgate-filter-select" onchange="onFilterChange()" title="Filtrar por Período de Creación">
+                <option value="all">📅 Todas las Fechas</option>
+                <option value="today">📅 Hoy (Guardia)</option>
+                <option value="7days">📅 Últimos 7 Días</option>
+                <option value="30days">📅 Últimos 30 Días</option>
+              </select>
+              <button type="button" class="invgate-btn-tool" id="btn-refresh-tickets" onclick="resetBoardFilters()" title="Restablecer filtros y refrescar bandeja" style="padding: 0 10px; height: 32px; display: flex; align-items: center; justify-content: center; background: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 6px; cursor: pointer; transition: all 0.2s ease;">
+                <svg id="svg-refresh-icon" viewBox="0 0 24 24" fill="none" stroke="#334155" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px; transition: transform 0.45s ease;"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+              </button>
             </div>
 
             <!-- Tabla Estilizada con Encabezado Azul Marino y Scroll Exclusivo de Filas -->
