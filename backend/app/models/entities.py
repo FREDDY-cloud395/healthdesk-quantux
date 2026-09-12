@@ -13,6 +13,7 @@ class TicketStatus(str, Enum):
     NUEVO = "NUEVO"
     ASIGNADO = "ASIGNADO"
     EN_CURSO = "EN_CURSO"
+    EN_ESPERA = "EN_ESPERA"
     RESUELTO = "RESUELTO"
     CERRADO = "CERRADO"
 

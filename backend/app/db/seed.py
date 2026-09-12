@@ -4,19 +4,328 @@ from app.db.session import engine, init_db
 from app.models.entities import (
     User, UserRole, Platform, Institution, Ticket,
     TicketStatus, TicketType, ImpactLevel, UrgencyLevel,
-    PriorityLevel, SupportLevel, TicketComment, TicketAuditLog
+    PriorityLevel, SupportLevel, TicketComment, TicketAuditLog,
+    KBArticle, KBArticleHistory
 )
+
+def seed_kb_articles(session: Session):
+    existing_kb = session.exec(select(KBArticle)).first()
+    if existing_kb:
+        print("KB Articles already seeded.")
+        return
+
+    print("Seeding Knowledge Base (Base de Conocimiento) Articles...")
+    articles = [
+        # --- 1. RECETA DIGITAL ---
+        KBArticle(
+            title="Protocolo de Contingencia: Firma Digital Remota PKI en Receta Electrónica",
+            category="Receta Digital",
+            tags="receta, firma digital, pki, token, dispensa, farmacia, anmat",
+            version="v2.1",
+            changelog="Actualización de certificados raíz ANMAT y soporte HSM en la nube",
+            view_count=142,
+            source_ticket_id="TICK-202608-0001",
+            author_username="admin",
+            content="""### 1. Diagnóstico del Problema
+Cuando el servicio de firma digital PKI responde con error `ERR_PKI_CERT_EXPIRED` o `ERR_HSM_TIMEOUT`, las recetas emitidas quedan en estado 'Borrador Sin Firma' y no pueden ser dispensadas en la red de farmacias.
+
+### 2. Procedimiento de Resolución Técnica
+1. **Verificación del Servicio HSM:** Ejecutar en la consola de administración el comando de diagnóstico `curl -k https://pki.quantux.salud.ar/health/ready`.
+2. **Conmutación por Falla (Failover):** Si el cluster principal presenta latencia > 1500ms, habilitar el HSM secundario en `Configuración > Integraciones PKI > Modo Respaldo`.
+3. **Renovación de Certificados:** Cargar el nuevo paquete de Autoridad Certificante Raíz (.p12) validado por ANMAT / Ley 25.506.
+4. **Firma Masiva de Pendientes:** Seleccionar las recetas en cola y presionar 'Firmar y Despachar Lote'. Se enviará el token criptográfico al correo del paciente y la receta quedará validada con código QR inmutable."""
+        ),
+        KBArticle(
+            title="Resolución de Rechazos de Dispensa en Red Farmacéutica FACAF / COFA",
+            category="Receta Digital",
+            tags="dispensa, validacion, vademecum, codigos troquel, trazabilidad, cefa",
+            version="v1.4",
+            changelog="Integración de nuevos códigos GTIN/Troquel para medicamentos de alto costo",
+            view_count=89,
+            source_ticket_id="TICK-202608-0002",
+            author_username="soporte",
+            content="""### 1. Causa Frecuente
+El 90% de los rechazos en punto de farmacia se originan en discrepancias entre el código de troquel prescripto y el catálogo actualizado del financiador (OSDE, Swiss Medical, Galeno, PAMI).
+
+### 2. Pasos de Normalización
+1. **Verificación de Cobertura:** Comprobar que el principio activo (DCI) esté homologado en el Vademécum Unificado Nacional.
+2. **Resincronización de Catálogo:** Ir a `Plataformas > Receta Electrónica > Sincronizar Vademécum COFA`.
+3. **Emisión de Duplicado Rectificado:** Si la receta fue rechazada físicamente, anular la orden previa ingresando el motivo 'Discrepancia de Presentación' y generar una nueva orden con el GTIN comercial homologado."""
+        ),
+
+        # --- 2. TELEMEDICINA ---
+        KBArticle(
+            title="Optimización WebRTC y Manejo de Baja Conectividad en Videoconsultas",
+            category="Telemedicina",
+            tags="webrtc, video, audio, coturn, stun, turn, ancho de banda, 4g",
+            version="v2.0",
+            changelog="Incorporación de codecs adaptativos VP9/Opus y fallback automático a TURN TCP:443",
+            view_count=215,
+            source_ticket_id="TICK-202608-0003",
+            author_username="dnavarro",
+            content="""### 1. Escenario Clínico
+En zonas con conectividad intermitente (latencia > 250ms o pérdida de paquetes > 5%), la sesión WebRTC puede experimentar congelamiento de video o pérdida de audio bidireccional.
+
+### 2. Medidas de Mitigación Inmediatas
+1. **Fallback Dinámico de Codec:** La plataforma conmuta automáticamente a compresión VP9 y audio mono Opus a 24 kbps.
+2. **Forzar Canal TURN Seguro:** Si el firewall institucional bloquea UDP (puertos 49152-65535), el sistema conmuta a `turn.quantux.salud.ar:443` vía TCP/TLS.
+3. **Modo Solo Audio:** Si el ancho de banda desciende de 128 kbps, se pausa la pista de video preservando la comunicación clínica sin cortar la llamada."""
+        ),
+        KBArticle(
+            title="Configuración de Sala de Espera Virtual, Triage y Notificaciones Push",
+            category="Telemedicina",
+            tags="sala de espera, push, websocket, notificaciones, fcm, turnos, triage",
+            version="v1.2",
+            changelog="Implementación de canal de contingencia vía SMS para pacientes sin app activa",
+            view_count=78,
+            author_username="soporte",
+            content="""### 1. Flujo de Atención Virtual
+El paciente ingresa a la sala de espera web tras completar el cuestionario de triage de síntomas. El médico visualiza la lista clasificada por escala Manchester (Rojo/Amarillo/Verde).
+
+### 2. Reglas de Notificación
+1. **Alerta 10 minutos antes:** Notificación Push y correo recordatorio con enlace directo de acceso.
+2. **Llamado del Profesional:** Cuando el médico pulsa 'Llamar Paciente', se dispara un ping WebSocket con tono audible y vibración.
+3. **Canal SMS de Respaldo:** Si no se detecta conexión activa en 60 segundos, se despacha un SMS automático con el enlace de conexión rápida."""
+        ),
+
+        # --- 3. HISTORIA CLÍNICA ---
+        KBArticle(
+            title="Procedimiento de Bloqueo Criptográfico y Sellado de Tiempo en HCE",
+            category="Historia Clínica",
+            tags="hce, sellado de tiempo, tsa, rfc 3161, ley 25506, auditoria, inmutabilidad",
+            version="v3.0",
+            changelog="Homologación con Autoridad Certificante Raíz y Ley 25.506 de Firma Digital",
+            view_count=167,
+            source_ticket_id="TICK-202608-0004",
+            author_username="admin",
+            content="""### 1. Requisitos Legales y de Seguridad
+Conforme a la Ley 26.529 de Derechos del Paciente y Ley 25.506 de Firma Digital, todo registro clínico debe ser inmutable y contar con sellado de tiempo criptográfico (Timestamping Authority - RFC 3161).
+
+### 2. Protocolo de Bloqueo
+1. **Cierre de Evolución:** Al guardar la consulta, el motor genera un hash SHA-256 del contenido clínico.
+2. **Firma y Estampillado:** Se solicita la firma digital del profesional y la estampilla de tiempo del servidor TSA central.
+3. **Auditoría Pericial:** Toda rectificación posterior genera una adenda encadenada sin modificar el registro original."""
+        ),
+        KBArticle(
+            title="Reconciliación de Identidad de Pacientes y Fusión de Registros en MPI",
+            category="Historia Clínica",
+            tags="mpi, pacientes, dni, fusion registros, homonimia, duplicados, renaper",
+            version="v1.5",
+            changelog="Algoritmo probabilístico de coincidencia Jaro-Winkler para detección de duplicados",
+            view_count=94,
+            author_username="soporte",
+            content="""### 1. Problema de Homonimia y Duplicados
+Ocurre cuando un paciente es registrado con errores en su DNI, fecha de nacimiento o cambio de apellido conyugal, generando historias clínicas fragmentadas.
+
+### 2. Procedimiento de Fusión Segura (Merge)
+1. **Búsqueda en MPI:** Ingresar a `Historia Clínica > Herramientas MPI > Detección de Duplicados`.
+2. **Validación RENAPER:** Validar los datos biométricos contra el padrón nacional de personas.
+3. **Ejecución de Merge:** Seleccionar el registro 'Master' (destino) y el registro 'Secundario' (origen). El sistema fusiona evoluciones, alergias y estudios diagnósticos manteniendo el registro de auditoría del operador."""
+        ),
+
+        # --- 4. CONTINGENCIAS ---
+        KBArticle(
+            title="Plan de Continuidad Operativa (BCP): Caída de Enlace Sanatorial y Modo Offline",
+            category="Contingencias",
+            tags="bcp, offline, contingencia, caida enlace, sqlite local, resincronizacion",
+            version="v2.3",
+            changelog="Prueba semestral de desastre simulado superada con éxito (RTO < 5 min)",
+            view_count=312,
+            source_ticket_id="TICK-202608-0006",
+            author_username="admin",
+            content="""### 1. Activación del Protocolo BCP
+Ante la pérdida de enlace a Internet en guardias médicas o centros ambulatorios, los puestos de trabajo conmutan automáticamente a la base de datos local SQLite cifrada en memoria (AES-256).
+
+### 2. Operación en Modo Autónomo
+- **Atención de Guardia:** Se pueden registrar evoluciones de emergencia y prescribir medicamentos básicos.
+- **Identificación:** Se valida la identidad con la base local de afiliados cacheados.
+
+### 3. Recuperación y Resincronización
+Al restablecerse la conectividad WAN:
+1. El agente de sincronización en segundo plano envía las atenciones firmadas en lotes de 20 registros.
+2. Se resuelve cualquier colisión de turnos mediante política 'Last Write Wins con Adenda Humana'.
+3. Se genera el informe de conciliación de contingencia."""
+        ),
+        KBArticle(
+            title="Protocolo de Mitigación y Notificación ante Incidentes de Ciberseguridad",
+            category="Contingencias",
+            tags="seguridad, breach, hipaa, proteccion de datos, ciso, aislamiento, soc",
+            version="v1.1",
+            changelog="Alineación con directivas de ciberseguridad para infraestructura crítica de salud",
+            view_count=129,
+            author_username="admin",
+            content="""### 1. Detección Temprana
+Si el sistema SIEM / SOC detecta patrones anómalos de extracción masiva de datos clínicos o intentos de fuerza bruta en cuentas de médicos:
+
+### 2. Acciones Inmediatas (Fase de Contención)
+1. **Aislamiento de Sesión:** Revocación instantánea de todos los tokens JWT emitidos para la cuenta afectada.
+2. **Bloqueo de IP:** Incorporación automática de la dirección IP de origen en la lista negra del WAF.
+3. **Preservación de Evidencias:** Extracción de logs inmutables de acceso y auditoría de base de datos para peritaje forense."""
+        ),
+
+        # --- 5. FACTURACIÓN Y PAGOS ---
+        KBArticle(
+            title="Conciliación de Copagos Online y Recuperación de Transacciones Huérfanas",
+            category="Facturación y Pagos",
+            tags="copagos, pasarela, mercado pago, stripe, devoluciones, conciliacion",
+            version="v1.8",
+            changelog="Webhook idempotente y reintento con backoff exponencial",
+            view_count=104,
+            source_ticket_id="TICK-202608-0007",
+            author_username="soporte",
+            content="""### 1. Transacción Huérfana
+Se produce cuando el paciente abona el copago en la pasarela de pagos pero cierra la ventana antes de redirigir al portal, dejando el turno en estado 'Pendiente de Confirmación'.
+
+### 2. Conciliación Automática y Manual
+1. **Webhook de Pasarela:** El sistema procesa el evento `payment.succeeded` de forma asíncrona mediante un endpoint idempotente.
+2. **Comprobación Manual:** Si el paciente presenta el comprobante de pago bancario, ingresar a `Copagos > Transacciones Pendientes > Forzar Conciliación por ID de Operación`.
+3. El turno se confirma inmediatamente y se emite la factura electrónica AFIP / CAE."""
+        ),
+        KBArticle(
+            title="Configuración de Matrices de Copago y Coseguros Multi-Convenio",
+            category="Facturación y Pagos",
+            tags="obras sociales, prepagas, nomenclador, aranceles, copago porcentual",
+            version="v1.3",
+            changelog="Actualización de tablas de aranceles Nomenclador Nacional 2026",
+            view_count=65,
+            author_username="soporte",
+            content="""### 1. Estructura de Aranceles
+El módulo de facturación permite parametrizar reglas de copago fijas, porcentuales o mixtas según el plan del afiliado (ej: Plan Clásico vs. Plan Premium).
+
+### 2. Carga de Reglas
+1. Dirigirse a `Configuración > Reglas de Facturación > Nuevo Convenio`.
+2. Seleccionar la Institución Sanitaria y el Financiador.
+3. Definir los aranceles por código de práctica médica (consulta médica general, especialista, telemedicina guardia).
+4. Guardar y verificar con la calculadora de cotización en tiempo real."""
+        ),
+
+        # --- 6. INTEROPERABILIDAD ---
+        KBArticle(
+            title="Guía de Integración FHIR R4: Recursos Patient, Encounter, MedicationRequest",
+            category="Interoperabilidad",
+            tags="fhir, hl7, r4, json, api rest, interoperabilidad, bus de salud, snomed",
+            version="v2.4",
+            changelog="Soporte de perfiles de la Red Nacional de Salud Digital e IPS (International Patient Summary)",
+            view_count=188,
+            source_ticket_id="TICK-202608-0005",
+            author_username="admin",
+            content="""### 1. Arquitectura REST FHIR R4
+Quantux ServiceDesk expone un servidor FHIR R4 conforme al estándar HL7 Internacional para la interoperabilidad semántica entre prestadores de salud.
+
+### 2. Endpoints Principales
+- `GET /fhir/r4/Patient?identifier=DNI|12345678`: Consulta de datos demográficos.
+- `POST /fhir/r4/Encounter`: Registro de evento de atención clínica o guardia.
+- `POST /fhir/r4/MedicationRequest`: Prescripción electrónica estandarizada con códigos SNOMED CT.
+- `GET /fhir/r4/DiagnosticReport?patient={id}`: Consulta de informes de laboratorio e imágenes.
+
+### 3. Autenticación y Seguridad
+Todas las peticiones requieren token OAuth2 / SMART on FHIR con scopes clínicos granulares (`patient/*.read`, `encounter/*.write`)."""
+        ),
+        KBArticle(
+            title="Mapeo y Transformación de Mensajes HL7 v2.5.1 (ADT, ORM, ORU) con Mirth Connect",
+            category="Interoperabilidad",
+            tags="hl7 v2, mirth connect, nextgen, adt a08, orm o01, oru r01, mllp, his",
+            version="v1.6",
+            changelog="Canales MLLP con TLS 1.3 y reintentos automáticos en cola Dead-Letter",
+            view_count=117,
+            author_username="dnavarro",
+            content="""### 1. Canales de Integración Hospitalaria (HIS/LIS/RIS)
+Para instituciones con sistemas legados, el ServiceDesk incluye canales de integración MLLP basados en Mirth Connect.
+
+### 2. Mapeo de Eventos
+- **ADT^A04 / ADT^A08:** Admisión y actualización demográfica de pacientes.
+- **ORM^O01:** Solicitud de estudios complementarios y órdenes de interconsulta.
+- **ORU^R01:** Retorno de resultados diagnósticos estructurados.
+
+### 3. Procedimiento ante Errores de Segmento
+Si el mensaje es rechazado con `AR` (Application Reject) por falta del campo `PID-3` o `PV1-2`, inspeccionar la cola de mensajes en `Herramientas > Visor MLLP` y aplicar la regla de transformación JavaScript correspondiente."""
+        ),
+
+        # --- 7. CONSULTORIO DIGITAL ---
+        KBArticle(
+            title="Configuración de Agenda Médica Inteligente, Sobreturnos y Cancelaciones",
+            category="Consultorio Digital",
+            tags="agenda, turnos, consultorio, sobreturnos, cancelacion automatica, whatsapp",
+            version="v1.7",
+            changelog="Recordatorios automáticos vía WhatsApp con confirmación interactiva 1-click",
+            view_count=155,
+            author_username="soporte",
+            content="""### 1. Gestión Eficiente de la Demanda Asistencial
+El módulo de Consultorio Digital permite configurar intervalos de consulta según especialidad (ej: 15 min para medicina general, 45 min para salud mental).
+
+### 2. Funcionalidades Clave
+1. **Reglas de Sobreturnos:** Límite máximo de 2 sobreturnos por bloque horario para evitar demoras en sala de espera.
+2. **Confirmación Automatizada:** Despacho de mensaje WhatsApp 24h antes del turno. Si el paciente presiona 'Cancelar', el turno se libera automáticamente para la lista de espera prioritaria.
+3. **Bloqueos Preventivos:** Habilitación de franjas de investigación o ateneos clínicos con 1 solo clic."""
+        ),
+        KBArticle(
+            title="Emisión de Certificados Médicos Digitales y Reposo Laboral con QR Inmutable",
+            category="Consultorio Digital",
+            tags="certificados medicos, reposo laboral, qr, validacion web, firma digital",
+            version="v1.2",
+            changelog="Portal público de verificación de autenticidad de certificados sin credenciales",
+            view_count=98,
+            author_username="soporte",
+            content="""### 1. Emisión Segura y Validez Legal
+Los certificados médicos de reposo laboral, aptitud física o recetas de uso prolongado cuentan con firma digital homologada y código QR de validación inmutable.
+
+### 2. Pasos para el Profesional
+1. Desde la Historia Clínica, hacer clic en `Documentos > Nuevo Certificado Médico`.
+2. Seleccionar el tipo de documento (Reposo Laboral / Apto Físico / Certificado de Tratamiento).
+3. Ingresar los días de reposo y diagnóstico (codificado según CIE-10).
+4. Firmar con token digital. El paciente recibe el PDF firmado en su app y los empleadores pueden escanear el QR para verificar su autenticidad sin necesidad de ingresar al sistema."""
+        ),
+    ]
+
+    for a in articles:
+        session.add(a)
+
+    session.commit()
+
+    # Generar registros de historial para simular versionado profesional
+    for a in articles:
+        session.add(KBArticleHistory(
+            article_id=a.id,
+            version="v1.0",
+            title=a.title,
+            category=a.category,
+            content=a.content,
+            author_username="admin",
+            tags=a.tags,
+            changelog="Creación inicial del protocolo y homologación con el equipo médico",
+            source_ticket_id=a.source_ticket_id,
+            created_at=datetime.utcnow()
+        ))
+        if a.version != "v1.0":
+            session.add(KBArticleHistory(
+                article_id=a.id,
+                version=a.version,
+                title=a.title,
+                category=a.category,
+                content=a.content,
+                author_username=a.author_username,
+                tags=a.tags,
+                changelog=a.changelog or "Actualización de versión",
+                source_ticket_id=a.source_ticket_id,
+                created_at=datetime.utcnow()
+            ))
+
+    session.commit()
+    print(f"Successfully seeded {len(articles)} Knowledge Base articles with full history!")
 
 def run_seed():
     init_db()
     with Session(engine) as session:
-        # 1. VERIFICAR SI YA HAY DATOS
+        # Asegurar siempre que los artículos de KB estén sembrados
+        seed_kb_articles(session)
+
+        # 1. VERIFICAR SI YA HAY DATOS DE USUARIOS
         existing_user = session.exec(select(User)).first()
         if existing_user:
-            print("Database already seeded.")
+            print("Users and base entities already seeded.")
             return
 
-        print("Seeding Quantux HealthDesk Database...")
+        print("Seeding Quantux HealthDesk Base Entities...")
 
         # 2. USUARIOS BASE (3 ROLES CON NIVELES ITIL)
         users = [

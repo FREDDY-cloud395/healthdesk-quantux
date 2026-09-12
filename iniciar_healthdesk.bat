@@ -18,8 +18,8 @@ if %ERRORLEVEL% NEQ 0 (
 echo [OK] Python detectado correctamente.
 echo.
 echo [2/3] Liberando puerto 8000 en caso de instancias colgadas previas...
-for /f "tokens=5" %%a in ('netstat -aon ^| findstr :8000 ^| findstr LISTENING') do (
-    echo [INFO] Cerrando proceso previo en puerto 8000 (PID %%a)...
+for /f "tokens=5" %%a in ('netstat -aon 2^>nul ^| findstr :8000 ^| findstr LISTENING') do (
+    echo [INFO] Cerrando proceso previo en puerto 8000 [PID %%a]
     taskkill /F /PID %%a >nul 2>&1
 )
 echo [OK] Puerto 8000 disponible.

@@ -3,742 +3,157 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tablero de Control Scrumban — HealthDesk Quantux</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <title>DOC-SB-000 • Tablero Scrumban Interactivo • Quantux HealthDesk v3.2.0-UAT</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
   <style>
-    :root {
-      --q-navy: #1E3A5F;
-      --q-navy-dark: #142842;
-      --q-navy-soft: #2D4B73;
-      --q-teal: #00C4B4;
-      --q-teal-hover: #00A89A;
-      --q-teal-light: #E0F7F5;
-      --q-bg: #F1F5F9;
-      --q-card-bg: #FFFFFF;
-      --q-border: #E2E8F0;
-      --q-text-main: #1E293B;
-      --q-text-muted: #64748B;
-      --q-accent-amber: #D97706;
-      --q-accent-amber-bg: #FEF3C7;
-      --q-accent-green: #16A34A;
-      --q-accent-green-bg: #DCFCE7;
-      --q-accent-blue: #2563EB;
-      --q-accent-blue-bg: #DBEAFE;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Inter', -apple-system, sans-serif;
-      background-color: var(--q-bg);
-      color: var(--q-text-main);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      overflow-x: hidden;
-    }
-
-    /* HEADER */
-    header {
-      background: var(--q-navy);
-      color: #FFFFFF;
-      padding: 12px 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 4px 12px rgba(30, 58, 95, 0.15);
-      position: sticky;
-      top: 0;
-      z-index: 50;
-    }
-
-    .brand-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .brand-logo svg {
-      width: 38px;
-      height: 38px;
-    }
-
-    .brand-titles h1 {
-      font-family: 'Montserrat', sans-serif;
-      font-size: 18px;
-      font-weight: 800;
-      letter-spacing: -0.3px;
-      line-height: 1.1;
-    }
-
-    .brand-titles h1 span {
-      color: var(--q-teal);
-    }
-
-    .brand-titles p {
-      font-size: 11px;
-      color: #94A3B8;
-      font-weight: 500;
-    }
-
-    .header-badges {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-
-    .status-pill {
-      background: rgba(0, 196, 180, 0.15);
-      border: 1px solid var(--q-teal);
-      color: var(--q-teal);
-      font-size: 11px;
-      font-weight: 700;
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-family: 'Montserrat', sans-serif;
-    }
-
-    .timebox-pill {
-      background: rgba(255, 255, 255, 0.1);
-      color: #E2E8F0;
-      font-size: 11px;
-      font-weight: 600;
-      padding: 4px 12px;
-      border-radius: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-    }
-
-    /* METRICS STRIP */
-    .metrics-bar {
-      background: #FFFFFF;
-      border-bottom: 1px solid var(--q-border);
-      padding: 10px 24px;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 16px;
-    }
-
-    .metric-card {
-      display: flex;
-      flex-direction: column;
-      border-left: 3px solid var(--q-teal);
-      padding-left: 10px;
-    }
-
-    .metric-label {
-      font-size: 10.5px;
-      font-weight: 600;
-      color: var(--q-text-muted);
-      text-transform: uppercase;
-      font-family: 'Montserrat', sans-serif;
-    }
-
-    .metric-val {
-      font-size: 18px;
-      font-weight: 800;
-      color: var(--q-navy);
-      font-family: 'Montserrat', sans-serif;
-    }
-
-    .metric-val small {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--q-text-muted);
-    }
-
-    /* CONTROLS BAR */
-    .controls-bar {
-      padding: 12px 24px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      align-items: center;
-      justify-content: space-between;
-      background: #F8FAFC;
-      border-bottom: 1px solid var(--q-border);
-    }
-
-    .filters-group {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      align-items: center;
-    }
-
-    .filter-item {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--q-navy);
-    }
-
-    select, input[type="text"] {
-      background: #FFFFFF;
-      border: 1px solid var(--q-border);
-      border-radius: 6px;
-      padding: 6px 10px;
-      font-size: 12px;
-      color: var(--q-text-main);
-      font-family: inherit;
-      outline: none;
-      transition: border 0.2s;
-    }
-
-    select:focus, input[type="text"]:focus {
-      border-color: var(--q-teal);
-      box-shadow: 0 0 0 2px rgba(0, 196, 180, 0.2);
-    }
-
-    .btn {
-      background: var(--q-teal);
-      color: var(--q-navy-dark);
-      font-family: 'Montserrat', sans-serif;
-      font-weight: 700;
-      font-size: 11.5px;
-      padding: 7px 14px;
-      border-radius: 6px;
-      border: none;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.2s;
-    }
-
-    .btn:hover {
-      background: var(--q-teal-hover);
-      transform: translateY(-1px);
-    }
-
-    .btn-secondary {
-      background: #FFFFFF;
-      color: var(--q-navy);
-      border: 1px solid var(--q-border);
-    }
-
-    .btn-secondary:hover {
-      background: #F1F5F9;
-      color: var(--q-navy-dark);
-    }
-
-    /* BOARD CONTAINER */
-    .board-container {
-      flex: 1;
-      padding: 16px 24px;
-      display: grid;
-      grid-template-columns: repeat(5, minmax(280px, 1fr));
-      gap: 14px;
-      overflow-x: auto;
-      align-items: flex-start;
-    }
-
-    /* COLUMN */
-    .board-col {
-      background: #E2E8F0;
-      border-radius: 8px;
-      display: flex;
-      flex-direction: column;
-      max-height: calc(100vh - 210px);
-      min-height: 500px;
-    }
-
-    .col-header {
-      padding: 12px 14px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 2px solid transparent;
-      border-top-left-radius: 8px;
-      border-top-right-radius: 8px;
-      background: #FFFFFF;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    }
-
-    .col-backlog .col-header { border-top: 3px solid #64748B; }
-    .col-sprint .col-header { border-top: 3px solid var(--q-accent-blue); }
-    .col-in-progress .col-header { border-top: 3px solid var(--q-accent-amber); }
-    .col-qa .col-header { border-top: 3px solid #8B5CF6; }
-    .col-done .col-header { border-top: 3px solid var(--q-accent-green); }
-
-    .col-title {
-      font-family: 'Montserrat', sans-serif;
-      font-size: 12.5px;
-      font-weight: 800;
-      color: var(--q-navy);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .col-count {
-      background: var(--q-bg);
-      color: var(--q-navy);
-      font-size: 11px;
-      font-weight: 700;
-      padding: 2px 8px;
-      border-radius: 12px;
-      font-family: 'JetBrains Mono', monospace;
-    }
-
-    .col-cards-list {
-      padding: 10px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      flex: 1;
-    }
-
-    /* CARD */
-    .kanban-card {
-      background: var(--q-card-bg);
-      border-radius: 6px;
-      padding: 12px;
-      border: 1px solid #CBD5E1;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
-      cursor: grab;
-      transition: all 0.2s ease;
-      position: relative;
-    }
-
-    .kanban-card:hover {
-      box-shadow: 0 6px 12px rgba(30, 58, 95, 0.1);
-      transform: translateY(-2px);
-      border-color: var(--q-teal);
-    }
-
-    .card-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 6px;
-    }
-
-    .card-id {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--q-navy);
-      background: #F1F5F9;
-      padding: 2px 6px;
-      border-radius: 4px;
-    }
-
-    .card-sp {
-      background: var(--q-teal-light);
-      color: var(--q-navy);
-      border: 1px solid var(--q-teal);
-      font-size: 10.5px;
-      font-weight: 800;
-      padding: 1px 7px;
-      border-radius: 10px;
-      font-family: 'Montserrat', sans-serif;
-    }
-
-    .card-title {
-      font-family: 'Montserrat', sans-serif;
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--q-navy);
-      margin-bottom: 6px;
-      line-height: 1.3;
-    }
-
-    .card-epic {
-      font-size: 10px;
-      font-weight: 600;
-      color: #475569;
-      margin-bottom: 8px;
-      display: inline-block;
-      background: #F8FAFC;
-      border: 1px solid var(--q-border);
-      padding: 2px 6px;
-      border-radius: 4px;
-    }
-
-    .card-meta {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 10.5px;
-      color: var(--q-text-muted);
-      border-top: 1px solid #F1F5F9;
-      padding-top: 8px;
-      margin-top: 6px;
-    }
-
-    .card-sprint-tag {
-      font-weight: 700;
-      color: var(--q-navy-soft);
-    }
-
-    .card-actions {
-      display: flex;
-      gap: 4px;
-    }
-
-    .card-btn-move {
-      background: #F1F5F9;
-      border: 1px solid #CBD5E1;
-      border-radius: 4px;
-      padding: 2px 6px;
-      font-size: 10px;
-      font-weight: 700;
-      cursor: pointer;
-      color: var(--q-navy);
-    }
-
-    .card-btn-move:hover {
-      background: var(--q-teal);
-      color: #FFFFFF;
-      border-color: var(--q-teal);
-    }
-
-    /* FOOTER */
-    footer {
-      background: #FFFFFF;
-      border-top: 1px solid var(--q-border);
-      padding: 8px 24px;
-      font-size: 11px;
-      color: var(--q-text-muted);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+    body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background-color: #f8f9fa; color: #212529; }
+    .doc-container { max-width: 1200px; margin: 30px auto; background: #fff; padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+    .badge-uat { background: #0d6efd; color: #fff; font-weight: 600; }
+    .badge-tqm { background: #198754; color: #fff; font-weight: 600; }
+    h1, h2, h3, h4 { color: #0f172a; font-weight: 700; margin-top: 1.5rem; margin-bottom: 1rem; }
+    h1 { border-bottom: 3px solid #0d6efd; padding-bottom: 10px; }
+    h2 { border-bottom: 1px solid #dee2e6; padding-bottom: 8px; margin-top: 2rem; }
+    table { width: 100%; margin: 20px 0; border-collapse: collapse; }
+    th { background: #0f172a; color: #fff; padding: 12px; font-weight: 600; }
+    td { padding: 10px 12px; border-bottom: 1px solid #e2e8f0; vertical-align: middle; }
+    tr:nth-child(even) { background-color: #f8fafc; }
+    .callout { border-left: 5px solid #0d6efd; padding: 15px 20px; background: #f0f7ff; border-radius: 4px; margin: 20px 0; }
+    .callout-success { border-left-color: #198754; background: #f0fdf4; }
+    .callout-warning { border-left-color: #f59e0b; background: #fffbeb; }
+    .doc-header-card { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #fff; padding: 25px; border-radius: 8px; margin-bottom: 30px; }
+    .mermaid { background: #fff; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px; margin: 20px 0; }
   </style>
 </head>
 <body>
 
-  <!-- HEADER -->
-  <header>
-    <div class="brand-header">
-      <div class="brand-logo">
-        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="44" cy="44" r="38" fill="#00C4B4"/>
-          <path d="M34 34L54 54M54 34L34 54" stroke="white" stroke-width="6.5" stroke-linecap="round"/>
-          <path d="M68 68L86 86" stroke="#1E3A5F" stroke-width="11" stroke-linecap="round"/>
-        </svg>
-      </div>
-      <div class="brand-titles">
-        <h1>HealthDesk <span>Quantux</span> • Tablero de Control Scrumban</h1>
-        <p>Sistema Centralizado de Gestión de Tickets de Soporte | Línea Base Oficial MVP</p>
-      </div>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow-sm">
+  <div class="container-fluid px-4">
+    <a class="navbar-brand fw-bold text-info" href="/cockpit">
+      <i class="fas fa-heartbeat me-2"></i>Quantux HealthDesk <span class="badge bg-primary ms-1">v3.2.0-UAT</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item"><a class="nav-link" href="/cockpit"><i class="fas fa-desktop me-1"></i> Cockpit</a></li>
+        <li class="nav-item"><a class="nav-link" href="/scrumban"><i class="fas fa-columns me-1"></i> Tablero Scrumban</a></li>
+        <li class="nav-item"><a class="nav-link" href="/plan"><i class="fas fa-project-diagram me-1"></i> Plan de Gestión (DOC-01)</a></li>
+        <li class="nav-item"><a class="nav-link" href="/especificacion"><i class="fas fa-list-check me-1"></i> Especificación (DOC-02)</a></li>
+        <li class="nav-item"><a class="nav-link" href="/arquitectura"><i class="fas fa-sitemap me-1"></i> Arquitectura (DOC-03)</a></li>
+        <li class="nav-item"><a class="nav-link" href="/pruebas"><i class="fas fa-vial-circle-check me-1"></i> Pruebas TQM (DOC-04)</a></li>
+        <li class="nav-item"><a class="nav-link" href="/manual"><i class="fas fa-book-medical me-1"></i> Manual Operativo (DOC-05)</a></li>
+        <li class="nav-item"><a class="nav-link" href="/presentacion"><i class="fas fa-chalkboard-teacher me-1"></i> Presentación Ejecutiva (DOC-06)</a></li>
+      </ul>
+      <span class="navbar-text text-white">
+        <span class="badge bg-success"><i class="fas fa-check-circle me-1"></i> Zero Defects TQM (14/14)</span>
+      </span>
     </div>
+  </div>
+</nav>
 
-    <div class="header-badges">
-      <span class="status-pill" style="background: #10B981; border-color: #059669;">● Sprint 5: Estabilización, Manual Operativo & Entrega Final 100%</span>
-      <span class="timebox-pill">Timebox: 5 Semanas (5 Sprints) • Proyecto Completado</span>
-    </div>
-  </header>
+<div class="container doc-container">
 
-  <!-- METRICS STRIP -->
-  <section class="metrics-bar">
-    <div class="metric-card">
-      <span class="metric-label">Progreso del Backlog</span>
-      <span class="metric-val" id="metric-progress" style="color: #10B981;">78 <small>/ 78 SP (100%)</small></span>
-    </div>
-    <div class="metric-card">
-      <span class="metric-label">Historias & Casos QA</span>
-      <span class="metric-val" id="metric-stories">35 UHs + 7 QA <small>(Todas Done)</small></span>
-    </div>
-    <div class="metric-card">
-      <span class="metric-label">Sprints Completados</span>
-      <span class="metric-val">Sprints 1 al 5 <small>100% Finalizados</small></span>
-    </div>
-    <div class="metric-card">
-      <span class="metric-label">Esfuerzo Ejecutado</span>
-      <span class="metric-val">185 / 185 hs <small>dedicación total</small></span>
-    </div>
-    <div class="metric-card">
-      <span class="metric-label">Solution Owner</span>
-      <span class="metric-val" style="font-size: 14px; margin-top: 4px;">Freddy Cortés <small>(AF)</small></span>
-    </div>
-  </section>
-
-  <!-- CONTROLS & FILTERS -->
-  <section class="controls-bar">
-    <div class="filters-group">
-      <div class="filter-item">
-        <label for="filter-sprint">Sprint:</label>
-        <select id="filter-sprint" onchange="renderBoard()">
-          <option value="ALL" selected>Todos los Sprints (1 a 5) — 100%</option>
-          <option value="Sprint 1">Sprint 1 (Planificación & Docs)</option>
-          <option value="Sprint 2">Sprint 2 (Backend Core & DB)</option>
-          <option value="Sprint 3">Sprint 3 (Frontend Consola Central)</option>
-          <option value="Sprint 4">Sprint 4 (Integración E2E & QA)</option>
-          <option value="Sprint 5">Sprint 5 (Estabilización & Cierre)</option>
-        </select>
-      </div>
-
-      <div class="filter-item">
-        <label for="filter-epic">Épica:</label>
-        <select id="filter-epic" onchange="renderBoard()">
-          <option value="ALL">Todas las Épicas (EP-01 a EP-06 + QA)</option>
-          <option value="EP-01">EP-01: Acceso, Roles y Permisos (7 SP)</option>
-          <option value="EP-02">EP-02: Tickets y Datos (15 SP)</option>
-          <option value="EP-03">EP-03: Bandeja y Asignación (10 SP)</option>
-          <option value="EP-04">EP-04: Ciclo Estados & Solución (14 SP)</option>
-          <option value="EP-05">EP-05: Seguimiento e Historial (9 SP)</option>
-          <option value="EP-06">EP-06: Consola Operativa y Maestros (25 SP)</option>
-          <option value="QA-E2E">QA-E2E: Pruebas Funcionales & Auditoría (17 SP)</option>
-        </select>
-      </div>
-
-      <div class="filter-item">
-        <label for="search-input">Buscar:</label>
-        <input type="text" id="search-input" placeholder="UH, título o palabra clave..." oninput="renderBoard()">
-      </div>
-    </div>
-
+<div class="doc-header-card">
+  <div class="d-flex justify-content-between align-items-center">
     <div>
-      <button class="btn btn-secondary" onclick="exportToCSV()">📥 Exportar CSV (Excel / Jira / Trello)</button>
-      <button class="btn btn-secondary" onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
-      <button class="btn btn-secondary" onclick="resetDefaultTasks()">🔄 Restaurar Base</button>
-      <button class="btn" onclick="saveState()">💾 Guardar</button>
+      <span class="badge bg-primary text-uppercase me-2">DOC-SB-000</span>
+      <span class="badge bg-success text-uppercase">v3.2.0-UAT • Tablero Scrumban Vivo</span>
+      <h2 class="text-white mt-2 mb-1">TABLERO SCRUMBAN INTERACTIVO DE HISTORIAS DE USUARIO</h2>
+      <p class="text-light mb-0">Gestión Visual de Flujo de Trabajo • 8 Épicas • 38 Historias de Usuario • 91 Story Points</p>
     </div>
-  </section>
-
-  <!-- KANBAN BOARD -->
-  <main class="board-container">
-
-    <!-- COL 1: BACKLOG -->
-    <div class="board-col col-backlog">
-      <div class="col-header">
-        <div class="col-title">📋 Product Backlog</div>
-        <span class="col-count" id="count-backlog">0</span>
-      </div>
-      <div class="col-cards-list" id="list-backlog"></div>
+    <div class="text-end">
+      <span class="badge bg-light text-dark p-2 fw-bold">100% Homologado UAT</span>
     </div>
+  </div>
+</div>
 
-    <!-- COL 2: SPRINT BACKLOG -->
-    <div class="board-col col-sprint">
-      <div class="col-header">
-        <div class="col-title">🎯 Sprint Backlog</div>
-        <span class="col-count" id="count-sprint">0</span>
-      </div>
-      <div class="col-cards-list" id="list-sprint"></div>
+<div class="row g-3 mb-4">
+  <div class="col-md-3">
+    <div class="card bg-secondary text-white p-3 text-center shadow-sm">
+      <h6>BACKLOG PRIORIZADO</h6>
+      <h3 class="mb-0">0</h3>
+      <small>En espera de análisis</small>
     </div>
-
-    <!-- COL 3: EN CURSO -->
-    <div class="board-col col-in-progress">
-      <div class="col-header">
-        <div class="col-title">⚡ En Curso (Doing)</div>
-        <span class="col-count" id="count-progress">0</span>
-      </div>
-      <div class="col-cards-list" id="list-progress"></div>
+  </div>
+  <div class="col-md-3">
+    <div class="card bg-info text-white p-3 text-center shadow-sm">
+      <h6>ANÁLISIS & DISEÑO CON IA</h6>
+      <h3 class="mb-0">0</h3>
+      <small>Modelado formal</small>
     </div>
-
-    <!-- COL 4: TESTING / QA -->
-    <div class="board-col col-qa">
-      <div class="col-header">
-        <div class="col-title">🧪 Testing / Validación</div>
-        <span class="col-count" id="count-qa">0</span>
-      </div>
-      <div class="col-cards-list" id="list-qa"></div>
+  </div>
+  <div class="col-md-3">
+    <div class="card bg-warning text-dark p-3 text-center shadow-sm">
+      <h6>DESARROLLO & PRUEBAS TQM</h6>
+      <h3 class="mb-0">0</h3>
+      <small>En validación de ciclos</small>
     </div>
-
-    <!-- COL 5: DONE -->
-    <div class="board-col col-done">
-      <div class="col-header">
-        <div class="col-title">✅ Completado (Done)</div>
-        <span class="col-count" id="count-done">0</span>
-      </div>
-      <div class="col-cards-list" id="list-done"></div>
+  </div>
+  <div class="col-md-3">
+    <div class="card bg-success text-white p-3 text-center shadow-sm">
+      <h6>CERTIFICADO UAT (DONE)</h6>
+      <h3 class="mb-0">38</h3>
+      <small>Zero Defects (91 SP)</small>
     </div>
+  </div>
+</div>
 
-  </main>
+<div class="card p-3 shadow-sm">
+  <h5 class="fw-bold mb-3"><i class="fas fa-tasks me-2"></i>Historias de Usuario Certificadas en UAT (38 UHs / 91 SP)</h5>
+  <div class="row g-2">
+    <!-- Tarjetas de Historias -->
+    <div class="col-md-4"><div class="p-2 border rounded bg-light small"><strong>UH-01 (3 SP):</strong> Login multi-rol y control RBAC <span class="badge bg-success float-end">OK</span></div></div>
+    <div class="col-md-4"><div class="p-2 border rounded bg-light small"><strong>UH-02 (2 SP):</strong> Listado de usuarios para Admin <span class="badge bg-success float-end">OK</span></div></div>
+    <div class="col-md-4"><div class="p-2 border rounded bg-light small"><strong>UH-03 (2 SP):</strong> Auditoría de inicio de sesión <span class="badge bg-success float-end">OK</span></div></div>
+    <div class="col-md-4"><div class="p-2 border rounded bg-light small"><strong>UH-04 (1 SP):</strong> Encriptación y resguardo seguro <span class="badge bg-success float-end">OK</span></div></div>
+    <div class="col-md-4"><div class="p-2 border rounded bg-light small"><strong>UH-05 (3 SP):</strong> Alta correlativa TICK-YYYYMM-XXXX <span class="badge bg-success float-end">OK</span></div></div>
+    <div class="col-md-4"><div class="p-2 border rounded bg-light small"><strong>UH-06 (3 SP):</strong> Catálogo 9 Plataformas Clínicas <span class="badge bg-success float-end">OK</span></div></div>
+    <div class="col-md-4"><div class="p-2 border rounded bg-light small"><strong>UH-07 (3 SP):</strong> Catálogo 14 Clientes Sanitarios <span class="badge bg-success float-end">OK</span></div></div>
+    <div class="col-md-4"><div class="p-2 border rounded bg-light small"><strong>UH-08 (2 SP):</strong> Tipificación Incidente/Requerimiento <span class="badge bg-success float-end">OK</span></div></div>
+    <div class="col-md-4"><div class="p-2 border rounded bg-light small"><strong>UH-09 (3 SP):</strong> Matriz ITIL P=IxU determinística <span class="badge bg-success float-end">OK</span></div></div>
+    <div class="col-md-4"><div class="p-2 border rounded bg-light small"><strong>UH-10 (2 SP):</strong> Carga de adjuntos y evidencias <span class="badge bg-success float-end">OK</span></div></div>
+    <div class="col-md-4"><div class="p-2 border rounded bg-light small"><strong>UH-11 (2 SP):</strong> Edición permitida en estado NUEVO <span class="badge bg-success float-end">OK</span></div></div>
+    <div class="col-md-4"><div class="p-2 border rounded bg-light small"><strong>UH-12 (3 SP):</strong> Bandeja Cockpit con filtros dinámicos <span class="badge bg-success float-end">OK</span></div></div>
+    <div class="col-md-4"><div class="p-2 border rounded bg-light small"><strong>UH-13 (2 SP):</strong> Indicador semáforo SLA de criticidad <span class="badge bg-success float-end">OK</span></div></div>
+    <div class="col-md-4"><div class="p-2 border rounded bg-light small"><strong>UH-14 (3 SP):</strong> Autoasignación 'Tomar Ticket' <span class="badge bg-success float-end">OK</span></div></div>
+    <div class="col-md-4"><div class="p-2 border rounded bg-light small"><strong>UH-15 (3 SP):</strong> Escalamiento jerárquico N1->N2->N3 <span class="badge bg-success float-end">OK</span></div></div>
+    <div class="col-md-4"><div class="p-2 border rounded bg-light small"><strong>UH-16 (2 SP):</strong> Reasignación entre operadores <span class="badge bg-success float-end">OK</span></div></div>
+    <div class="col-md-4"><div class="p-2 border rounded bg-light small"><strong>UH-17 (3 SP):</strong> Transición a EN_CURSO y diagnóstico <span class="badge bg-success float-end">OK</span></div></div>
+    <div class="col-md-4"><div class="p-2 border rounded bg-light small"><strong>UH-18 (3 SP):</strong> Pausa operativa (Estado EN_ESPERA) <span class="badge bg-success float-end">OK</span></div></div>
+    <div class="col-md-4"><div class="p-2 border rounded bg-light small"><strong>UH-19 (3 SP):</strong> Guardrail de solución >= 8 caracteres <span class="badge bg-success float-end">OK</span></div></div>
+    <div class="col-md-4"><div class="p-2 border rounded bg-light small"><strong>UH-20 (3 SP):</strong> Marcación de Workaround provisorio <span class="badge bg-success float-end">OK</span></div></div>
+    <div class="col-md-4"><div class="p-2 border rounded bg-light small"><strong>UH-21 (2 SP):</strong> Transición efectiva a RESUELTO <span class="badge bg-success float-end">OK</span></div></div>
+    <div class="col-md-4"><div class="p-2 border rounded bg-light small"><strong>UH-22 (3 SP):</strong> Cierre con conformidad e inmutabilidad <span class="badge bg-success float-end">OK</span></div></div>
+    <div class="col-md-4"><div class="p-2 border rounded bg-light small"><strong>UH-23 (3 SP):</strong> Comentarios públicos bidireccionales <span class="badge bg-success float-end">OK</span></div></div>
+    <div class="col-md-4"><div class="p-2 border rounded bg-light small"><strong>UH-24 (3 SP):</strong> Notas internas confidenciales RBAC <span class="badge bg-success float-end">OK</span></div></div>
+    <div class="col-md-4"><div class="p-2 border rounded bg-light small"><strong>UH-25 (2 SP):</strong> Trazabilidad de adjuntos en mensajes <span class="badge bg-success float-end">OK</span></div></div>
+    <div class="col-md-4"><div class="p-2 border rounded bg-light small"><strong>UH-26 (2 SP):</strong> Notificaciones automáticas por email <span class="badge bg-success float-end">OK</span></div></div>
+    <div class="col-md-4"><div class="p-2 border rounded bg-light small"><strong>UH-27 (2 SP):</strong> Caja Negra de auditoría forense <span class="badge bg-success float-end">OK</span></div></div>
+    <div class="col-md-4"><div class="p-2 border rounded bg-light small"><strong>UH-28 (1 SP):</strong> Ordenamiento por columnas en Cockpit <span class="badge bg-success float-end">OK</span></div></div>
+    <div class="col-md-4"><div class="p-2 border rounded bg-light small"><strong>UH-29 (1 SP):</strong> Panel de métricas rápidas de bandeja <span class="badge bg-success float-end">OK</span></div></div>
+    <div class="col-md-4"><div class="p-2 border rounded bg-light small"><strong>UH-30 (2 SP):</strong> Búsqueda en texto libre de bandeja <span class="badge bg-success float-end">OK</span></div></div>
+    <div class="col-md-4"><div class="p-2 border rounded bg-light small"><strong>UH-31 (2 SP):</strong> Alta y administración de operadores <span class="badge bg-success float-end">OK</span></div></div>
+    <div class="col-md-4"><div class="p-2 border rounded bg-light small"><strong>UH-32 (1 SP):</strong> Configuración global del ServiceDesk <span class="badge bg-success float-end">OK</span></div></div>
+    <div class="col-md-4"><div class="p-2 border rounded bg-light small"><strong>UH-33 (3 SP):</strong> Consulta y filtros en Base de Conocimiento <span class="badge bg-success float-end">OK</span></div></div>
+    <div class="col-md-4"><div class="p-2 border rounded bg-light small"><strong>UH-34 (3 SP):</strong> Publicación de artículos clínicos v1.0 <span class="badge bg-success float-end">OK</span></div></div>
+    <div class="col-md-4"><div class="p-2 border rounded bg-light small"><strong>UH-35 (2 SP):</strong> Versionado inmutable v1.1 con changelog <span class="badge bg-success float-end">OK</span></div></div>
+    <div class="col-md-4"><div class="p-2 border rounded bg-light small"><strong>UH-36 (2 SP):</strong> Auto-publicación de KB desde ticket <span class="badge bg-success float-end">OK</span></div></div>
+    <div class="col-md-4"><div class="p-2 border rounded bg-light small"><strong>UH-37 (3 SP):</strong> Tablero de dotación mesas N1/N2/N3 <span class="badge bg-success float-end">OK</span></div></div>
+    <div class="col-md-4"><div class="p-2 border rounded bg-light small"><strong>UH-38 (3 SP):</strong> Exportación forense de tickets en CSV <span class="badge bg-success float-end">OK</span></div></div>
+  </div>
+</div>
 
-  <!-- FOOTER -->
-  <footer>
-    <span>Quantux Salud • HealthDesk | Tablero de Control de Proyecto y Gestión de Flujo</span>
-    <span>Comité: Paula Sbarbati • Diego Martínez • Carolina Brizuela • Nicolás Sánchez</span>
-  </footer>
-
-  <script>
-    // BASE DE DATOS ACTUALIZADA CON SPRINT 1, 2 Y 3 COMPLETADOS + SPRINT 4 QA E2E
-    const INITIAL_BACKLOG = [
-      // SPRINT 1 & 2: DOCUMENTACIÓN Y ARQUITECTURA
-      { id: "DOC-01", title: "Plan de Gestión del Proyecto (DOC-MGT-001)", epic: "Gestión", sp: 5, sprint: "Sprint 1", status: "done", discipline: "AF / PM" },
-      { id: "DOC-02", title: "Especificación Funcional y Backlog (DOC-REQ-002)", epic: "Gestión", sp: 8, sprint: "Sprint 1", status: "done", discipline: "AF" },
-      { id: "DOC-03", title: "Arquitectura y Diseño Técnico (DOC-ARC-003)", epic: "Gestión", sp: 5, sprint: "Sprint 2", status: "done", discipline: "Tech / AF" },
-      { id: "DOC-MAP", title: "User Story Mapping y Flujo de 5 Pasos", epic: "Gestión", sp: 3, sprint: "Sprint 1", status: "done", discipline: "AF / UX" },
-
-      // EP-01: Acceso y Roles (7 SP)
-      { id: "UH-01", title: "Autenticación de Usuarios por Rol", epic: "EP-01", sp: 2, sprint: "Sprint 2", status: "done", discipline: "Backend" },
-      { id: "UH-02", title: "Control de Permisos por Perfil (RBAC)", epic: "EP-01", sp: 2, sprint: "Sprint 2", status: "done", discipline: "Backend" },
-      { id: "UH-03", title: "Auditoría Básica de Acceso", epic: "EP-01", sp: 2, sprint: "Sprint 3", status: "done", discipline: "Backend" },
-      { id: "UH-04", title: "Cierre de Sesión Seguro", epic: "EP-01", sp: 1, sprint: "Sprint 3", status: "done", discipline: "Frontend" },
-
-      // EP-02: Tickets y Datos (15 SP)
-      { id: "UH-05", title: "Formulario Unificado de Alta de Ticket", epic: "EP-02", sp: 3, sprint: "Sprint 2", status: "done", discipline: "Backend API" },
-      { id: "UH-06", title: "Selección de Plataforma / Categoría", epic: "EP-02", sp: 2, sprint: "Sprint 2", status: "done", discipline: "Backend" },
-      { id: "UH-07", title: "Vinculación con Cliente Institucional", epic: "EP-02", sp: 2, sprint: "Sprint 2", status: "done", discipline: "Backend" },
-      { id: "UH-08", title: "Tipificación de la Solicitud", epic: "EP-02", sp: 2, sprint: "Sprint 2", status: "done", discipline: "Backend" },
-      { id: "UH-09", title: "Asignación de Prioridad (P = I × U)", epic: "EP-02", sp: 3, sprint: "Sprint 2", status: "done", discipline: "Backend / UX" },
-      { id: "UH-10", title: "Adjunto de Evidencias", epic: "EP-02", sp: 2, sprint: "Sprint 3", status: "done", discipline: "Frontend" },
-      { id: "UH-11", title: "Consulta y Edición Básica de Ticket", epic: "EP-02", sp: 1, sprint: "Sprint 3", status: "done", discipline: "Frontend" },
-
-      // EP-03: Bandeja y Asignación (10 SP)
-      { id: "UH-12", title: "Bandeja de Entrada de Solicitudes", epic: "EP-03", sp: 3, sprint: "Sprint 2", status: "done", discipline: "Backend API" },
-      { id: "UH-13", title: "Asignación de Responsable de Soporte", epic: "EP-03", sp: 2, sprint: "Sprint 2", status: "done", discipline: "Backend" },
-      { id: "UH-14", title: "Autoasignación Directa ('Tomar Ticket')", epic: "EP-03", sp: 1, sprint: "Sprint 3", status: "done", discipline: "Frontend" },
-      { id: "UH-15", title: "Derivación a Nivel de Soporte (N2/N3)", epic: "EP-03", sp: 2, sprint: "Sprint 3", status: "done", discipline: "Backend" },
-      { id: "UH-16", title: "Reasignación de Responsable con Motivo", epic: "EP-03", sp: 2, sprint: "Sprint 4", status: "done", discipline: "Backend / QA" },
-
-      // EP-04: Ciclo Estados y Solución (14 SP)
-      { id: "UH-17", title: "Transición de Estado a 'En Curso'", epic: "EP-04", sp: 2, sprint: "Sprint 2", status: "done", discipline: "Backend" },
-      { id: "UH-18", title: "Pausa de Gestión por Info Pendiente", epic: "EP-04", sp: 2, sprint: "Sprint 2", status: "done", discipline: "Backend" },
-      { id: "UH-19", title: "Registro Obligatorio de Solución", epic: "EP-04", sp: 3, sprint: "Sprint 2", status: "done", discipline: "Backend" },
-      { id: "UH-20", title: "Registro de Solución Provisoria (Workaround)", epic: "EP-04", sp: 3, sprint: "Sprint 4", status: "done", discipline: "Backend / UX" },
-      { id: "UH-21", title: "Transición a Estado 'Resuelto'", epic: "EP-04", sp: 2, sprint: "Sprint 2", status: "done", discipline: "Backend" },
-      { id: "UH-22", title: "Transición a Estado 'Cerrado'", epic: "EP-04", sp: 2, sprint: "Sprint 4", status: "done", discipline: "Backend / QA" },
-
-      // EP-05: Seguimiento e Historial (9 SP)
-      { id: "UH-23", title: "Comentarios Públicos de Seguimiento", epic: "EP-05", sp: 2, sprint: "Sprint 4", status: "done", discipline: "Frontend / Backend" },
-      { id: "UH-24", title: "Notas Internas Privadas para Soporte", epic: "EP-05", sp: 2, sprint: "Sprint 4", status: "done", discipline: "Backend" },
-      { id: "UH-25", title: "Avisos Básicos de Notificación", epic: "EP-05", sp: 2, sprint: "Sprint 4", status: "done", discipline: "Frontend" },
-      { id: "UH-26", title: "Aviso Destacado de Ticket Resuelto", epic: "EP-05", sp: 1, sprint: "Sprint 4", status: "done", discipline: "Frontend" },
-      { id: "UH-27", title: "Historial y Trazabilidad de Cambios", epic: "EP-05", sp: 2, sprint: "Sprint 4", status: "done", discipline: "Backend / QA" },
-
-      // EP-06: Operación en Consola Unificada (Panel 3 Col) y Tablas Maestras (20 SP)
-      { id: "UH-28", title: "Consola Operativa en Pantalla Única (3 Columnas)", epic: "EP-06", sp: 6, sprint: "Sprint 3", status: "done", discipline: "UX / Frontend" },
-      { id: "UH-29", title: "Selector Rápido de Rol en 1 Clic", epic: "EP-06", sp: 3, sprint: "Sprint 3", status: "done", discipline: "Frontend" },
-      { id: "UH-30", title: "Listado, Búsqueda y Filtros Rápidos", epic: "EP-06", sp: 4, sprint: "Sprint 3", status: "done", discipline: "Frontend" },
-      { id: "UH-31", title: "Administración de Usuarios y Roles", epic: "EP-06", sp: 4, sprint: "Sprint 2", status: "done", discipline: "Backend API" },
-      { id: "UH-32", title: "Administración de Categorías y Prioridades", epic: "EP-06", sp: 3, sprint: "Sprint 2", status: "done", discipline: "Backend API" },
-
-      // PRUEBAS FUNCIONALES & QA E2E (SPRINT 4)
-      { id: "QA-E2E-01", title: "Validación E2E: Flujo Solicitante y Cálculo P=IxU", epic: "QA-E2E", sp: 3, sprint: "Sprint 4", status: "done", discipline: "QA Funcional" },
-      { id: "QA-E2E-02", title: "Validación E2E: Triage Soporte N2 y Notas Internas", epic: "QA-E2E", sp: 3, sprint: "Sprint 4", status: "done", discipline: "QA Funcional" },
-      { id: "QA-E2E-03", title: "Validación E2E: Guardrail Resolución >= 8 car y Workaround", epic: "QA-E2E", sp: 2, sprint: "Sprint 4", status: "done", discipline: "QA Funcional" },
-      { id: "QA-E2E-04", title: "Validación E2E: Cierre Definitivo e Inmutabilidad FSM", epic: "QA-E2E", sp: 2, sprint: "Sprint 4", status: "done", discipline: "QA Funcional" },
-      { id: "QA-E2E-05", title: "Validación E2E: Caja Negra de Auditoría Sanitaria", epic: "QA-E2E", sp: 3, sprint: "Sprint 4", status: "done", discipline: "QA / Compliance" },
-      { id: "QA-E2E-06", title: "Validación E2E: Integridad 9 Plataformas y 14 Clientes", epic: "QA-E2E", sp: 2, sprint: "Sprint 4", status: "done", discipline: "QA Funcional" },
-      { id: "QA-E2E-07", title: "Benchmark de Rendimiento API (<15ms) y Concurrencia", epic: "QA-E2E", sp: 2, sprint: "Sprint 4", status: "done", discipline: "Performance" },
-
-      // SPRINT 5: ESTABILIZACIÓN, MANUAL OPERATIVO Y CIERRE (78/78 SP 100%)
-      { id: "DOC-05", title: "Manual Operativo de Usuario y Guía de Gestión (DOC-MAN-005)", epic: "Gestión", sp: 5, sprint: "Sprint 5", status: "done", discipline: "AF / Operaciones" },
-      { id: "UH-33", title: "Barra de Métricas de Servicio en Producción y Triage en Tiempo Real", epic: "EP-06", sp: 3, sprint: "Sprint 5", status: "done", discipline: "Frontend / API" },
-      { id: "UH-34", title: "Exportación Directa a CSV / Excel de la Bandeja", epic: "EP-06", sp: 2, sprint: "Sprint 5", status: "done", discipline: "Frontend / Data" },
-      { id: "UH-35", title: "Servicio de Notificaciones por Email ante Eventos FSM y Alertas P1", epic: "EP-06", sp: 3, sprint: "Sprint 5", status: "done", discipline: "Backend / Notificaciones" },
-      { id: "REL-01", title: "Línea Base Operativa y Pase a Producción v1.0", epic: "Gestión", sp: 2, sprint: "Sprint 5", status: "done", discipline: "Comité / AF" }
-    ];
-
-    let tasks = INITIAL_BACKLOG;
-    localStorage.setItem('quantux_board_tasks', JSON.stringify(tasks));
-
-    const COLUMNS = ['backlog', 'sprint', 'progress', 'qa', 'done'];
-
-    function renderBoard() {
-      const sprintFilter = document.getElementById('filter-sprint').value;
-      const epicFilter = document.getElementById('filter-epic').value;
-      const searchQuery = document.getElementById('search-input').value.toLowerCase().trim();
-
-      // Limpiar listas
-      COLUMNS.forEach(col => {
-        document.getElementById(`list-${col}`).innerHTML = '';
-      });
-
-      const counts = { backlog: 0, sprint: 0, progress: 0, qa: 0, done: 0 };
-      let completedSP = 0;
-      let totalSP = 0;
-
-      tasks.forEach(task => {
-        if (task.sp && task.epic !== 'Gestión') {
-          totalSP += task.sp;
-          if (task.status === 'done') completedSP += task.sp;
-        }
-
-        // Filtros
-        if (sprintFilter !== 'ALL' && task.sprint !== sprintFilter) return;
-        if (epicFilter !== 'ALL' && task.epic !== epicFilter) return;
-        if (searchQuery && !task.id.toLowerCase().includes(searchQuery) && !task.title.toLowerCase().includes(searchQuery)) return;
-
-        counts[task.status]++;
-
-        const card = document.createElement('div');
-        card.className = 'kanban-card';
-        card.innerHTML = `
-          <div class="card-top">
-            <span class="card-id">${task.id}</span>
-            <span class="card-sp">${task.sp} SP</span>
-          </div>
-          <div class="card-title">${task.title}</div>
-          <div class="card-epic">${task.epic} • ${task.discipline}</div>
-          <div class="card-meta">
-            <span class="card-sprint-tag">${task.sprint}</span>
-            <div class="card-actions">
-              ${getMoveButtons(task)}
-            </div>
-          </div>
-        `;
-
-        document.getElementById(`list-${task.status}`).appendChild(card);
-      });
-
-      // Actualizar contadores
-      COLUMNS.forEach(col => {
-        document.getElementById(`count-${col}`).innerText = counts[col];
-      });
-
-      // Métricas
-      const percent = totalSP > 0 ? Math.round((completedSP / totalSP) * 100) : 0;
-      document.getElementById('metric-progress').innerHTML = `${completedSP} <small>/ 75 SP (${percent}%)</small>`;
-    }
-
-    function getMoveButtons(task) {
-      const currentIndex = COLUMNS.indexOf(task.status);
-      let html = '';
-      if (currentIndex > 0) {
-        html += `<button class="card-btn-move" title="Mover a la izquierda" onclick="moveTask('${task.id}', '${COLUMNS[currentIndex - 1]}')">◀</button>`;
-      }
-      if (currentIndex < COLUMNS.length - 1) {
-        html += `<button class="card-btn-move" title="Mover a la derecha" onclick="moveTask('${task.id}', '${COLUMNS[currentIndex + 1]}')">▶</button>`;
-      }
-      return html;
-    }
-
-    function moveTask(taskId, newStatus) {
-      const task = tasks.find(t => t.id === taskId);
-      if (task) {
-        task.status = newStatus;
-        saveState();
-        renderBoard();
-      }
-    }
-
-    function saveState() {
-      localStorage.setItem('quantux_board_tasks', JSON.stringify(tasks));
-    }
-
-    function resetDefaultTasks() {
-      if (confirm("¿Deseas restaurar el tablero al estado actual del proyecto?")) {
-        tasks = JSON.parse(JSON.stringify(INITIAL_BACKLOG));
-        saveState();
-        renderBoard();
-      }
-    }
-
-    function exportToCSV() {
-      let csvContent = "data:text/csv;charset=utf-8,ID,Titulo,Epica,StoryPoints,Sprint,Estado,Disciplina\n";
-      tasks.forEach(t => {
-        csvContent += `"${t.id}","${t.title}","${t.epic}","${t.sp}","${t.sprint}","${t.status}","${t.discipline}"\n`;
-      });
-      const encodedUri = encodeURI(csvContent);
-      const link = document.createElement("a");
-      link.setAttribute("href", encodedUri);
-      link.setAttribute("download", "Backlog_HealthDesk_Quantux.csv");
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-
-    // Inicializar
-    renderBoard();
-  </script>
-
+  <hr class="my-5">
+  <div class="text-center text-muted small pb-4">
+    <strong>Quantux HealthDesk v3.2.0-UAT</strong> • Solución de Triage e Incidentes Asistenciales ITIL 4<br>
+    Solution Owner: <em>Freddy Cortés</em> • Facilitador Técnico: <em>Diego Martínez</em> • Comité Evaluador: <em>Paula Sbarbati, Diego Martínez, Carolina Brizuela, Nicolás Sánchez</em><br>
+    Certificación de Calidad: <strong>14 Ciclos Consecutivos TQM (Zero Defects 100%)</strong> • Septiembre 2026
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

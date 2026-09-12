@@ -761,8 +761,8 @@ function updateUserProfileUI() {
   const topUser = document.getElementById('top-username');
   const topRole = document.getElementById('top-role-badge');
   const topAvatar = document.getElementById('top-user-avatar');
-  const profName = document.getElementById('profile-full-name');
-  const profRole = document.getElementById('profile-role-sub');
+  const profName = document.getElementById('profile-name') || document.getElementById('profile-full-name');
+  const profRole = document.getElementById('profile-role') || document.getElementById('profile-role-sub');
   const profAvatar = document.getElementById('profile-avatar');
   const currUserName = document.getElementById('current-user-name');
   const currUserRole = document.getElementById('current-user-role');
@@ -786,26 +786,25 @@ function updateUserProfileUI() {
     return;
   }
 
-  const initials = (AppState.currentUser.full_name || AppState.currentUser.username)
-    .split(' ')
-    .map(n => n[0])
-    .join('')
-    .substring(0, 2)
-    .toUpperCase();
+  const uName = AppState.currentUser.full_name || AppState.currentUser.username;
+  const uRole = (AppState.currentUser.role || 'USUARIO').toUpperCase();
+  const uUsername = AppState.currentUser.username || 'user';
 
-  if (topUser) topUser.textContent = AppState.currentUser.full_name || AppState.currentUser.username;
+  if (topUser) topUser.textContent = uName;
   if (topRole) {
-    topRole.textContent = AppState.currentUser.role;
-    topRole.style.background = '#0284C7';
+    topRole.textContent = uRole;
+    topRole.style.background = uRole === 'ADMIN' ? '#0F172A' : (uRole.includes('SOPORTE') ? '#0284C7' : '#00A896');
   }
-  if (topAvatar) topAvatar.innerHTML = getUserAvatarHtml(AppState.currentUser.username, AppState.currentUser.full_name, 32);
-  if (profName) profName.textContent = AppState.currentUser.full_name;
-  if (profRole) profRole.textContent = `ROL: ${AppState.currentUser.role}`;
-  if (profAvatar) profAvatar.innerHTML = getUserAvatarHtml(AppState.currentUser.username, AppState.currentUser.full_name, 40);
-  if (currUserName) currUserName.textContent = AppState.currentUser.full_name;
-  if (currUserRole) currUserRole.textContent = `Rol: ${AppState.currentUser.role}`;
-  if (currUserAvatar) currUserAvatar.innerHTML = getUserAvatarHtml(AppState.currentUser.username, AppState.currentUser.full_name, 34);
-  if (topSwitchText) topSwitchText.textContent = 'Cerrar Sesión';
+  if (topAvatar) topAvatar.innerHTML = getUserAvatarHtml(uUsername, uName, 32);
+  
+  if (profName) profName.textContent = uName;
+  if (profRole) profRole.textContent = `ROL: ${uRole} (UAT)`;
+  if (profAvatar) profAvatar.innerHTML = getUserAvatarHtml(uUsername, uName, 38);
+  
+  if (currUserName) currUserName.textContent = uName;
+  if (currUserRole) currUserRole.textContent = `Rol: ${uRole}`;
+  if (currUserAvatar) currUserAvatar.innerHTML = getUserAvatarHtml(uUsername, uName, 34);
+  if (topSwitchText) topSwitchText.textContent = 'Cambiar Usuario';
 }
 
 // =============================================================================
@@ -2172,23 +2171,29 @@ function openResolveModal(ticketId) {
 function openReassignModal(ticketId) {
   const modal = document.getElementById('modal-reassign-ticket');
   if (!modal) return;
-  const t = AppState.selectedTicket;
-  if (!t) return;
+  const t = (AppState.tickets && AppState.tickets.find(x => x.id === ticketId)) || AppState.selectedTicket || {};
   
-  document.getElementById('reassign-ticket-id').value = ticketId;
+  const idInput = document.getElementById('reassign-ticket-id');
+  if (idInput) idInput.value = ticketId;
   const disp = document.getElementById('reassign-ticket-id-display');
   if (disp) disp.textContent = ticketId;
   
   const selOp = document.getElementById('reassign-operator-select');
   if (selOp) {
+    const ops = (AppState.operators && AppState.operators.length > 0) 
+      ? AppState.operators 
+      : (AppState.users || []).filter(u => u.role !== 'SOLICITANTE');
     selOp.innerHTML = '<option value="">Seleccione operador disponible...</option>' + 
-      AppState.operators.map(op => `<option value="${op.username}" ${op.username === t.assignee_username ? 'selected' : ''}>${op.full_name} (${op.role} - ${op.support_level || 'N1'})</option>`).join('');
+      ops.map(op => `<option value="${op.username}" ${op.username === t.assignee_username ? 'selected' : ''}>${op.full_name || op.username} (${op.role || 'SOPORTE'} - ${op.support_level || 'N1'})</option>`).join('');
   }
   
   const selLvl = document.getElementById('reassign-level-select');
   if (selLvl) {
     selLvl.value = t.support_level || 'N1';
   }
+
+  const reasonInput = document.getElementById('reassign-reason');
+  if (reasonInput) reasonInput.value = '';
   
   modal.classList.add('active');
 }
@@ -4775,25 +4780,46 @@ function initModalListeners() {
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       
-      const titleVal = document.getElementById('modal-title') ? document.getElementById('modal-title').value.trim() : '';
-      const descVal = document.getElementById('modal-description') ? document.getElementById('modal-description').value.trim() : '';
-      const platVal = document.getElementById('modal-platform') ? document.getElementById('modal-platform').value : 'RECETA_DIGITAL';
-      const instVal = document.getElementById('modal-institution') ? document.getElementById('modal-institution').value : 'OSDE';
-      const impactVal = document.getElementById('modal-impact') ? document.getElementById('modal-impact').value : 'MEDIO';
-      const urgencyVal = document.getElementById('modal-urgency') ? document.getElementById('modal-urgency').value : 'MEDIO';
-      const typeVal = document.getElementById('modal-type') ? document.getElementById('modal-type').value : 'INCIDENTE';
-      const attachVal = document.getElementById('modal-attachment-url') ? document.getElementById('modal-attachment-url').value.trim() : '';
+      const titleInput = document.getElementById('modal-title');
+      const descInput = document.getElementById('modal-description');
+      const platInput = document.getElementById('modal-platform');
+      const instInput = document.getElementById('modal-institution');
+      const impactInput = document.getElementById('modal-impact');
+      const urgencyInput = document.getElementById('modal-urgency');
+      const typeInput = document.getElementById('modal-type');
+      const attachInput = document.getElementById('modal-attachment-url');
+      const submitBtn = document.getElementById('btn-submit-ticket');
 
-      if (!titleVal || titleVal.length < 5) {
-        showToast('El título debe tener al menos 5 caracteres explicativos', 'warning');
+      const titleVal = titleInput ? titleInput.value.trim() : '';
+      const descVal = descInput ? descInput.value.trim() : '';
+      let platVal = platInput ? platInput.value : 'CAT_RECETA';
+      let instVal = instInput ? instInput.value : 'OSDE';
+      const impactVal = impactInput ? impactInput.value : 'MEDIO';
+      const urgencyVal = urgencyInput ? urgencyInput.value : 'MEDIO';
+      const typeVal = typeInput ? typeInput.value : 'INCIDENTE';
+      const attachVal = attachInput ? attachInput.value.trim() : '';
+
+      if (!platVal || platVal.includes('<option')) platVal = 'CAT_RECETA';
+      if (!instVal) instVal = 'OSDE';
+
+      if (!titleVal) {
+        showToast('Por favor ingrese un título breve para la solicitud', 'warning');
         goToWizardStep(4);
+        if (titleInput) titleInput.focus();
         return;
       }
 
-      if (!descVal || descVal.length < 10) {
-        showToast('La descripción debe contener al menos 10 caracteres', 'warning');
+      if (!descVal) {
+        showToast('Por favor ingrese una descripción del problema', 'warning');
         goToWizardStep(4);
+        if (descInput) descInput.focus();
         return;
+      }
+
+      const originalBtnText = submitBtn ? submitBtn.innerHTML : '🚀 Confirmar y Enviar Solicitud';
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '⏳ Registrando Solicitud...';
       }
 
       const payload = {
@@ -4805,7 +4831,7 @@ function initModalListeners() {
         urgency: urgencyVal,
         ticket_type: typeVal,
         attachment_url: attachVal || null,
-        requester_username: AppState.currentUser ? AppState.currentUser.username : 'admin'
+        requester_username: AppState.currentUser ? AppState.currentUser.username : 'solicitante'
       };
 
       try {
@@ -4813,13 +4839,20 @@ function initModalListeners() {
         if (modal) modal.classList.remove('active');
         form.reset();
         goToWizardStep(1);
-        showToast(`¡Solicitud #${created.id} creada con éxito! Prioridad asignada: ${created.priority}`, 'success');
+        showToast(`✅ ¡Solicitud #${created.id} creada con éxito! Prioridad asignada: ${created.priority}`, 'success');
         await loadTickets();
         await loadDashboardMetrics(AppState.currentDashInst);
         selectTicket(created.id, true);
         switchView('tickets');
       } catch (err) {
-        showToast('Error al crear la solicitud: ' + (err.detail || 'Verifique los campos requeridos'), 'error');
+        console.error('Error al crear la solicitud:', err);
+        const errorDetail = (err && (err.detail || err.message)) || 'Verifique los datos de la solicitud';
+        showToast('❌ Error al crear la solicitud: ' + errorDetail, 'error');
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = originalBtnText;
+        }
       }
     });
   }
@@ -4901,14 +4934,31 @@ function initModalListeners() {
   if (formReassign) {
     formReassign.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const ticketId = document.getElementById('reassign-ticket-id').value;
-      const op = document.getElementById('reassign-operator-select').value;
-      const lvl = document.getElementById('reassign-level-select').value;
-      const reason = document.getElementById('reassign-reason').value.trim() || `Derivación a nivel ${lvl}`;
+      const ticketIdInput = document.getElementById('reassign-ticket-id');
+      const opInput = document.getElementById('reassign-operator-select');
+      const lvlInput = document.getElementById('reassign-level-select');
+      const reasonInput = document.getElementById('reassign-reason');
+      const submitBtn = document.getElementById('btn-submit-reassign');
+
+      const ticketId = ticketIdInput ? ticketIdInput.value : '';
+      const op = opInput ? opInput.value : '';
+      const lvl = lvlInput ? lvlInput.value : 'N1';
+      const reason = (reasonInput ? reasonInput.value.trim() : '') || `Reasignación a nivel ${lvl}`;
+
+      if (!ticketId) {
+        showToast('Identificador de solicitud no válido', 'error');
+        return;
+      }
 
       if (!op) {
-        showToast('Seleccione un operador para derivar la solicitud', 'error');
+        showToast('Por favor seleccione un operador para asignar el ticket', 'warning');
         return;
+      }
+
+      const originalBtnText = submitBtn ? submitBtn.innerHTML : 'Guardar Asignación';
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '⏳ Asignando...';
       }
 
       try {
@@ -4919,13 +4969,19 @@ function initModalListeners() {
           changed_by_username: AppState.currentUser ? AppState.currentUser.username : 'admin'
         });
 
-        modalReassign.classList.remove('active');
+        if (modalReassign) modalReassign.classList.remove('active');
         showToast(`👥 ¡Solicitud #${ticketId} reasignada a @${op} (${lvl})!`, 'success');
         await loadTickets();
         await selectTicket(ticketId, true);
         await loadDashboardMetrics(AppState.currentDashInst);
       } catch (err) {
-        showToast('Error al reasignar solicitud: ' + (err.detail || err.message || 'Error en servidor'), 'error');
+        console.error('Error al reasignar:', err);
+        showToast('❌ Error al reasignar: ' + ((err && (err.detail || err.message)) || 'Error en servidor'), 'error');
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = originalBtnText;
+        }
       }
     });
   }
@@ -5434,7 +5490,7 @@ function populateSelects() {
     filterPlat.innerHTML = '<option value="">Todas las Plataformas</option>' + 
       AppState.platforms.map(p => `<option value="${p.code}">${p.name}</option>`).join('');
   }
-  if (modalPlat) {
+  if (modalPlat && modalPlat.tagName === 'SELECT') {
     modalPlat.innerHTML = '<option value="">Seleccione Plataforma...</option>' + 
       AppState.platforms.map(p => `<option value="${p.code}">${p.name}</option>`).join('');
   }
@@ -5452,7 +5508,7 @@ function populateSelects() {
   }
   if (modalInst) {
     modalInst.innerHTML = '<option value="">Seleccione Institución...</option>' + 
-      AppState.institutions.map(i => `<option value="${i.code}">${i.name}</option>`).join('');
+      AppState.institutions.map(i => `<option value="${i.code}" ${i.code === 'OSDE' ? 'selected' : ''}>${i.name}</option>`).join('');
   }
   const editPlat = document.getElementById('edit-platform');
   const editInst = document.getElementById('edit-institution');

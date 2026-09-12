@@ -26,7 +26,8 @@ def calculate_priority(impact: ImpactLevel, urgency: UrgencyLevel) -> PriorityLe
 ALLOWED_TRANSITIONS = {
     TicketStatus.NUEVO: [TicketStatus.ASIGNADO, TicketStatus.EN_CURSO],
     TicketStatus.ASIGNADO: [TicketStatus.EN_CURSO, TicketStatus.ASIGNADO],
-    TicketStatus.EN_CURSO: [TicketStatus.RESUELTO, TicketStatus.EN_CURSO],
+    TicketStatus.EN_CURSO: [TicketStatus.RESUELTO, TicketStatus.EN_CURSO, TicketStatus.EN_ESPERA],
+    TicketStatus.EN_ESPERA: [TicketStatus.EN_CURSO, TicketStatus.RESUELTO, TicketStatus.EN_ESPERA],
     TicketStatus.RESUELTO: [TicketStatus.CERRADO, TicketStatus.EN_CURSO],
     TicketStatus.CERRADO: []  # Estado final inmutable
 }

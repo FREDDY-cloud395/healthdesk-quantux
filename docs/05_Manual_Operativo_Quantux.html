@@ -3,429 +3,126 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DOC-MAN-005 — Manual de Usuario y Guía Operativa | Quantux Salud</title>
+  <title>DOC-UM-005 • Manual Operativo y Guía de Usuario • Quantux HealthDesk v3.2.0-UAT</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&display=swap');
-
-    :root {
-      --q-navy: #0D2137;
-      --q-blue-dark: #19385C;
-      --q-teal: #00A896;
-      --q-teal-dark: #028090;
-      --q-teal-soft: #E8F8F5;
-      --q-bg-page: #FFFFFF;
-      --q-bg-subtle: #F8FAFC;
-      --q-border: #CBD5E1;
-      --q-text: #1E293B;
-      --q-text-muted: #475569;
-      --q-amber-bg: #FEF9C3;
-      --q-amber-border: #F59E0B;
-      --q-green-bg: #ECFDF5;
-      --q-green-border: #10B981;
-      --q-blue-bg: #EFF6FF;
-      --q-blue-border: #3B82F6;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
-      color: var(--q-text);
-      background-color: #475569;
-      line-height: 1.45;
-      font-size: 10px;
-      -webkit-print-color-adjust: exact;
-      print-color-adjust: exact;
-    }
-
-    .doc-page {
-      width: 210mm;
-      height: 297mm;
-      max-height: 297mm;
-      margin: 20px auto;
-      background: #FFFFFF;
-      padding: 16mm 18mm 14mm 18mm;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-      position: relative;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    @media print {
-      @page {
-        size: A4 portrait;
-        margin: 0;
-      }
-      body {
-        background: transparent;
-        margin: 0;
-        padding: 0;
-      }
-      .doc-page {
-        width: 210mm !important;
-        height: 297mm !important;
-        max-height: 297mm !important;
-        margin: 0 !important;
-        padding: 16mm 18mm 14mm 18mm !important;
-        box-shadow: none !important;
-        page-break-after: always;
-        break-after: page;
-      }
-      .doc-page:last-child {
-        page-break-after: avoid;
-        break-after: avoid;
-      }
-    }
-
-    .header-rule {
-      display: flex; justify-content: space-between; align-items: center;
-      border-bottom: 2px solid var(--q-teal); padding-bottom: 6px; margin-bottom: 10px;
-    }
-    .brand-title {
-      font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 800; color: var(--q-blue-dark);
-      letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px;
-    }
-    .doc-badge {
-      font-size: 8.5px; background: var(--q-teal-soft); color: var(--q-teal-dark);
-      padding: 3px 8px; border-radius: 6px; font-weight: 800; border: 1px solid #B2DFDB;
-    }
-
-    .footer-rule {
-      border-top: 1px solid var(--q-border); padding-top: 6px; margin-top: 8px;
-      display: flex; justify-content: space-between; font-size: 8.5px; color: var(--q-text-muted); font-weight: 600;
-    }
-
-    h2.section-title {
-      font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 800; color: var(--q-blue-dark);
-      border-bottom: 1.5px solid #E2E8F0; padding-bottom: 4px; margin: 10px 0 6px 0;
-      display: flex; align-items: center; gap: 6px;
-    }
-    h3.sub-title {
-      font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 700; color: var(--q-navy);
-      margin: 6px 0 4px 0;
-    }
-
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-
-    .card {
-      background: var(--q-bg-subtle); border: 1px solid #E2E8F0; border-radius: 8px; padding: 8px 10px;
-    }
-    .card-accent {
-      background: var(--q-teal-soft); border: 1px solid #B2DFDB; border-radius: 8px; padding: 8px 10px;
-    }
-    .card-blue {
-      background: var(--q-blue-bg); border: 1px solid #BFDBFE; border-radius: 8px; padding: 8px 10px;
-    }
-    .card-warn {
-      background: var(--q-amber-bg); border: 1px solid var(--q-amber-border); border-radius: 8px; padding: 8px 10px;
-    }
-    .card-success {
-      background: var(--q-green-bg); border: 1px solid var(--q-green-border); border-radius: 8px; padding: 8px 10px;
-    }
-
-    table.doc-table { width: 100%; border-collapse: collapse; margin: 6px 0; font-size: 9.5px; }
-    table.doc-table th { background: var(--q-blue-dark); color: #FFFFFF; font-family: 'Outfit', sans-serif; font-weight: 700; text-align: left; padding: 6px 8px; }
-    table.doc-table td { padding: 5px 8px; border-bottom: 1px solid #E2E8F0; }
-    table.doc-table tr:nth-child(even) td { background: #F8FAFC; }
-
-    .badge-role { display: inline-block; padding: 2px 6px; border-radius: 4px; font-weight: 700; font-size: 8px; }
-    .badge-sol { background: #E0E7FF; color: #3730A3; }
-    .badge-sop { background: #CCFBF1; color: #0F766E; }
-    .badge-adm { background: #F3E8FF; color: #6B21A8; }
-
-    .cover-box {
-      background: linear-gradient(135deg, #0D2137 0%, #19385C 100%);
-      color: #FFFFFF; border-radius: 10px; padding: 18px 22px; margin-bottom: 12px;
-    }
-    .cover-title { font-family: 'Outfit', sans-serif; font-size: 22px; font-weight: 900; letter-spacing: -0.5px; }
-    .cover-sub { font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 700; color: #00E5CC; margin-top: 4px; }
-    .cover-desc { font-size: 10px; color: #CBD5E1; margin-top: 8px; line-height: 1.5; }
-
-    .meta-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 9.5px; }
-    .meta-table td { padding: 4px 8px; border-bottom: 1px solid #E2E8F0; }
-    .meta-table td.lbl { font-weight: 700; color: var(--q-blue-dark); width: 28%; background: #F1F5F9; }
-
-    ul.clean-list { list-style: disc; margin-left: 16px; margin-top: 4px; }
-    ul.clean-list li { margin-bottom: 3px; }
-    ol.clean-list { margin-left: 16px; margin-top: 4px; }
-    ol.clean-list li { margin-bottom: 4px; }
+    body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background-color: #f8f9fa; color: #212529; }
+    .doc-container { max-width: 1200px; margin: 30px auto; background: #fff; padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+    .badge-uat { background: #0d6efd; color: #fff; font-weight: 600; }
+    .badge-tqm { background: #198754; color: #fff; font-weight: 600; }
+    h1, h2, h3, h4 { color: #0f172a; font-weight: 700; margin-top: 1.5rem; margin-bottom: 1rem; }
+    h1 { border-bottom: 3px solid #0d6efd; padding-bottom: 10px; }
+    h2 { border-bottom: 1px solid #dee2e6; padding-bottom: 8px; margin-top: 2rem; }
+    table { width: 100%; margin: 20px 0; border-collapse: collapse; }
+    th { background: #0f172a; color: #fff; padding: 12px; font-weight: 600; }
+    td { padding: 10px 12px; border-bottom: 1px solid #e2e8f0; vertical-align: middle; }
+    tr:nth-child(even) { background-color: #f8fafc; }
+    .callout { border-left: 5px solid #0d6efd; padding: 15px 20px; background: #f0f7ff; border-radius: 4px; margin: 20px 0; }
+    .callout-success { border-left-color: #198754; background: #f0fdf4; }
+    .callout-warning { border-left-color: #f59e0b; background: #fffbeb; }
+    .doc-header-card { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #fff; padding: 25px; border-radius: 8px; margin-bottom: 30px; }
+    .mermaid { background: #fff; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px; margin: 20px 0; }
   </style>
 </head>
 <body>
 
-  <!-- ==================== PÁGINA 1: PORTADA & BIENVENIDA ==================== -->
-  <div class="doc-page">
-    <div>
-      <div class="header-rule">
-        <div class="brand-title">🩺 QUANTUX SALUD • MESA DE AYUDA</div>
-        <div class="doc-badge">DOC-MAN-005 • GUÍA FÁCIL</div>
-      </div>
-
-      <div class="cover-box">
-        <div style="font-size: 24px; margin-bottom: 6px;">🩺 📋 ✨</div>
-        <div class="cover-title">MANUAL DE USUARIO Y GUÍA FÁCIL</div>
-        <div class="cover-sub">SOPORTE Y GESTIÓN ÁGIL PARA TODOS LOS EQUIPOS DE SALUD</div>
-        <div class="cover-desc">Guía práctica paso a paso para solicitar ayuda técnica, seguir tus pedidos en tiempo real y validar soluciones de forma simple. Diseñada para personal asistencial, administrativo, técnico y directivo.</div>
-      </div>
-
-      <h2 class="section-title">1. ¿Para qué sirve esta plataforma?</h2>
-      <div class="grid-2">
-        <div class="card-blue">
-          <h3 class="sub-title">⚡ Pedir ayuda en 30 segundos</h3>
-          <p>Registra cualquier problema o duda sobre tus sistemas de trabajo diarios (Receta Digital, Telemedicina, Historia Clínica, Turnos, Facturación o Laboratorio) de forma rápida y sin trámites complejos.</p>
-        </div>
-        <div class="card-accent">
-          <h3 class="sub-title">👁️ Seguimiento transparente</h3>
-          <p>Conoce en todo momento quién tomó tu pedido, qué técnico lo está revisando y recibe avisos automáticos por correo electrónico con cada avance.</p>
-        </div>
-      </div>
-
-      <h2 class="section-title" style="margin-top: 12px;">2. Control Documental y Responsables</h2>
-      <table class="meta-table">
-        <tr><td class="lbl">Código:</td><td>DOC-MAN-005</td><td class="lbl">Versión:</td><td>3.0 (Edición Amigable)</td></tr>
-        <tr><td class="lbl">Publicación:</td><td>Agosto 2026</td><td class="lbl">Estado:</td><td><strong style="color:#00A896;">VIGENTE / DISTRIBUCIÓN GENERAL</strong></td></tr>
-        <tr><td class="lbl">Líder Funcional:</td><td>Freddy Cortés</td><td class="lbl">Facilitador Técnico:</td><td>Diego Martínez</td></tr>
-        <tr><td class="lbl">Comité Evaluador:</td><td colspan="3">Paula Sbarbati (Calidad), Diego Martínez (Técnica), Carolina Brizuela (Operaciones), Nicolás Sánchez (Seguridad)</td></tr>
-      </table>
-    </div>
-
-    <div class="footer-rule">
-      <span>DOC-MAN-005: Manual de Usuario • Quantux Salud</span>
-      <span>Página 1 de 5</span>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow-sm">
+  <div class="container-fluid px-4">
+    <a class="navbar-brand fw-bold text-info" href="/cockpit">
+      <i class="fas fa-heartbeat me-2"></i>Quantux HealthDesk <span class="badge bg-primary ms-1">v3.2.0-UAT</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item"><a class="nav-link" href="/cockpit"><i class="fas fa-desktop me-1"></i> Cockpit</a></li>
+        <li class="nav-item"><a class="nav-link" href="/scrumban"><i class="fas fa-columns me-1"></i> Tablero Scrumban</a></li>
+        <li class="nav-item"><a class="nav-link" href="/plan"><i class="fas fa-project-diagram me-1"></i> Plan de Gestión (DOC-01)</a></li>
+        <li class="nav-item"><a class="nav-link" href="/especificacion"><i class="fas fa-list-check me-1"></i> Especificación (DOC-02)</a></li>
+        <li class="nav-item"><a class="nav-link" href="/arquitectura"><i class="fas fa-sitemap me-1"></i> Arquitectura (DOC-03)</a></li>
+        <li class="nav-item"><a class="nav-link" href="/pruebas"><i class="fas fa-vial-circle-check me-1"></i> Pruebas TQM (DOC-04)</a></li>
+        <li class="nav-item"><a class="nav-link" href="/manual"><i class="fas fa-book-medical me-1"></i> Manual Operativo (DOC-05)</a></li>
+        <li class="nav-item"><a class="nav-link" href="/presentacion"><i class="fas fa-chalkboard-teacher me-1"></i> Presentación Ejecutiva (DOC-06)</a></li>
+      </ul>
+      <span class="navbar-text text-white">
+        <span class="badge bg-success"><i class="fas fa-check-circle me-1"></i> Zero Defects TQM (14/14)</span>
+      </span>
     </div>
   </div>
+</nav>
 
-  <!-- ==================== PÁGINA 2: ROLES & PANTALLA PRINCIPAL ==================== -->
-  <div class="doc-page">
+<div class="container doc-container">
+
+<div class="doc-header-card">
+  <div class="d-flex justify-content-between align-items-center">
     <div>
-      <div class="header-rule">
-        <div class="brand-title">🩺 QUANTUX SALUD • MESA DE AYUDA</div>
-        <div class="doc-badge">DOC-MAN-005 • ROLES Y PANTALLA</div>
-      </div>
-
-      <h2 class="section-title">3. ¿Qué puede hacer cada usuario en el sistema?</h2>
-      <table class="doc-table">
-        <thead>
-          <tr>
-            <th>Acción en la Plataforma</th>
-            <th style="text-align:center;"><span class="badge-role badge-sol">👤 Usuario Solicitante</span></th>
-            <th style="text-align:center;"><span class="badge-role badge-sop">🎧 Equipo de Soporte</span></th>
-            <th style="text-align:center;"><span class="badge-role badge-adm">🛡️ Administrador</span></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td><strong>Crear nuevas solicitudes de asistencia técnica</strong></td><td align="center">✅ Sí</td><td align="center">✅ Sí</td><td align="center">✅ Sí</td></tr>
-          <tr><td><strong>Priorización automática del caso (según urgencia)</strong></td><td align="center">✅ Automático</td><td align="center">✅ Automático</td><td align="center">✅ Automático</td></tr>
-          <tr><td><strong>Ver solicitudes registradas</strong></td><td align="center">⚠️ Solo las propias</td><td align="center">✅ Todas (14 Instituciones)</td><td align="center">✅ Visibilidad Total</td></tr>
-          <tr><td><strong>Tomar solicitudes para empezar a trabajar</strong></td><td align="center">❌ No</td><td align="center">✅ Sí (1 Clic)</td><td align="center">✅ Sí</td></tr>
-          <tr><td><strong>Derivar a un especialista técnico</strong></td><td align="center">❌ No</td><td align="center">✅ Sí (N2 / N3)</td><td align="center">✅ Sí</td></tr>
-          <tr><td><strong>Registrar la solución técnica del inconveniente</strong></td><td align="center">❌ No</td><td align="center">✅ Sí</td><td align="center">✅ Sí</td></tr>
-          <tr><td><strong>Dar conformidad y cerrar el ticket definitivamente</strong></td><td align="center">✅ <strong>Tu decisión exclusiva</strong></td><td align="center">❌ Espera al solicitante</td><td align="center">✅ Cierre admin</td></tr>
-          <tr><td><strong>Descargar listado de solicitudes a Excel / CSV</strong></td><td align="center">❌ No</td><td align="center">✅ Sí</td><td align="center">✅ Sí</td></tr>
-        </tbody>
-      </table>
-
-      <h2 class="section-title" style="margin-top: 10px;">4. Conoce tu Menú de Navegación y Tableros de Control</h2>
-      <div class="grid-3" style="margin-top: 4px;">
-        <div class="card">
-          <h3 class="sub-title">📊 Panel de Control</h3>
-          <p><strong>Tablero y Incidentes Críticos:</strong> KPIs en vivo, cumplimiento de SLAs (98.4%), semáforos de servicio en producción y gráficos de plataformas.</p>
-        </div>
-        <div class="card-blue">
-          <h3 class="sub-title">🎫 Mesa de Ayuda</h3>
-          <p><strong>Gestión de Casos:</strong> Cockpit en 3 columnas con sub-pestañas rápidas (Mis Solicitudes, Nuevos, En Trabajo, P1 Críticos).</p>
-        </div>
-        <div class="card-accent">
-          <h3 class="sub-title">👥 Usuarios & KB</h3>
-          <p><strong>Directorio y Guías:</strong> Base de conocimiento asistencial (📖), catálogo de plataformas (🩺) y alta de usuarios.</p>
-        </div>
-      </div>
-
-      <div class="card-warn" style="margin-top: 8px;">
-        <h3 class="sub-title" style="color: #92400E;">💡 Submenú Contextual Inteligente (Pills Turquesa)</h3>
-        <p>Al hacer clic en cualquier módulo principal, la barra contextual te muestra accesos directos específicos para filtrar tu trabajo en 1 clic.</p>
-      </div>
+      <span class="badge bg-primary text-uppercase me-2">DOC-UM-005</span>
+      <span class="badge bg-success text-uppercase">v3.2.0-UAT • Guía Oficial</span>
+      <h2 class="text-white mt-2 mb-1">MANUAL OPERATIVO Y GUÍA DE USUARIO</h2>
+      <p class="text-light mb-0">Instrucciones de Uso para Médicos, Operadores ITIL N1/N2/N3 y Administradores</p>
     </div>
-
-    <div class="footer-rule">
-      <span>DOC-MAN-005: Manual de Usuario • Quantux Salud</span>
-      <span>Página 2 de 5</span>
+    <div class="text-end">
+      <span class="badge bg-info text-dark p-2 fw-bold">Manual Asistencial</span>
     </div>
   </div>
+</div>
 
-  <!-- ==================== PÁGINA 3: GUÍA DEL SOLICITANTE ==================== -->
-  <div class="doc-page">
-    <div>
-      <div class="header-rule">
-        <div class="brand-title">🩺 QUANTUX SALUD • MESA DE AYUDA</div>
-        <div class="doc-badge">DOC-MAN-005 • SOLICITANTES</div>
-      </div>
-
-      <h2 class="section-title">5. Paso a Paso: Cómo pedir ayuda técnica</h2>
-      
-      <div class="card-blue" style="margin-bottom: 10px;">
-        <h3 class="sub-title" style="color: var(--q-blue-dark);">Paso 1: Crear tu solicitud (Menos de 30 segundos)</h3>
-        <ol class="clean-list">
-          <li>Presiona el botón verde <strong>"➕ Nueva Solicitud"</strong> arriba a la izquierda.</li>
-          <li>Elige la <strong>Plataforma / Sistema</strong> con problemas (ej. <em>Receta Digital, Telemedicina, HCE</em>).</li>
-          <li>Selecciona tu <strong>Institución</strong> (ej. <em>OSDE, Swiss Medical, Hospital Británico</em>).</li>
-          <li>Indica cuánto afecta tu tarea:
-            <ul class="clean-list" style="margin-top:2px;">
-              <li><strong>Crítico:</strong> Falla total urgente que detiene la atención al paciente.</li>
-              <li><strong>Alto / Medio:</strong> Falla importante o parcial con alternativa temporal.</li>
-              <li><strong>Bajo:</strong> Consulta de uso, dudas o solicitud de nuevos accesos.</li>
-            </ul>
-          </li>
-          <li>Escribe un <strong>Título breve</strong> y una <strong>Descripción</strong> sencilla de lo que observas.</li>
-          <li>Presiona <strong>"Confirmar y Enviar Solicitud"</strong>.</li>
-        </ol>
-      </div>
-
-      <div class="grid-2">
-        <div class="card">
-          <h3 class="sub-title">Paso 2: Conversar con Soporte</h3>
-          <p>Selecciona tu solicitud en el panel izquierdo. En el centro podrás leer lo que el técnico responde y agregar comentarios o datos adicionales en cualquier momento.</p>
-        </div>
-        <div class="card-success">
-          <h3 class="sub-title" style="color: #065F46;">Paso 3: Tu Confirmación y Cierre</h3>
-          <p>Cuando el técnico aplique la solución, verás el cartel verde <strong>"Conformidad del Solicitante"</strong>. Prueba que todo funcione bien en tu equipo y haz clic en <strong>"Confirmar Solución y Cerrar"</strong>.</p>
-        </div>
-      </div>
-
-      <div class="card-accent" style="margin-top: 10px;">
-        <h3 class="sub-title" style="color: var(--q-teal-dark);">📧 Notificaciones Automáticas a tu Casilla</h3>
-        <p>No necesitas estar mirando la pantalla todo el día: el sistema te enviará un correo electrónico cuando tu solicitud sea recibida, cuando un técnico la tome y cuando esté solucionada lista para tu prueba.</p>
-      </div>
-    </div>
-
-    <div class="footer-rule">
-      <span>DOC-MAN-005: Manual de Usuario • Quantux Salud</span>
-      <span>Página 3 de 5</span>
+<div class="row g-4">
+  <div class="col-md-4">
+    <div class="card h-100 shadow-sm border-top border-primary border-4 p-3">
+      <h5 class="fw-bold text-primary"><i class="fas fa-user-md me-2"></i>1. Solicitante Asistencial</h5>
+      <p class="small text-muted">Para médicos, enfermeros y secretarios de guardia.</p>
+      <ul class="small ps-3">
+        <li>Login con <code>solicitante</code> / <code>quantux123</code>.</li>
+        <li>Presionar <strong>"Nuevo Ticket"</strong> y seleccionar plataforma y sanatorio.</li>
+        <li>Cálculo reactivo de prioridad $P=I 	imes U$.</li>
+        <li>Seguimiento en vivo y <strong>Cierre con Conformidad</strong>.</li>
+      </ul>
     </div>
   </div>
-
-  <!-- ==================== PÁGINA 4: GUÍA DEL EQUIPO DE SOPORTE ==================== -->
-  <div class="doc-page">
-    <div>
-      <div class="header-rule">
-        <div class="brand-title">🩺 QUANTUX SALUD • MESA DE AYUDA</div>
-        <div class="doc-badge">DOC-MAN-005 • EQUIPO DE SOPORTE</div>
-      </div>
-
-      <h2 class="section-title">6. Guía para el Equipo de Soporte Técnico</h2>
-
-      <div class="card" style="background: #F1F5F9; margin-bottom: 10px;">
-        <h3 class="sub-title">El Camino de una Solicitud (Estados)</h3>
-        <p style="font-weight: 700; color: var(--q-blue-dark); font-size: 9.5px; text-align: center; margin: 4px 0;">
-          NUEVA ➔ 🙋‍♂️ ASIGNADA ➔ ⚙️ EN TRABAJO ➔ ✅ SOLUCIONADA ➔ 🩺 CERRADA CONFORME
-        </p>
-      </div>
-
-      <div class="grid-3">
-        <div class="card-blue">
-          <h3 class="sub-title">1. Tomar Solicitud</h3>
-          <p>Al seleccionar una solicitud en estado <code>NUEVA</code>, haz clic en <strong>"🙋‍♂️ Tomar Yo"</strong> para asignártela de inmediato.</p>
-        </div>
-        <div class="card">
-          <h3 class="sub-title">2. Derivación</h3>
-          <p>Si se requiere intervención de base de datos o infraestructura, selecciona al especialista (Nivel 2 o 3) y guarda.</p>
-        </div>
-        <div class="card-warn">
-          <h3 class="sub-title" style="color: #92400E;">3. Notas Internas 🔒</h3>
-          <p>Marca <strong>"🔒 Nota Privada"</strong> para guardar datos técnicos confidenciales que el usuario solicitante no necesita ver.</p>
-        </div>
-      </div>
-
-      <h2 class="section-title" style="margin-top: 12px;">7. Registro de Solución y Soluciones Provisorias</h2>
-      <div class="card-accent">
-        <ul class="clean-list">
-          <li><strong>Explicación Clara:</strong> Escribe qué se hizo para resolver el problema (mínimo 8 caracteres). Evita respuestas de una sola palabra como "ok".</li>
-          <li><strong>Solución Temporal (*Workaround*):</strong> Si aplicaste una solución provisional para que el usuario pueda seguir trabajando mientras se programa un cambio de fondo, tilda la casilla <strong>"⚠️ Solución Provisoria"</strong>.</li>
-        </ul>
-      </div>
-
-      <h2 class="section-title" style="margin-top: 10px;">8. Exportación de Datos para Reportes (Excel)</h2>
-      <div class="card">
-        <p>En el panel izquierdo, presiona <strong>"📊 Exportar Bandeja a CSV"</strong>. El archivo se descargará listo para abrirse en Microsoft Excel sin problemas de tildes o caracteres especiales.</p>
-      </div>
-    </div>
-
-    <div class="footer-rule">
-      <span>DOC-MAN-005: Manual de Usuario • Quantux Salud</span>
-      <span>Página 4 de 5</span>
+  <div class="col-md-4">
+    <div class="card h-100 shadow-sm border-top border-warning border-4 p-3">
+      <h5 class="fw-bold text-warning text-dark"><i class="fas fa-headset me-2"></i>2. Operador Soporte N1/N2/N3</h5>
+      <p class="small text-muted">Para analistas y especialistas de mesa de ayuda.</p>
+      <ul class="small ps-3">
+        <li>Login con <code>soporte</code> / <code>cpaez</code> / <code>quantux123</code>.</li>
+        <li>Autoasignación con <strong>"Tomar Ticket"</strong>.</li>
+        <li>Pausa de gestión en <strong>"EN ESPERA"</strong>.</li>
+        <li>Registro de <strong>Notas Internas Privadas</strong>.</li>
+        <li>Resolución con guardrail &ge; 8 caracteres y Workaround.</li>
+      </ul>
     </div>
   </div>
-
-  <!-- ==================== PÁGINA 5: PREGUNTAS FRECUENTES & FIRMAS ==================== -->
-  <div class="doc-page">
-    <div>
-      <div class="header-rule">
-        <div class="brand-title">🩺 QUANTUX SALUD • MESA DE AYUDA</div>
-        <div class="doc-badge">DOC-MAN-005 • PREGUNTAS & FIRMAS</div>
-      </div>
-
-      <h2 class="section-title">9. Preguntas Frecuentes (FAQ)</h2>
-      
-      <div class="grid-2">
-        <div class="card-blue">
-          <h3 class="sub-title">❓ ¿Qué hago ante una emergencia crítica?</h3>
-          <p>Crea el ticket marcando impacto <strong>Crítico</strong>. La mesa de ayuda lo recibirá con alarma roja prioritaria (SLA máximo de 1 hora) y servicio en producción activa 24/7.</p>
-        </div>
-        <div class="card-blue">
-          <h3 class="sub-title">❓ ¿Por qué mi caso sigue en 'Solucionado'?</h3>
-          <p>Porque el sistema espera que pruebes que todo anda bien y presiones el botón verde de <strong>Conformidad</strong> para archivarlo.</p>
-        </div>
-        <div class="card-blue">
-          <h3 class="sub-title">❓ ¿Cómo busco un pedido de días anteriores?</h3>
-          <p>Escribe cualquier palabra del título o el número de ticket en la barra de búsqueda del panel izquierdo.</p>
-        </div>
-        <div class="card-blue">
-          <h3 class="sub-title">❓ ¿Cómo sé si el técnico ya me contestó?</h3>
-          <p>Recibirás un aviso en tu correo electrónico con el mensaje del técnico y un enlace directo a tu solicitud.</p>
-        </div>
-      </div>
-
-      <h2 class="section-title" style="margin-top: 12px;">10. Tiempos de Compromiso de Atención (SLA)</h2>
-      <table class="doc-table">
-        <thead>
-          <tr><th>Prioridad</th><th>Tipo de Situación</th><th>Tiempo Máximo de Solución</th></tr>
-        </thead>
-        <tbody>
-          <tr><td><strong style="color:#DC2626;">P1 - Crítico</strong></td><td>Detención total del servicio en servicio en producción o urgencias</td><td><strong>1 Hora</strong> (Atención Inmediata 24/7)</td></tr>
-          <tr><td><strong style="color:#D97706;">P2 - Alto</strong></td><td>Inconveniente severo pero con alternativa operativa</td><td><strong>4 Horas</strong></td></tr>
-          <tr><td><strong style="color:#2563EB;">P3 - Medio</strong></td><td>Dificultad puntual en un puesto o usuario individual</td><td><strong>8 Horas</strong></td></tr>
-          <tr><td><strong style="color:#4B5563;">P4 - Bajo</strong></td><td>Consultas de uso, solicitudes de accesos o sugerencias</td><td><strong>24 Horas</strong></td></tr>
-        </tbody>
-      </table>
-
-      <h2 class="section-title" style="margin-top: 10px;">11. Conformidad del Comité Evaluador</h2>
-      <div class="card-accent" style="text-align: center; padding: 8px;">
-        <strong style="color: var(--q-navy); font-size: 10px;">APROBADO PARA DISTRIBUCIÓN GENERAL EN INSTITUCIONES DE SALUD</strong>
-        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 6px;">
-          <div style="border-top: 1.5px solid var(--q-blue-dark); padding-top: 4px;">
-            <strong>Paula Sbarbati</strong><br><span style="color:var(--q-text-muted); font-size:8px;">Calidad Asistencial</span>
-          </div>
-          <div style="border-top: 1.5px solid var(--q-blue-dark); padding-top: 4px;">
-            <strong>Diego Martínez</strong><br><span style="color:var(--q-text-muted); font-size:8px;">Arquitectura Técnica</span>
-          </div>
-          <div style="border-top: 1.5px solid var(--q-blue-dark); padding-top: 4px;">
-            <strong>Carolina Brizuela</strong><br><span style="color:var(--q-text-muted); font-size:8px;">Operaciones de Salud</span>
-          </div>
-          <div style="border-top: 1.5px solid var(--q-blue-dark); padding-top: 4px;">
-            <strong>Nicolás Sánchez</strong><br><span style="color:var(--q-text-muted); font-size:8px;">Seguridad & Compliance</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="footer-rule">
-      <span>DOC-MAN-005: Manual de Usuario • Quantux Salud</span>
-      <span>Página 5 de 5</span>
+  <div class="col-md-4">
+    <div class="card h-100 shadow-sm border-top border-danger border-4 p-3">
+      <h5 class="fw-bold text-danger"><i class="fas fa-user-shield me-2"></i>3. Administrador TI</h5>
+      <p class="small text-muted">Para gerencia y supervisores del ServiceDesk.</p>
+      <ul class="small ps-3">
+        <li>Login con <code>admin</code> / <code>quantux123</code>.</li>
+        <li>Supervisión de dotación en <strong>Mesas N1/N2/N3</strong>.</li>
+        <li>Aprobación y versionado de <strong>Base de Conocimiento</strong>.</li>
+        <li><strong>Exportación Forense en CSV</strong> con codificación UTF-8.</li>
+      </ul>
     </div>
   </div>
+</div>
 
+<div class="callout callout-warning mt-4">
+  <h6 class="fw-bold"><i class="fas fa-exclamation-triangle me-2"></i>Guardrail Clínico Obligatorio con IA</h6>
+  <p class="mb-0">Los módulos de IA sugieren protocolos basados en palabras clave y síntomas. <strong>Ningún operador debe aplicar una modificación de software en producción sin la debida confirmación con el especialista facultativo responsable.</strong></p>
+</div>
+
+  <hr class="my-5">
+  <div class="text-center text-muted small pb-4">
+    <strong>Quantux HealthDesk v3.2.0-UAT</strong> • Solución de Triage e Incidentes Asistenciales ITIL 4<br>
+    Solution Owner: <em>Freddy Cortés</em> • Facilitador Técnico: <em>Diego Martínez</em> • Comité Evaluador: <em>Paula Sbarbati, Diego Martínez, Carolina Brizuela, Nicolás Sánchez</em><br>
+    Certificación de Calidad: <strong>14 Ciclos Consecutivos TQM (Zero Defects 100%)</strong> • Septiembre 2026
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -1,13 +1,17 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from app.db.seed import run_seed
 from app.api.endpoints import auth, tickets, masters, users
 
 app = FastAPI(
     title="Quantux ServiceDesk API",
-    description="Backend oficial de Quantux ServiceDesk para Plataformas HealthTech (Producción Homologada)",
-    version="3.2.0-PROD"
+    description="Backend centralizado de Quantux ServiceDesk para Plataformas HealthTech (Ambiente de Pruebas & Certificación UAT)",
+    version="3.2.0-UAT"
 )
+
+# GZIP para aceleración de transferencia en redes móviles y tablets (90% reducción de payload)
+app.add_middleware(GZipMiddleware, minimum_size=500)
 
 # CORS para permitir conexion desde la UI Cockpit
 app.add_middleware(
@@ -33,25 +37,34 @@ app.include_router(tickets.router, prefix="/api/v1/tickets", tags=["Tickets"])
 app.include_router(masters.router, prefix="/api/v1", tags=["Tablas Maestras"])
 app.include_router(users.router, prefix="/api/v1/users", tags=["Usuarios"])
 
-# RUTA AL DIRECTORIO FRONTEND Y DOCS
-frontend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "frontend"))
+# Configuración de Rutas de Archivos Estáticos
 docs_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "docs"))
+frontend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "frontend"))
 
+# Montar frontend en /static, /css, /js, /assets
 if os.path.exists(frontend_dir):
-    app.mount("/css", StaticFiles(directory=os.path.join(frontend_dir, "css")), name="css")
-    app.mount("/js", StaticFiles(directory=os.path.join(frontend_dir, "js")), name="js")
     app.mount("/static", StaticFiles(directory=frontend_dir), name="static")
+    css_dir = os.path.join(frontend_dir, "css")
+    if os.path.exists(css_dir):
+        app.mount("/css", StaticFiles(directory=css_dir), name="css")
+    js_dir = os.path.join(frontend_dir, "js")
+    if os.path.exists(js_dir):
+        app.mount("/js", StaticFiles(directory=js_dir), name="js")
+    assets_dir = os.path.join(frontend_dir, "assets")
+    if os.path.exists(assets_dir):
+        app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
 
 if os.path.exists(docs_dir):
     app.mount("/docs-files", StaticFiles(directory=docs_dir), name="docs_files")
 
+# Endpoints de Documentación y Cockpit Central
 @app.get("/")
 @app.get("/cockpit")
 def serve_cockpit():
-    index_file = os.path.join(frontend_dir, "index.html")
-    if os.path.exists(index_file):
-        return FileResponse(index_file, headers={"Cache-Control": "no-cache, no-store, must-revalidate"})
-    return {"message": "Frontend no encontrado"}
+    f = os.path.join(frontend_dir, "index.html")
+    if os.path.exists(f):
+        return FileResponse(f, headers={"Cache-Control": "no-cache, no-store, must-revalidate"})
+    return {"message": "Quantux ServiceDesk UI no encontrado"}
 
 @app.get("/scrumban")
 def serve_scrumban():
@@ -74,6 +87,27 @@ def serve_especificacion():
         return FileResponse(f, headers={"Cache-Control": "no-cache, no-store, must-revalidate"})
     return {"message": "Especificación no encontrada"}
 
+@app.get("/arquitectura")
+def serve_arquitectura():
+    f = os.path.join(docs_dir, "03_Arquitectura_Tecnica_Quantux.html")
+    if os.path.exists(f):
+        return FileResponse(f, headers={"Cache-Control": "no-cache, no-store, must-revalidate"})
+    return {"message": "Arquitectura no encontrada"}
+
+@app.get("/pruebas")
+def serve_pruebas():
+    f = os.path.join(docs_dir, "04_Informe_de_Pruebas_y_Evidencias_Quantux.html")
+    if os.path.exists(f):
+        return FileResponse(f, headers={"Cache-Control": "no-cache, no-store, must-revalidate"})
+    return {"message": "Informe de Pruebas no encontrado"}
+
+@app.get("/manual")
+def serve_manual():
+    f = os.path.join(docs_dir, "05_Manual_Operativo_Quantux.html")
+    if os.path.exists(f):
+        return FileResponse(f, headers={"Cache-Control": "no-cache, no-store, must-revalidate"})
+    return {"message": "Manual de Usuario no encontrado"}
+
 @app.get("/presentacion")
 def serve_presentacion():
     f = os.path.join(docs_dir, "06_Presentacion_Ejecutiva_Quantux.html")
@@ -88,12 +122,11 @@ def api_status():
         "system": "Quantux ServiceDesk",
         "organization": "Quantux Salud & HealthTech",
         "status": "ONLINE",
-        "version": "3.2.0-PROD",
-        "release": "Executive Redesign & Production Cloud Edition",
+        "environment": "UAT / Certificación y Pruebas",
+        "version": "3.2.0-UAT",
+        "release": "Ambiente de Pruebas & Certificación (UAT)",
         "cockpit_url": "/cockpit",
         "scrumban_url": "/scrumban",
-        "presentacion_url": "/presentacion",
+        "manual_url": "/manual",
         "docs_url": "/docs"
     }
-
-

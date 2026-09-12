@@ -62,13 +62,16 @@ class TicketEscalateRequest(BaseModel):
 
 class TicketStatusRequest(BaseModel):
     new_status: TicketStatus
-    changed_by_username: str = "soporte"
+    changed_by_username: Optional[str] = None
+    changed_by: Optional[str] = None
     reason: Optional[str] = None
 
 class TicketResolveRequest(BaseModel):
     resolution_notes: str
     is_workaround: bool = False
-    resolved_by_username: str = "soporte"
+    resolved_by_username: Optional[str] = None
+    resolved_by: Optional[str] = None
+    root_cause: Optional[str] = None
 
 class TicketCloseRequest(BaseModel):
     closed_by_username: str = "solicitante"
@@ -628,9 +631,10 @@ def update_ticket_status(ticket_id: str, req: TicketStatusRequest, background_ta
     ticket.updated_at = datetime.utcnow()
     session.add(ticket)
     
+    operator_user = req.changed_by_username or req.changed_by or "soporte"
     session.add(TicketAuditLog(
         ticket_id=ticket_id,
-        changed_by_username=req.changed_by_username,
+        changed_by_username=operator_user,
         field_changed="status",
         old_value=old_status.value,
         new_value=req.new_status.value,
@@ -658,6 +662,7 @@ def resolve_ticket(ticket_id: str, req: TicketResolveRequest, background_tasks: 
     if len(req.resolution_notes.strip()) < 8:
         raise HTTPException(status_code=400, detail="La solución técnica debe contener al menos 8 caracteres explicativos.")
     
+    resolver_user = req.resolved_by_username or req.resolved_by or "soporte"
     old_status = ticket.status
     ticket.status = TicketStatus.RESUELTO
     ticket.resolution_notes = req.resolution_notes.strip()
@@ -668,7 +673,7 @@ def resolve_ticket(ticket_id: str, req: TicketResolveRequest, background_tasks: 
     
     session.add(TicketAuditLog(
         ticket_id=ticket_id,
-        changed_by_username=req.resolved_by_username,
+        changed_by_username=resolver_user,
         field_changed="status",
         old_value=old_status.value,
         new_value="RESUELTO",

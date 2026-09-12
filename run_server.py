@@ -58,7 +58,7 @@ def main():
         sys.exit(1)
 
     # 2. Comprobar puerto 8000
-    host = "127.0.0.1"
+    host = "0.0.0.0"
     port = 8000
     print(f"\n[2/3] Verificando disponibilidad de puerto {port}...")
     if not check_port_free(host, port):
