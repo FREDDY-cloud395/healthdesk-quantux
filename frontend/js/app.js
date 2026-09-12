@@ -6366,6 +6366,114 @@ function reassignFromWorkspace() {
   openReassignModal(AppState.selectedTicket.id);
 }
 
+function openReassignModal(ticketId) {
+  const ticket = AppState.selectedTicket || (AppState.tickets && AppState.tickets.find(t => String(t.id) === String(ticketId)));
+  if (!ticket) return;
+
+  const existingModal = document.getElementById('modal-dynamic-reassign');
+  if (existingModal) existingModal.remove();
+
+  const modalHtml = `
+    <div id="modal-dynamic-reassign" style="z-index: 10000; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.65); display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
+      <div style="background: #FFFFFF; border-radius: 12px; max-width: 480px; width: 92%; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2); overflow: hidden;">
+        <div style="background: linear-gradient(135deg, #0F172A, #1E293B); color: #FFF; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between;">
+          <h5 style="margin: 0; font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+            <span>👤</span> Asignar / Reasignar Operador ITIL
+          </h5>
+          <button type="button" onclick="closeReassignModal()" style="background: transparent; border: none; color: #94A3B8; font-size: 18px; cursor: pointer; padding: 0 4px;">✕</button>
+        </div>
+        <div style="padding: 20px;">
+          <div style="margin-bottom: 14px;">
+            <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 4px;">Ticket:</label>
+            <div style="font-size: 13px; font-weight: 600; color: #0F172A; background: #F1F5F9; padding: 8px 12px; border-radius: 6px;">
+              #${ticket.id} — ${escapeHtml(ticket.title || '')}
+            </div>
+          </div>
+          
+          <div style="margin-bottom: 14px;">
+            <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 4px;">Seleccionar Operador Responsable:</label>
+            <select id="reassign-operator-select" style="width: 100%; padding: 9px 12px; border: 1px solid #CBD5E1; border-radius: 6px; font-size: 13px; background: #FFF; font-weight: 500;">
+              <option value="cpaez" ${ticket.assignee_username === 'cpaez' ? 'selected' : ''}>Carlos Páez (Soporte N2 • Especialista HCE / Telemedicina)</option>
+              <option value="soporte" ${ticket.assignee_username === 'soporte' ? 'selected' : ''}>Carlos Páez (Mesa de Soporte N1)</option>
+              <option value="admin" ${ticket.assignee_username === 'admin' ? 'selected' : ''}>Administrador TI (Ingeniería N3 • Infraestructura)</option>
+            </select>
+          </div>
+
+          <div style="margin-bottom: 14px;">
+            <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 4px;">Nivel ITIL Asignado:</label>
+            <select id="reassign-level-select" style="width: 100%; padding: 9px 12px; border: 1px solid #CBD5E1; border-radius: 6px; font-size: 13px; background: #FFF; font-weight: 500;">
+              <option value="N1" ${(ticket.itil_level || 'N1') === 'N1' ? 'selected' : ''}>Nivel N1 — Mesa de Ayuda y Triage</option>
+              <option value="N2" ${(ticket.itil_level || 'N1') === 'N2' ? 'selected' : ''}>Nivel N2 — Analista Funcional y Plataformas</option>
+              <option value="N3" ${(ticket.itil_level || 'N1') === 'N3' ? 'selected' : ''}>Nivel N3 — Ingeniería, DBAs y Arquitectura</option>
+            </select>
+          </div>
+
+          <div style="margin-bottom: 18px;">
+            <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 4px;">Motivo / Nota de Derivación (Opcional):</label>
+            <textarea id="reassign-reason-textarea" rows="2" placeholder="Indique motivo técnico o instrucciones para el operador..." style="width: 100%; padding: 8px 12px; border: 1px solid #CBD5E1; border-radius: 6px; font-size: 12px; resize: none; font-family: inherit;"></textarea>
+          </div>
+
+          <div style="display: flex; gap: 8px; justify-content: flex-end;">
+            <button type="button" onclick="closeReassignModal()" style="padding: 8px 14px; background: #F1F5F9; color: #475569; border: 1px solid #CBD5E1; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;">Cancelar</button>
+            <button type="button" onclick="confirmReassign('${ticket.id}')" style="padding: 8px 18px; background: #00A896; color: #FFFFFF; border: none; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; box-shadow: 0 2px 4px rgba(0,168,150,0.25);">Confirmar Asignación</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+}
+
+function closeReassignModal() {
+  const modal = document.getElementById('modal-dynamic-reassign');
+  if (modal) modal.remove();
+}
+
+async function confirmReassign(ticketId) {
+  const opSelect = document.getElementById('reassign-operator-select');
+  const lvlSelect = document.getElementById('reassign-level-select');
+  const reasonText = document.getElementById('reassign-reason-textarea');
+  if (!opSelect) return;
+
+  const username = opSelect.value;
+  const itilLevel = lvlSelect ? lvlSelect.value : 'N2';
+  const reason = reasonText ? reasonText.value.trim() : '';
+
+  let fullName = 'Carlos Páez';
+  if (username === 'admin') fullName = 'Administrador TI';
+
+  try {
+    const payload = {
+      assignee_username: username,
+      assignee_name: fullName,
+      itil_level: itilLevel,
+      status: 'ASIGNADO'
+    };
+
+    await API.updateTicket(ticketId, payload);
+
+    if (reason) {
+      await API.addComment(ticketId, {
+        message: `🔄 Asignación / Derivación a ${fullName} (${itilLevel}). Motivo: ${reason}`,
+        content: `🔄 Asignación / Derivación a ${fullName} (${itilLevel}). Motivo: ${reason}`,
+        is_internal: true,
+        author_username: AppState.currentUser ? AppState.currentUser.username : 'soporte',
+        author_name: AppState.currentUser ? AppState.currentUser.full_name : 'Operador',
+        author_role: 'SOPORTE'
+      });
+    }
+
+    closeReassignModal();
+    showToast(`Ticket #${ticketId} asignado a ${fullName} (${itilLevel})`, 'success');
+    await openAgentWorkspace(ticketId);
+    await loadTickets();
+  } catch (err) {
+    console.error('Error reasignando ticket:', err);
+    showToast('Error al reasignar el caso', 'error');
+  }
+}
+
 // =============================================================================
 // 13. QUICK FSM WORKFLOW ACTIONS (INTEGRATED)
 // =============================================================================
@@ -6440,7 +6548,7 @@ async function quickReopenTicket(ticketId) {
 }
 
 function openEscalateModal(ticketId) {
-  reassignFromWorkspace();
+  openReassignModal(ticketId);
 }
 
 function openTechDetailsModal(ticketId) {

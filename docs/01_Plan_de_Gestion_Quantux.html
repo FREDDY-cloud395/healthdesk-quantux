@@ -3,176 +3,779 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DOC-PM-001 • Plan de Gestión del Proyecto con IA • Quantux HealthDesk v3.2.0-UAT</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
-  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+  <title>DOC-MGT-001 — Plan de Gestión del Proyecto HealthDesk Quantux</title>
   <style>
-    body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background-color: #f8f9fa; color: #212529; }
-    .doc-container { max-width: 1200px; margin: 30px auto; background: #fff; padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
-    .badge-uat { background: #0d6efd; color: #fff; font-weight: 600; }
-    .badge-tqm { background: #198754; color: #fff; font-weight: 600; }
-    h1, h2, h3, h4 { color: #0f172a; font-weight: 700; margin-top: 1.5rem; margin-bottom: 1rem; }
-    h1 { border-bottom: 3px solid #0d6efd; padding-bottom: 10px; }
-    h2 { border-bottom: 1px solid #dee2e6; padding-bottom: 8px; margin-top: 2rem; }
-    table { width: 100%; margin: 20px 0; border-collapse: collapse; }
-    th { background: #0f172a; color: #fff; padding: 12px; font-weight: 600; }
-    td { padding: 10px 12px; border-bottom: 1px solid #e2e8f0; vertical-align: middle; }
-    tr:nth-child(even) { background-color: #f8fafc; }
-    .callout { border-left: 5px solid #0d6efd; padding: 15px 20px; background: #f0f7ff; border-radius: 4px; margin: 20px 0; }
-    .callout-success { border-left-color: #198754; background: #f0fdf4; }
-    .callout-warning { border-left-color: #f59e0b; background: #fffbeb; }
-    .doc-header-card { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #fff; padding: 25px; border-radius: 8px; margin-bottom: 30px; }
-    .mermaid { background: #fff; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px; margin: 20px 0; }
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+    :root {
+      --q-navy: #1E3A5F;
+      --q-navy-dark: #142842;
+      --q-navy-soft: #2D4B73;
+      --q-teal: #00C4B4;
+      --q-teal-light: #E0F7F5;
+      --q-gray-bg: #F8FAFC;
+      --q-gray-border: #E2E8F0;
+      --q-text-body: #334155;
+      --q-text-muted: #64748B;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      color: var(--q-text-body);
+      background-color: #CBD5E1;
+      line-height: 1.6;
+      font-size: 12.5px;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .doc-page {
+      width: 210mm;
+      min-height: 297mm;
+      margin: 20px auto;
+      background: #FFFFFF;
+      padding: 20mm 18mm;
+      box-shadow: 0 10px 25px rgba(30, 58, 95, 0.12);
+      position: relative;
+    }
+
+    @media print {
+      body { background: transparent; }
+      .doc-page { width: 100%; margin: 0; padding: 0; box-shadow: none; }
+      .page-break { page-break-before: always; }
+      @page { size: A4; margin: 15mm 15mm 15mm 15mm; }
+    }
+
+    .quantux-logo-header { display: flex; align-items: center; gap: 12px; }
+    .quantux-isotype { width: 44px; height: 44px; flex-shrink: 0; }
+    .quantux-text-group { display: flex; flex-direction: column; line-height: 1; }
+    .quantux-brand-name { font-family: 'Montserrat', sans-serif; font-size: 26px; font-weight: 800; color: var(--q-navy); letter-spacing: -0.5px; }
+    .quantux-brand-sub { font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 800; color: var(--q-teal); letter-spacing: 2px; text-align: right; margin-top: 2px; }
+
+    .running-header {
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 2px solid var(--q-teal); padding-bottom: 8px; margin-bottom: 20px;
+      font-size: 10px; font-family: 'Montserrat', sans-serif; font-weight: 700; color: var(--q-navy);
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+
+    .running-footer {
+      border-top: 1px solid var(--q-gray-border); padding-top: 8px; margin-top: 25px;
+      display: flex; justify-content: space-between; font-size: 9px; color: var(--q-text-muted);
+    }
+
+    .cover-container {
+      min-height: 252mm; display: flex; flex-direction: column; justify-content: space-between;
+      border: 2px solid var(--q-navy); border-radius: 8px; padding: 36px; background: #FFFFFF;
+    }
+
+    .cover-top-bar { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--q-gray-border); padding-bottom: 18px; }
+    .cover-main { margin: 30px 0; text-align: center; }
+    .cover-tag {
+      display: inline-block; background: var(--q-teal-light); color: var(--q-navy);
+      font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 700; padding: 6px 18px;
+      border-radius: 30px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; border: 1px solid var(--q-teal);
+    }
+    .cover-main h1 { font-family: 'Montserrat', sans-serif; font-size: 27px; font-weight: 800; color: var(--q-navy); line-height: 1.2; margin-bottom: 12px; }
+    .cover-main h2 { font-family: 'Montserrat', sans-serif; font-size: 14.5px; font-weight: 600; color: var(--q-navy-soft); max-width: 90%; margin: 0 auto; }
+    .cover-card { background: var(--q-gray-bg); border: 1px solid var(--q-gray-border); border-left: 4px solid var(--q-teal); border-radius: 6px; padding: 20px; }
+    .cover-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; font-size: 11.5px; }
+    .cover-grid-item strong { display: block; color: var(--q-navy); font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+
+    h2.section-header {
+      font-family: 'Montserrat', sans-serif; font-size: 13.5px; font-weight: 800; color: var(--q-navy);
+      text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid var(--q-teal);
+      padding-bottom: 5px; margin-top: 22px; margin-bottom: 10px;
+    }
+    h3.sub-header { font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 700; color: var(--q-navy-soft); margin-top: 12px; margin-bottom: 6px; }
+    p { margin-bottom: 8px; text-align: justify; }
+
+    .box-mvp { background: var(--q-gray-bg); border: 1px solid var(--q-gray-border); border-radius: 8px; padding: 14px; margin: 12px 0; }
+    .flow-steps { display: flex; justify-content: space-between; align-items: center; margin: 10px 0; background: #FFFFFF; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--q-teal); }
+    .flow-step-item { text-align: center; font-family: 'Montserrat', sans-serif; font-weight: 700; color: var(--q-navy); font-size: 10.5px; }
+    .flow-step-num { display: block; color: var(--q-teal); font-size: 12.5px; font-weight: 800; }
+    .roles-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 8px; }
+    .role-card { background: #FFFFFF; border: 1px solid var(--q-gray-border); border-radius: 6px; padding: 8px 10px; }
+    .role-card h5 { font-family: 'Montserrat', sans-serif; font-size: 11px; color: var(--q-navy); font-weight: 700; margin-bottom: 2px; }
+    .role-card p { font-size: 10.5px; color: var(--q-text-body); margin: 0; }
+
+    .scope-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 8px 0; }
+    .scope-item { background: #FFFFFF; border: 1px solid var(--q-gray-border); border-left: 3px solid var(--q-navy); border-radius: 4px; padding: 7px 9px; font-size: 10.5px; }
+    .scope-item strong { color: var(--q-navy); display: block; font-family: 'Montserrat', sans-serif; font-size: 10.5px; margin-bottom: 1px; }
+    .out-scope-box { background: #FEE2E2; border: 1px solid #F87171; border-radius: 6px; padding: 8px 10px; margin-top: 8px; font-size: 10.5px; color: #991B1B; }
+
+    .demo-step { display: flex; gap: 10px; background: #FFFFFF; border: 1px solid var(--q-gray-border); border-radius: 6px; padding: 7px 10px; margin-bottom: 6px; }
+    .demo-step-num { font-family: 'Montserrat', sans-serif; font-weight: 800; color: var(--q-teal); font-size: 11.5px; min-width: 20px; }
+    .demo-step-content strong { color: var(--q-navy); font-family: 'Montserrat', sans-serif; font-size: 11px; display: block; margin-bottom: 1px; }
+    .demo-step-content p { margin: 0; font-size: 10.5px; }
+
+    table { width: 100%; border-collapse: collapse; margin: 10px 0 14px 0; font-size: 11px; background: #FFFFFF; }
+    table th { background: var(--q-navy); color: #FFFFFF; font-family: 'Montserrat', sans-serif; font-weight: 700; text-align: left; padding: 7px 9px; font-size: 10px; letter-spacing: 0.3px; border: 1px solid var(--q-navy); }
+    table td { padding: 6px 9px; border: 1px solid var(--q-gray-border); vertical-align: middle; }
+    table tr:nth-child(even) { background-color: var(--q-gray-bg); }
+    .badge-risk { background: #FEF3C7; color: #92400E; font-weight: 700; padding: 2px 6px; border-radius: 4px; font-size: 9.5px; font-family: 'Montserrat', sans-serif; }
   </style>
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow-sm">
-  <div class="container-fluid px-4">
-    <a class="navbar-brand fw-bold text-info" href="/cockpit">
-      <i class="fas fa-heartbeat me-2"></i>Quantux HealthDesk <span class="badge bg-primary ms-1">v3.2.0-UAT</span>
-    </a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navMenu">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item"><a class="nav-link" href="/cockpit"><i class="fas fa-desktop me-1"></i> Cockpit</a></li>
-        <li class="nav-item"><a class="nav-link" href="/scrumban"><i class="fas fa-columns me-1"></i> Tablero Scrumban</a></li>
-        <li class="nav-item"><a class="nav-link" href="/plan"><i class="fas fa-project-diagram me-1"></i> Plan de Gestión (DOC-01)</a></li>
-        <li class="nav-item"><a class="nav-link" href="/especificacion"><i class="fas fa-list-check me-1"></i> Especificación (DOC-02)</a></li>
-        <li class="nav-item"><a class="nav-link" href="/arquitectura"><i class="fas fa-sitemap me-1"></i> Arquitectura (DOC-03)</a></li>
-        <li class="nav-item"><a class="nav-link" href="/pruebas"><i class="fas fa-vial-circle-check me-1"></i> Pruebas TQM (DOC-04)</a></li>
-        <li class="nav-item"><a class="nav-link" href="/manual"><i class="fas fa-book-medical me-1"></i> Manual Operativo (DOC-05)</a></li>
-        <li class="nav-item"><a class="nav-link" href="/presentacion"><i class="fas fa-chalkboard-teacher me-1"></i> Presentación Ejecutiva (DOC-06)</a></li>
-      </ul>
-      <span class="navbar-text text-white">
-        <span class="badge bg-success"><i class="fas fa-check-circle me-1"></i> Zero Defects TQM (14/14)</span>
-      </span>
+  <div class="doc-page">
+
+    <!-- PORTADA -->
+    <div class="cover-container">
+      <div class="cover-top-bar">
+        <div class="quantux-logo-header">
+          <svg class="quantux-isotype" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="44" cy="44" r="38" fill="#00C4B4"/>
+            <path d="M34 34L54 54M54 34L34 54" stroke="white" stroke-width="6.5" stroke-linecap="round"/>
+            <path d="M68 68L86 86" stroke="#1E3A5F" stroke-width="11" stroke-linecap="round"/>
+          </svg>
+          <div class="quantux-text-group">
+            <span class="quantux-brand-name">Quantux</span>
+            <span class="quantux-brand-sub">SALUD</span>
+          </div>
+        </div>
+        <div style="font-family: 'Montserrat', sans-serif; font-size: 11px; color: var(--q-navy); font-weight: 700;">
+          DOC-MGT-001
+        </div>
+      </div>
+
+      <div class="cover-main">
+        <div class="cover-tag">Documento de Gestión de Proyecto</div>
+        <h1>PLAN DE GESTIÓN DEL PROYECTO</h1>
+        <h2>HEALTHDESK QUANTUX — SISTEMA CENTRALIZADO DE GESTIÓN DE TICKETS DE SOPORTE</h2>
+      </div>
+
+      <div class="cover-card">
+        <div class="cover-grid">
+          <div class="cover-grid-item">
+            <strong>Código Documental</strong>
+            DOC-MGT-001 (Versión 1.0 Oficial)
+          </div>
+          <div class="cover-grid-item">
+            <strong>Fecha de Emisión</strong>
+            28 de Agosto de 2026
+          </div>
+          <div class="cover-grid-item">
+            <strong>Solution Owner</strong>
+            Freddy Cortés (Analista Funcional)
+          </div>
+          <div class="cover-grid-item">
+            <strong>Clasificación</strong>
+            Uso Interno / Confidencial
+          </div>
+          <div class="cover-grid-item" style="grid-column: span 2; border-top: 1px solid var(--q-gray-border); padding-top: 10px; margin-top: 4px;">
+            <strong>Comité Evaluador</strong>
+            • Paula Sbarbati (Referente Funcional)<br>
+            • Diego Martínez (Facilitador Técnico)<br>
+            • Carolina Brizuela (Capital Humano)<br>
+            • Nicolás Sánchez (Gerencia General)
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align: center; font-size: 10px; color: var(--q-text-muted); font-family: 'Montserrat', sans-serif;">
+        Quantux Salud • www.quantuxsalud.com
+      </div>
     </div>
-  </div>
-</nav>
 
-<div class="container doc-container">
+    <!-- PÁGINA 2: CONTROL Y SECCIÓN 1 Y 2 -->
+    <div class="page-break"></div>
 
-<div class="doc-header-card">
-  <div class="d-flex justify-content-between align-items-center">
-    <div>
-      <span class="badge bg-primary text-uppercase me-2">DOC-PM-001</span>
-      <span class="badge bg-success text-uppercase">v3.2.0-UAT • Homologado</span>
-      <h2 class="text-white mt-2 mb-1">PLAN DE GESTIÓN DEL PROYECTO INFORMÁTICO CON IA Y AGENTES</h2>
-      <p class="text-light mb-0">Gestión Integral de Incidentes y Servicios para Plataformas HealthTech • Quantux Salud</p>
+    <div class="running-header">
+      <span>Quantux Salud</span>
+      <span>DOC-MGT-001: Plan de Gestión del Proyecto</span>
     </div>
-    <div class="text-end">
-      <span class="badge bg-light text-dark p-2 fw-bold">8 Épicas • 38 UHs • 91 SP</span>
+
+    <!-- CONTROL DE VERSIONES -->
+    <h2 class="section-header">Control de Versiones y Distribución</h2>
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 15%;">Versión</th>
+          <th style="width: 20%;">Fecha</th>
+          <th style="width: 25%;">Responsable</th>
+          <th>Detalle de Modificaciones / Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>v0.1</strong></td>
+          <td>24/08/2026</td>
+          <td>Freddy Cortés</td>
+          <td>Estructuración inicial del alcance y relevamiento de soporte.</td>
+        </tr>
+        <tr>
+          <td><strong>v0.2</strong></td>
+          <td>26/08/2026</td>
+          <td>Freddy Cortés</td>
+          <td>Calibración de roles, matriz de esfuerzo y riesgos preventivos.</td>
+        </tr>
+        <tr>
+          <td><strong>v1.0</strong></td>
+          <td>28/08/2026</td>
+          <td>Freddy Cortés</td>
+          <td><strong>Versión Oficial de Línea Base del MVP.</strong></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- SECCIÓN 1 -->
+    <h2 class="section-header">1. Identificación y Gobernanza del Proyecto</h2>
+    
+    <h3 class="sub-header">1.1. Ficha del Proyecto</h3>
+    <table>
+      <tbody>
+        <tr>
+          <td style="width: 30%; font-weight: 600;">Proyecto</td>
+          <td><strong>HealthDesk Quantux</strong> — Sistema Centralizado de Gestión de Tickets de Soporte</td>
+        </tr>
+        <tr>
+          <td style="font-weight: 600;">Organización</td>
+          <td>Quantux Salud</td>
+        </tr>
+        <tr>
+          <td style="font-weight: 600;">Solution Owner</td>
+          <td><strong>Freddy Cortés</strong> (Analista Funcional — Solution Owner)</td>
+        </tr>
+        <tr>
+          <td style="font-weight: 600;">Referente Funcional</td>
+          <td>Paula Sbarbati</td>
+        </tr>
+        <tr>
+          <td style="font-weight: 600;">Facilitador Técnico</td>
+          <td>Diego Martínez</td>
+        </tr>
+        <tr>
+          <td style="font-weight: 600;">Capital Humano</td>
+          <td>Carolina Brizuela</td>
+        </tr>
+        <tr>
+          <td style="font-weight: 600;">Gerencia General</td>
+          <td>Nicolás Sánchez</td>
+        </tr>
+        <tr>
+          <td style="font-weight: 600;">Duración Estimada</td>
+          <td>5 Semanas (5 Sprints semanales)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 class="sub-header">1.2. Propósito y Contexto Operativo</h3>
+    <p>
+      Quantux Salud opera un ecosistema tecnológico de <strong>9 plataformas digitales</strong> que dan soporte a más de <strong>12.000 profesionales de la salud activos</strong>, procesan <strong>400.000 recetas mensuales</strong> y atienden los requerimientos de <strong>14 clientes institucionales</strong> (financiadores, sanatorios y empresas de internación domiciliaria). El proyecto diseña e implementa una plataforma centralizada adaptada a la dinámica de soporte de la compañía.
+    </p>
+
+    <!-- SECCIÓN 2: DEFINICIÓN OFICIAL DEL MVP -->
+    <h2 class="section-header">2. Definición Oficial del MVP</h2>
+
+    <!-- MVP 1/3 -->
+    <div class="box-mvp">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+        <h3 class="sub-header" style="margin: 0;">MVP | Sistema de Tickets de Soporte</h3>
+        <span style="font-size: 10px; font-weight: 700; color: var(--q-teal); font-family: 'Montserrat', sans-serif;">MVP • 1/3</span>
+      </div>
+      <p style="margin-bottom: 6px;"><strong>Objetivo:</strong> Demostrar un circuito completo, simple y trazable de atención de tickets.</p>
+      
+      <div class="flow-steps">
+        <div class="flow-step-item"><span class="flow-step-num">1</span> Crear ticket</div>
+        <div style="color: var(--q-teal);">•</div>
+        <div class="flow-step-item"><span class="flow-step-num">2</span> Asignar</div>
+        <div style="color: var(--q-teal);">•</div>
+        <div class="flow-step-item"><span class="flow-step-num">3</span> Gestionar</div>
+        <div style="color: var(--q-teal);">•</div>
+        <div class="flow-step-item"><span class="flow-step-num">4</span> Resolver</div>
+        <div style="color: var(--q-teal);">•</div>
+        <div class="flow-step-item"><span class="flow-step-num">5</span> Cerrar</div>
+      </div>
+
+      <div class="roles-grid">
+        <div class="role-card">
+          <h5>Usuario / Solicitante</h5>
+          <p>Genera y consulta sus tickets.</p>
+        </div>
+        <div class="role-card">
+          <h5>Operador de Soporte</h5>
+          <p>Recibe, gestiona y resuelve.</p>
+        </div>
+        <div class="role-card">
+          <h5>Administrador</h5>
+          <p>Configura y supervisa la operación.</p>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
 
-<div class="callout callout-success">
-  <h5 class="fw-bold"><i class="fas fa-check-double me-2"></i>Certificación TQM de Cero Defectos (Zero Defects)</h5>
-  El presente plan establece el sistema de ejecución formal integrando <strong>personas, procesos, datos, herramientas y agentes de IA</strong>, cumpliendo con la gobernanza de las 5 preguntas clave y el mecanismo de mitigación de la 6ª pregunta ante fallas de IA.
-</div>
+    <!-- MVP 2/3 -->
+    <div class="box-mvp">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+        <h3 class="sub-header" style="margin: 0;">Alcance Funcional del MVP</h3>
+        <span style="font-size: 10px; font-weight: 700; color: var(--q-teal); font-family: 'Montserrat', sans-serif;">MVP • 2/3</span>
+      </div>
+      <p style="margin-bottom: 6px;">Funcionalidades mínimas necesarias para soportar el flujo end-to-end.</p>
+      
+      <div class="scope-grid">
+        <div class="scope-item">
+          <strong>Acceso</strong>
+          Login + roles y permisos básicos
+        </div>
+        <div class="scope-item">
+          <strong>Tickets</strong>
+          Alta, consulta y edición
+        </div>
+        <div class="scope-item">
+          <strong>Datos</strong>
+          Título, descripción, categoría, prioridad, solicitante y fecha
+        </div>
+        <div class="scope-item">
+          <strong>Gestión</strong>
+          Asignación de responsable / operador de soporte
+        </div>
+        <div class="scope-item">
+          <strong>Estados</strong>
+          Nuevo → Asignado → En curso → Resuelto → Cerrado
+        </div>
+        <div class="scope-item">
+          <strong>Seguimiento</strong>
+          Comentarios y actualizaciones
+        </div>
+        <div class="scope-item">
+          <strong>Historial</strong>
+          Trazabilidad de cambios relevantes
+        </div>
+        <div class="scope-item">
+          <strong>Bandeja</strong>
+          Listado, búsqueda y filtros básicos
+        </div>
+        <div class="scope-item">
+          <strong>Notificaciones</strong>
+          Avisos básicos por asignación / cambio de estado
+        </div>
+        <div class="scope-item">
+          <strong>Administración</strong>
+          Usuarios, categorías y prioridades
+        </div>
+      </div>
 
-<h2>1. DEFINICIÓN DEL PROYECTO Y CONTEXTO ESTRATÉGICO</h2>
-<p>Quantux opera un ecosistema heterogéneo de <strong>9 plataformas clínicas asistenciales</strong> en más de <strong>14 sanatorios y financiadores</strong> (OSDE, Swiss Medical, Galeno, Italiano, Mater Dei, etc.). El proyecto resuelve la dispersión de canales, la falta de triage sanitario $P=I 	imes U$, la pérdida de trazabilidad legal y la fuga de conocimiento técnico.</p>
-
-<div class="row g-3 my-3">
-  <div class="col-md-3">
-    <div class="card bg-light p-3 border-0 shadow-sm text-center">
-      <h3 class="text-primary fw-bold mb-0">9</h3>
-      <small class="text-muted">Plataformas Asistenciales</small>
+      <div class="out-scope-box">
+        <strong>Fuera del MVP:</strong> SLA avanzados • automatizaciones complejas • integraciones • dashboards sofisticados • IA / chatbot
+      </div>
     </div>
-  </div>
-  <div class="col-md-3">
-    <div class="card bg-light p-3 border-0 shadow-sm text-center">
-      <h3 class="text-success fw-bold mb-0">14</h3>
-      <small class="text-muted">Clientes Institucionales</small>
+
+    <!-- MVP 3/3 -->
+    <div class="box-mvp">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+        <h3 class="sub-header" style="margin: 0;">Demo Objetivo | Historia que debe poder mostrarse</h3>
+        <span style="font-size: 10px; font-weight: 700; color: var(--q-teal); font-family: 'Montserrat', sans-serif;">MVP • 3/3</span>
+      </div>
+      <p style="margin-bottom: 6px;">La demo debe recorrer un caso completo, no funcionalidades aisladas.</p>
+      
+      <div class="demo-step">
+        <div class="demo-step-num">01</div>
+        <div class="demo-step-content">
+          <strong>Usuario genera solicitud</strong>
+          <p>Crea ticket, selecciona categoría/prioridad y describe el problema.</p>
+        </div>
+      </div>
+
+      <div class="demo-step">
+        <div class="demo-step-num">02</div>
+        <div class="demo-step-content">
+          <strong>Soporte recibe y asigna</strong>
+          <p>El ticket aparece en la bandeja y se asigna a un responsable de soporte.</p>
+        </div>
+      </div>
+
+      <div class="demo-step">
+        <div class="demo-step-num">03</div>
+        <div class="demo-step-content">
+          <strong>Operador gestiona</strong>
+          <p>Cambia estado, agrega comentarios y registra avances.</p>
+        </div>
+      </div>
+
+      <div class="demo-step">
+        <div class="demo-step-num">04</div>
+        <div class="demo-step-content">
+          <strong>Se registra la solución</strong>
+          <p>El operador documenta la resolución y marca el ticket como resuelto.</p>
+        </div>
+      </div>
+
+      <div class="demo-step">
+        <div class="demo-step-num">05</div>
+        <div class="demo-step-content">
+          <strong>Cierre + trazabilidad</strong>
+          <p>Se cierra el ticket y queda disponible el historial completo.</p>
+        </div>
+      </div>
+
+      <p style="margin-top: 8px; font-weight: 600; color: var(--q-navy);">
+        <strong>Criterio de éxito:</strong> Completar el ciclo de atención con responsables, estados y trazabilidad de forma simple e intuitiva.
+      </p>
     </div>
-  </div>
-  <div class="col-md-3">
-    <div class="card bg-light p-3 border-0 shadow-sm text-center">
-      <h3 class="text-info fw-bold mb-0">38</h3>
-      <small class="text-muted">Historias de Usuario</small>
+
+    <!-- PÁGINA 3: METODOLOGÍA, RACI Y ESTIMACIÓN -->
+    <div class="page-break"></div>
+
+    <div class="running-header">
+      <span>Quantux Salud</span>
+      <span>DOC-MGT-001: Plan de Gestión del Proyecto</span>
     </div>
-  </div>
-  <div class="col-md-3">
-    <div class="card bg-light p-3 border-0 shadow-sm text-center">
-      <h3 class="text-danger fw-bold mb-0">100%</h3>
-      <small class="text-muted">TQM Zero Defects (14/14)</small>
+
+    <!-- SECCIÓN 3 -->
+    <h2 class="section-header">3. Enfoque de Desarrollo y Adaptación Metodológica</h2>
+    <p>
+      El proyecto adopta un marco <strong>Ágil (Iterativo e Incremental)</strong> bajo la modalidad <strong>Scrumban</strong> estructurado en 5 ciclos semanales con gestión visual de flujo.
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 30%;">Etapa de Adaptación</th>
+          <th>Decisión y Justificación de Gestión</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>1. Enfoque de Desarrollo</strong></td>
+          <td>Ciclo iterativo e incremental en 5 Sprints para validar software funcional utilizable cada semana.</td>
+        </tr>
+        <tr>
+          <td><strong>2. Adaptación a Quantux</strong></td>
+          <td>Alineación al modelo operativo de soporte para las plataformas y clientes institucionales.</td>
+        </tr>
+        <tr>
+          <td><strong>3. Adaptación al Proyecto</strong></td>
+          <td>Estructuración sobre los 5 pasos del flujo y panel centralizado de operación (Cockpit).</td>
+        </tr>
+        <tr>
+          <td><strong>4. Mejora Continua</strong></td>
+          <td>Revisiones periódicas para calibrar y ajustar prioridades de entrega con los referentes.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- SECCIÓN 4 -->
+    <h2 class="section-header">4. Estructura de Roles y Matriz RACI de Gobernanza</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Actividad / Hito de Gestión</th>
+          <th style="text-align: center;">Solution Owner</th>
+          <th style="text-align: center;">Ref. Funcional</th>
+          <th style="text-align: center;">Fac. Técnico</th>
+          <th style="text-align: center;">Cap. Humano</th>
+          <th style="text-align: center;">Gerencia Gral.</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Definición de Alcance y Plan de Gestión</td>
+          <td style="text-align: center; font-weight: 700; color: var(--q-teal);">R / A</td>
+          <td style="text-align: center;">C</td>
+          <td style="text-align: center;">C</td>
+          <td style="text-align: center;">I</td>
+          <td style="text-align: center;">I</td>
+        </tr>
+        <tr>
+          <td>Aprobación de Requerimientos y Backlog</td>
+          <td style="text-align: center; font-weight: 700;">R</td>
+          <td style="text-align: center; font-weight: 700; color: #007A70;">A</td>
+          <td style="text-align: center;">C</td>
+          <td style="text-align: center;">I</td>
+          <td style="text-align: center;">I</td>
+        </tr>
+        <tr>
+          <td>Diseño y Construcción del Incremento</td>
+          <td style="text-align: center; font-weight: 700; color: var(--q-teal);">R / A</td>
+          <td style="text-align: center;">I</td>
+          <td style="text-align: center;">C</td>
+          <td style="text-align: center;">I</td>
+          <td style="text-align: center;">I</td>
+        </tr>
+        <tr>
+          <td>Validación de la Demo Operativa E2E</td>
+          <td style="text-align: center; font-weight: 700;">R</td>
+          <td style="text-align: center; font-weight: 700; color: #007A70;">A</td>
+          <td style="text-align: center;">C</td>
+          <td style="text-align: center;">I</td>
+          <td style="text-align: center;">I</td>
+        </tr>
+        <tr>
+          <td>Aprobación Final del Proyecto</td>
+          <td style="text-align: center; font-weight: 700;">R</td>
+          <td style="text-align: center;">C</td>
+          <td style="text-align: center;">C</td>
+          <td style="text-align: center;">C</td>
+          <td style="text-align: center; font-weight: 700; color: #991B1B;">A</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- SECCIÓN 5 -->
+    <h2 class="section-header">5. Estimación del Esfuerzo y Capacidad del Proyecto</h2>
+    
+    <h3 class="sub-header">5.1. Matriz Calibrada de Dedicación por Disciplina y Sprint</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Perfil / Disciplina</th>
+          <th style="text-align: center;">Sprint 1</th>
+          <th style="text-align: center;">Sprint 2</th>
+          <th style="text-align: center;">Sprint 3</th>
+          <th style="text-align: center;">Sprint 4</th>
+          <th style="text-align: center;">Sprint 5</th>
+          <th style="text-align: center; background: var(--q-teal); color: var(--q-navy);">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>📋 Análisis Funcional (AF / Solution Owner)</td>
+          <td style="text-align: center;">16 hs</td>
+          <td style="text-align: center;">6 hs</td>
+          <td style="text-align: center;">4 hs</td>
+          <td style="text-align: center;">4 hs</td>
+          <td style="text-align: center;">4 hs</td>
+          <td style="text-align: center; font-weight: 700;">34 hs</td>
+        </tr>
+        <tr>
+          <td>🎨 Diseño UX / UI</td>
+          <td style="text-align: center;">8 hs</td>
+          <td style="text-align: center;">3 hs</td>
+          <td style="text-align: center;">8 hs</td>
+          <td style="text-align: center;">2 hs</td>
+          <td style="text-align: center;">1 hs</td>
+          <td style="text-align: center; font-weight: 700;">22 hs</td>
+        </tr>
+        <tr>
+          <td>⚙️ Desarrollo Backend</td>
+          <td style="text-align: center;">2 hs</td>
+          <td style="text-align: center;">18 hs</td>
+          <td style="text-align: center;">6 hs</td>
+          <td style="text-align: center;">8 hs</td>
+          <td style="text-align: center;">2 hs</td>
+          <td style="text-align: center; font-weight: 700;">36 hs</td>
+        </tr>
+        <tr>
+          <td>💻 Desarrollo Frontend</td>
+          <td style="text-align: center;">2 hs</td>
+          <td style="text-align: center;">2 hs</td>
+          <td style="text-align: center;">16 hs</td>
+          <td style="text-align: center;">10 hs</td>
+          <td style="text-align: center;">2 hs</td>
+          <td style="text-align: center; font-weight: 700;">32 hs</td>
+        </tr>
+        <tr>
+          <td>🧪 Testing & Calidad (QA)</td>
+          <td style="text-align: center;">3 hs</td>
+          <td style="text-align: center;">5 hs</td>
+          <td style="text-align: center;">4 hs</td>
+          <td style="text-align: center;">10 hs</td>
+          <td style="text-align: center;">12 hs</td>
+          <td style="text-align: center; font-weight: 700;">34 hs</td>
+        </tr>
+        <tr>
+          <td>📊 Project Management</td>
+          <td style="text-align: center;">8 hs</td>
+          <td style="text-align: center;">4 hs</td>
+          <td style="text-align: center;">3 hs</td>
+          <td style="text-align: center;">4 hs</td>
+          <td style="text-align: center;">8 hs</td>
+          <td style="text-align: center; font-weight: 700;">27 hs</td>
+        </tr>
+        <tr style="background: var(--q-gray-bg); font-weight: 700;">
+          <td>TOTAL POR SPRINT</td>
+          <td style="text-align: center;">39 hs</td>
+          <td style="text-align: center;">38 hs</td>
+          <td style="text-align: center;">41 hs</td>
+          <td style="text-align: center;">38 hs</td>
+          <td style="text-align: center;">29 hs</td>
+          <td style="text-align: center; color: var(--q-navy); font-size: 12px; font-weight: 800;">185 hs</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 class="sub-header">5.2. Resumen de Línea Base del Backlog por Épicas (10 Módulos del MVP)</h3>
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 15%;">Épica</th>
+          <th>Nombre y Módulo Asociado del MVP</th>
+          <th style="text-align: center; width: 15%;">Story Points</th>
+          <th style="text-align: center; width: 15%;">Sprints</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>EP-01</strong></td>
+          <td>Acceso, Roles y Permisos Básicos (Módulo: Acceso)</td>
+          <td style="text-align: center;">7 SP</td>
+          <td style="text-align: center;">Sprints 2 y 3</td>
+        </tr>
+        <tr>
+          <td><strong>EP-02</strong></td>
+          <td>Tickets y Datos de Solicitud (Módulos: Tickets, Datos)</td>
+          <td style="text-align: center;">15 SP</td>
+          <td style="text-align: center;">Sprints 2 y 3</td>
+        </tr>
+        <tr>
+          <td><strong>EP-03</strong></td>
+          <td>Bandeja de Entrada y Asignación (Módulos: Bandeja, Gestión)</td>
+          <td style="text-align: center;">10 SP</td>
+          <td style="text-align: center;">Sprints 2, 3 y 4</td>
+        </tr>
+        <tr>
+          <td><strong>EP-04</strong></td>
+          <td>Ciclo de Estados y Registro de Solución (Módulo: Estados)</td>
+          <td style="text-align: center;">14 SP</td>
+          <td style="text-align: center;">Sprints 2 y 4</td>
+        </tr>
+        <tr>
+          <td><strong>EP-05</strong></td>
+          <td>Seguimiento, Notificaciones e Historial (Módulos: Seguimiento, Historial, Notif.)</td>
+          <td style="text-align: center;">9 SP</td>
+          <td style="text-align: center;">Sprint 4</td>
+        </tr>
+        <tr>
+          <td><strong>EP-06</strong></td>
+          <td>Administración y Operación Centralizada (Módulos: Administración, Bandeja)</td>
+          <td style="text-align: center;">20 SP</td>
+          <td style="text-align: center;">Sprints 2 y 3</td>
+        </tr>
+        <tr style="background: var(--q-gray-bg); font-weight: 700;">
+          <td colspan="2">TOTAL LÍNEA BASE INICIAL DEL MVP</td>
+          <td style="text-align: center; color: var(--q-navy);">75 SP</td>
+          <td style="text-align: center;">5 Sprints</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- PÁGINA 4: CRONOGRAMA, ENTREGABLES Y RIESGOS -->
+    <div class="page-break"></div>
+
+    <div class="running-header">
+      <span>Quantux Salud</span>
+      <span>DOC-MGT-001: Plan de Gestión del Proyecto</span>
     </div>
+
+    <!-- SECCIÓN 6 -->
+    <h2 class="section-header">6. Cronograma del Proyecto e Hitos de Entrega</h2>
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 15%;">Sprint</th>
+          <th style="width: 20%;">Fechas</th>
+          <th style="width: 30%;">Objetivo Principal</th>
+          <th>Entregables del Hito</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Sprint 1</strong></td>
+          <td>24-ago al 28-ago</td>
+          <td>Planificación y Especificación de Línea Base</td>
+          <td>• Plan de Gestión y Especificación Funcional.<br>• User Story Map aprobado.</td>
+        </tr>
+        <tr>
+          <td><strong>Sprint 2</strong></td>
+          <td>31-ago al 04-sep</td>
+          <td>Backend Core y Persistencia de Datos</td>
+          <td>• Servicios REST y persistencia.<br>• Circuito de 5 estados operativo.</td>
+        </tr>
+        <tr>
+          <td><strong>Sprint 3</strong></td>
+          <td>07-sep al 11-sep</td>
+          <td>Frontend Cockpit UI y Selector de Roles</td>
+          <td>• Interfaz en 3 columnas.<br>• Selector rápido de roles en 1 clic.</td>
+        </tr>
+        <tr>
+          <td><strong>Sprint 4</strong></td>
+          <td>14-sep al 18-sep</td>
+          <td>Integración E2E y Auditoría</td>
+          <td>• Circuito completo de 5 pasos integrado.<br>• Notas e historial de cambios.</td>
+        </tr>
+        <tr>
+          <td><strong>Sprint 5</strong></td>
+          <td>21-sep al 25-sep</td>
+          <td>Estabilización, QA y Cierre</td>
+          <td>• Dataset de prueba cargado.<br>• <strong>ENTREGA FINAL DEL PROYECTO</strong>.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- SECCIÓN 7 -->
+    <h2 class="section-header">7. Catálogo de Entregables del Proyecto</h2>
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 25%;">Paquete de Trabajo</th>
+          <th>Entregables Incluidos</th>
+          <th style="width: 35%;">Criterio de Aceptación</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>1. Paquete Documental</strong></td>
+          <td>• Doc 01: Plan de Gestión del Proyecto.<br>• Doc 02: Especificación Funcional y Backlog.<br>• Doc 03: Arquitectura y Diseño Técnico.<br>• Doc 04: Guía de Demostración Operativa.</td>
+          <td>Aprobación formal por el Comité Evaluador.</td>
+        </tr>
+        <tr>
+          <td><strong>2. Paquete de Software</strong></td>
+          <td>• Aplicación Backend con base de datos configurada.<br>• Frontend de operación Cockpit.<br>• Dataset de prueba con 9 plataformas y 14 clientes.</td>
+          <td>Ejecución funcional sin errores ni dependencias externas.</td>
+        </tr>
+        <tr>
+          <td><strong>3. Paquete de Calidad</strong></td>
+          <td>• Validación del circuito de estados.<br>• Historial de auditoría completo.<br>• Checklist del caso de demo (5 pasos).</td>
+          <td>Cumplimiento del criterio de éxito del MVP.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- SECCIÓN 8 -->
+    <h2 class="section-header">8. Gestión Preventiva de Riesgos del Proyecto</h2>
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 8%;">ID</th>
+          <th style="width: 32%;">Riesgo Identificado</th>
+          <th style="width: 15%; text-align: center;">Nivel</th>
+          <th>Estrategia de Mitigación</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>R-01</strong></td>
+          <td><strong>Desvío del Alcance:</strong> Sumar funciones fuera del MVP.</td>
+          <td style="text-align: center;"><span class="badge-risk">ALTO</span></td>
+          <td>Blindaje estricto en los puntos del MVP; lo demás queda formalmente diferido.</td>
+        </tr>
+        <tr>
+          <td><strong>R-02</strong></td>
+          <td><strong>Interfaz Poco Intuitiva:</strong> Dificultad de adopción por operadores.</td>
+          <td style="text-align: center;"><span class="badge-risk">ALTO</span></td>
+          <td>Validar pantallas y usabilidad de forma temprana con el Referente Funcional.</td>
+        </tr>
+        <tr>
+          <td><strong>R-03</strong></td>
+          <td><strong>Demoras en Integración E2E:</strong> Falla en el circuito de 5 pasos.</td>
+          <td style="text-align: center;"><span class="badge-risk">ALTO</span></td>
+          <td>Flujo principal conectado y probado al cierre de la Semana 3.</td>
+        </tr>
+        <tr>
+          <td><strong>R-04</strong></td>
+          <td><strong>Modelado Inadecuado:</strong> Categorías no alineadas a plataformas.</td>
+          <td style="text-align: center;"><span class="badge-risk">MEDIO</span></td>
+          <td>Parametrizar categorías y prioridades con el Referente Funcional.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="running-footer">
+      <span>Quantux Salud • HealthDesk</span>
+      <span>Confidencial • Uso Interno</span>
+    </div>
+
   </div>
-</div>
 
-<h2>2. ENFOQUE DE GESTIÓN Y ADAPTACIÓN METODOLÓGICA</h2>
-<p>Se implementa un modelo <strong>Scrumban Híbrido ITIL 4 + IA Agéntica</strong>, combinando cadencias Scrum, flujo Kanban visual con límites WIP, y estricta categorización de incidentes ITIL 4.</p>
-
-<div class="mermaid">
-graph TD
-    A[Scrum: Backlog & Sprints] --> D[Scrumban Adaptado Quantux v3.2.0]
-    B[Kanban: Flujo Continuo & Límites WIP] --> D
-    C[ITIL 4: Triage P=IxU & SLAs] --> D
-    E[IA Agéntica: Generación & Copiloto] --> D
-    D --> F[Entrega Continua con Validación Humana Obligatoria]
-</div>
-
-<h2>3. SISTEMA DE EJECUCIÓN CON IA: ROLES, AUTONOMÍA Y VALIDACIÓN</h2>
-<table class="table table-bordered">
-  <thead>
-    <tr>
-      <th>Actividad Relevante</th>
-      <th>Responsable Humano</th>
-      <th>Herramienta / Agente IA</th>
-      <th>Autonomía</th>
-      <th>Mecanismo de Validación</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr><td>Relevamiento Sanitario</td><td>Freddy Cortés (PO)</td><td>Asistencia / Síntesis</td><td><span class="badge bg-secondary">Bajo</span></td><td>Revisión y Entrevistas Clínicas</td></tr>
-    <tr><td>Historias de Usuario</td><td>Freddy Cortés (PO)</td><td>Generación Gherkin</td><td><span class="badge bg-info">Medio</span></td><td>Aprobación Formal del PO</td></tr>
-    <tr><td>Diseño de Arquitectura</td><td>Diego Martínez</td><td>Proposición Schemas</td><td><span class="badge bg-info">Medio</span></td><td>Revisión Técnica de Integridad</td></tr>
-    <tr><td>Codificación Backend/UI</td><td>Desarrollador / PO</td><td>Generación Python/JS</td><td><span class="badge bg-warning text-dark">Medio/Alto</span></td><td>Pruebas Automatizadas E2E</td></tr>
-    <tr><td>Generación de Pruebas TQM</td><td>Carolina Brizuela</td><td>Generador de Suites</td><td><span class="badge bg-info">Medio</span></td><td>Ejecución 14 Ciclos 100% OK</td></tr>
-    <tr><td>Decisiones de Negocio</td><td>Comité Evaluador</td><td>Soporte Comparativo</td><td><span class="badge bg-danger">0% (Prohibida)</span></td><td>Decisión Humana Exclusiva</td></tr>
-  </tbody>
-</table>
-
-<div class="callout callout-warning">
-  <h6 class="fw-bold"><i class="fas fa-shield-alt me-2"></i>La 6ª Pregunta: ¿Qué ocurre si la IA se equivoca?</h6>
-  <p class="mb-0">Cualquier alucinación o desvío de IA es interceptado por el linter, el compilador y la suite de pruebas TQM (rechazo automático si la prueba falla). La base de datos y los schemas en código son la Fuente Única de la Verdad (SSOT).</p>
-</div>
-
-<h2>4. GESTIÓN INTEGRAL DE RIESGOS (MATRIZ DE RIESGOS TRADICIONAL + IA)</h2>
-<table class="table table-striped table-hover">
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Riesgo Identificado</th>
-      <th>Tipo</th>
-      <th>Prob.</th>
-      <th>Imp.</th>
-      <th>Estrategia de Mitigación</th>
-      <th>Reversibilidad</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr><td>RSK-01</td><td>Alucinación en endpoints</td><td>IA</td><td>Media</td><td>Alto</td><td>Suite de pruebas TQM con compilación estricta</td><td>Inmediata (Git)</td></tr>
-    <tr><td>RSK-02</td><td>Pérdida de contexto en docs</td><td>IA</td><td>Media</td><td>Medio</td><td>Uso de SSOT estructurado en Markdown y scripts</td><td>Alta</td></tr>
-    <tr><td>RSK-03</td><td>Fuga de datos de pacientes</td><td>Seguridad</td><td>Baja</td><td>Crítico</td><td>Sanitización total (sin DNI ni PHI en ServiceDesk)</td><td>Alta</td></tr>
-    <tr><td>RSK-04</td><td>Dependencia de red túnel UAT</td><td>Infra</td><td>Media</td><td>Medio</td><td>Arquitectura híbrida dual (Localhost + Túnel)</td><td>Inmediata</td></tr>
-    <tr><td>RSK-05</td><td>Modificación de ticket cerrado</td><td>Negocio</td><td>Baja</td><td>Alto</td><td>FSM en código duro que rechaza transiciones</td><td>Bloqueado</td></tr>
-  </tbody>
-</table>
-
-  <hr class="my-5">
-  <div class="text-center text-muted small pb-4">
-    <strong>Quantux HealthDesk v3.2.0-UAT</strong> • Solución de Triage e Incidentes Asistenciales ITIL 4<br>
-    Solution Owner: <em>Freddy Cortés</em> • Facilitador Técnico: <em>Diego Martínez</em> • Comité Evaluador: <em>Paula Sbarbati, Diego Martínez, Carolina Brizuela, Nicolás Sánchez</em><br>
-    Certificación de Calidad: <strong>14 Ciclos Consecutivos TQM (Zero Defects 100%)</strong> • Septiembre 2026
-  </div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
