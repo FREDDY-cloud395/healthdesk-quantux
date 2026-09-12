@@ -29,3 +29,7 @@ qa_screenshots/
 .idea/
 .DS_Store
 Thumbs.db
+
+cloudflared.exe
+*.pyc
+__pycache__/
