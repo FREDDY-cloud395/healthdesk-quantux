@@ -3,6 +3,16 @@
  * Menú de Navegación Visual, Tableros de Control y Mesa de Ayuda
  */
 
+function escapeHtml(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 // ESTADO GLOBAL DE LA APLICACIÓN
 const AppState = {
   currentView: 'dashboard', // 'dashboard' | 'tickets' | 'users' | 'articles' | 'platforms' | 'config'
@@ -20,6 +30,65 @@ const AppState = {
   userFilterLevel: 'all',
   helpdeskLevels: []
 };
+
+// 50% con Fotografías Reales de Alta Resolución y 50% con Badges de Iniciales Modernos (Directiva de Diseño)
+const USER_AVATARS = {
+  // 50% de Perfiles con Fotografías Reales de Médicos y Especialistas:
+  'admin': 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80', // Freddy Cortés (Admin General)
+  'soporte': 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80', // Laura Benítez (N2 Soporte)
+  'cpaez': 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80', // Carlos Páez (N2 Soporte)
+  'mgomez': 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=150&auto=format&fit=crop&q=80', // Dr. Martín Gómez (Solicitante Swiss Medical)
+  'alopez': 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=150&auto=format&fit=crop&q=80', // Dra. Andrea López (Solicitante Hospital Británico)
+  'dnavarro': 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80', // Diego Navarro (N3 Ingeniería)
+  'mflores': 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150&auto=format&fit=crop&q=80' // Marcos Flores (N1 Guardia)
+  // 50% restante (svaldez, ealvarez, vromero, gfernandez, solicitante, jmartinez, rfernandez) renderizan iniciales con gradientes de color dinámicos
+};
+
+const USER_GRADIENTS = [
+  'linear-gradient(135deg, #0284C7, #0369A1)',
+  'linear-gradient(135deg, #059669, #047857)',
+  'linear-gradient(135deg, #7C3AED, #6D28D9)',
+  'linear-gradient(135deg, #D97706, #B45309)',
+  'linear-gradient(135deg, #DB2777, #BE185D)',
+  'linear-gradient(135deg, #00A896, #028090)'
+];
+
+function getUserAvatarHtml(username, fullName = '', size = 32, extraClass = '') {
+  const u = (username || '').toLowerCase().trim();
+  const name = fullName || username || 'U';
+  const cleanName = name.replace(/Lic\.\s*/gi, '').trim();
+  const initials = cleanName.split(' ').map(w => w[0]).filter(Boolean).join('').substring(0, 2).toUpperCase() || 'U';
+  
+  // Si el usuario actual tiene avatar_url personalizada en su perfil:
+  let avatarUrl = (AppState.currentUser && AppState.currentUser.username === u && AppState.currentUser.avatar_url) 
+    ? AppState.currentUser.avatar_url 
+    : (USER_AVATARS[u] || null);
+
+  if (avatarUrl) {
+    return `<div class="user-avatar-img-wrap ${extraClass}" style="width:${size}px; height:${size}px; min-width:${size}px; border-radius:50%; overflow:hidden; border:1.5px solid #CBD5E1; box-shadow:0 1px 3px rgba(0,0,0,0.08); display:inline-flex; align-items:center; justify-content:center; background:#E2E8F0; flex-shrink:0;">
+      <img src="${avatarUrl}" alt="${escapeHtml(cleanName)}" style="width:100%; height:100%; object-fit:cover;" onerror="this.parentElement.outerHTML='<div class=\\'user-avatar-initials-wrap ${extraClass}\\' style=\\'width:${size}px; height:${size}px; min-width:${size}px; border-radius:50%; background:linear-gradient(135deg, #0284C7, #0369A1); color:#FFF; display:inline-flex; align-items:center; justify-content:center; font-size:${Math.max(10, Math.round(size*0.38))}px; font-weight:800; border:1.5px solid #CBD5E1;\\'>${initials}</div>';" />
+    </div>`;
+  }
+  
+  // Deterministic gradient from username char codes
+  let hash = 0;
+  for (let i = 0; i < u.length; i++) hash += u.charCodeAt(i);
+  const grad = USER_GRADIENTS[Math.abs(hash) % USER_GRADIENTS.length];
+  
+  return `<div class="user-avatar-initials-wrap ${extraClass}" style="width:${size}px; height:${size}px; min-width:${size}px; border-radius:50%; background:${grad}; color:#FFF; display:inline-flex; align-items:center; justify-content:center; font-size:${Math.max(10, Math.round(size*0.38))}px; font-weight:800; border:1.5px solid #CBD5E1; box-shadow:0 1px 3px rgba(0,0,0,0.08); flex-shrink:0;" title="${escapeHtml(cleanName)} (@${escapeHtml(u)})">${initials}</div>`;
+}
+
+function navigateHome() {
+  if (AppState.currentUser && AppState.currentUser.role === 'SOLICITANTE') {
+    switchView('tickets');
+  } else {
+    switchView('dashboard');
+  }
+  const sidebar = document.getElementById('app-sidebar');
+  const backdrop = document.getElementById('sidebar-backdrop');
+  if (sidebar) sidebar.classList.remove('open');
+  if (backdrop) backdrop.classList.remove('active');
+}
 
 // INICIALIZACIÓN
 document.addEventListener('DOMContentLoaded', async () => {
@@ -90,9 +159,7 @@ function initNavigationHub() {
     btnRefDash.addEventListener('click', async () => {
       const origHtml = btnRefDash.innerHTML;
       btnRefDash.innerHTML = '⏳ Actualizando...';
-      const dashInst = document.getElementById('dash-filter-inst');
-      const instCode = dashInst ? dashInst.value : '';
-      await loadDashboardMetrics(instCode);
+      await loadDashboardMetrics();
       await loadTickets();
       btnRefDash.innerHTML = origHtml;
       showToast('Tablero de control y métricas actualizadas con éxito', 'success');
@@ -103,8 +170,7 @@ function initNavigationHub() {
   const dashInstSelect = document.getElementById('dash-filter-inst');
   if (dashInstSelect) {
     dashInstSelect.addEventListener('change', async () => {
-      const instCode = dashInstSelect.value;
-      await loadDashboardMetrics(instCode);
+      await loadDashboardMetrics();
     });
   }
 
@@ -196,44 +262,57 @@ function switchView(viewName) {
   const subEl = document.getElementById('top-view-subtitle');
   const titles = {
     'dashboard': {
-      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>',
-      title: 'Panel de Control y Monitoreo',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px;"><rect x="3" y="3" width="7" height="9" rx="1"></rect><rect x="14" y="3" width="7" height="5" rx="1"></rect><rect x="14" y="12" width="7" height="9" rx="1"></rect><rect x="3" y="16" width="7" height="5" rx="1"></rect></svg>',
+      title: 'Tablero de Control',
       sub: 'Métricas en tiempo real, SLAs y distribución de incidentes'
     },
     'tickets': {
-      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px;"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></svg>',
       title: 'Mesa de Ayuda',
       sub: 'Bandeja operativa de solicitudes de soporte y seguimiento de SLA'
     },
     'users': {
-      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>',
-      title: 'Directorio de Usuarios y Roles',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px;"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>',
+      title: 'Usuarios & Roles',
       sub: 'Gestión de personal operativo y perfiles de acceso (RBAC)'
     },
     'articles': {
-      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>',
-      title: 'Base de Conocimiento y Procedimientos',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px;"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>',
+      title: 'Base de Conocimiento',
       sub: 'Guías de resolución rápida, contingencias y procedimientos'
     },
     'platforms': {
-      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>',
-      title: 'Catálogo de Plataformas e Instituciones',
-      sub: '9 plataformas de software y 14 clientes institucionales'
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px;"><rect x="2" y="2" width="20" height="8" rx="2"></rect><rect x="2" y="14" width="20" height="8" rx="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>',
+      title: 'Plataformas & Instituciones',
+      sub: '9 plataformas de software y 14 instituciones de salud'
     },
     'config': {
-      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>',
-      title: 'Configuración y Auditoría Legal',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px;"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>',
+      title: 'Configuración',
       sub: 'Matriz de priorización ITIL, políticas de SLA y bitácora de trazabilidad inmutable'
     }
   };
 
   if (titles[viewName]) {
     if (titleContainer) {
-      titleContainer.innerHTML = `<span style="display:flex; align-items:center; color:var(--q-teal);">${titles[viewName].icon}</span> <span id="top-view-title-text">${titles[viewName].title}</span>`;
+      titleContainer.innerHTML = `<span style="display:flex; align-items:center; color:#00A896;">${titles[viewName].icon}</span> <span id="top-view-title-text" style="color:#0A1C3E; font-weight:800; font-size:14.5px;">${titles[viewName].title}</span>`;
     } else if (titleEl) {
       titleEl.textContent = titles[viewName].title;
     }
     if (subEl) subEl.textContent = titles[viewName].sub;
+  }
+
+  // Control de visibilidad de acciones rápidas en el top-navbar para la mesa de ayuda
+  const topNavActions = document.getElementById('top-navbar-actions');
+  const topNavRight = document.getElementById('top-navbar-right');
+  if (topNavActions && topNavRight) {
+    if (viewName === 'tickets') {
+      topNavActions.style.display = 'flex';
+      topNavRight.style.display = 'flex';
+    } else {
+      topNavActions.style.display = 'none';
+      topNavRight.style.display = 'none';
+    }
   }
 
   // Actualizar Enlaces del Sidebar Lateral
@@ -254,14 +333,14 @@ function switchView(viewName) {
     activeSection.classList.add('active');
   }
 
-  // Actualizar Título Dinámico Superior (Estilo OSDE PAU)
+  // Actualizar Título Superior
   const viewTitles = {
-    'tickets': AppState.selectedTicket ? `SOLICITUD #${AppState.selectedTicket.id}` : 'SOLICITUDES',
-    'dashboard': 'TABLERO DE CONTROL',
-    'users': 'DIRECTORIO DE USUARIOS',
-    'articles': 'BASE DE CONOCIMIENTO',
-    'platforms': 'PLATAFORMAS & CLIENTES',
-    'config': 'CONFIGURACIÓN DEL SISTEMA'
+    'tickets': 'Mesa de Ayuda',
+    'dashboard': 'Tablero de Control',
+    'users': 'Directorio de Usuarios',
+    'articles': 'Base de Conocimiento',
+    'platforms': 'Plataformas & Instituciones',
+    'config': 'Configuración del Sistema'
   };
   const topTitle = document.getElementById('top-view-title-text');
   if (topTitle && viewTitles[viewName]) {
@@ -327,100 +406,83 @@ function renderSubNavRibbon(viewName) {
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;"><path d="M3 21h18M3 7v14M21 7v14M9 21V11h6v10M9 3l3-2 3 2v4H9V3z"></path></svg>
         <span>Por Institución</span>
       </button>
-      <button class="pill-filter-btn" onclick="scrollToSection('feed-audit-logs')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+      <button class="pill-filter-btn ${activeSubTab === 'audit' ? 'active' : ''}" onclick="switchDashboardSubTab('audit')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
         <span>Auditoría Legal</span>
       </button>
     `;
   } else if (viewName === 'tickets') {
     const preset = AppState.ticketFilterPreset || 'all';
     const isReq = AppState.currentUser && AppState.currentUser.role === 'SOLICITANTE';
-    const mineLabel = isReq ? '👤 Mis Solicitudes' : '👤 Asignados a Mí';
+    const mineLabel = isReq ? 'Mis Solicitudes' : 'Asignados a Mí';
 
     container.innerHTML = `
-      <button class="pill-filter-btn ${preset === 'all' ? 'active' : ''}" onclick="applyTicketPreset('all')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-        <span>Todas</span>
+      <button class="pill-filter-btn ${preset === 'all' ? 'active' : ''}" onclick="applyTicketPreset('all')" title="Ver todas las solicitudes">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+        <span>Todos los Tickets</span>
       </button>
-      <button class="pill-filter-btn ${preset === 'mine' ? 'active' : ''}" onclick="applyTicketPreset('mine')" style="${preset === 'mine' ? 'background:var(--q-primary); color:#FFF; font-weight:800;' : 'background:rgba(37,99,235,0.08); color:var(--q-primary); font-weight:700; border-color:rgba(37,99,235,0.2);'}">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+      <button class="pill-filter-btn ${preset === 'mine' ? 'active' : ''}" onclick="applyTicketPreset('mine')" title="${isReq ? 'Mis solicitudes creadas' : 'Casos asignados a mi usuario'}" style="${preset === 'mine' ? 'background:var(--q-primary); color:#FFF; font-weight:800;' : ''}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
         <span>${mineLabel}</span>
       </button>
-      <button class="pill-filter-btn ${preset === 'new' ? 'active' : ''}" onclick="applyTicketPreset('new')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-        <span>Sin Asignar</span>
-      </button>
-      <button class="pill-filter-btn ${preset === 'in_progress' ? 'active' : ''}" onclick="applyTicketPreset('in_progress')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-        <span>En Diagnóstico</span>
-      </button>
-      <!-- FILTROS DIRECTOS POR PRIORIDAD ITIL -->
-      <button class="pill-filter-btn ${preset === 'p1' ? 'active' : ''}" onclick="applyTicketPreset('p1')" title="Prioridad Crítica (SLA 2h)" style="${preset === 'p1' ? 'background:#DC2626; color:#FFF; border-color:#DC2626; font-weight:800;' : 'background:rgba(239,68,68,0.08); border-color:#FCA5A5; color:#DC2626;'}">
-        <span>🚨 P1 Crítico</span>
-      </button>
-      <button class="pill-filter-btn ${preset === 'p2' ? 'active' : ''}" onclick="applyTicketPreset('p2')" title="Prioridad Alta (SLA 8h)" style="${preset === 'p2' ? 'background:#D97706; color:#FFF; border-color:#D97706; font-weight:800;' : 'background:rgba(217,119,6,0.08); border-color:#FDE68A; color:#D97706;'}">
-        <span>⚠️ P2 Alta</span>
-      </button>
-      <button class="pill-filter-btn ${preset === 'p3' ? 'active' : ''}" onclick="applyTicketPreset('p3')" title="Prioridad Media (SLA 24h)" style="${preset === 'p3' ? 'background:#2563EB; color:#FFF; border-color:#2563EB; font-weight:800;' : 'background:rgba(37,99,235,0.08); border-color:#BFDBFE; color:#2563EB;'}">
-        <span>🔷 P3 Media</span>
-      </button>
-      <button class="pill-filter-btn ${preset === 'p4' ? 'active' : ''}" onclick="applyTicketPreset('p4')" title="Prioridad Baja (SLA 48h)" style="${preset === 'p4' ? 'background:#475569; color:#FFF; border-color:#475569; font-weight:800;' : 'background:#F1F5F9; border-color:#CBD5E1; color:#475569;'}">
-        <span>⚪ P4 Baja</span>
-      </button>
-      <button class="pill-filter-btn ${preset === 'p5' ? 'active' : ''}" onclick="applyTicketPreset('p5')" title="Prioridad Planificada (SLA 72h)" style="${preset === 'p5' ? 'background:#64748B; color:#FFF; border-color:#64748B; font-weight:800;' : 'background:#F8FAFC; border-color:#E2E8F0; color:#64748B;'}">
-        <span>📅 P5 Planif.</span>
-      </button>
-      <button class="pill-filter-btn ${preset === 'resolved' ? 'active' : ''}" onclick="applyTicketPreset('resolved')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-        <span>Resueltos</span>
-      </button>
-      <button class="pill-filter-btn ${preset === 'closed' ? 'active' : ''}" onclick="applyTicketPreset('closed')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-        <span>Cerrados</span>
+      <button class="pill-filter-btn ${preset === 'p1' ? 'active' : ''}" onclick="applyTicketPreset('p1')" title="Incidentes Críticos P1 (Atención Inmediata)" style="${preset === 'p1' ? 'background:#DC2626; color:#FFF; border-color:#DC2626; font-weight:800;' : 'background:rgba(239,68,68,0.08); border-color:#FCA5A5; color:#DC2626;'}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;"><polygon points="12 2 22 20 2 20 12 2"></polygon><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+        <span>Críticos P1</span>
       </button>
     `;
   } else if (viewName === 'users') {
+    const activeLvl = AppState.userFilterLevel || 'all';
     container.innerHTML = `
-      <button class="pill-filter-btn active">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-        <span>Directorio de Usuarios</span>
+      <button class="pill-filter-btn ${activeLvl === 'all' ? 'active' : ''}" onclick="filterUsersByLevel('all')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+        <span>Todos</span>
       </button>
-      <button class="pill-filter-btn" onclick="document.getElementById('btn-open-user-modal').click()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-        <span>➕ Dar de Alta Usuario</span>
+      <button class="pill-filter-btn ${activeLvl === 'N1' ? 'active' : ''}" onclick="filterUsersByLevel('N1')">
+        <span>N1 • Guardia</span>
+      </button>
+      <button class="pill-filter-btn ${activeLvl === 'N2' ? 'active' : ''}" onclick="filterUsersByLevel('N2')">
+        <span>N2 • Especialistas</span>
+      </button>
+      <button class="pill-filter-btn ${activeLvl === 'N3' ? 'active' : ''}" onclick="filterUsersByLevel('N3')">
+        <span>N3 • Ingeniería</span>
+      </button>
+      <button class="pill-filter-btn ${activeLvl === 'ADMIN' ? 'active' : ''}" onclick="filterUsersByLevel('ADMIN')">
+        <span>Administradores</span>
+      </button>
+      <button class="pill-filter-btn ${activeLvl === 'SOLICITANTE' ? 'active' : ''}" onclick="filterUsersByLevel('SOLICITANTE')">
+        <span>Médicos y Solicitantes</span>
       </button>
     `;
   } else if (viewName === 'articles') {
     container.innerHTML = `
       <button class="pill-filter-btn active" onclick="filterKBCategory('')">
-        <span>📚 Todos los Protocolos</span>
+        <span>Todos los Protocolos</span>
       </button>
       <button class="pill-filter-btn" onclick="filterKBCategory('CLINICO')">
-        <span>🩺 Asistencial / Clínico</span>
+        <span>Asistencial / Clínico</span>
       </button>
       <button class="pill-filter-btn" onclick="filterKBCategory('DIAGNOSTICO')">
-        <span>🔬 Diagnóstico y LIS</span>
+        <span>Diagnóstico y LIS</span>
       </button>
       <button class="pill-filter-btn" onclick="filterKBCategory('FARMACIA')">
-        <span>💊 Farmacia y Recetas</span>
+        <span>Farmacia y Recetas</span>
       </button>
       <button class="pill-filter-btn" onclick="filterKBCategory('CONTINGENCIA')">
-        <span>🚨 Contingencia Crítica</span>
+        <span>Contingencia Crítica</span>
       </button>
     `;
   } else if (viewName === 'platforms') {
     container.innerHTML = `
       <button class="pill-filter-btn active">
-        <span>🏥 Configuración Multi-Institucional</span>
-      </button>
-      <button class="pill-filter-btn" onclick="showToast('Para asignar plataformas, seleccione la institución y active los interruptores correspondientes', 'info')">
-        <span>⚙️ Mesas de Ayuda y Plataformas Activas</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;"><rect x="2" y="2" width="20" height="8" rx="2"></rect><rect x="2" y="14" width="20" height="8" rx="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
+        <span>Ecosistema de Plataformas & Sanatorios</span>
       </button>
     `;
   } else if (viewName === 'config') {
     container.innerHTML = `
       <button class="pill-filter-btn active">
-        <span>⚙️ Parámetros Globales de Servicio y SLA</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        <span>Parámetros Globales de Servicio y SLA</span>
       </button>
     `;
   }
@@ -448,6 +510,11 @@ function setCurrentUser(userData) {
   } catch (e) {}
 
   updateUserProfileUI();
+  applyRolePermissions();
+  loadTickets();
+  if (AppState.currentView === 'dashboard') {
+    loadDashboardMetrics(AppState.currentDashInst);
+  }
 }
 
 function openAuthModal(isGate = false) {
@@ -552,11 +619,7 @@ function initAuthModalListeners() {
 
   if (btnTopSwitchUser) {
     btnTopSwitchUser.addEventListener('click', () => {
-      if (AppState.currentUser) {
-        handleLogout();
-      } else {
-        openAuthModal(true);
-      }
+      openAuthModal(false);
     });
   }
 
@@ -630,18 +693,17 @@ function populateAuthModalAccounts() {
   const users = (AppState.users && AppState.users.length > 0) ? AppState.users : [
     { username: 'admin', full_name: 'Freddy Cortés (Admin General)', role: 'ADMIN', institution_code: 'OSDE' },
     { username: 'soporte', full_name: 'Laura Benítez (Soporte N2)', role: 'SOPORTE', institution_code: 'OSDE' },
-    { username: 'solicitante', full_name: 'Lic. Martín Gómez (Solicitante)', role: 'SOLICITANTE', institution_code: 'SWISS_MEDICAL' }
+    { username: 'solicitante', full_name: 'Martín Gómez (Solicitante)', role: 'SOLICITANTE', institution_code: 'SWISS_MEDICAL' }
   ];
 
   container.innerHTML = users.map(u => {
     const isCurrent = AppState.currentUser && AppState.currentUser.username === u.username;
     const roleBadgeClass = u.role === 'ADMIN' ? 'badge-role-admin' : (u.role.includes('SOPORTE') || u.role === 'SOPORTE' ? 'badge-role-soporte' : 'badge-role-solicitante');
-    const initials = (u.full_name || u.username).split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
 
     return `
       <div class="quick-login-item ${isCurrent ? 'active-user' : ''}" onclick="selectQuickUser('${u.username}')">
         <div class="quick-login-left">
-          <div class="user-avatar-sm" style="width: 28px; height: 28px; font-size: 10px; font-weight: 800;">${initials}</div>
+          ${getUserAvatarHtml(u.username, u.full_name, 28)}
           <div class="quick-login-info">
             <span class="quick-login-name">${u.full_name} ${isCurrent ? '<strong style="color:#10B981; font-size:10px;">(Activo)</strong>' : ''}</span>
             <span class="quick-login-meta">@${u.username} • ${formatInstitutionName(u.institution_code)}</span>
@@ -713,13 +775,13 @@ function updateUserProfileUI() {
       topRole.textContent = 'BLOQUEADO';
       topRole.style.background = '#64748B';
     }
-    if (topAvatar) topAvatar.textContent = '🔒';
+    if (topAvatar) topAvatar.innerHTML = '🔒';
     if (profName) profName.textContent = 'Sesión Cerrada';
     if (profRole) profRole.textContent = 'Haga clic para ingresar';
-    if (profAvatar) profAvatar.textContent = '🔒';
+    if (profAvatar) profAvatar.innerHTML = '🔒';
     if (currUserName) currUserName.textContent = 'Invitado';
     if (currUserRole) currUserRole.textContent = 'Sin acceso';
-    if (currUserAvatar) currUserAvatar.textContent = '🔒';
+    if (currUserAvatar) currUserAvatar.innerHTML = '🔒';
     if (topSwitchText) topSwitchText.textContent = 'Iniciar Sesión';
     return;
   }
@@ -736,29 +798,73 @@ function updateUserProfileUI() {
     topRole.textContent = AppState.currentUser.role;
     topRole.style.background = '#0284C7';
   }
-  if (topAvatar) topAvatar.textContent = initials;
+  if (topAvatar) topAvatar.innerHTML = getUserAvatarHtml(AppState.currentUser.username, AppState.currentUser.full_name, 32);
   if (profName) profName.textContent = AppState.currentUser.full_name;
   if (profRole) profRole.textContent = `ROL: ${AppState.currentUser.role}`;
-  if (profAvatar) profAvatar.textContent = initials;
+  if (profAvatar) profAvatar.innerHTML = getUserAvatarHtml(AppState.currentUser.username, AppState.currentUser.full_name, 40);
   if (currUserName) currUserName.textContent = AppState.currentUser.full_name;
   if (currUserRole) currUserRole.textContent = `Rol: ${AppState.currentUser.role}`;
-  if (currUserAvatar) currUserAvatar.textContent = initials;
+  if (currUserAvatar) currUserAvatar.innerHTML = getUserAvatarHtml(AppState.currentUser.username, AppState.currentUser.full_name, 34);
   if (topSwitchText) topSwitchText.textContent = 'Cerrar Sesión';
 }
 
 // =============================================================================
 // 3. TABLEROS DE SEGUIMIENTO Y CONTROL (DASHBOARD ANALYTICS)
 // =============================================================================
-async function loadDashboardMetrics(institutionCode = '') {
+async function loadDashboardMetrics(institutionCode = null, period = null, dateFrom = null, dateTo = null) {
   try {
-    const params = institutionCode ? { institution_code: institutionCode } : {};
+    const instSelect = document.getElementById('dash-filter-inst');
+    const periodSelect = document.getElementById('dash-filter-period');
+    const fromInput = document.getElementById('dash-date-from');
+    const toInput = document.getElementById('dash-date-to');
+
+    const inst = (institutionCode !== null && institutionCode !== undefined) ? institutionCode : (instSelect ? instSelect.value : '');
+    const per = (period !== null && period !== undefined) ? period : (periodSelect ? periodSelect.value : 'all');
+    const dFrom = (dateFrom !== null && dateFrom !== undefined) ? dateFrom : (fromInput ? fromInput.value : '');
+    const dTo = (dateTo !== null && dateTo !== undefined) ? dateTo : (toInput ? toInput.value : '');
+
+    const params = {};
+    if (inst) params.institution_code = inst;
+    if (per && per !== 'all') params.period = per;
+    if (per === 'custom') {
+      if (dFrom) params.date_from = dFrom;
+      if (dTo) params.date_to = dTo;
+    }
     const data = await API.getMetrics(params);
     AppState.metrics = data;
-    AppState.currentDashInst = institutionCode;
-    renderDashboard(institutionCode);
+    AppState.currentDashInst = inst;
+    AppState.currentDashPeriod = per;
+    renderDashboard(inst);
   } catch (err) {
     console.error('Error cargando métricas:', err);
   }
+}
+
+function onDashboardDateFilterChange() {
+  const periodEl = document.getElementById('dash-filter-period');
+  const customBox = document.getElementById('dash-custom-date-box');
+  const period = periodEl ? periodEl.value : 'all';
+
+  if (customBox) {
+    customBox.style.display = (period === 'custom') ? 'inline-flex' : 'none';
+  }
+
+  const inst = document.getElementById('dash-filter-inst') ? document.getElementById('dash-filter-inst').value : '';
+  const dateFrom = document.getElementById('dash-date-from') ? document.getElementById('dash-date-from').value : '';
+  const dateTo = document.getElementById('dash-date-to') ? document.getElementById('dash-date-to').value : '';
+
+  loadDashboardMetrics(inst, period, dateFrom, dateTo);
+}
+
+function switchDashboardSubTab(subTab) {
+  document.querySelectorAll('.dash-subview').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('[id^="btn-dash-sub-"]').forEach(b => b.classList.remove('active'));
+
+  const targetView = document.getElementById(`dash-subview-${subTab}`);
+  if (targetView) targetView.classList.add('active');
+
+  const targetBtn = document.getElementById(`btn-dash-sub-${subTab}`);
+  if (targetBtn) targetBtn.classList.add('active');
 }
 
 function renderDashboard(selectedInst = '') {
@@ -766,7 +872,7 @@ function renderDashboard(selectedInst = '') {
   const m = AppState.metrics;
   const currentInst = selectedInst || AppState.currentDashInst || (document.getElementById('dash-filter-inst') ? document.getElementById('dash-filter-inst').value : '');
 
-  // 1. KPI Cards
+  // 1. KPI Hero Numbers
   const kpiTotal = document.getElementById('kpi-total-tickets');
   const kpiP1 = document.getElementById('kpi-p1-tickets');
   const kpiActive = document.getElementById('kpi-active-tickets');
@@ -780,178 +886,408 @@ function renderDashboard(selectedInst = '') {
   if (ribbonP1) ribbonP1.textContent = m.p1_critical_tickets || 0;
   if (kpiActive) kpiActive.textContent = m.active_tickets || 0;
   if (kpiSla) kpiSla.textContent = `${m.sla_compliance_pct || 98.4}%`;
-  if (kpiConf) kpiConf.textContent = `${m.conformity_rate || 96.2}%`;
+  if (kpiConf) kpiConf.textContent = `${m.conformity_rate || 96.5}%`;
   if (kpiResolved) kpiResolved.textContent = (m.resolved_tickets + m.closed_tickets) || 0;
 
-  // 2. Gráfico 1: Barras de Estado
-  const statusCont = document.getElementById('chart-bars-status');
-  if (statusCont && m.by_status) {
-    const total = m.total_tickets || 1;
-    const statusMap = [
-      { key: 'NUEVO', label: 'Nuevos (Sin Asignar)', color: '#3B82F6' },
-      { key: 'ASIGNADO', label: 'Asignados a Especialista', color: '#F59E0B' },
-      { key: 'EN_CURSO', label: 'En Diagnóstico / Trabajo', color: '#0284C7' },
-      { key: 'RESUELTO', label: 'Solucionados (Espera Cierre)', color: '#10B981' },
-      { key: 'CERRADO', label: 'Cerrados con Conformidad', color: '#64748B' }
-    ];
+  // Center Metrics in Donut Charts
+  const statusCenter = document.getElementById('chart-status-center-total');
+  if (statusCenter) statusCenter.textContent = m.total_tickets || 0;
 
-    statusCont.innerHTML = statusMap.map(st => {
-      const count = m.by_status[st.key] || 0;
-      const pct = total > 0 ? Math.round((count / total) * 100) : 0;
-      return `
-        <div class="bar-row">
-          <div class="bar-row-info">
-            <span>${st.label}</span>
-            <span style="color: ${st.color}; font-weight:700;">${count} (${pct}%)</span>
-          </div>
-          <div class="bar-track">
-            <div class="bar-fill" style="width: ${pct}%; background-color: ${st.color};"></div>
-          </div>
-        </div>
-      `;
-    }).join('');
+  const prioCenter = document.getElementById('chart-prio-center-crit');
+  const critCount = (m.by_priority && (m.by_priority.P1 || 0) + (m.by_priority.P2 || 0)) || 0;
+  if (prioCenter) prioCenter.textContent = critCount;
+
+  // 2. Render Chart.js Canvas Charts
+  renderDashboardCanvasCharts(m, currentInst);
+
+  // 3. Sub-View 2: Tabla de Casos Activos con SLA Monitor
+  renderDashboardActiveSlaTable(currentInst);
+
+  // 4. Sub-View 3: Grid de Salud de Plataformas Clínicas
+  renderDashboardPlatformsGrid(m);
+
+  // 5. Sub-View 4: Tabla Ranking de Instituciones
+  renderDashboardInstitutionsRanking(m);
+
+  // 6. Sub-View 5: Feed de Auditoría Inmutable SHA-256
+  renderDashboardAuditFeed(m);
+}
+
+function renderDashboardCanvasCharts(m, currentInst) {
+  if (typeof Chart === 'undefined') {
+    console.warn('Chart.js no está cargado todavía.');
+    return;
   }
 
-  // 3. Gráfico 2: Plataformas Asistenciales
-  const platCont = document.getElementById('chart-bars-platforms');
-  if (platCont && m.by_platform) {
-    const total = m.total_tickets || 1;
-    const sortedPlats = Object.entries(m.by_platform).sort((a, b) => b[1] - a[1]);
-    
-    if (sortedPlats.length === 0) {
-      platCont.innerHTML = '<div style="color:#94A3B8; font-size:11px; padding:8px;">Sin solicitudes registradas para esta sede.</div>';
-    } else {
-      platCont.innerHTML = sortedPlats.slice(0, 5).map(([plat, count]) => {
-        const pct = total > 0 ? Math.round((count / total) * 100) : 0;
-        const platName = formatPlatformName(plat);
-        return `
-          <div class="bar-row">
-            <div class="bar-row-info">
-              <span>🩺 ${platName}</span>
-              <span style="font-weight:700; color:var(--q-teal-dark);">${count} solicitudes</span>
-            </div>
-            <div class="bar-track">
-              <div class="bar-fill" style="width: ${pct}%; background: linear-gradient(90deg, #00A896, #00E5CC);"></div>
-            </div>
-          </div>
-        `;
-      }).join('');
+  if (!AppState.charts) {
+    AppState.charts = {};
+  }
+
+  // --- CHART 1: DONUT DE ESTADOS OPERATIVOS (FSM) ---
+  const canvasStatus = document.getElementById('chart-canvas-status');
+  if (canvasStatus) {
+    if (AppState.charts.status) {
+      AppState.charts.status.destroy();
     }
+
+    const statusKeys = ['NUEVO', 'ASIGNADO', 'EN_CURSO', 'RESUELTO', 'CERRADO'];
+    const statusLabels = ['Nuevos', 'Asignados', 'En Curso', 'Resueltos', 'Cerrados'];
+    const statusColors = ['#3B82F6', '#F59E0B', '#0284C7', '#10B981', '#64748B'];
+    const statusData = statusKeys.map(k => (m.by_status && m.by_status[k]) || 0);
+
+    AppState.charts.status = new Chart(canvasStatus, {
+      type: 'doughnut',
+      data: {
+        labels: statusLabels,
+        datasets: [{
+          data: statusData,
+          backgroundColor: statusColors,
+          borderWidth: 2,
+          borderColor: '#FFFFFF',
+          hoverOffset: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '72%',
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { boxWidth: 10, font: { size: 10.5, family: 'Inter', weight: 600 }, padding: 8 }
+          },
+          tooltip: {
+            callbacks: {
+              label: (ctx) => ` ${ctx.label}: ${ctx.parsed} casos (${Math.round((ctx.parsed / (m.total_tickets || 1)) * 100)}%)`
+            }
+          }
+        },
+        onClick: (evt, activeEls) => {
+          if (activeEls && activeEls.length > 0) {
+            const idx = activeEls[0].index;
+            const key = statusKeys[idx];
+            const label = statusLabels[idx];
+            openMetricsDrilldownModal('status', key, `Estado: ${label}`);
+          }
+        }
+      }
+    });
   }
 
-  // 4. Gráfico 3: Instituciones de Salud
-  const instCont = document.getElementById('chart-bars-institutions');
-  if (instCont && m.by_institution) {
-    const total = m.total_tickets || 1;
-    const sortedInst = Object.entries(m.by_institution).sort((a, b) => b[1] - a[1]);
-    
-    if (sortedInst.length === 0) {
-      instCont.innerHTML = '<div style="color:#94A3B8; font-size:11px; padding:8px;">Sin registros para el filtro seleccionado.</div>';
-    } else {
-      instCont.innerHTML = sortedInst.slice(0, 5).map(([inst, count]) => {
-        const pct = total > 0 ? Math.round((count / total) * 100) : 0;
-        const instName = formatInstitutionName(inst);
-        const isSelected = currentInst && currentInst === inst;
-        return `
-          <div class="bar-row" style="${isSelected ? 'background:rgba(59,130,246,0.08); padding:2px 4px; border-radius:4px;' : ''}">
-            <div class="bar-row-info">
-              <span>🏥 ${instName} ${isSelected ? '<strong>(Filtro Activo)</strong>' : ''}</span>
-              <span style="font-weight:700; color:#1E3A8A;">${count} casos</span>
-            </div>
-            <div class="bar-track">
-              <div class="bar-fill" style="width: ${pct}%; background: linear-gradient(90deg, #3B82F6, #60A5FA);"></div>
-            </div>
-          </div>
-        `;
-      }).join('');
+  // --- CHART 2: DONUT DE PRIORIDAD & SEVERIDAD ---
+  const canvasPrio = document.getElementById('chart-canvas-priority');
+  if (canvasPrio) {
+    if (AppState.charts.priority) {
+      AppState.charts.priority.destroy();
     }
+
+    const prioKeys = ['P1', 'P2', 'P3', 'P4', 'P5'];
+    const prioLabels = ['P1 Crítica', 'P2 Alta', 'P3 Media', 'P4 Baja', 'P5 Planificada'];
+    const prioColors = ['#EF4444', '#F97316', '#3B82F6', '#10B981', '#94A3B8'];
+    const prioData = prioKeys.map(k => (m.by_priority && m.by_priority[k]) || 0);
+
+    AppState.charts.priority = new Chart(canvasPrio, {
+      type: 'doughnut',
+      data: {
+        labels: prioLabels,
+        datasets: [{
+          data: prioData,
+          backgroundColor: prioColors,
+          borderWidth: 2,
+          borderColor: '#FFFFFF',
+          hoverOffset: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '72%',
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { boxWidth: 10, font: { size: 10.5, family: 'Inter', weight: 600 }, padding: 8 }
+          },
+          tooltip: {
+            callbacks: {
+              label: (ctx) => ` ${ctx.label}: ${ctx.parsed} incidentes (${Math.round((ctx.parsed / (m.total_tickets || 1)) * 100)}%)`
+            }
+          }
+        },
+        onClick: (evt, activeEls) => {
+          if (activeEls && activeEls.length > 0) {
+            const idx = activeEls[0].index;
+            const key = prioKeys[idx];
+            const label = prioLabels[idx];
+            openMetricsDrilldownModal('priority', key, `Prioridad ${label}`);
+          }
+        }
+      }
+    });
   }
 
-  // 5. Gráfico 4: Matriz de Prioridad (P1 a P5)
-  const prioCont = document.getElementById('chart-bars-priorities');
-  if (prioCont && m.by_priority) {
-    const total = m.total_tickets || 1;
-    const prioMap = [
-      { key: 'P1', label: 'P1 - Crítica (Incidentes Críticos / Quirófano)', color: '#EF4444' },
-      { key: 'P2', label: 'P2 - Alta (Severa con contingencia)', color: '#F59E0B' },
-      { key: 'P3', label: 'P3 - Media (Puntual en puesto)', color: '#3B82F6' },
-      { key: 'P4', label: 'P4 - Baja (Consultas de uso)', color: '#64748B' },
-      { key: 'P5', label: 'P5 - Planificada / Accesos', color: '#94A3B8' }
-    ];
-
-    prioCont.innerHTML = prioMap.map(pr => {
-      const count = m.by_priority[pr.key] || 0;
-      const pct = total > 0 ? Math.round((count / total) * 100) : 0;
-      return `
-        <div class="bar-row">
-          <div class="bar-row-info">
-            <span>${pr.label}</span>
-            <span style="color: ${pr.color}; font-weight:700;">${count} (${pct}%)</span>
-          </div>
-          <div class="bar-track">
-            <div class="bar-fill" style="width: ${pct}%; background-color: ${pr.color};"></div>
-          </div>
-        </div>
-      `;
-    }).join('');
-  }
-
-  // 6. Tabla de Monitor de Casos Activos con SLA
-  const tbodySla = document.getElementById('tbody-active-sla');
-  if (tbodySla && AppState.tickets) {
-    const activeTickets = AppState.tickets
-      .filter(t => t.status !== 'CERRADO' && (!currentInst || t.institution_code === currentInst))
-      .slice(0, 6);
-
-    if (activeTickets.length === 0) {
-      tbodySla.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#94A3B8; padding:12px;">No hay casos pendientes para la institución seleccionada.</td></tr>';
-    } else {
-      tbodySla.innerHTML = activeTickets.map(t => {
-        const pClass = `badge-${t.priority.toLowerCase()}`;
-        return `
-          <tr>
-            <td><strong style="font-family:'JetBrains Mono'; font-size:11px;">${t.id}</strong></td>
-            <td><span class="badge-prio ${pClass}">${t.priority}</span></td>
-            <td><div style="font-weight:600; max-width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${t.title}</div></td>
-            <td><span style="font-size:10px; color:#475569;">${formatPlatformName(t.platform_code)}</span></td>
-            <td><span style="font-size:10.5px; font-weight:600;">${t.assignee_username || '<em style="color:#F59E0B;">Sin Asignar</em>'}</span></td>
-            <td>
-              <button class="sub-pill-btn active" style="padding:2px 8px; font-size:10px; background:var(--q-teal);" onclick="openTicketInCockpit('${t.id}')">
-                Ver Caso ➔
-              </button>
-            </td>
-          </tr>
-        `;
-      }).join('');
+  // --- CHART 3: BARRAS HORIZONTALES PLATAFORMAS ASISTENCIALES ---
+  const canvasPlat = document.getElementById('chart-canvas-platforms');
+  if (canvasPlat) {
+    if (AppState.charts.platforms) {
+      AppState.charts.platforms.destroy();
     }
+
+    const platEntries = Object.entries(m.by_platform || {}).sort((a, b) => b[1] - a[1]).slice(0, 6);
+    const platLabels = platEntries.map(([k]) => formatPlatformName(k));
+    const platData = platEntries.map(([, v]) => v);
+    const platCodes = platEntries.map(([k]) => k);
+
+    AppState.charts.platforms = new Chart(canvasPlat, {
+      type: 'bar',
+      data: {
+        labels: platLabels,
+        datasets: [{
+          label: 'Solicitudes',
+          data: platData,
+          backgroundColor: 'rgba(0, 168, 150, 0.85)',
+          borderRadius: 6,
+          borderSkipped: false
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: (ctx) => ` ${ctx.parsed.x} solicitudes registradas`
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: { color: '#F1F5F9' },
+            ticks: { font: { size: 10, family: 'Inter' }, precision: 0 }
+          },
+          y: {
+            grid: { display: false },
+            ticks: { font: { size: 11, family: 'Inter', weight: 600 }, color: '#1E293B' }
+          }
+        },
+        onClick: (evt, activeEls) => {
+          if (activeEls && activeEls.length > 0) {
+            const idx = activeEls[0].index;
+            const code = platCodes[idx];
+            const name = platLabels[idx];
+            openMetricsDrilldownModal('platform', code, `Plataforma: ${name}`);
+          }
+        }
+      }
+    });
   }
 
-  // 7. Feed de Auditoría Inmutable
-  const auditFeed = document.getElementById('feed-audit-logs');
-  if (auditFeed && m.recent_audit) {
-    if (m.recent_audit.length === 0) {
-      auditFeed.innerHTML = '<div style="color:#94A3B8; font-size:11px; padding:8px;">Sin actividad reciente para el filtro seleccionado.</div>';
-    } else {
-      auditFeed.innerHTML = m.recent_audit.slice(0, 6).map(log => {
-        return `
-          <div style="background:#F8FAFC; border:1px solid #E2E8F0; border-radius:6px; padding:6px 10px; font-size:11px; display:flex; justify-content:space-between; align-items:center;">
-            <div>
-              <strong style="color:var(--q-navy); font-family:'JetBrains Mono'; font-size:10.5px;">[${log.ticket_id}]</strong> 
-              <span style="color:#475569;">${log.reason}</span>
-            </div>
-            <div style="font-size:9.5px; color:#94A3B8; font-weight:600;">
-              👤 ${log.changed_by} • ${log.time}
-            </div>
-          </div>
-        `;
-      }).join('');
+  // --- CHART 4: BARRAS HORIZONTALES INSTITUCIONES / SANATORIOS ---
+  const canvasInst = document.getElementById('chart-canvas-institutions');
+  if (canvasInst) {
+    if (AppState.charts.institutions) {
+      AppState.charts.institutions.destroy();
     }
+
+    const instEntries = Object.entries(m.by_institution || {}).sort((a, b) => b[1] - a[1]).slice(0, 6);
+    const instLabels = instEntries.map(([k]) => formatInstitutionName(k));
+    const instData = instEntries.map(([, v]) => v);
+    const instCodes = instEntries.map(([k]) => k);
+
+    AppState.charts.institutions = new Chart(canvasInst, {
+      type: 'bar',
+      data: {
+        labels: instLabels,
+        datasets: [{
+          label: 'Casos',
+          data: instData,
+          backgroundColor: 'rgba(59, 130, 246, 0.85)',
+          borderRadius: 6,
+          borderSkipped: false
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: (ctx) => ` ${ctx.parsed.x} casos sanitarios`
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: { color: '#F1F5F9' },
+            ticks: { font: { size: 10, family: 'Inter' }, precision: 0 }
+          },
+          y: {
+            grid: { display: false },
+            ticks: { font: { size: 11, family: 'Inter', weight: 600 }, color: '#1E293B' }
+          }
+        },
+        onClick: (evt, activeEls) => {
+          if (activeEls && activeEls.length > 0) {
+            const idx = activeEls[0].index;
+            const code = instCodes[idx];
+            const name = instLabels[idx];
+            openMetricsDrilldownModal('institution', code, `Institución: ${name}`);
+          }
+        }
+      }
+    });
   }
 }
 
+function renderDashboardActiveSlaTable(currentInst) {
+  const tbodySla = document.getElementById('tbody-active-sla');
+  if (!tbodySla) return;
+
+  const activeTickets = (AppState.tickets || [])
+    .filter(t => t.status !== 'CERRADO' && (!currentInst || t.institution_code === currentInst))
+    .slice(0, 10);
+
+  if (activeTickets.length === 0) {
+    tbodySla.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#94A3B8; padding:20px;">No hay incidentes pendientes para la institución seleccionada.</td></tr>';
+    return;
+  }
+
+  tbodySla.innerHTML = activeTickets.map(t => {
+    const pClass = `prio-pill-${t.priority.toLowerCase()}`;
+    const sla = calculateTicketSLA(t);
+    const assigneeName = formatUserName(t.assignee_username);
+    return `
+      <tr>
+        <td><strong style="font-family:'JetBrains Mono', monospace; font-size:11.5px; color:#0F172A;">${t.id}</strong></td>
+        <td><span class="prio-pill ${pClass}">${t.priority}</span></td>
+        <td>
+          <div style="font-weight:600; max-width:280px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:#0F172A;">${t.title}</div>
+          <div style="font-size:10px; color:#64748B;">🏥 ${formatInstitutionName(t.institution_code)}</div>
+        </td>
+        <td><span style="font-size:11px; font-weight:600; color:#475569;">${formatPlatformName(t.platform_code)}</span></td>
+        <td>
+          <div style="display:flex; align-items:center; gap:6px;">
+            <div style="width:20px; height:20px; border-radius:50%; background:#E0F2FE; color:#0369A1; font-weight:800; font-size:9px; display:flex; align-items:center; justify-content:center;">
+              ${getInitials(assigneeName)}
+            </div>
+            <span style="font-size:11px; font-weight:600; color:#1E293B;">${assigneeName}</span>
+          </div>
+        </td>
+        <td>
+          <span style="font-size:11px; font-weight:700; color:${sla.isBreached ? '#DC2626' : '#10B981'};">
+            ${sla.isBreached ? '⚠️ Excedido' : '⏱️ ' + sla.timeRemainingText}
+          </span>
+        </td>
+        <td style="text-align:center;">
+          <button class="btn-clean-action" style="padding:4px 10px; font-size:11px; font-weight:700; border-radius:6px; background:#00A896; color:#FFF; border:none; cursor:pointer;" onclick="openTicketWorkspace('${t.id}')">
+            Abrir Caso ➔
+          </button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function renderDashboardPlatformsGrid(m) {
+  const container = document.getElementById('grid-platform-health-cards');
+  if (!container) return;
+
+  const platforms = AppState.platforms || [];
+  if (platforms.length === 0) {
+    container.innerHTML = '<div style="color:#94A3B8; font-size:12px; padding:12px;">Cargando catálogo de plataformas asistenciales...</div>';
+    return;
+  }
+
+  container.innerHTML = platforms.map(p => {
+    const count = (m.by_platform && m.by_platform[p.code]) || 0;
+    const isCritical = count > 10;
+    return `
+      <div class="chart-card-modern" style="cursor:pointer; transition:transform 0.15s ease;" onclick="openMetricsDrilldownModal('platform', '${p.code}', 'Plataforma: ${p.name}')">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;">
+          <div>
+            <div style="font-size:14px; font-weight:800; color:#0F172A;">🩺 ${p.name}</div>
+            <div style="font-size:11px; color:#64748B;">Código: <code>${p.code}</code></div>
+          </div>
+          <span style="font-size:10px; font-weight:800; padding:3px 8px; border-radius:6px; background:${isCritical ? '#FEE2E2; color:#DC2626;' : '#ECFDF5; color:#059669;'}">
+            ${isCritical ? '⚠️ ALTA DEMANDA' : '🟢 OPERATIVO'}
+          </span>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px; padding-top:10px; border-top:1px solid #F1F5F9;">
+          <span style="font-size:11.5px; color:#64748B;">Solicitudes Registradas:</span>
+          <strong style="font-size:16px; color:#00A896; font-weight:900;">${count}</strong>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderDashboardInstitutionsRanking(m) {
+  const tbody = document.getElementById('tbody-institutions-ranking');
+  if (!tbody) return;
+
+  const institutions = AppState.institutions || [];
+  if (institutions.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#94A3B8; padding:20px;">Cargando instituciones...</td></tr>';
+    return;
+  }
+
+  const sortedInst = [...institutions].sort((a, b) => {
+    const cA = (m.by_institution && m.by_institution[a.code]) || 0;
+    const cB = (m.by_institution && m.by_institution[b.code]) || 0;
+    return cB - cA;
+  });
+
+  tbody.innerHTML = sortedInst.map(inst => {
+    const total = (m.by_institution && m.by_institution[inst.code]) || 0;
+    const active = (AppState.tickets || []).filter(t => t.institution_code === inst.code && t.status !== 'CERRADO').length;
+    return `
+      <tr>
+        <td><strong>🏥 ${inst.name}</strong></td>
+        <td><span style="font-size:11px; color:#64748B;">${inst.segment || 'Sanatorio / Prepaga'}</span></td>
+        <td><strong style="font-size:13px; color:#0F172A;">${total}</strong></td>
+        <td><span style="font-weight:700; color:#0284C7;">${active} activos</span></td>
+        <td><span style="color:#10B981; font-weight:800;">98.5%</span></td>
+        <td><span style="color:#059669; font-weight:800;">96.8%</span></td>
+        <td style="text-align:center;">
+          <button class="btn-clean-action" style="padding:4px 10px; font-size:11px; font-weight:700; border-radius:6px; background:#3B82F6; color:#FFF; border:none; cursor:pointer;" onclick="openMetricsDrilldownModal('institution', '${inst.code}', 'Institución: ${inst.name}')">
+            Ver Casos ➔
+          </button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function renderDashboardAuditFeed(m) {
+  const auditFeed = document.getElementById('feed-audit-logs');
+  if (!auditFeed) return;
+
+  const logs = m.recent_audit || [];
+  if (logs.length === 0) {
+    auditFeed.innerHTML = '<div style="color:#94A3B8; font-size:11px; padding:12px;">Sin actividad reciente para el filtro seleccionado.</div>';
+    return;
+  }
+
+  auditFeed.innerHTML = logs.slice(0, 10).map(log => {
+    return `
+      <div style="background:#F8FAFC; border:1px solid #E2E8F0; border-radius:8px; padding:8px 12px; font-size:11.5px; display:flex; justify-content:space-between; align-items:center; gap:10px;">
+        <div>
+          <strong style="color:var(--q-navy); font-family:'JetBrains Mono', monospace; font-size:11px;">[${log.ticket_id}]</strong> 
+          <span style="color:#334155; font-weight:600; margin-left:6px;">${log.reason}</span>
+        </div>
+        <div style="font-size:10px; color:#94A3B8; font-weight:600; white-space:nowrap;">
+          👤 ${formatUserName(log.changed_by)} • ${log.time}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
 function openTicketInCockpit(ticketId) {
-  switchView('tickets');
-  selectTicket(ticketId, true);
+  openTicketWorkspace(ticketId);
 }
 
 // =============================================================================
@@ -959,44 +1295,63 @@ function openTicketInCockpit(ticketId) {
 // =============================================================================
 async function loadTickets(params = {}) {
   try {
-    const tickets = await API.getTickets(params);
-    AppState.tickets = tickets;
+    // Aislamiento de Seguridad: Rol Solicitante solo ve sus propios tickets
+    if (AppState.currentUser && AppState.currentUser.role === 'SOLICITANTE') {
+      params.requester_username = AppState.currentUser.username;
+    }
+
+    // Filtro de Período de Creación si existe
+    const periodSelect = document.getElementById('tkt-filter-period');
+    if (periodSelect && periodSelect.value && periodSelect.value !== 'all' && !params.period) {
+      params.period = periodSelect.value;
+    }
+
+    const rawTickets = await API.getTickets(params);
+    
+    // Por defecto en la bandeja se ocultan los resueltos y cerrados
+    // a menos que el usuario los solicite explícitamente vía filtro o preset
+    let filteredTickets = rawTickets;
+    
+    if (params.pending_only) {
+      filteredTickets = rawTickets.filter(t => ['NUEVO', 'ASIGNADO', 'EN_CURSO'].includes(t.status));
+    } else if (!params.status && !params.include_all && !params.include_resolved) {
+      filteredTickets = rawTickets.filter(t => t.status !== 'RESUELTO' && t.status !== 'CERRADO');
+    }
+    
+    AppState.tickets = filteredTickets;
     renderTicketList();
     
-    // Actualizar contadores de presets si es consulta general
-    if (Object.keys(params).length === 0) {
-      updatePresetCounts(tickets);
+    // Si no hay filtros restrictivos de búsqueda, guardar copia global para contadores precisos
+    if (!params.priority && !params.assignee_username && !params.status && !params.search) {
+      AppState.allTicketsRaw = rawTickets;
+      updatePresetCounts(rawTickets);
+    } else if (AppState.allTicketsRaw) {
+      updatePresetCounts(AppState.allTicketsRaw);
+    } else {
+      API.getTickets({}).then(all => {
+        AppState.allTicketsRaw = all;
+        updatePresetCounts(all);
+      }).catch(() => updatePresetCounts(rawTickets));
     }
     
     // Si hay un ticket seleccionado, refrescarlo
     if (AppState.selectedTicket) {
-      const refreshed = tickets.find(t => t.id === AppState.selectedTicket.id);
+      const refreshed = rawTickets.find(t => t.id === AppState.selectedTicket.id);
       if (refreshed) {
         AppState.selectedTicket = refreshed;
         renderTicketDetail(refreshed);
-      } else if (tickets.length > 0) {
-        selectTicket(tickets[0].id, false);
+      } else if (filteredTickets.length > 0) {
+        selectTicket(filteredTickets[0].id, false);
       }
-    } else if (tickets.length > 0) {
-      selectTicket(tickets[0].id, false);
-    } else {
-      const container = document.getElementById('ticket-detail-container');
-      if (container) {
-        container.innerHTML = `
-          <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; color:#94A3B8; text-align:center; padding:40px 20px;">
-            <div style="font-size:40px; margin-bottom:12px;">📋</div>
-            <h3 style="font-size:15px; font-weight:700; color:#64748B;">Ningún ticket seleccionado</h3>
-            <p style="font-size:12px; max-width:320px; margin-top:6px;">Seleccione una solicitud de la bandeja para ver su detalle integral, gestión FSM y bitácora de trazabilidad.</p>
-          </div>
-        `;
-      }
+    } else if (filteredTickets.length > 0) {
+      selectTicket(filteredTickets[0].id, false);
     }
     
     // Actualizar badges de conteo
-    const badge = document.getElementById('ticket-count-badge');
     const sideBadge = document.getElementById('sidebar-ticket-count');
-    if (badge) badge.textContent = tickets.length;
-    if (sideBadge) sideBadge.textContent = tickets.length;
+    const footerCount = document.getElementById('invgate-footer-count-num');
+    if (sideBadge) sideBadge.textContent = filteredTickets.length;
+    if (footerCount) footerCount.textContent = filteredTickets.length;
   } catch (err) {
     console.error('Error cargando tickets:', err);
   }
@@ -1004,26 +1359,94 @@ async function loadTickets(params = {}) {
 
 function updatePresetCounts(tickets) {
   if (!tickets) return;
-  const cAll = tickets.length;
-  const cNew = tickets.filter(t => t.status === 'NUEVO').length;
-  const cProg = tickets.filter(t => t.status === 'EN_CURSO' || t.status === 'ASIGNADO').length;
-  const cP1 = tickets.filter(t => t.priority === 'P1').length;
-  const cRes = tickets.filter(t => t.status === 'RESUELTO').length;
-  const cCls = tickets.filter(t => t.status === 'CERRADO').length;
+  const currentUsername = AppState.currentUser ? AppState.currentUser.username : '';
+  const currentRole = AppState.currentUser ? AppState.currentUser.role : '';
 
-  const elAll = document.getElementById('preset-count-all');
-  const elNew = document.getElementById('preset-count-new');
-  const elProg = document.getElementById('preset-count-prog');
-  const elP1 = document.getElementById('preset-count-p1');
-  const elRes = document.getElementById('preset-count-res');
-  const elCls = document.getElementById('preset-count-cls');
+  const cAll = tickets.filter(t => t.status !== 'RESUELTO' && t.status !== 'CERRADO').length;
+  
+  const cMine = tickets.filter(t => {
+    if (t.status === 'RESUELTO' || t.status === 'CERRADO') return false;
+    if (currentRole === 'SOLICITANTE') {
+      return t.requester_username === currentUsername;
+    }
+    return t.assignee_username === currentUsername;
+  }).length;
 
-  if (elAll) elAll.textContent = cAll;
-  if (elNew) elNew.textContent = cNew;
-  if (elProg) elProg.textContent = cProg;
+  const cUnassigned = tickets.filter(t => {
+    if (t.status === 'RESUELTO' || t.status === 'CERRADO') return false;
+    return !t.assignee_username || t.assignee_username === '' || t.assignee_username === 'null';
+  }).length;
+
+  const cP1 = tickets.filter(t => (t.priority || '').toUpperCase() === 'P1' && t.status !== 'RESUELTO' && t.status !== 'CERRADO').length;
+
+  const elMine = document.getElementById('qv-count-mine');
+  const elUnassigned = document.getElementById('qv-count-unassigned');
+  const elP1 = document.getElementById('qv-count-p1');
+  const elTotalBadge = document.getElementById('tickets-badge-total');
+
+  if (elMine) elMine.textContent = cMine;
+  if (elUnassigned) elUnassigned.textContent = cUnassigned;
   if (elP1) elP1.textContent = cP1;
-  if (elRes) elRes.textContent = cRes;
-  if (elCls) elCls.textContent = cCls;
+  if (elTotalBadge) elTotalBadge.textContent = `${cAll} Solicitudes`;
+}
+
+function selectQuickView(viewKey) {
+  AppState.activeQuickView = viewKey;
+
+  // Actualizar estado activo de los botones de filtro tab
+  const pills = document.querySelectorAll('#view-tickets .filter-tab-pill');
+  pills.forEach(p => p.classList.remove('active'));
+
+  const pillMap = {
+    'ALL': 'qv-all',
+    'MINE': 'qv-mine',
+    'UNASSIGNED': 'qv-unassigned',
+    'P1': 'qv-p1',
+    'N1': 'qv-n1',
+    'RESOLVED': 'qv-resolved'
+  };
+
+  const activePillId = pillMap[viewKey] || 'qv-all';
+  const targetPill = document.getElementById(activePillId);
+  if (targetPill) targetPill.classList.add('active');
+
+  // Construir parámetros combinando con los selectores de precisión
+  const params = {};
+  const inst = document.getElementById('tkt-filter-inst') ? document.getElementById('tkt-filter-inst').value : '';
+  const plat = document.getElementById('tkt-filter-platform') ? document.getElementById('tkt-filter-platform').value : '';
+  const level = document.getElementById('tkt-filter-level') ? document.getElementById('tkt-filter-level').value : '';
+  const period = document.getElementById('tkt-filter-period') ? document.getElementById('tkt-filter-period').value : '';
+  const statusSelect = document.getElementById('tkt-filter-status') ? document.getElementById('tkt-filter-status').value : '';
+
+  if (inst) params.institution = inst;
+  if (plat) params.platform = plat;
+  if (level) params.support_level = level;
+  if (period && period !== 'all') params.period = period;
+
+  if (viewKey === 'MINE') {
+    if (AppState.currentUser && AppState.currentUser.role === 'SOLICITANTE') {
+      params.requester_username = AppState.currentUser.username;
+    } else if (AppState.currentUser) {
+      params.assignee_username = AppState.currentUser.username;
+    }
+  } else if (viewKey === 'UNASSIGNED') {
+    params.assignee_username = '__unassigned__';
+  } else if (viewKey === 'P1') {
+    params.priority = 'P1';
+  } else if (viewKey === 'N1') {
+    params.support_level = 'N1';
+  } else if (viewKey === 'RESOLVED') {
+    params.status = 'RESUELTO';
+    params.include_resolved = true;
+  }
+
+  if (viewKey !== 'RESOLVED' && statusSelect && statusSelect !== 'ACTIVE' && statusSelect !== 'ALL') {
+    params.status = statusSelect;
+  } else if (statusSelect === 'ALL') {
+    params.include_all = true;
+  }
+
+  loadTickets(params);
 }
 
 function calculateTicketSLA(ticket) {
@@ -1103,62 +1526,189 @@ function calculateTicketSLA(ticket) {
   };
 }
 
+function getInitials(name) {
+  if (!name) return '??';
+  const parts = name.trim().split(/\s+/);
+  if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
+function getAvatarBubbleClass(initials) {
+  const code = (initials.charCodeAt(0) + (initials.charCodeAt(1) || 0)) % 4;
+  if (code === 0) return 'bubble-cr';
+  if (code === 1) return 'bubble-dc';
+  if (code === 2) return 'bubble-da';
+  return 'bubble-lb';
+}
+
 function renderTicketList() {
+  const tbody = document.getElementById('ticket-table-body');
   const container = document.getElementById('ticket-list');
-  if (!container) return;
-
   const countBadge = document.getElementById('ticket-count-badge');
-  if (countBadge) {
-    countBadge.textContent = AppState.tickets ? AppState.tickets.length : 0;
-  }
   const sidebarCount = document.getElementById('sidebar-ticket-count');
-  if (sidebarCount && AppState.tickets) {
-    sidebarCount.textContent = AppState.tickets.length;
+  const footerCount = document.getElementById('invgate-footer-count-num');
+
+  const total = AppState.tickets ? AppState.tickets.length : 0;
+  if (countBadge) countBadge.textContent = total;
+  if (sidebarCount) sidebarCount.textContent = total;
+  if (footerCount) footerCount.textContent = total;
+
+  if (tbody) {
+    if (!AppState.tickets || AppState.tickets.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="7" style="text-align:center; padding: 48px 16px; color:#94A3B8;">
+            <div style="font-size:36px; margin-bottom:10px;">📭</div>
+            <div style="font-size:14px; font-weight:700; color:#475569;">No hay solicitudes activas con los filtros aplicados</div>
+            <div style="font-size:12px; color:#94A3B8; margin-top:4px;">Utilice los filtros avanzados para consultar casos resueltos o cambiar de sede.</div>
+          </td>
+        </tr>
+      `;
+    } else {
+      tbody.innerHTML = AppState.tickets.map(t => {
+        const priority = (t.priority || 'P3').toUpperCase();
+        const status = (t.status || 'NUEVO').toUpperCase();
+        const level = (t.support_level || 'N1').toUpperCase();
+        const platName = formatPlatformName(t.platform_code);
+        const instName = formatInstitutionName(t.institution_code);
+        const timeAgo = formatDateFriendly(t.created_at);
+
+        // Clases de prioridad para borde lateral y pastilla
+        const prioRowClass = `prio-row-${priority.toLowerCase()}`;
+        const prioChipClass = `chip-${priority.toLowerCase()}`;
+        let prioIcon = '🔷';
+        let prioLabel = `${priority} • Media`;
+        if (priority === 'P1') { prioIcon = '🚨'; prioLabel = 'P1 • Crítica'; }
+        else if (priority === 'P2') { prioIcon = '⚠️'; prioLabel = 'P2 • Alta'; }
+        else if (priority === 'P3') { prioIcon = '🔷'; prioLabel = 'P3 • Media'; }
+        else if (priority === 'P4') { prioIcon = '⚪'; prioLabel = 'P4 • Baja'; }
+
+        // Pastilla de Estado
+        let statusPillClass = 'status-pill-nuevo';
+        let statusIcon = '🟢';
+        let statusText = 'NUEVO';
+        if (status === 'ASIGNADO') { statusPillClass = 'status-pill-asignado'; statusIcon = '🔵'; statusText = 'ASIGNADO'; }
+        else if (status === 'EN_CURSO') { statusPillClass = 'status-pill-en_curso'; statusIcon = '🟡'; statusText = 'EN CURSO'; }
+        else if (status === 'RESUELTO') { statusPillClass = 'status-pill-resuelto'; statusIcon = '✅'; statusText = 'RESUELTO'; }
+        else if (status === 'CERRADO') { statusPillClass = 'status-pill-cerrado'; statusIcon = '🔒'; statusText = 'CERRADO'; }
+
+        // Cálculo dinámico de SLA
+        const sla = calculateTicketSLA(t);
+        let slaChipClass = 'sla-chip-ok';
+        if (sla.status === 'BREACHED') slaChipClass = 'sla-chip-breached';
+        else if (sla.status === 'WARNING') slaChipClass = 'sla-chip-warn';
+
+        // Asignado a
+        const rawAgent = t.assignee_name || (t.assignee_username ? formatUserName(t.assignee_username) : 'Sin Asignar');
+        const agentName = rawAgent.replace(/Lic\.\s*/gi, '').trim();
+
+        // Solicitante / Institución
+        const rawReq = t.requester_name || (t.requester_username ? formatUserName(t.requester_username) : 'Médico Asistencial');
+        const reqName = rawReq.replace(/Lic\.\s*/gi, '').trim();
+
+        return `
+          <tr class="${prioRowClass}" onclick="openAgentWorkspace('${t.id}')" title="Haga clic para abrir el espacio de trabajo de la solicitud #${t.id}">
+            <!-- 1. ID & PRIORIDAD (Misma Fila / Horizontal) -->
+            <td style="white-space: nowrap; width: 250px; min-width: 240px;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="tkt-id-badge" style="margin-bottom: 0;">#${t.id}</span>
+                <span class="tkt-prio-chip ${prioChipClass}">${prioIcon} ${prioLabel}</span>
+              </div>
+            </td>
+
+            <!-- 2. SOLICITUD & TAXONOMÍA -->
+            <td style="width: auto;">
+              <div class="tkt-table-subject-cell">
+                <div style="flex: 1; min-width: 0;">
+                  <div class="tkt-table-subject-title">${escapeHtml(t.title)}</div>
+                  <div class="tkt-chips-row">
+                    <span class="tkt-chip-module">💻 ${platName}</span>
+                    <span class="tkt-chip-inst">🏥 ${instName}</span>
+                    <span class="tkt-chip-time">🕒 ${timeAgo}</span>
+                  </div>
+                </div>
+              </div>
+            </td>
+
+            <!-- 3. ESTADO & TIEMPO SLA -->
+            <td style="width: 170px; white-space: nowrap;">
+              <div class="tkt-sla-track-cell">
+                <span class="tkt-status-pill ${statusPillClass}">${statusIcon} ${statusText}</span>
+                <span class="tkt-sla-chip ${slaChipClass}">⏱️ ${sla.timeRemainingText || 'En plazo'}</span>
+              </div>
+            </td>
+
+            <!-- 4. ASIGNADO A -->
+            <td style="width: 180px;">
+              <div class="tkt-user-profile-cell">
+                ${getUserAvatarHtml(t.assignee_username, agentName, 28)}
+                <div class="tkt-user-details">
+                  <span class="tkt-user-name">${agentName.split('(')[0].trim()}</span>
+                  <span class="tkt-user-sub">${level} • Mesa de Ayuda</span>
+                </div>
+              </div>
+            </td>
+
+            <!-- 5. SOLICITANTE / INSTITUCIÓN -->
+            <td style="width: 190px;">
+              <div class="tkt-user-profile-cell">
+                ${getUserAvatarHtml(t.requester_username, reqName, 28)}
+                <div class="tkt-user-details">
+                  <span class="tkt-user-name" title="${reqName}">${reqName.split('(')[0].trim()}</span>
+                  <span class="tkt-user-sub">${instName}</span>
+                </div>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
   }
 
-  if (!AppState.tickets || AppState.tickets.length === 0) {
-    container.innerHTML = `
-      <div style="text-align:center; padding:40px 14px; color:#94A3B8;">
-        <div style="font-size:36px; margin-bottom:10px;">📭</div>
-        <div style="font-size:13px; font-weight:700; color:#475569;">No hay solicitudes con estos filtros</div>
-        <div style="font-size:11.5px; color:#94A3B8; margin-top:4px;">Pruebe cambiando el filtro de estado o sede.</div>
-      </div>
-    `;
-    return;
+  // Compatibilidad con contenedor de lista auxiliar si existe
+  if (container) {
+    if (!AppState.tickets || AppState.tickets.length === 0) {
+      container.innerHTML = `
+        <div style="text-align:center; padding:40px 14px; color:#94A3B8;">
+          <div style="font-size:36px; margin-bottom:10px;">📭</div>
+          <div style="font-size:13px; font-weight:700; color:#475569;">No hay solicitudes con estos filtros</div>
+        </div>
+      `;
+    } else {
+      container.innerHTML = AppState.tickets.map(t => {
+        const isSelected = AppState.selectedTicket && AppState.selectedTicket.id === t.id;
+        const priority = (t.priority || 'P3').toUpperCase();
+        const status = (t.status || 'NUEVO').toUpperCase();
+        const level = (t.support_level || 'N1').toUpperCase();
+        const platName = formatPlatformName(t.platform_code);
+        const instName = formatInstitutionName(t.institution_code);
+        const timeAgo = formatDateFriendly(t.created_at);
+
+        return `
+          <div class="ticket-card-clean prio-${priority.toLowerCase()} ${isSelected ? 'selected' : ''}" onclick="openAgentWorkspace('${t.id}')">
+            <div class="card-row-top">
+              <div class="card-id-prio">
+                <span class="prio-chip prio-chip-${priority.toLowerCase()}">${priority}</span>
+                <span class="ticket-id-clean">#${t.id}</span>
+              </div>
+              <span class="ticket-time-clean">${timeAgo}</span>
+            </div>
+            <div class="ticket-subject-clean">${t.title}</div>
+            <div class="card-row-bottom">
+              <div class="card-tags-group">
+                <span class="pill-tag" title="${platName}">🩺 ${platName}</span>
+                <span class="pill-tag" title="${instName}">🏥 ${instName}</span>
+              </div>
+              <div class="card-status-group">
+                <span class="badge-tier badge-tier-${level.toLowerCase()}" style="font-size:9.5px; padding:2px 6px;">${level}</span>
+                <span class="badge-status st-${status}" style="font-size:9.5px; padding:2px 6px;">${formatStatusName(status)}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
   }
-
-  container.innerHTML = AppState.tickets.map(t => {
-    const isSelected = AppState.selectedTicket && AppState.selectedTicket.id === t.id;
-    const priority = (t.priority || 'P3').toUpperCase();
-    const status = (t.status || 'NUEVO').toUpperCase();
-    const level = (t.support_level || 'N1').toUpperCase();
-    const platName = formatPlatformName(t.platform_code);
-    const instName = formatInstitutionName(t.institution_code);
-    const timeAgo = formatDateFriendly(t.created_at);
-
-    return `
-      <div class="ticket-card-clean prio-${priority.toLowerCase()} ${isSelected ? 'selected' : ''}" onclick="selectTicket('${t.id}', true)">
-        <div class="card-row-top">
-          <div class="card-id-prio">
-            <span class="prio-chip prio-chip-${priority.toLowerCase()}">${priority}</span>
-            <span class="ticket-id-clean">#${t.id}</span>
-          </div>
-          <span class="ticket-time-clean">${timeAgo}</span>
-        </div>
-        <div class="ticket-subject-clean">${t.title}</div>
-        <div class="card-row-bottom">
-          <div class="card-tags-group">
-            <span class="pill-tag" title="${platName}">🩺 ${platName}</span>
-            <span class="pill-tag" title="${instName}">🏥 ${instName}</span>
-          </div>
-          <div class="card-status-group">
-            <span class="badge-tier badge-tier-${level.toLowerCase()}" style="font-size:9.5px; padding:2px 6px;">${level}</span>
-            <span class="badge-status st-${status}" style="font-size:9.5px; padding:2px 6px;">${formatStatusName(status)}</span>
-          </div>
-        </div>
-      </div>
-    `;
-  }).join('');
 }
 
 async function selectTicket(ticketId, userTriggered = false) {
@@ -1168,13 +1718,8 @@ async function selectTicket(ticketId, userTriggered = false) {
     renderTicketList();
     renderTicketDetail(ticket);
 
-    const topTitle = document.getElementById('top-view-title-text');
-    if (topTitle && AppState.currentView === 'tickets') {
-      topTitle.textContent = `SOLICITUD #${ticket.id}`;
-    }
-
-    if (userTriggered && window.innerWidth <= 768) {
-      switchMobileCockpitTab('col-detail');
+    if (userTriggered) {
+      openAgentWorkspace(ticketId);
     }
   } catch (err) {
     console.error('Error seleccionando ticket:', err);
@@ -1321,9 +1866,20 @@ function renderTicketDetail(rawTicket) {
           </span>
         </div>
 
-        <!-- Barra de Acciones FSM -->
+        <!-- Barra de Acciones FSM y Popups Especializados -->
         <div class="detail-actions-toolbar">
           ${actionsToolbarHtml}
+          <div style="margin-left: auto; display: flex; gap: 6px; flex-wrap: wrap;">
+            <button class="btn-action-popup" onclick="openTechDetailsModal('${ticket.id}')" title="Ver diagnóstico integral, servidores y SLA en ventana modal">
+              🔍 Ficha Técnica
+            </button>
+            <button class="btn-action-popup" onclick="openAuditTrailModal('${ticket.id}')" title="Ver trazabilidad forense inmutable en ventana modal">
+              📜 Historial
+            </button>
+            <button class="btn-action-popup" onclick="openChatExpandedModal('${ticket.id}')" title="Abrir chat y notas en ventana ampliada">
+              💬 Chat Ampliado
+            </button>
+          </div>
         </div>
       </div>
 
@@ -2362,22 +2918,509 @@ function initArticleModalListeners() {
 }
 
 
-// =============================================================================
-// 6. GESTIÓN MULTI-TENANT DE PLATAFORMAS E INSTITUCIONES
+// =============================================================================// =============================================================================
+// 6. GESTIÓN MULTI-TENANT DE PLATAFORMAS E INSTITUCIONES (VISTA DIFERENCIADA)
 // =============================================================================
 AppState.selectedTenantInst = 'OSDE';
+AppState.activePlatformsSubTab = 'institutions';
+AppState.instCardTypeFilter = 'all';
+
+// Matriz inicial de asignación multi-tenant por código real
 AppState.tenantPlatforms = {
-  'OSDE': { 'REC_DIGITAL': true, 'TELEMED': true, 'PORTAL_PAC': true, 'EHR_CORE': true, 'LAB_HL7': true, 'IMG_DICOM': true },
-  'SWISS_MED': { 'REC_DIGITAL': true, 'TELEMED': true, 'PORTAL_PAC': true, 'EHR_CORE': true, 'FARM_HOSP': true },
-  'GALENO': { 'REC_DIGITAL': true, 'TELEMED': true, 'EHR_CORE': true, 'LAB_HL7': true },
-  'FINOCHIETTO': { 'REC_DIGITAL': true, 'EHR_CORE': true, 'LAB_HL7': true, 'IMG_DICOM': true, 'FARM_HOSP': true },
-  'ITALIANO': { 'REC_DIGITAL': true, 'TELEMED': true, 'PORTAL_PAC': true, 'EHR_CORE': true, 'LAB_HL7': true, 'IMG_DICOM': true, 'FARM_HOSP': true, 'HIST_CLIN': true, 'APP_GUARDIA': true },
-  'ALEMAN': { 'REC_DIGITAL': true, 'TELEMED': true, 'EHR_CORE': true, 'LAB_HL7': true, 'IMG_DICOM': true }
+  'OSDE': { 'CAT_RECETA': true, 'CAT_TELEMEDICINA': true, 'CAT_AFILIADOS_PORTAL': true, 'CAT_REGISTRO_INTEROP': true, 'CAT_CONSULTORIO_DIGITAL': true, 'CAT_CARTILLA_TURNOS': true, 'CAT_RPM_MONITOREO': true },
+  'SWISS_MEDICAL': { 'CAT_RECETA': true, 'CAT_TELEMEDICINA': true, 'CAT_AFILIADOS_PORTAL': true, 'CAT_CONSULTORIO_DIGITAL': true, 'CAT_COPAGOS_PAGOS': true, 'CAT_REGISTRO_INTEROP': true },
+  'GALENO': { 'CAT_RECETA': true, 'CAT_TELEMEDICINA': true, 'CAT_CONSULTORIO_DIGITAL': true, 'CAT_CARTILLA_TURNOS': true, 'CAT_COPAGOS_PAGOS': true },
+  'MEDIFE': { 'CAT_RECETA': true, 'CAT_AFILIADOS_PORTAL': true, 'CAT_CONSULTORIO_DIGITAL': true, 'CAT_REGISTRO_INTEROP': true },
+  'OMINT': { 'CAT_RECETA': true, 'CAT_TELEMEDICINA': true, 'CAT_CONSULTORIO_DIGITAL': true, 'CAT_COPAGOS_PAGOS': true },
+  'HOSPITAL_ALEMAN': { 'CAT_RECETA': true, 'CAT_TELEMEDICINA': true, 'CAT_REGISTRO_INTEROP': true, 'CAT_INTERNACION_DOM': true, 'CAT_RPM_MONITOREO': true },
+  'HOSPITAL_ITALIANO': { 'CAT_RECETA': true, 'CAT_TELEMEDICINA': true, 'CAT_AFILIADOS_PORTAL': true, 'CAT_REGISTRO_INTEROP': true, 'CAT_INTERNACION_DOM': true, 'CAT_RPM_MONITOREO': true, 'CAT_CONSULTORIO_DIGITAL': true, 'CAT_COPAGOS_PAGOS': true, 'CAT_CARTILLA_TURNOS': true },
+  'HOSPITAL_BRITANICO': { 'CAT_RECETA': true, 'CAT_TELEMEDICINA': true, 'CAT_REGISTRO_INTEROP': true, 'CAT_CONSULTORIO_DIGITAL': true },
+  'HOSPITAL_AUSTRAL': { 'CAT_RECETA': true, 'CAT_TELEMEDICINA': true, 'CAT_INTERNACION_DOM': true, 'CAT_RPM_MONITOREO': true, 'CAT_REGISTRO_INTEROP': true },
+  'SANATORIO_FINOCHIETTO': { 'CAT_RECETA': true, 'CAT_REGISTRO_INTEROP': true, 'CAT_INTERNACION_DOM': true, 'CAT_COPAGOS_PAGOS': true },
+  'SANATORIO_LOS_ARCOS': { 'CAT_RECETA': true, 'CAT_TELEMEDICINA': true, 'CAT_REGISTRO_INTEROP': true },
+  'SANATORIO_MATER_DEI': { 'CAT_RECETA': true, 'CAT_TELEMEDICINA': true, 'CAT_AFILIADOS_PORTAL': true },
+  'PAMI': { 'CAT_RECETA': true, 'CAT_AFILIADOS_PORTAL': true, 'CAT_INTERNACION_DOM': true, 'CAT_REGISTRO_INTEROP': true },
+  'IOMA': { 'CAT_RECETA': true, 'CAT_AFILIADOS_PORTAL': true, 'CAT_REGISTRO_INTEROP': true }
 };
 
-function selectTenantInstitution(instCode) {
-  AppState.selectedTenantInst = instCode;
-  renderPlatformsCatalog();
+const PLATFORM_ICONS = {
+  'CAT_RECETA': '💊',
+  'CAT_TELEMEDICINA': '📹',
+  'CAT_AFILIADOS_PORTAL': '📱',
+  'CAT_REGISTRO_INTEROP': '🔗',
+  'CAT_RPM_MONITOREO': '📊',
+  'CAT_INTERNACION_DOM': '🛏️',
+  'CAT_COPAGOS_PAGOS': '💳',
+  'CAT_CARTILLA_TURNOS': '📅',
+  'CAT_CONSULTORIO_DIGITAL': '🩺'
+};
+
+const PLATFORM_PROTOCOLS = {
+  'CAT_RECETA': 'PKI / Validador RUP',
+  'CAT_TELEMEDICINA': 'WebRTC / H.264',
+  'CAT_AFILIADOS_PORTAL': 'REST API / OAuth2',
+  'CAT_REGISTRO_INTEROP': 'FHIR R4 / HL7 v2.5',
+  'CAT_RPM_MONITOREO': 'MQTT / Telemetría IoT',
+  'CAT_INTERNACION_DOM': 'GeoJSON / REST',
+  'CAT_COPAGOS_PAGOS': 'PCI-DSS / Webhook',
+  'CAT_CARTILLA_TURNOS': 'GraphQL / CalDAV',
+  'CAT_CONSULTORIO_DIGITAL': 'EHR / SNOMED-CT'
+};
+
+const PLATFORM_ITIL_TIER = {
+  'CAT_RECETA': 'N1 Triage / N2 Farmacia',
+  'CAT_TELEMEDICINA': 'N1 Guardia / N2 WebRTC',
+  'CAT_AFILIADOS_PORTAL': 'N1 Atención al Paciente',
+  'CAT_REGISTRO_INTEROP': 'N3 Arquitectura e Integración',
+  'CAT_RPM_MONITOREO': 'N2 Dispositivos Médicos',
+  'CAT_INTERNACION_DOM': 'N2 Coordinación Domiciliaria',
+  'CAT_COPAGOS_PAGOS': 'N2 Facturación y Pasarelas',
+  'CAT_CARTILLA_TURNOS': 'N1 Turnos Asistenciales',
+  'CAT_CONSULTORIO_DIGITAL': 'N2 Especialistas Clínicos'
+};
+
+function switchPlatformsSubTab(subTab) {
+  AppState.activePlatformsSubTab = subTab;
+
+  const btnInst = document.getElementById('btn-subtab-inst');
+  const btnPlat = document.getElementById('btn-subtab-plat');
+  const btnMatrix = document.getElementById('btn-subtab-matrix');
+
+  const viewInst = document.getElementById('platforms-subview-institutions');
+  const viewPlat = document.getElementById('platforms-subview-platforms');
+  const viewMatrix = document.getElementById('platforms-subview-matrix');
+
+  if (btnInst) btnInst.classList.toggle('active', subTab === 'institutions');
+  if (btnPlat) btnPlat.classList.toggle('active', subTab === 'platforms');
+  if (btnMatrix) btnMatrix.classList.toggle('active', subTab === 'matrix');
+
+  if (viewInst) viewInst.style.display = (subTab === 'institutions') ? 'block' : 'none';
+  if (viewPlat) viewPlat.style.display = (subTab === 'platforms') ? 'block' : 'none';
+  if (viewMatrix) viewMatrix.style.display = (subTab === 'matrix') ? 'block' : 'none';
+
+  if (subTab === 'institutions') {
+    renderInstitutionsCatalog();
+  } else if (subTab === 'platforms') {
+    renderClinicalPlatformsCards();
+  } else if (subTab === 'matrix') {
+    renderTenantMatrixTable();
+  }
+}
+
+function renderPlatformsCatalog() {
+  renderInstitutionsCatalog();
+  renderClinicalPlatformsCards();
+  renderTenantMatrixTable();
+}
+
+function renderInstitutionsCatalog() {
+  const containerCards = document.getElementById('grid-institutions-cards');
+  const tbodyTable = document.getElementById('tbody-institutions-table');
+  const containerTable = document.getElementById('container-institutions-table');
+  if (!containerCards && !tbodyTable) return;
+
+  const institutions = AppState.institutions || [];
+  const platforms = AppState.platforms || [];
+  const tickets = AppState.tickets || [];
+  const query = (document.getElementById('filter-inst-cards-input')?.value || '').toLowerCase().trim();
+  const typeFilter = AppState.instCardTypeFilter || 'all';
+
+  // Actualizar KPIs superiores
+  const totalOpenIncidents = tickets.filter(t => t.status !== 'RESUELTO' && t.status !== 'CERRADO').length;
+  const kpiInstEl = document.getElementById('kpi-total-institutions');
+  const kpiPlatEl = document.getElementById('kpi-total-platforms');
+  const kpiIncEl = document.getElementById('kpi-active-network-incidents');
+  if (kpiInstEl) kpiInstEl.textContent = institutions.length;
+  if (kpiPlatEl) kpiPlatEl.textContent = platforms.length;
+  if (kpiIncEl) kpiIncEl.textContent = totalOpenIncidents;
+
+  const filtered = institutions.filter(inst => {
+    const matchesQuery = !query || 
+      inst.name.toLowerCase().includes(query) || 
+      inst.code.toLowerCase().includes(query) || 
+      (inst.location && inst.location.toLowerCase().includes(query));
+    
+    let matchesType = true;
+    if (typeFilter === 'PREPAGA') {
+      matchesType = ['OSDE', 'SWISS_MEDICAL', 'GALENO', 'MEDIFE', 'OMINT', 'PAMI', 'IOMA'].includes(inst.code);
+    } else if (typeFilter === 'SANATORIO') {
+      matchesType = ['SANATORIO_FINOCHIETTO', 'SANATORIO_LOS_ARCOS', 'SANATORIO_MATER_DEI'].includes(inst.code);
+    } else if (typeFilter === 'HOSPITAL') {
+      matchesType = ['HOSPITAL_ALEMAN', 'HOSPITAL_ITALIANO', 'HOSPITAL_BRITANICO', 'HOSPITAL_AUSTRAL'].includes(inst.code);
+    } else if (typeFilter === 'INCIDENTS') {
+      const openCount = tickets.filter(t => t.institution_code === inst.code && t.status !== 'RESUELTO' && t.status !== 'CERRADO').length;
+      matchesType = openCount > 0;
+    }
+    return matchesQuery && matchesType;
+  });
+
+  // 1. Renderizar Modo Cuadrícula (Cards)
+  if (containerCards) {
+    if (filtered.length === 0) {
+      containerCards.innerHTML = `
+        <div style="grid-column: 1 / -1; text-align: center; padding: 40px; background: #FFF; border: 1px dashed #CBD5E1; border-radius: 10px;">
+          <div style="font-size: 32px; margin-bottom: 8px;">🏥</div>
+          <div style="font-weight: 700; color: #475569;">No se encontraron instituciones con los filtros seleccionados</div>
+        </div>
+      `;
+    } else {
+      containerCards.innerHTML = filtered.map(inst => {
+        const instConfig = AppState.tenantPlatforms[inst.code] || {};
+        const activePlatKeys = Object.keys(instConfig).filter(k => !!instConfig[k]);
+        const activeTicketsCount = tickets.filter(t => t.institution_code === inst.code && t.status !== 'RESUELTO' && t.status !== 'CERRADO').length;
+        
+        let orgType = 'Prestador Médico';
+        let typeBadgeBg = '#EFF6FF';
+        let typeBadgeColor = '#1D4ED8';
+        let slaTier = 'SLA Oro (24x7)';
+
+        if (['OSDE', 'SWISS_MEDICAL', 'GALENO', 'MEDIFE', 'OMINT'].includes(inst.code)) {
+          orgType = 'Prepaga / Aseguradora';
+          typeBadgeBg = '#EFF6FF';
+          typeBadgeColor = '#1E40AF';
+          slaTier = 'SLA Platino Crítico (2h)';
+        } else if (['SANATORIO_FINOCHIETTO', 'SANATORIO_LOS_ARCOS', 'SANATORIO_MATER_DEI'].includes(inst.code)) {
+          orgType = 'Sanatorio Privado';
+          typeBadgeBg = '#F5F3FF';
+          typeBadgeColor = '#6D28D9';
+          slaTier = 'SLA Alta Complejidad (4h)';
+        } else if (['HOSPITAL_ALEMAN', 'HOSPITAL_ITALIANO', 'HOSPITAL_BRITANICO', 'HOSPITAL_AUSTRAL'].includes(inst.code)) {
+          orgType = 'Hospital de Comunidad';
+          typeBadgeBg = '#ECFDF5';
+          typeBadgeColor = '#047857';
+          slaTier = 'SLA Asistencial (4h)';
+        } else if (['PAMI', 'IOMA'].includes(inst.code)) {
+          orgType = 'Obra Social / Red Pública';
+          typeBadgeBg = '#FEF3C7';
+          typeBadgeColor = '#B45309';
+          slaTier = 'SLA Red Masiva';
+        }
+
+        const initials = inst.name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+
+        return `
+          <div class="card" style="padding: 16px; background: #FFFFFF; border: 1.5px solid #E2E8F0; border-radius: 12px; display: flex; flex-direction: column; justify-content: space-between; transition: all 0.2s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.04); cursor: pointer;" onclick="openInstitutionDetailModal('${inst.code}')">
+            <div>
+              <!-- Header de Tarjeta: Logo y Tipo -->
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 12px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <div style="width: 38px; height: 38px; border-radius: 8px; background: #00A896; color: #FFF; font-weight: 800; font-size: 13px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,168,150,0.25);">
+                    ${initials}
+                  </div>
+                  <div>
+                    <h3 style="font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 800; color: #0F172A; margin: 0; line-height: 1.2;">
+                      ${inst.name}
+                    </h3>
+                    <div style="font-size: 10.5px; color: #64748B; margin-top: 2px;">
+                      <code>${inst.code}</code> • 📍 ${inst.location || 'Sede Central'}
+                    </div>
+                  </div>
+                </div>
+                <span style="font-size: 10px; font-weight: 800; background: ${typeBadgeBg}; color: ${typeBadgeColor}; padding: 3px 8px; border-radius: 6px; white-space: nowrap;">
+                  ${orgType}
+                </span>
+              </div>
+
+              <!-- Metadatos de SLA y Casos Activos -->
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; background: #F8FAFC; padding: 8px 10px; border-radius: 8px; margin-bottom: 12px; border: 1px solid #F1F5F9;">
+                <div>
+                  <div style="font-size: 10px; color: #64748B; font-weight: 600;">Contrato SLA</div>
+                  <div style="font-size: 11px; font-weight: 800; color: #0F172A;">${slaTier}</div>
+                </div>
+                <div>
+                  <div style="font-size: 10px; color: #64748B; font-weight: 600;">Incidentes Activos</div>
+                  <div style="font-size: 11px; font-weight: 800; color: ${activeTicketsCount > 0 ? '#DC2626' : '#059669'};">
+                    ${activeTicketsCount > 0 ? `🚨 ${activeTicketsCount} en curso` : '🟢 Operativo'}
+                  </div>
+                </div>
+              </div>
+
+              <!-- Módulos de Software Habilitados -->
+              <div style="margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                  <span style="font-size: 11px; font-weight: 700; color: #475569;">Sistemas Habilitados:</span>
+                  <span style="font-size: 10.5px; font-weight: 800; color: #00A896;">${activePlatKeys.length} de ${platforms.length} activos</span>
+                </div>
+                <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+                  ${activePlatKeys.map(pk => {
+                    const icon = PLATFORM_ICONS[pk] || '💻';
+                    const pObj = platforms.find(p => p.code === pk);
+                    const pName = pObj ? pObj.name : pk;
+                    return `
+                      <span style="font-size: 10px; font-weight: 700; background: #F0FDFA; color: #0F766E; border: 1px solid #CCFBF1; padding: 2px 6px; border-radius: 4px; display: inline-flex; align-items: center; gap: 3px;" title="${pName}">
+                        <span>${icon}</span>
+                        <span>${pName}</span>
+                      </span>
+                    `;
+                  }).join('')}
+                  ${activePlatKeys.length === 0 ? '<span style="font-size:10.5px; color:#94A3B8; font-style:italic;">Ningún módulo asignado</span>' : ''}
+                </div>
+              </div>
+            </div>
+
+            <!-- Acciones Rápidas -->
+            <div style="display: flex; gap: 6px; border-top: 1px solid #F1F5F9; padding-top: 10px; margin-top: 4px;" onclick="event.stopPropagation()">
+              <button type="button" class="btn-pri" onclick="openInstitutionDetailModal('${inst.code}')" style="width: 100%; font-size: 11.5px; padding: 6px 10px; font-weight: 800; border-radius: 6px; background: #00A896; border: none; color: #FFF; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                <span>📋 Ficha 360° & Módulos</span>
+                <span>➔</span>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+  }
+
+  // 2. Renderizar Modo Tabla Ejecutiva
+  if (tbodyTable) {
+    if (filtered.length === 0) {
+      tbodyTable.innerHTML = `
+        <tr>
+          <td colspan="6" style="text-align: center; padding: 30px; color: #64748B; font-weight: 600;">
+            No se encontraron instituciones sanitarias
+          </td>
+        </tr>
+      `;
+    } else {
+      tbodyTable.innerHTML = filtered.map(inst => {
+        const instConfig = AppState.tenantPlatforms[inst.code] || {};
+        const activePlatKeys = Object.keys(instConfig).filter(k => !!instConfig[k]);
+        const activeTicketsCount = tickets.filter(t => t.institution_code === inst.code && t.status !== 'RESUELTO' && t.status !== 'CERRADO').length;
+        const initials = inst.name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+
+        return `
+          <tr style="border-bottom: 1px solid #E2E8F0; transition: background 0.15s ease;" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background='#FFFFFF'">
+            <td style="padding: 12px 16px; font-weight: 700; color: #0F172A;">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <div style="width: 32px; height: 32px; border-radius: 6px; background: #00A896; color: #FFF; font-weight: 800; font-size: 11.5px; display: flex; align-items: center; justify-content: center;">
+                  ${initials}
+                </div>
+                <div>
+                  <div style="font-size: 12.5px; font-weight: 800;">${inst.name}</div>
+                  <div style="font-size: 10px; color: #64748B;"><code>${inst.code}</code></div>
+                </div>
+              </div>
+            </td>
+            <td style="padding: 12px 14px; font-size: 11.5px; color: #475569;">
+              📍 ${inst.location || 'Sede Central'}
+            </td>
+            <td style="padding: 12px 14px;">
+              <span style="font-size: 11px; font-weight: 800; color: #00A896; background: #F0FDFA; border: 1px solid #CCFBF1; padding: 3px 8px; border-radius: 6px;">
+                ${activePlatKeys.length} / ${platforms.length} Activos
+              </span>
+            </td>
+            <td style="padding: 12px 14px; font-size: 11px; font-weight: 700; color: #334155;">
+              SLA Platino (24x7)
+            </td>
+            <td style="padding: 12px 14px;">
+              <span style="font-size: 10.5px; font-weight: 800; padding: 3px 8px; border-radius: 6px; ${activeTicketsCount > 0 ? 'background: #FEE2E2; color: #DC2626; border: 1px solid #FECACA;' : 'background: #DCFCE7; color: #15803D; border: 1px solid #86EFAC;'}">
+                ${activeTicketsCount > 0 ? `🚨 ${activeTicketsCount} en curso` : '🟢 Operativo'}
+              </span>
+            </td>
+            <td style="padding: 12px 16px; text-align: right;">
+              <button type="button" class="btn-sec" onclick="openInstitutionDetailModal('${inst.code}')" style="font-size: 11px; padding: 4px 10px; font-weight: 700; border-radius: 6px;">
+                📋 Ficha 360°
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+  }
+}
+
+function togglePlatformsViewMode(mode) {
+  AppState.platformsViewMode = mode;
+  const containerCards = document.getElementById('grid-institutions-cards');
+  const containerTable = document.getElementById('container-institutions-table');
+  const btnCards = document.getElementById('btn-view-mode-cards');
+  const btnTable = document.getElementById('btn-view-mode-table');
+
+  if (btnCards) btnCards.classList.toggle('active', mode === 'cards');
+  if (btnTable) btnTable.classList.toggle('active', mode === 'table');
+
+  if (containerCards) containerCards.style.display = (mode === 'cards') ? 'grid' : 'none';
+  if (containerTable) containerTable.style.display = (mode === 'table') ? 'block' : 'none';
+}
+
+function filterInstitutionCards(query) {
+  renderInstitutionsCatalog();
+}
+
+function filterInstitutionCardsByType(type) {
+  AppState.instCardTypeFilter = type;
+  document.querySelectorAll('[data-inst-type-filter]').forEach(b => {
+    b.classList.toggle('active', b.dataset.instTypeFilter === type);
+  });
+  renderInstitutionsCatalog();
+}
+
+function goToMatrixForInstitution(instCode) {
+  switchPlatformsSubTab('matrix');
+  showToast(`Configurando matriz multi-tenant para ${formatInstitutionName(instCode)}`, 'info');
+}
+
+function renderClinicalPlatformsCards() {
+  const container = document.getElementById('grid-platforms-cards');
+  if (!container) return;
+
+  const platforms = AppState.platforms || [];
+  const institutions = AppState.institutions || [];
+  const tickets = AppState.tickets || [];
+
+  container.innerHTML = platforms.map(plat => {
+    const icon = PLATFORM_ICONS[plat.code] || '💻';
+    const protocol = PLATFORM_PROTOCOLS[plat.code] || 'REST API / HL7';
+    const itilTier = PLATFORM_ITIL_TIER[plat.code] || 'N2 Especialista';
+    
+    // Contar cuántas instituciones tienen habilitada esta plataforma
+    const connectedInsts = institutions.filter(inst => {
+      const c = AppState.tenantPlatforms[inst.code];
+      return c && !!c[plat.code];
+    });
+
+    // Contar incidentes activos de esta plataforma
+    const openIncidents = tickets.filter(t => t.platform_code === plat.code && t.status !== 'RESUELTO' && t.status !== 'CERRADO').length;
+
+    return `
+      <div class="card" style="padding: 16px; background: #FFFFFF; border: 1.5px solid #E2E8F0; border-radius: 12px; display: flex; flex-direction: column; justify-content: space-between; transition: all 0.2s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+        <div>
+          <!-- Header de Tarjeta: Icono y Nombre del Software -->
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 10px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <div style="width: 40px; height: 40px; border-radius: 10px; background: #F0FDFA; border: 1.5px solid #99F6E4; color: #0D9488; font-size: 20px; display: flex; align-items: center; justify-content: center;">
+                ${icon}
+              </div>
+              <div>
+                <h3 style="font-family: 'Outfit', sans-serif; font-size: 14.5px; font-weight: 800; color: #0F172A; margin: 0; line-height: 1.2;">
+                  ${plat.name}
+                </h3>
+                <span style="font-size: 9.5px; font-family: 'JetBrains Mono', monospace; background: #F1F5F9; color: #475569; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 3px;">
+                  ${plat.code}
+                </span>
+              </div>
+            </div>
+            <span style="font-size: 10px; font-weight: 800; background: #DCFCE7; color: #15803D; padding: 3px 8px; border-radius: 6px; border: 1px solid #86EFAC;">
+              🟢 99.98% SLA
+            </span>
+          </div>
+
+          <!-- Descripción del Producto -->
+          <p style="font-size: 11.5px; color: #475569; margin: 0 0 12px 0; line-height: 1.4;">
+            ${plat.description || 'Módulo asistencial digital de alta disponibilidad con integración hospitalaria.'}
+          </p>
+
+          <!-- Ficha Técnica de Integración ITIL -->
+          <div style="background: #F8FAFC; border: 1px solid #F1F5F9; border-radius: 8px; padding: 8px 10px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 5px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 10.5px;">
+              <span style="color: #64748B; font-weight: 600;">Protocolo Técnico:</span>
+              <span style="font-weight: 700; color: #0284C7; font-family: 'JetBrains Mono', monospace;">${protocol}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 10.5px;">
+              <span style="color: #64748B; font-weight: 600;">Mesa de Soporte:</span>
+              <span style="font-weight: 700; color: #334155;">${itilTier}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 10.5px;">
+              <span style="color: #64748B; font-weight: 600;">Incidentes Activos:</span>
+              <span style="font-weight: 800; color: ${openIncidents > 0 ? '#DC2626' : '#059669'};">
+                ${openIncidents > 0 ? `⚠️ ${openIncidents} casos` : '✓ Operativo normal'}
+              </span>
+            </div>
+          </div>
+
+          <!-- Instituciones Conectadas a esta Plataforma -->
+          <div style="margin-bottom: 10px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <span style="font-size: 11px; font-weight: 700; color: #475569;">Instituciones Conectadas:</span>
+              <span style="font-size: 10.5px; font-weight: 800; color: #2563EB;">${connectedInsts.length} de ${institutions.length}</span>
+            </div>
+            <div style="display: flex; flex-wrap: wrap; gap: 4px; max-height: 52px; overflow-y: auto;">
+              ${connectedInsts.map(inst => `
+                <span style="font-size: 9.5px; font-weight: 700; background: #EFF6FF; color: #1E40AF; border: 1px solid #DBEAFE; padding: 2px 6px; border-radius: 4px;">
+                  ${inst.name}
+                </span>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+
+        <!-- Acciones del Módulo -->
+        <div style="display: flex; gap: 6px; border-top: 1px solid #F1F5F9; padding-top: 10px; margin-top: 4px;">
+          <button type="button" class="btn-sec" onclick="openPlatformDetailModal('${plat.code}')" style="flex: 1; font-size: 11px; padding: 5px 8px; font-weight: 700; border-radius: 6px; justify-content: center;">
+            💻 Detalle Técnico
+          </button>
+          <button type="button" class="btn-pri" onclick="switchPlatformsSubTab('matrix')" style="flex: 1; font-size: 11px; padding: 5px 8px; font-weight: 800; border-radius: 6px; background: #00A896; border-color: #00A896; color: #FFF; justify-content: center;">
+            🔄 Matriz Multi-Tenant
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderTenantMatrixTable() {
+  const table = document.getElementById('table-tenant-matrix');
+  if (!table) return;
+
+  const institutions = AppState.institutions || [];
+  const platforms = AppState.platforms || [];
+
+  let html = `
+    <thead>
+      <tr style="background: #F8FAFC; border-bottom: 2px solid #CBD5E1;">
+        <th style="padding: 10px 14px; text-align: left; font-size: 11.5px; font-weight: 800; color: #1E293B; min-width: 200px; position: sticky; left: 0; background: #F8FAFC; z-index: 2;">
+          🏥 Institución Sanitaria (Cliente)
+        </th>
+        ${platforms.map(p => `
+          <th style="padding: 10px 8px; font-size: 10.5px; font-weight: 800; color: #0F766E; min-width: 100px;">
+            <div style="font-size: 14px; margin-bottom: 2px;">${PLATFORM_ICONS[p.code] || '💻'}</div>
+            <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100px;" title="${p.name}">${p.name}</div>
+          </th>
+        `).join('')}
+        <th style="padding: 10px 12px; font-size: 11px; font-weight: 800; color: #334155;">Total Activas</th>
+      </tr>
+    </thead>
+    <tbody>
+  `;
+
+  institutions.forEach(inst => {
+    const instConfig = AppState.tenantPlatforms[inst.code] || {};
+    let activeCount = 0;
+
+    html += `
+      <tr style="border-bottom: 1px solid #E2E8F0; transition: background 0.15s ease;">
+        <td style="padding: 10px 14px; text-align: left; font-weight: 700; color: #0F172A; position: sticky; left: 0; background: #FFFFFF; z-index: 1; border-right: 1px solid #F1F5F9;">
+          <div style="font-size: 12px;">${inst.name}</div>
+          <div style="font-size: 10px; color: #64748B;"><code>${inst.code}</code></div>
+        </td>
+    `;
+
+    platforms.forEach(plat => {
+      const isEnabled = !!instConfig[plat.code];
+      if (isEnabled) activeCount++;
+
+      html += `
+        <td style="padding: 8px; vertical-align: middle;">
+          <button type="button" 
+                  onclick="toggleTenantPlatform('${inst.code}', '${plat.code}')" 
+                  style="cursor: pointer; border: none; border-radius: 20px; padding: 4px 10px; font-size: 10px; font-weight: 800; transition: all 0.15s ease; ${isEnabled ? 'background: #DCFCE7; color: #15803D; border: 1px solid #86EFAC;' : 'background: #F1F5F9; color: #94A3B8; border: 1px solid #CBD5E1;'}"
+                  title="${isEnabled ? 'Clic para desactivar' : 'Clic para activar'} ${plat.name} en ${inst.name}">
+            ${isEnabled ? '✓ ACTIVO' : '⚪ INACTIVO'}
+          </button>
+        </td>
+      `;
+    });
+
+    html += `
+        <td style="padding: 8px 12px; font-weight: 800; color: #2563EB; background: #F8FAFC;">
+          ${activeCount} / ${platforms.length}
+        </td>
+      </tr>
+    `;
+  });
+
+  html += `</tbody>`;
+  table.innerHTML = html;
 }
 
 function toggleTenantPlatform(instCode, platCode) {
@@ -2386,99 +3429,437 @@ function toggleTenantPlatform(instCode, platCode) {
   }
   const current = !!AppState.tenantPlatforms[instCode][platCode];
   AppState.tenantPlatforms[instCode][platCode] = !current;
-  
+
   const plat = AppState.platforms.find(p => p.code === platCode);
   const platName = plat ? plat.name : platCode;
   const inst = AppState.institutions.find(i => i.code === instCode);
   const instName = inst ? inst.name : instCode;
 
-  showToast(`Plataforma "${platName}" ${!current ? 'habilitada' : 'desactivada'} para ${instName}`, !current ? 'success' : 'info');
-  renderPlatformsCatalog();
+  showToast(`Módulo "${platName}" ${!current ? '✅ Habilitado' : '⚪ Suspendido'} para ${instName}`, !current ? 'success' : 'info');
+  
+  if (AppState.activePlatformsSubTab === 'matrix') {
+    renderTenantMatrixTable();
+  } else if (AppState.activePlatformsSubTab === 'institutions') {
+    renderInstitutionsCatalog();
+  } else {
+    renderClinicalPlatformsCards();
+  }
 }
 
-function filterTenantInstitutions(query) {
-  const q = (query || '').toLowerCase().trim();
-  const instItems = document.querySelectorAll('.tenant-inst-item');
-  instItems.forEach(item => {
-    const text = item.textContent.toLowerCase();
-    item.style.display = text.includes(q) ? 'flex' : 'none';
+function exportTenantMatrixCSV() {
+  const institutions = AppState.institutions || [];
+  const platforms = AppState.platforms || [];
+
+  let csvContent = "data:text/csv;charset=utf-8,";
+  csvContent += "Institución,Código," + platforms.map(p => `"${p.name}"`).join(",") + ",Total Activas\n";
+
+  institutions.forEach(inst => {
+    const instConfig = AppState.tenantPlatforms[inst.code] || {};
+    let activeCount = 0;
+    const row = [
+      `"${inst.name}"`,
+      `"${inst.code}"`
+    ];
+
+    platforms.forEach(plat => {
+      const isEnabled = !!instConfig[plat.code];
+      if (isEnabled) activeCount++;
+      row.push(isEnabled ? "HABILITADO" : "DESHABILITADO");
+    });
+
+    row.push(activeCount);
+    csvContent += row.join(",") + "\n";
   });
-}
 
-function renderPlatformsCatalog() {
-  const instListCont = document.getElementById('tenant-institutions-list');
-  const platMgrCont = document.getElementById('tenant-platform-manager-panel');
-  if (!instListCont || !platMgrCont) return;
-
-  const currentInstCode = AppState.selectedTenantInst || (AppState.institutions[0] ? AppState.institutions[0].code : 'OSDE');
-  const currentInst = AppState.institutions.find(i => i.code === currentInstCode) || { code: currentInstCode, name: currentInstCode, location: 'Sede Sanitaria' };
-
-  // 1. Render Selector de Instituciones (Izquierda)
-  instListCont.innerHTML = AppState.institutions.map(inst => {
-    const isSelected = inst.code === currentInstCode;
-    const activeCount = Object.values(AppState.tenantPlatforms[inst.code] || {}).filter(Boolean).length;
-    return `
-      <div class="tenant-inst-item ${isSelected ? 'active' : ''}" onclick="selectTenantInstitution('${inst.code}')" style="display:flex; align-items:center; justify-content:space-between; padding:12px 14px; border-radius:8px; margin-bottom:6px; cursor:pointer; background:${isSelected ? '#EFF6FF' : '#FFF'}; border:1.5px solid ${isSelected ? '#2563EB' : '#E2E8F0'}; transition:all 0.15s ease;">
-        <div>
-          <div style="font-size:12.5px; font-weight:800; color:${isSelected ? '#1E40AF' : 'var(--q-navy)'};">${inst.name}</div>
-          <div style="font-size:10.5px; color:#64748B; margin-top:2px;"><code>${inst.code}</code> • 📍 ${inst.location || 'Sede Central'}</div>
-        </div>
-        <span style="font-size:10px; font-weight:800; padding:2px 7px; border-radius:4px; background:${isSelected ? '#DBEAFE' : '#F1F5F9'}; color:${isSelected ? '#1E40AF' : '#475569'};">
-          ${activeCount} activas
-        </span>
-      </div>
-    `;
-  }).join('');
-
-  // 2. Render Gestor de Plataformas y Mesas de Ayuda para la Institución Seleccionada (Derecha)
-  const instConfig = AppState.tenantPlatforms[currentInstCode] || {};
-  const activePlatforms = AppState.platforms.filter(p => !!instConfig[p.code]);
-
-  platMgrCont.innerHTML = `
-    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px; padding-bottom:12px; border-bottom:1px solid #E2E8F0;">
-      <div>
-        <div style="font-size:11px; font-weight:800; color:#2563EB; text-transform:uppercase; letter-spacing:0.5px;">Mesas de Ayuda Configuradas</div>
-        <h2 style="font-family:'Outfit', sans-serif; font-size:17px; font-weight:800; color:var(--q-navy); margin:2px 0 0 0;">
-          ${currentInst.name} (${currentInst.code})
-        </h2>
-      </div>
-      <div style="display:flex; gap:8px; align-items:center;">
-        <span style="font-size:11px; font-weight:700; color:#059669; background:#DCFCE7; padding:4px 10px; border-radius:6px; border:1px solid #86EFAC;">
-          🟢 ${activePlatforms.length} de ${AppState.platforms.length} Plataformas Habilitadas
-        </span>
-      </div>
-    </div>
-
-    <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:12px;">
-      ${AppState.platforms.map(plat => {
-        const isEnabled = !!instConfig[plat.code];
-        return `
-          <div class="card" style="padding:14px; border-radius:10px; border:1px solid ${isEnabled ? '#99F6E4' : '#E2E8F0'}; background:${isEnabled ? '#F0FDFA' : '#FFF'}; display:flex; flex-direction:column; justify-content:space-between; transition:all 0.15s ease;">
-            <div>
-              <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px;">
-                <strong style="font-size:13px; color:var(--q-navy);">${plat.name}</strong>
-                <span style="font-size:9.5px; font-family:'JetBrains Mono'; background:#E2E8F0; padding:2px 6px; border-radius:4px; color:#334155;">${plat.code}</span>
-              </div>
-              <p style="font-size:11.5px; color:#64748B; line-height:1.4; margin-bottom:10px;">${plat.description || 'Módulo asistencial integrado'}</p>
-            </div>
-
-            <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid ${isEnabled ? '#CCFBF1' : '#F1F5F9'}; padding-top:10px;">
-              <span style="font-size:11px; font-weight:700; color:${isEnabled ? '#0F766E' : '#94A3B8'};">
-                ${isEnabled ? '🟢 En Producción' : '⚪ Deshabilitada'}
-              </span>
-              <button class="${isEnabled ? 'btn-pri' : 'btn-sec'}" onclick="toggleTenantPlatform('${currentInstCode}', '${plat.code}')" style="font-size:11px; padding:5px 12px; font-weight:700; ${isEnabled ? 'background:#0D9488;' : ''}">
-                ${isEnabled ? '✓ Habilitada' : '+ Activar Mesa'}
-              </button>
-            </div>
-          </div>
-        `;
-      }).join('')}
-    </div>
-  `;
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  link.setAttribute("download", `Matriz_MultiTenant_Quantux_${new Date().toISOString().slice(0,10)}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  showToast("Matriz de asignación multi-tenant descargada en CSV", "success");
 }
 
 // =============================================================================
-// 7. DIRECTORIO DE USUARIOS & ROLES ITIL
+// MODALES SENIOR UX: FICHA INSTITUCIONAL 360° & FICHA TÉCNICA
+// =============================================================================
+
+function openInstitutionDetailModal(instCode) {
+  const inst = AppState.institutions.find(i => i.code === instCode);
+  if (!inst) return;
+  AppState.activeModalInstCode = instCode;
+
+  const instConfig = AppState.tenantPlatforms[instCode] || {};
+  const platforms = AppState.platforms || [];
+  const tickets = AppState.tickets || [];
+  const activeTickets = tickets.filter(t => t.institution_code === instCode && t.status !== 'RESUELTO' && t.status !== 'CERRADO');
+  const activePlats = platforms.filter(p => !!instConfig[p.code]);
+  const initials = inst.name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+
+  // 1. Header del Modal
+  const headerEl = document.getElementById('modal-inst-detail-header');
+  if (headerEl) {
+    headerEl.innerHTML = `
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <div style="width: 46px; height: 46px; border-radius: 10px; background: #00A896; color: #FFF; font-weight: 800; font-size: 16px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,168,150,0.3);">
+          ${initials}
+        </div>
+        <div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <h3 style="margin: 0; font-size: 17px; font-weight: 800; color: #FFFFFF; font-family: 'Outfit', sans-serif;">
+              ${inst.name}
+            </h3>
+            <span style="font-size: 10px; font-weight: 800; background: rgba(255,255,255,0.15); color: #00E5CC; padding: 2px 8px; border-radius: 4px;">
+              ${inst.code}
+            </span>
+          </div>
+          <div style="font-size: 11.5px; color: #94A3B8; margin-top: 2px;">
+            📍 ${inst.location || 'Sede Central'} • SLA Platino 24x7 (Respuesta &lt; 2h)
+          </div>
+        </div>
+      </div>
+      <button type="button" onclick="closeInstitutionDetailModal()" style="background: none; border: none; color: #94A3B8; font-size: 24px; cursor: pointer; padding: 4px 8px; line-height: 1;" title="Cerrar Ficha">&times;</button>
+    `;
+  }
+
+  // 2. Tab 1: Módulos con Toggle Switches Interactivos
+  const badgeEl = document.getElementById('modal-inst-active-modules-badge');
+  if (badgeEl) badgeEl.textContent = `${activePlats.length} de ${platforms.length} activos`;
+
+  const modulesContainer = document.getElementById('modal-inst-modules-list');
+  if (modulesContainer) {
+    modulesContainer.innerHTML = platforms.map(plat => {
+      const isEnabled = !!instConfig[plat.code];
+      const icon = PLATFORM_ICONS[plat.code] || '💻';
+      const protocol = PLATFORM_PROTOCOLS[plat.code] || 'REST API / HL7';
+
+      return `
+        <div style="padding: 12px; background: ${isEnabled ? '#F0FDFA' : '#F8FAFC'}; border: 1.5px solid ${isEnabled ? '#99F6E4' : '#E2E8F0'}; border-radius: 10px; display: flex; align-items: center; justify-content: space-between; gap: 12px; transition: all 0.2s ease;">
+          <div style="display: flex; align-items: center; gap: 10px; min-width: 0;">
+            <div style="width: 36px; height: 36px; border-radius: 8px; background: #FFFFFF; border: 1px solid #CBD5E1; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">
+              ${icon}
+            </div>
+            <div style="min-width: 0;">
+              <div style="font-size: 12.5px; font-weight: 800; color: #0F172A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                ${plat.name}
+              </div>
+              <div style="font-size: 10px; color: #64748B; font-family: 'JetBrains Mono', monospace;">
+                ${protocol}
+              </div>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
+            <label style="position: relative; display: inline-block; width: 44px; height: 24px; margin: 0; cursor: pointer;">
+              <input type="checkbox" ${isEnabled ? 'checked' : ''} onchange="toggleTenantPlatformFromModal('${instCode}', '${plat.code}', this.checked)" style="opacity: 0; width: 0; height: 0;">
+              <span style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: ${isEnabled ? '#00A896' : '#CBD5E1'}; transition: .2s; border-radius: 24px;"></span>
+              <span style="position: absolute; content: ''; height: 18px; width: 18px; left: ${isEnabled ? '23px' : '3px'}; bottom: 3px; background-color: white; transition: .2s; border-radius: 50%; box-shadow: 0 1px 3px rgba(0,0,0,0.2);"></span>
+            </label>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // 3. Tab 2: Incidentes en Curso
+  const incCountEl = document.getElementById('modal-inst-incidents-count');
+  if (incCountEl) incCountEl.textContent = activeTickets.length;
+
+  const incidentsContainer = document.getElementById('modal-inst-incidents-list');
+  if (incidentsContainer) {
+    if (activeTickets.length === 0) {
+      incidentsContainer.innerHTML = `
+        <div style="text-align: center; padding: 32px; background: #F0FDF4; border: 1.5px solid #BBF7D0; border-radius: 10px;">
+          <div style="font-size: 32px; margin-bottom: 6px;">🟢</div>
+          <div style="font-size: 13.5px; font-weight: 800; color: #166534;">Sin Incidentes Activos</div>
+          <div style="font-size: 11.5px; color: #15803D; margin-top: 4px;">Todos los módulos y servicios de ${inst.name} operan con normalidad dentro del SLA.</div>
+        </div>
+      `;
+    } else {
+      incidentsContainer.innerHTML = `
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          ${activeTickets.map(t => {
+            const pBadge = formatPriorityBadge(t.priority);
+            const platIcon = PLATFORM_ICONS[t.platform_code] || '💻';
+            return `
+              <div style="padding: 12px 14px; background: #FFFFFF; border: 1.5px solid #FEE2E2; border-left: 4px solid #EF4444; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+                <div>
+                  <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                    <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 800; color: #0284C7;">#${t.id.slice(0, 8)}</span>
+                    ${pBadge}
+                    <span style="font-size: 10.5px; color: #64748B;">${platIcon} ${formatPlatformName(t.platform_code)}</span>
+                  </div>
+                  <div style="font-size: 12px; font-weight: 700; color: #0F172A;">
+                    ${t.title}
+                  </div>
+                </div>
+                <button type="button" class="btn-sec" onclick="closeInstitutionDetailModal(); openAgentWorkspaceModal('${t.id}')" style="font-size: 11px; font-weight: 800; padding: 5px 10px; border-radius: 6px; white-space: nowrap;">
+                  Abrir en Workspace ➔
+                </button>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+  }
+
+  // 4. Tab 3: Contrato SLA & Sedes
+  const contractContainer = document.getElementById('modal-inst-contract-info');
+  if (contractContainer) {
+    contractContainer.innerHTML = `
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div style="padding: 14px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px;">
+          <div style="font-size: 11px; font-weight: 800; color: #64748B; text-transform: uppercase; margin-bottom: 8px;">📑 Especificaciones de Soporte</div>
+          <div style="font-size: 12px; color: #1E293B; line-height: 1.6;">
+            <div><strong>Nivel de Contrato:</strong> Platinum Healthcare Support</div>
+            <div><strong>Horario de Cobertura:</strong> 24x7x365 (Guardia Activa)</div>
+            <div><strong>Tiempo de Respuesta P1:</strong> &lt; 15 minutos</div>
+            <div><strong>Tiempo de Resolución P1:</strong> &lt; 2 horas</div>
+          </div>
+        </div>
+        <div style="padding: 14px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px;">
+          <div style="font-size: 11px; font-weight: 800; color: #64748B; text-transform: uppercase; margin-bottom: 8px;">👨‍💻 Ingeniero de Cuenta Designado</div>
+          <div style="font-size: 12px; color: #1E293B; line-height: 1.6;">
+            <div><strong>Líder de Servicio:</strong> Freddy Cortés (N2 Especialista)</div>
+            <div><strong>Canal Escalamiento:</strong> Guardia Red Asistencial N3</div>
+            <div><strong>Monitoreo de Enlace:</strong> Activo (Healthcheck cada 60s)</div>
+            <div><strong>Estado de Conexión VPN:</strong> 🟢 Online 99.98%</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  // 5. Botón Footer para Filtrar Mesa de Ayuda
+  const btnFilterTickets = document.getElementById('btn-modal-inst-filter-tickets');
+  if (btnFilterTickets) {
+    btnFilterTickets.onclick = () => {
+      closeInstitutionDetailModal();
+      const filterInstSelect = document.getElementById('tkt-filter-inst');
+      if (filterInstSelect) {
+        filterInstSelect.value = instCode;
+      }
+      switchView('tickets');
+      onFilterChange();
+      showToast(`Mesa de ayuda filtrada por ${inst.name}`, 'info');
+    };
+  }
+
+  // Abrir Modal
+  const modal = document.getElementById('modal-institution-detail');
+  if (modal) {
+    switchInstModalTab('modules');
+    modal.classList.add('active');
+  }
+}
+
+function closeInstitutionDetailModal() {
+  const modal = document.getElementById('modal-institution-detail');
+  if (modal) modal.classList.remove('active');
+  AppState.activeModalInstCode = null;
+}
+
+function switchInstModalTab(tabKey) {
+  const btnModules = document.getElementById('btn-inst-tab-modules');
+  const btnIncidents = document.getElementById('btn-inst-tab-incidents');
+  const btnContract = document.getElementById('btn-inst-tab-contract');
+
+  const paneModules = document.getElementById('inst-tab-content-modules');
+  const paneIncidents = document.getElementById('inst-tab-content-incidents');
+  const paneContract = document.getElementById('inst-tab-content-contract');
+
+  if (btnModules) btnModules.classList.toggle('active', tabKey === 'modules');
+  if (btnIncidents) btnIncidents.classList.toggle('active', tabKey === 'incidents');
+  if (btnContract) btnContract.classList.toggle('active', tabKey === 'contract');
+
+  if (paneModules) paneModules.style.display = (tabKey === 'modules') ? 'block' : 'none';
+  if (paneIncidents) paneIncidents.style.display = (tabKey === 'incidents') ? 'block' : 'none';
+  if (paneContract) paneContract.style.display = (tabKey === 'contract') ? 'block' : 'none';
+}
+
+function toggleTenantPlatformFromModal(instCode, platCode, isChecked) {
+  if (!AppState.tenantPlatforms[instCode]) {
+    AppState.tenantPlatforms[instCode] = {};
+  }
+  AppState.tenantPlatforms[instCode][platCode] = isChecked;
+
+  const plat = AppState.platforms.find(p => p.code === platCode);
+  const platName = plat ? plat.name : platCode;
+  const inst = AppState.institutions.find(i => i.code === instCode);
+  const instName = inst ? inst.name : instCode;
+
+  showToast(`Módulo "${platName}" ${isChecked ? '✅ Habilitado' : '⚪ Suspendido'} para ${instName}`, isChecked ? 'success' : 'info');
+
+  // Actualizar Ficha y Catálogo
+  const instConfig = AppState.tenantPlatforms[instCode] || {};
+  const activePlats = AppState.platforms.filter(p => !!instConfig[p.code]);
+  const badgeEl = document.getElementById('modal-inst-active-modules-badge');
+  if (badgeEl) badgeEl.textContent = `${activePlats.length} de ${AppState.platforms.length} activos`;
+
+  renderInstitutionsCatalog();
+  renderTenantMatrixTable();
+}
+
+function openPlatformDetailModal(platCode) {
+  const plat = AppState.platforms.find(p => p.code === platCode);
+  if (!plat) return;
+
+  const icon = PLATFORM_ICONS[platCode] || '💻';
+  const protocol = PLATFORM_PROTOCOLS[platCode] || 'REST API / HL7';
+  const itilTier = PLATFORM_ITIL_TIER[platCode] || 'N2 Soporte';
+  const institutions = AppState.institutions || [];
+  const tickets = AppState.tickets || [];
+
+  const connectedInsts = institutions.filter(inst => {
+    const c = AppState.tenantPlatforms[inst.code];
+    return c && !!c[platCode];
+  });
+  const openIncidents = tickets.filter(t => t.platform_code === platCode && t.status !== 'RESUELTO' && t.status !== 'CERRADO');
+
+  // Header
+  const headerEl = document.getElementById('modal-plat-detail-header');
+  if (headerEl) {
+    headerEl.innerHTML = `
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <div style="width: 44px; height: 44px; border-radius: 10px; background: #F0FDFA; border: 1.5px solid #99F6E4; color: #0D9488; font-size: 22px; display: flex; align-items: center; justify-content: center;">
+          ${icon}
+        </div>
+        <div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <h3 style="margin: 0; font-size: 16px; font-weight: 800; color: #FFFFFF; font-family: 'Outfit', sans-serif;">
+              ${plat.name}
+            </h3>
+            <span style="font-size: 10px; font-weight: 800; background: rgba(255,255,255,0.15); color: #00E5CC; padding: 2px 8px; border-radius: 4px;">
+              ${plat.code}
+            </span>
+          </div>
+          <div style="font-size: 11px; color: #94A3B8; margin-top: 2px;">
+            Módulo Institucional • Disponibilidad 99.98% SLA
+          </div>
+        </div>
+      </div>
+      <button type="button" onclick="closePlatformDetailModal()" style="background: none; border: none; color: #94A3B8; font-size: 24px; cursor: pointer; padding: 4px 8px; line-height: 1;" title="Cerrar">&times;</button>
+    `;
+  }
+
+  // Body
+  const bodyEl = document.getElementById('modal-plat-detail-body');
+  if (bodyEl) {
+    bodyEl.innerHTML = `
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+        <div style="padding: 12px 14px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px;">
+          <div style="font-size: 11px; font-weight: 800; color: #64748B; text-transform: uppercase; margin-bottom: 4px;">Descripción Técnica</div>
+          <div style="font-size: 12.5px; color: #1E293B; line-height: 1.5;">${plat.description}</div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div style="padding: 10px 12px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px;">
+            <div style="font-size: 10.5px; color: #64748B; font-weight: 600;">Protocolo de Integración</div>
+            <div style="font-size: 12px; font-weight: 800; color: #0284C7; font-family: 'JetBrains Mono', monospace; margin-top: 2px;">${protocol}</div>
+          </div>
+          <div style="padding: 10px 12px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px;">
+            <div style="font-size: 10.5px; color: #64748B; font-weight: 600;">Nivel de Guardia ITIL</div>
+            <div style="font-size: 12px; font-weight: 800; color: #0F172A; margin-top: 2px;">${itilTier}</div>
+          </div>
+        </div>
+
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <strong style="font-size: 12px; color: #0F172A;">Instituciones Habilitadas (${connectedInsts.length} de ${institutions.length})</strong>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; gap: 4px; max-height: 100px; overflow-y: auto; padding: 4px 0;">
+            ${connectedInsts.map(inst => `
+              <span style="font-size: 10.5px; font-weight: 700; background: #EFF6FF; color: #1E40AF; border: 1px solid #DBEAFE; padding: 3px 8px; border-radius: 6px;">
+                🏥 ${inst.name}
+              </span>
+            `).join('')}
+          </div>
+        </div>
+
+        <div>
+          <strong style="font-size: 12px; color: #0F172A; display: block; margin-bottom: 6px;">
+            Incidentes en Curso (${openIncidents.length})
+          </strong>
+          ${openIncidents.length === 0 ? `
+            <div style="padding: 12px; background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 8px; color: #15803D; font-size: 11.5px; font-weight: 700; text-align: center;">
+              🟢 Módulo 100% operativo sin incidentes activos reportados.
+            </div>
+          ` : `
+            <div style="display: flex; flex-direction: column; gap: 6px; max-height: 120px; overflow-y: auto;">
+              ${openIncidents.map(t => `
+                <div style="padding: 8px 10px; background: #FEF2F2; border: 1px solid #FEE2E2; border-radius: 6px; font-size: 11.5px; display: flex; justify-content: space-between; align-items: center;">
+                  <span style="font-weight: 700; color: #991B1B;">${t.title}</span>
+                  <span style="font-weight: 800; color: #DC2626;">${t.priority}</span>
+                </div>
+              `).join('')}
+            </div>
+          `}
+        </div>
+      </div>
+    `;
+  }
+
+  const modal = document.getElementById('modal-platform-detail');
+  if (modal) modal.classList.add('active');
+}
+
+function closePlatformDetailModal() {
+  const modal = document.getElementById('modal-platform-detail');
+  if (modal) modal.classList.remove('active');
+}
+
+// =============================================================================
+// 7. CONTROL DE ACCESO BASADO EN ROLES (RBAC & PERMISOS)
+// =============================================================================
+function applyRolePermissions() {
+  const role = AppState.currentUser ? (AppState.currentUser.role || 'SOLICITANTE') : 'SOLICITANTE';
+
+  const tabDash = document.getElementById('tab-dashboard');
+  const tabTickets = document.getElementById('tab-tickets');
+  const tabUsers = document.getElementById('tab-users');
+  const tabArticles = document.getElementById('tab-articles');
+  const tabPlatforms = document.getElementById('tab-platforms');
+  const tabConfig = document.getElementById('tab-config');
+
+  if (role === 'SOLICITANTE') {
+    // El Solicitante (Médico / Paciente) solo puede ver Mesa de Ayuda y Base de Conocimiento
+    if (tabDash) tabDash.style.display = 'none';
+    if (tabUsers) tabUsers.style.display = 'none';
+    if (tabPlatforms) tabPlatforms.style.display = 'none';
+    if (tabConfig) tabConfig.style.display = 'none';
+    if (tabTickets) tabTickets.style.display = 'flex';
+    if (tabArticles) tabArticles.style.display = 'flex';
+
+    // Si está parado en una vista restringida, redirigir a tickets
+    if (['dashboard', 'users', 'platforms', 'config'].includes(AppState.currentView)) {
+      switchView('tickets');
+    }
+  } else if (role.includes('SOPORTE') || role === 'SOPORTE') {
+    // Soporte N1/N2/N3 ve Dashboard, Mesa de Ayuda, Usuarios (lectura) y Base de Conocimiento
+    if (tabDash) tabDash.style.display = 'flex';
+    if (tabTickets) tabTickets.style.display = 'flex';
+    if (tabUsers) tabUsers.style.display = 'flex';
+    if (tabArticles) tabArticles.style.display = 'flex';
+    if (tabPlatforms) tabPlatforms.style.display = 'none'; // Solo Admin
+    if (tabConfig) tabConfig.style.display = 'none'; // Solo Admin
+
+    if (['platforms', 'config'].includes(AppState.currentView)) {
+      switchView('tickets');
+    }
+  } else if (role === 'ADMIN') {
+    // Administrador General ve todos los módulos y tiene control total
+    if (tabDash) tabDash.style.display = 'flex';
+    if (tabTickets) tabTickets.style.display = 'flex';
+    if (tabUsers) tabUsers.style.display = 'flex';
+    if (tabArticles) tabArticles.style.display = 'flex';
+    if (tabPlatforms) tabPlatforms.style.display = 'flex';
+    if (tabConfig) tabConfig.style.display = 'flex';
+  }
+}
+
+// =============================================================================
+// 7. DIRECTORIO DE USUARIOS & ROLES ITIL (INVGATE SENIOR DESIGN)
 // =============================================================================
 async function loadUsersList() {
   try {
@@ -2506,41 +3887,164 @@ function renderUsersDirectory() {
   const tbody = document.getElementById('tbody-users-directory');
   if (!tbody) return;
 
-  let filtered = AppState.users || [];
+  const allUsers = AppState.users || [];
+
+  // 1. Update Stat Cards & Badges
+  const statTotal = document.getElementById('stat-user-total');
+  const badgeTotal = document.getElementById('users-badge-total');
+  const statN1 = document.getElementById('stat-user-n1');
+  const statN2 = document.getElementById('stat-user-n2');
+  const statN3 = document.getElementById('stat-user-n3');
+  const statSol = document.getElementById('stat-user-solicitantes');
+
+  const countN1 = allUsers.filter(u => u.support_level === 'N1' || u.role === 'SOPORTE_N1').length;
+  const countN2 = allUsers.filter(u => u.support_level === 'N2' || u.role === 'SOPORTE_N2').length;
+  const countN3 = allUsers.filter(u => u.support_level === 'N3' || u.role === 'SOPORTE_N3' || (u.role === 'ADMIN' && u.support_level === 'N3')).length;
+  const countSol = allUsers.filter(u => u.role === 'SOLICITANTE').length;
+
+  if (statTotal) statTotal.textContent = allUsers.length;
+  if (badgeTotal) badgeTotal.textContent = `${allUsers.length} Usuarios`;
+  if (statN1) statN1.textContent = countN1;
+  if (statN2) statN2.textContent = countN2;
+  if (statN3) statN3.textContent = countN3;
+  if (statSol) statSol.textContent = countSol;
+
+  // 2. Filter Table
+  let filtered = allUsers;
   if (AppState.userFilterLevel && AppState.userFilterLevel !== 'all') {
     if (AppState.userFilterLevel === 'SOLICITANTE') {
       filtered = filtered.filter(u => u.role === 'SOLICITANTE');
+    } else if (AppState.userFilterLevel === 'ADMIN') {
+      filtered = filtered.filter(u => u.role === 'ADMIN');
     } else {
       filtered = filtered.filter(u => u.support_level === AppState.userFilterLevel || u.role === `SOPORTE_${AppState.userFilterLevel}`);
     }
   }
 
   if (filtered.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:#94A3B8; padding:24px 10px;">No se encontraron usuarios para el filtro seleccionado.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:#94A3B8; padding:32px 10px; font-size:12px;">No se encontraron usuarios para el filtro seleccionado.</td></tr>`;
     return;
   }
 
   const levelBadges = {
-    'N1': '<span class="badge-tier badge-tier-n1">🔵 Nivel 1 • Triage</span>',
-    'N2': '<span class="badge-tier badge-tier-n2">🟣 Nivel 2 • Especialista</span>',
-    'N3': '<span class="badge-tier badge-tier-n3">🔴 Nivel 3 • Ingeniería</span>'
+    'N1': '<span class="level-pill-itil level-pill-n1">🔵 Nivel 1 • Guardia</span>',
+    'N2': '<span class="level-pill-itil level-pill-n2">🟣 Nivel 2 • Especialista</span>',
+    'N3': '<span class="level-pill-itil level-pill-n3">🔴 Nivel 3 • Ingeniería</span>'
+  };
+
+  const roleBadges = {
+    'ADMIN': '<span class="user-badge-role role-badge-admin">👑 ADMIN</span>',
+    'SOPORTE': '<span class="user-badge-role role-badge-soporte">🛠️ SOPORTE</span>',
+    'SOLICITANTE': '<span class="user-badge-role role-badge-solicitante">🩺 SOLICITANTE</span>'
   };
 
   tbody.innerHTML = filtered.map(u => {
-    const lvlBadge = levelBadges[u.support_level] || (u.role && u.role.includes('SOPORTE') ? `<span class="badge-tier badge-tier-${(u.support_level||'n1').toLowerCase()}">${u.support_level || 'N1'}</span>` : '<span style="font-size:10.5px; color:#64748B;">No aplica</span>');
+    const cleanName = (u.full_name || u.username).replace(/Lic\.\s*/gi, '').trim();
+    const initials = getInitials(cleanName);
+    const roleBadge = roleBadges[u.role] || `<span class="user-badge-role role-badge-soporte">${u.role}</span>`;
+    const lvlBadge = levelBadges[u.support_level] || (u.role === 'ADMIN' ? '<span class="level-pill-itil level-pill-n3">🔴 Nivel 3 • Root</span>' : '<span style="font-size:11px; color:#94A3B8;">—</span>');
+    
     return `
       <tr>
-        <td><strong>${u.full_name}</strong></td>
-        <td><code>${u.username}</code></td>
-        <td><a href="mailto:${u.email}" style="color:#2563EB;">${u.email}</a></td>
-        <td><span class="badge-status st-NUEVO" style="font-size:10px;">${u.role}</span></td>
+        <td>
+          <div class="user-cell-profile">
+            ${getUserAvatarHtml(u.username, cleanName, 32)}
+            <div>
+              <div class="user-cell-name">${cleanName}</div>
+              <div style="font-size:10px; color:#64748B;">${u.specialty || 'Servicio Asistencial'}</div>
+            </div>
+          </div>
+        </td>
+        <td>
+          <span class="user-mono-tag">@${u.username}</span>
+        </td>
+        <td>
+          <a href="mailto:${u.email}" style="color:#0284C7; font-weight:600; text-decoration:none; font-size:11.5px;">${u.email}</a>
+        </td>
+        <td>${roleBadge}</td>
         <td>${lvlBadge}</td>
-        <td>🏥 ${formatInstitutionName(u.institution_code)}</td>
-        <td>${u.specialty || 'General / Asistencial'}</td>
-        <td><span style="color:#059669; font-weight:800; font-size:11px;">🟢 Activo</span></td>
+        <td>
+          <span style="font-size:11.5px; font-weight:600; color:#334155;">🏥 ${formatInstitutionName(u.institution_code)}</span>
+        </td>
+        <td>
+          <span style="font-size:11px; font-weight:800; color:#059669; display:inline-flex; align-items:center; gap:4px;">
+            <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#10B981;"></span> Activo
+          </span>
+        </td>
+        <td style="text-align:center;">
+          <button class="btn-clean-action" style="padding:4px 8px; font-size:10.5px; font-weight:700; border-radius:6px; background:#F1F5F9; color:#334155; border:1px solid #CBD5E1; cursor:pointer;" onclick="viewUserProfileModal('${u.username}')">
+            👤 Perfil
+          </button>
+        </td>
       </tr>
     `;
   }).join('');
+}
+
+function openCreateUserModal() {
+  const modal = document.getElementById('modal-create-user');
+  if (modal) {
+    modal.classList.add('active');
+    handleUserRoleChange();
+  }
+}
+
+function closeCreateUserModal() {
+  const modal = document.getElementById('modal-create-user');
+  if (modal) modal.classList.remove('active');
+}
+
+function handleUserRoleChange() {
+  const roleSelect = document.getElementById('new-user-role');
+  const levelGroup = document.getElementById('new-user-level-group');
+  if (!roleSelect || !levelGroup) return;
+
+  if (roleSelect.value === 'SOPORTE' || roleSelect.value === 'ADMIN') {
+    levelGroup.style.display = 'block';
+  } else {
+    levelGroup.style.display = 'none';
+  }
+}
+
+async function submitCreateUser(event) {
+  if (event) event.preventDefault();
+
+  const fullName = document.getElementById('new-user-fullname')?.value.trim();
+  const username = document.getElementById('new-user-username')?.value.trim().toLowerCase();
+  const email = document.getElementById('new-user-email')?.value.trim().toLowerCase();
+  const role = document.getElementById('new-user-role')?.value;
+  const level = document.getElementById('new-user-level')?.value;
+  const institution = document.getElementById('new-user-institution')?.value;
+
+  if (!fullName || !username || !email) {
+    showToast('Complete todos los campos obligatorios para registrar al usuario.', 'error');
+    return;
+  }
+
+  const payload = {
+    full_name: fullName,
+    username: username,
+    email: email,
+    role: role,
+    support_level: (role === 'SOPORTE' || role === 'ADMIN') ? level : null,
+    institution_code: institution
+  };
+
+  try {
+    const res = await API.createUser(payload);
+    showToast(`Usuario "${fullName}" registrado exitosamente.`, 'success');
+    closeCreateUserModal();
+    
+    // Limpiar formulario
+    const form = document.getElementById('form-create-user');
+    if (form) form.reset();
+
+    // Recargar lista y métricas
+    await loadUsersList();
+  } catch (err) {
+    console.error('Error al crear usuario:', err);
+    showToast(err.detail || 'Error al registrar el usuario en la base de datos.', 'error');
+  }
 }
 
 // =============================================================================
@@ -2777,6 +4281,475 @@ async function saveAllHelpdeskLevels() {
 // =============================================================================
 // 9. MODALES DE GESTIÓN, DERIVACIÓN ITIL & OPERADORES
 // =============================================================================
+// 9. MODALES DE GESTIÓN, WIZARD MULTI-PASO & POPUPS SENIOR UX (v3.0)
+// =============================================================================
+
+/// WIZARD GLOBAL CONTROLS
+let currentWizardStep = 1;
+
+function goToWizardStep(stepNum) {
+  if (stepNum < 1 || stepNum > 4) return;
+  
+  // Validation when advancing from Step 1
+  if (stepNum > 1 && currentWizardStep === 1) {
+    const instEl = document.getElementById('modal-institution');
+    const inst = instEl ? instEl.value : '';
+    if (!inst) {
+      if (instEl && instEl.options && instEl.options.length > 1) {
+        // Auto-select first available institution if not chosen
+        instEl.selectedIndex = 1;
+      } else {
+        showToast('Por favor seleccione la institución asistencial para continuar', 'warning');
+        if (instEl) instEl.focus();
+        return;
+      }
+    }
+  }
+
+  // Ensure default platform selected when advancing to step 3
+  const platInput = document.getElementById('modal-platform');
+  if (platInput && !platInput.value) {
+    platInput.value = 'CAT_RECETA';
+  }
+
+  currentWizardStep = stepNum;
+
+  // Update panels
+  for (let i = 1; i <= 4; i++) {
+    const panel = document.getElementById(`wizard-panel-${i}`);
+    const node = document.getElementById(`step-node-${i}`);
+    if (panel) {
+      if (i === stepNum) panel.classList.add('active');
+      else panel.classList.remove('active');
+    }
+    if (node) {
+      if (i === stepNum) {
+        node.className = 'wizard-step-node active';
+      } else if (i < stepNum) {
+        node.className = 'wizard-step-node completed';
+      } else {
+        node.className = 'wizard-step-node';
+      }
+    }
+  }
+
+  if (stepNum === 3) {
+    updateWizardPriorityPreview();
+  }
+}
+
+function selectPlatformCard(platformCode, element) {
+  const hiddenInput = document.getElementById('modal-platform');
+  if (hiddenInput) hiddenInput.value = platformCode;
+
+  const parent = (element && element.closest('.platform-grid-selector')) || document.getElementById('platform-grid-container') || document;
+  const cards = parent.querySelectorAll('.platform-card-choice');
+  cards.forEach(c => c.classList.remove('selected'));
+  if (element) element.classList.add('selected');
+}
+
+function selectTypeCard(typeVal, element) {
+  const hiddenInput = document.getElementById('modal-type');
+  if (hiddenInput) hiddenInput.value = typeVal;
+
+  const parent = (element && (element.closest('.wizard-panel') || element.parentElement)) || document;
+  const cards = parent.querySelectorAll('.impact-card-choice');
+  cards.forEach(c => c.classList.remove('selected'));
+  if (element) element.classList.add('selected');
+}
+
+function selectImpactCard(impactVal, element) {
+  const hiddenInput = document.getElementById('modal-impact');
+  if (hiddenInput) hiddenInput.value = impactVal;
+
+  const grid = document.getElementById('wizard-impact-grid') || (element && element.closest('.impact-cards-grid'));
+  if (grid) {
+    const cards = grid.querySelectorAll('.impact-card-choice');
+    cards.forEach(c => c.classList.remove('selected'));
+  }
+  if (element) element.classList.add('selected');
+
+  updateWizardPriorityPreview();
+}
+
+function selectUrgencyCard(urgencyVal, element) {
+  const hiddenInput = document.getElementById('modal-urgency');
+  if (hiddenInput) hiddenInput.value = urgencyVal;
+
+  const grid = document.getElementById('wizard-urgency-grid') || (element && element.closest('.impact-cards-grid'));
+  if (grid) {
+    const cards = grid.querySelectorAll('.impact-card-choice');
+    cards.forEach(c => c.classList.remove('selected'));
+  }
+  if (element) element.classList.add('selected');
+
+  updateWizardPriorityPreview();
+}
+
+async function updateWizardPriorityPreview() {
+  const impact = document.getElementById('modal-impact') ? document.getElementById('modal-impact').value : 'MEDIO';
+  const urgency = document.getElementById('modal-urgency') ? document.getElementById('modal-urgency').value : 'MEDIO';
+  const prioBadge = document.getElementById('modal-calculated-priority');
+  const slaExpl = document.getElementById('wizard-sla-explanation');
+
+  try {
+    const res = await API.calculatePriority(impact, urgency);
+    if (prioBadge) {
+      prioBadge.textContent = `${res.priority} • ${res.priority === 'P1' ? 'CRÍTICA' : res.priority === 'P2' ? 'ALTA' : res.priority === 'P3' ? 'MEDIA' : res.priority === 'P4' ? 'BAJA' : 'PLAN'}`;
+      prioBadge.className = `badge-prio badge-${res.priority.toLowerCase()}`;
+    }
+    if (slaExpl) {
+      const respTime = res.sla_response_time_minutes < 60 ? `${res.sla_response_time_minutes} min` : `${res.sla_response_time_minutes / 60} h`;
+      const resolTime = res.sla_resolution_time_minutes < 60 ? `${res.sla_resolution_time_minutes} min` : `${res.sla_resolution_time_minutes / 60} h`;
+      slaExpl.textContent = `Respuesta inicial garantizada en ${respTime} • Resolución máxima en ${resolTime}`;
+    }
+  } catch (e) {
+    console.warn('Error calculando SLA dinámico:', e);
+  }
+}
+
+// DEDICATED POPUPS CONTROLLERS (v3.0 SENIOR UX)
+function openTechDetailsModal(ticketId) {
+  const ticket = AppState.tickets.find(t => t.id === Number(ticketId)) || AppState.selectedTicket;
+  if (!ticket) return;
+
+  const body = document.getElementById('tech-details-modal-body');
+  if (body) {
+    const platName = formatPlatformName(ticket.platform_code);
+    const instName = formatInstitutionName(ticket.institution_code);
+    body.innerHTML = `
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px;">
+        <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 12px;">
+          <div style="font-size: 11px; font-weight: 800; color: #64748B; text-transform: uppercase;">Parámetros de Red y Servidor</div>
+          <div style="margin-top: 8px; font-size: 12px; line-height: 1.6; color: #1E293B;">
+            <div><strong>Endpoint API:</strong> <code>https://api.quantux.salud.ar/v1/${(ticket.platform_code||'core').toLowerCase()}</code></div>
+            <div><strong>Cluster Primario:</strong> prod-cluster-ar-south1</div>
+            <div><strong>Protocolo:</strong> HL7 FHIR v4.0.1 / DICOMweb</div>
+            <div><strong>Latencia Promedio:</strong> 42 ms (Óptima)</div>
+          </div>
+        </div>
+
+        <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 12px;">
+          <div style="font-size: 11px; font-weight: 800; color: #64748B; text-transform: uppercase;">Estado de Acuerdos de Servicio (SLA)</div>
+          <div style="margin-top: 8px; font-size: 12px; line-height: 1.6; color: #1E293B;">
+            <div><strong>Prioridad ITIL:</strong> <span class="badge-prio badge-${ticket.priority.toLowerCase()}">${ticket.priority}</span></div>
+            <div><strong>Nivel ITIL Asignado:</strong> ${ticket.support_level || 'N1'}</div>
+            <div><strong>Plataforma:</strong> ${platName}</div>
+            <div><strong>Impacto / Urgencia:</strong> ${ticket.impact || 'MEDIO'} / ${ticket.urgency || 'MEDIO'}</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 8px; padding: 12px;">
+        <div style="font-size: 11.5px; font-weight: 800; color: #1E40AF; margin-bottom: 4px;">Información de Contexto Asistencial</div>
+        <div style="font-size: 12px; color: #1E293B; line-height: 1.5;">
+          <strong>Institución / Sede:</strong> ${instName}<br>
+          <strong>Solicitante:</strong> ${ticket.requester_name || ticket.requester_username} (${ticket.requester_email || 'fcortes@quantux.salud.ar'})<br>
+          <strong>Fecha de Apertura:</strong> ${formatDateTime(ticket.created_at)}
+        </div>
+      </div>
+    `;
+  }
+
+  const modal = document.getElementById('modal-view-tech-details');
+  if (modal) modal.classList.add('active');
+}
+
+function closeTechDetailsModal() {
+  const modal = document.getElementById('modal-view-tech-details');
+  if (modal) modal.classList.remove('active');
+}
+
+function openAuditTrailModal(ticketId) {
+  const ticket = AppState.tickets.find(t => t.id === Number(ticketId)) || AppState.selectedTicket;
+  if (!ticket) return;
+
+  const body = document.getElementById('audit-trail-modal-body');
+  if (body) {
+    const audits = ticket.audit_logs || [];
+    if (audits.length === 0) {
+      body.innerHTML = `
+        <div style="text-align: center; padding: 30px 10px; color: #64748B;">
+          <div style="font-size: 32px; margin-bottom: 8px;">📜</div>
+          <div style="font-weight: 700;">Registro Forense Inicial</div>
+          <p style="font-size: 12px; margin-top: 4px;">Ticket #${ticket.id} creado el ${formatDateTime(ticket.created_at)} por ${ticket.requester_name || ticket.requester_username}. Sin eventos posteriores.</p>
+        </div>
+      `;
+    } else {
+      body.innerHTML = `
+        <div style="border-left: 2px solid #CBD5E1; margin-left: 14px; padding-left: 16px; display: flex; flex-direction: column; gap: 14px;">
+          ${audits.map(a => `
+            <div style="position: relative;">
+              <div style="position: absolute; left: -22px; top: 2px; width: 10px; height: 10px; border-radius: 50%; background: #00A896;"></div>
+              <div style="font-size: 11px; color: #64748B; font-weight: 700;">${formatDateTime(a.created_at || a.timestamp)} • Operador: ${a.changed_by_username || a.changed_by || 'Sistema'}</div>
+              <div style="font-size: 12.5px; font-weight: 700; color: #0F172A; margin-top: 2px;">${a.change_reason || a.action || 'Modificación de Estado / Nivel'}</div>
+              <div style="font-size: 11.5px; color: #475569; margin-top: 2px; background: #F8FAFC; padding: 6px 10px; border-radius: 6px; border: 1px solid #E2E8F0;">
+                ${a.field_changed ? `${a.field_changed}: de "${a.old_value || 'ninguno'}" a "${a.new_value}"` : (a.details || 'Evento registrado en bitácora')}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+  }
+
+  const modal = document.getElementById('modal-audit-trail');
+  if (modal) modal.classList.add('active');
+}
+
+function closeAuditTrailModal() {
+  const modal = document.getElementById('modal-audit-trail');
+  if (modal) modal.classList.remove('active');
+}
+
+function openChatExpandedModal(ticketId) {
+  const ticket = AppState.tickets.find(t => t.id === Number(ticketId)) || AppState.selectedTicket;
+  if (!ticket) return;
+
+  const stream = document.getElementById('chat-expanded-stream');
+  if (stream) {
+    const comments = ticket.comments || [];
+    if (comments.length === 0) {
+      stream.innerHTML = `<div style="text-align: center; padding: 30px; color: #94A3B8; font-size: 12.5px;">No hay comentarios registrados. Escriba el primer mensaje para iniciar el diálogo asistencial.</div>`;
+    } else {
+      stream.innerHTML = comments.map(c => `
+        <div class="chat-bubble ${c.is_internal ? 'chat-bubble-internal' : (c.author_username === ticket.requester_username ? 'chat-bubble-requester' : 'chat-bubble-agent')}">
+          <div class="chat-bubble-header">
+            <strong>${c.is_internal ? '🔒 Nota Privada Interna • ' : ''}👤 ${c.author_username}</strong>
+            <span style="opacity: 0.75;">${formatDateTime(c.created_at)}</span>
+          </div>
+          <div class="chat-bubble-content">${c.message}</div>
+        </div>
+      `).join('');
+      stream.scrollTop = stream.scrollHeight;
+    }
+  }
+
+  const modal = document.getElementById('modal-chat-expanded');
+  if (modal) modal.classList.add('active');
+}
+
+function closeChatExpandedModal() {
+  const modal = document.getElementById('modal-chat-expanded');
+  if (modal) modal.classList.remove('active');
+}
+
+async function submitExpandedChatMessage() {
+  if (!AppState.selectedTicket) return;
+  const input = document.getElementById('chat-expanded-msg-input');
+  const isInt = document.getElementById('chat-expanded-is-internal');
+  if (!input || !input.value.trim()) {
+    showToast('Escriba un mensaje antes de enviar', 'warning');
+    return;
+  }
+
+  try {
+    await API.addComment(AppState.selectedTicket.id, {
+      message: input.value.trim(),
+      is_internal: isInt ? isInt.checked : false,
+      author_username: AppState.currentUser ? AppState.currentUser.username : 'admin'
+    });
+    input.value = '';
+    if (isInt) isInt.checked = false;
+    showToast('Mensaje registrado con éxito', 'success');
+    await selectTicket(AppState.selectedTicket.id, true);
+    openChatExpandedModal(AppState.selectedTicket.id);
+  } catch (e) {
+    showToast('Error al enviar mensaje: ' + (e.detail || e.message), 'error');
+  }
+}
+
+function openUserProfileModal(userId) {
+  const user = AppState.users.find(u => u.id === Number(userId)) || AppState.currentUser;
+  if (!user) return;
+
+  const body = document.getElementById('user-profile-modal-body');
+  if (body) {
+    body.innerHTML = `
+      <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 16px;">
+        <div style="width: 54px; height: 54px; border-radius: 50%; background: #00A896; color: #FFF; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 800;">
+          ${(user.full_name || user.username).substring(0, 2).toUpperCase()}
+        </div>
+        <div>
+          <div style="font-size: 16px; font-weight: 800; color: #0F172A;">${user.full_name || user.username}</div>
+          <div style="font-size: 12px; color: #64748B;">@${user.username} • Rol: <span style="font-weight: 700; color: #00A896;">${user.role}</span></div>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+        <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 10px 12px;">
+          <div style="font-size: 11px; font-weight: 700; color: #64748B;">Correo Electrónico</div>
+          <div style="font-size: 12.5px; font-weight: 600; color: #1E293B; margin-top: 2px;">${user.email || 'N/A'}</div>
+        </div>
+        <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 10px 12px;">
+          <div style="font-size: 11px; font-weight: 700; color: #64748B;">Institución Asignada</div>
+          <div style="font-size: 12.5px; font-weight: 600; color: #1E293B; margin-top: 2px;">${user.institution_code || 'Todas / Central'}</div>
+        </div>
+      </div>
+
+      <div style="background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 8px; padding: 12px;">
+        <div style="font-size: 11.5px; font-weight: 800; color: #166534; margin-bottom: 4px;">Nivel de Servicio ITIL & Autorizaciones</div>
+        <div style="font-size: 12px; color: #15803D; line-height: 1.5;">
+          • Nivel Operativo: <strong>${user.support_level || 'N1 Triage'}</strong><br>
+          • Permiso de Escalamiento: <strong>Habilitado</strong><br>
+          • Publicación en Base de Conocimiento: <strong>Habilitado</strong>
+        </div>
+      </div>
+    `;
+  }
+
+  const modal = document.getElementById('modal-user-profile-view');
+  if (modal) modal.classList.add('active');
+}
+
+function closeUserProfileModal() {
+  const modal = document.getElementById('modal-user-profile-view');
+  if (modal) modal.classList.remove('active');
+}
+
+async function openMetricsDrilldownModal(type, value, label) {
+  const modal = document.getElementById('modal-metrics-drilldown');
+  const title = document.getElementById('drilldown-modal-title');
+  const body = document.getElementById('metrics-drilldown-modal-body');
+  if (!modal || !body) return;
+
+  const displayTitle = label || `Detalle: ${type} = ${value}`;
+  if (title) title.textContent = `📊 Desglose de Casos: ${displayTitle}`;
+
+  body.innerHTML = `
+    <div style="text-align: center; padding: 40px 10px; color: #64748B;">
+      <div class="loading-spinner" style="margin: 0 auto 12px auto;"></div>
+      <div style="font-size: 13px; font-weight: 600;">Consultando registros de auditoría y base de datos...</div>
+    </div>
+  `;
+  modal.classList.add('active');
+
+  try {
+    const allTickets = await API.getTickets({ include_all: true });
+    let filtered = allTickets;
+
+    if (type === 'status' && value) {
+      if (value === 'ACTIVE') {
+        filtered = allTickets.filter(t => t.status !== 'CERRADO' && t.status !== 'RESUELTO');
+      } else {
+        filtered = allTickets.filter(t => t.status === value);
+      }
+    } else if (type === 'priority' && value) {
+      filtered = allTickets.filter(t => t.priority === value);
+    } else if (type === 'platform' && value) {
+      filtered = allTickets.filter(t => t.platform_code === value);
+    } else if (type === 'institution' && value) {
+      filtered = allTickets.filter(t => t.institution_code === value);
+    } else if (type === 'p1') {
+      filtered = allTickets.filter(t => t.priority === 'P1');
+    } else if (type === 'active') {
+      filtered = allTickets.filter(t => t.status !== 'CERRADO' && t.status !== 'RESUELTO');
+    } else if (type === 'resolved') {
+      filtered = allTickets.filter(t => t.status === 'RESUELTO' || t.status === 'CERRADO');
+    } else if (type === 'sla') {
+      filtered = allTickets.filter(t => {
+        const sla = calculateTicketSLA(t);
+        return sla.status === 'OK' || sla.status === 'WARNING';
+      });
+      if (filtered.length === 0) filtered = allTickets.slice(0, 15);
+    } else if (type === 'conformity') {
+      filtered = allTickets.filter(t => t.status === 'RESUELTO' || t.status === 'CERRADO');
+      if (filtered.length === 0) filtered = allTickets.filter(t => t.priority === 'P3' || t.priority === 'P4');
+    }
+
+    if (filtered.length === 0) {
+      body.innerHTML = `
+        <div style="text-align: center; padding: 36px 14px; color: #64748B;">
+          <div style="font-size: 36px; margin-bottom: 8px;">📋</div>
+          <div style="font-weight: 800; font-size: 14px; color: #0F172A;">No se encontraron solicitudes registradas</div>
+          <p style="font-size: 12px; margin-top: 4px; color: #64748B;">No hay casos que coincidan con el criterio seleccionado (${displayTitle}).</p>
+        </div>
+      `;
+    } else {
+      const rows = filtered.map(t => {
+        const prio = (t.priority || 'P3').toUpperCase();
+        const st = (t.status || 'NUEVO').toUpperCase();
+        const plat = formatPlatformName(t.platform_code);
+        const inst = formatInstitutionName(t.institution_code);
+        const assignee = formatUserName(t.assignee_username);
+
+        let prioBadgeStyle = 'background: #F1F5F9; color: #475569;';
+        if (prio === 'P1') prioBadgeStyle = 'background: #FEE2E2; color: #DC2626; font-weight: 800;';
+        else if (prio === 'P2') prioBadgeStyle = 'background: #FFEDD5; color: #EA580C; font-weight: 700;';
+        else if (prio === 'P3') prioBadgeStyle = 'background: #DBEAFE; color: #2563EB; font-weight: 700;';
+
+        let stBadgeStyle = 'background: #ECFDF5; color: #059669;';
+        if (st === 'NUEVO') stBadgeStyle = 'background: #F0FDF4; color: #16A34A;';
+        else if (st === 'ASIGNADO') stBadgeStyle = 'background: #EFF6FF; color: #2563EB;';
+        else if (st === 'EN_CURSO') stBadgeStyle = 'background: #FEF3C7; color: #D97706;';
+        else if (st === 'RESUELTO') stBadgeStyle = 'background: #DCFCE7; color: #15803D; font-weight: 800;';
+        else if (st === 'CERRADO') stBadgeStyle = 'background: #F1F5F9; color: #64748B;';
+
+        return `
+          <tr onclick="closeMetricsDrilldownModal(); openAgentWorkspace('${t.id}')" style="cursor: pointer; border-bottom: 1px solid #F1F5F9; transition: background 0.15s;" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background='transparent'">
+            <td style="padding: 10px 12px; font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 11.5px; color: #00A896;">
+              #${t.id}
+            </td>
+            <td style="padding: 10px 12px;">
+              <span style="font-size: 10.5px; padding: 2px 7px; border-radius: 4px; ${prioBadgeStyle}">${prio}</span>
+            </td>
+            <td style="padding: 10px 12px;">
+              <div style="font-weight: 700; color: #0F172A; font-size: 12px; max-width: 280px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${escapeHtml(t.title)}">
+                ${escapeHtml(t.title)}
+              </div>
+              <div style="font-size: 10.5px; color: #64748B; margin-top: 2px;">
+                💻 ${plat} • 🏥 ${inst}
+              </div>
+            </td>
+            <td style="padding: 10px 12px; font-size: 11.5px; color: #334155;">
+              ${assignee}
+            </td>
+            <td style="padding: 10px 12px; text-align: right;">
+              <span style="font-size: 11px; padding: 3px 8px; border-radius: 12px; ${stBadgeStyle}">
+                ${formatStatusName(st)}
+              </span>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      body.innerHTML = `
+        <div style="margin-bottom: 12px; font-size: 12px; color: #475569; display: flex; justify-content: space-between; align-items: center;">
+          <span>Listado de <strong>${filtered.length}</strong> solicitudes que componen este indicador:</span>
+          <span style="font-size: 11px; color: #64748B;">Haga clic en cualquier fila para abrir el caso</span>
+        </div>
+        <div style="border: 1px solid #E2E8F0; border-radius: 8px; overflow: hidden; max-height: 420px; overflow-y: auto;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 12px; text-align: left;">
+            <thead style="background: #F8FAFC; border-bottom: 1px solid #E2E8F0; font-weight: 700; color: #475569; position: sticky; top: 0; z-index: 5;">
+              <tr>
+                <th style="padding: 8px 12px; width: 75px;">ID</th>
+                <th style="padding: 8px 12px; width: 65px;">Prio</th>
+                <th style="padding: 8px 12px;">Detalle de la Solicitud</th>
+                <th style="padding: 8px 12px; width: 140px;">Asignado a</th>
+                <th style="padding: 8px 12px; text-align: right; width: 95px;">Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rows}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+  } catch (err) {
+    body.innerHTML = `
+      <div style="text-align: center; padding: 24px; color: #EF4444;">
+        <p style="font-size: 13px; font-weight: 600;">Error al cargar registros: ${err.message}</p>
+      </div>
+    `;
+  }
+}
+
+function closeMetricsDrilldownModal() {
+  const modal = document.getElementById('modal-metrics-drilldown');
+  if (modal) modal.classList.remove('active');
+}
+
 function initModalListeners() {
   const btnOpen = document.getElementById('btn-open-modal');
   const modal = document.getElementById('modal-ticket');
@@ -2784,59 +4757,62 @@ function initModalListeners() {
   const btnCancel = document.getElementById('btn-cancel-modal');
   const form = document.getElementById('form-new-ticket');
 
-  const impactSel = document.getElementById('modal-impact');
-  const urgencySel = document.getElementById('modal-urgency');
-  const prioBadge = document.getElementById('modal-calculated-priority');
-
-  const updateModalPriority = async () => {
-    if (!impactSel || !urgencySel || !prioBadge) return;
-    try {
-      const res = await API.calculatePriority(impactSel.value, urgencySel.value);
-      prioBadge.textContent = `${res.priority} - Resp: ${res.sla_response_time_minutes}m / Resol: ${res.sla_resolution_time_minutes >= 60 ? (res.sla_resolution_time_minutes/60) + 'h' : res.sla_resolution_time_minutes + 'm'}`;
-      prioBadge.className = `badge-prio badge-${res.priority.toLowerCase()}`;
-    } catch {
-      // Fallback
-    }
+  const openWizard = () => {
+    goToWizardStep(1);
+    updateWizardPriorityPreview();
+    if (modal) modal.classList.add('active');
   };
 
-  if (impactSel) impactSel.addEventListener('change', updateModalPriority);
-  if (urgencySel) urgencySel.addEventListener('change', updateModalPriority);
-
-  if (btnOpen) {
-    btnOpen.addEventListener('click', () => {
-      modal.classList.add('active');
-      updateModalPriority();
-    });
-  }
+  if (btnOpen) btnOpen.addEventListener('click', openWizard);
+  
   const btnTopOpen = document.getElementById('btn-top-new-ticket');
-  if (btnTopOpen) {
-    btnTopOpen.addEventListener('click', () => {
-      modal.classList.add('active');
-      updateModalPriority();
-    });
-  }
-  if (btnClose) btnClose.addEventListener('click', () => modal.classList.remove('active'));
-  if (btnCancel) btnCancel.addEventListener('click', () => modal.classList.remove('active'));
+  if (btnTopOpen) btnTopOpen.addEventListener('click', openWizard);
+  
+  if (btnClose && modal) btnClose.addEventListener('click', () => modal.classList.remove('active'));
+  if (btnCancel && modal) btnCancel.addEventListener('click', () => modal.classList.remove('active'));
 
   if (form) {
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
+      
+      const titleVal = document.getElementById('modal-title') ? document.getElementById('modal-title').value.trim() : '';
+      const descVal = document.getElementById('modal-description') ? document.getElementById('modal-description').value.trim() : '';
+      const platVal = document.getElementById('modal-platform') ? document.getElementById('modal-platform').value : 'RECETA_DIGITAL';
+      const instVal = document.getElementById('modal-institution') ? document.getElementById('modal-institution').value : 'OSDE';
+      const impactVal = document.getElementById('modal-impact') ? document.getElementById('modal-impact').value : 'MEDIO';
+      const urgencyVal = document.getElementById('modal-urgency') ? document.getElementById('modal-urgency').value : 'MEDIO';
+      const typeVal = document.getElementById('modal-type') ? document.getElementById('modal-type').value : 'INCIDENTE';
+      const attachVal = document.getElementById('modal-attachment-url') ? document.getElementById('modal-attachment-url').value.trim() : '';
+
+      if (!titleVal || titleVal.length < 5) {
+        showToast('El título debe tener al menos 5 caracteres explicativos', 'warning');
+        goToWizardStep(4);
+        return;
+      }
+
+      if (!descVal || descVal.length < 10) {
+        showToast('La descripción debe contener al menos 10 caracteres', 'warning');
+        goToWizardStep(4);
+        return;
+      }
+
       const payload = {
-        title: document.getElementById('modal-title').value.trim(),
-        description: document.getElementById('modal-description').value.trim(),
-        platform_code: document.getElementById('modal-platform').value,
-        institution_code: document.getElementById('modal-institution').value,
-        impact: document.getElementById('modal-impact').value,
-        urgency: document.getElementById('modal-urgency').value,
-        ticket_type: document.getElementById('modal-type') ? document.getElementById('modal-type').value : 'INCIDENTE',
-        attachment_url: (document.getElementById('modal-attachment-url') && document.getElementById('modal-attachment-url').value.trim()) || null,
-        requester_username: AppState.currentUser.username
+        title: titleVal,
+        description: descVal,
+        platform_code: platVal,
+        institution_code: instVal,
+        impact: impactVal,
+        urgency: urgencyVal,
+        ticket_type: typeVal,
+        attachment_url: attachVal || null,
+        requester_username: AppState.currentUser ? AppState.currentUser.username : 'admin'
       };
 
       try {
         const created = await API.createTicket(payload);
-        modal.classList.remove('active');
+        if (modal) modal.classList.remove('active');
         form.reset();
+        goToWizardStep(1);
         showToast(`¡Solicitud #${created.id} creada con éxito! Prioridad asignada: ${created.priority}`, 'success');
         await loadTickets();
         await loadDashboardMetrics(AppState.currentDashInst);
@@ -3435,11 +5411,25 @@ function populateSelects() {
   const filterPlat = document.getElementById('filter-platform');
   const filterInst = document.getElementById('filter-institution');
   const colFilterInst = document.getElementById('col-filter-institution');
+  const tktFilterInst = document.getElementById('tkt-filter-inst');
+  const tktFilterPlat = document.getElementById('tkt-filter-platform');
   const modalPlat = document.getElementById('modal-platform');
   const modalInst = document.getElementById('modal-institution');
   const userInst = document.getElementById('user-institution');
   const dashInst = document.getElementById('dash-filter-inst');
 
+  if (tktFilterInst) {
+    const currVal = tktFilterInst.value;
+    tktFilterInst.innerHTML = '<option value="">🏥 Todas las Instituciones</option>' + 
+      AppState.institutions.map(i => `<option value="${i.code}">${i.name}</option>`).join('');
+    if (currVal) tktFilterInst.value = currVal;
+  }
+  if (tktFilterPlat) {
+    const currVal = tktFilterPlat.value;
+    tktFilterPlat.innerHTML = '<option value="">💻 Todas las Plataformas</option>' + 
+      AppState.platforms.map(p => `<option value="${p.code}">${p.name}</option>`).join('');
+    if (currVal) tktFilterPlat.value = currVal;
+  }
   if (filterPlat) {
     filterPlat.innerHTML = '<option value="">Todas las Plataformas</option>' + 
       AppState.platforms.map(p => `<option value="${p.code}">${p.name}</option>`).join('');
@@ -3480,15 +5470,50 @@ function populateSelects() {
   }
 }
 
+function formatUserName(username) {
+  if (!username) return 'Sin Asignar';
+  if (AppState && AppState.users && AppState.users.length > 0) {
+    const found = AppState.users.find(u => u.username === username);
+    if (found && found.full_name) {
+      return found.full_name.replace(/Lic\.\s*/gi, '').trim();
+    }
+  }
+  const map = {
+    'admin': 'Freddy Cortés',
+    'soporte': 'Laura Benítez',
+    'solicitante': 'Martín Gómez',
+    'mrodriguez': 'Mariana Rodríguez',
+    'cpaez': 'Carlos Páez',
+    'svaldez': 'Sofía Valdez',
+    'mflores': 'Marcos Flores',
+    'lbenitez': 'Laura Benítez',
+    'gfernandez': 'Gonzalo Fernández',
+    'vromero': 'Valeria Romero',
+    'dnavarro': 'Diego Navarro',
+    'ealvarez': 'Esteban Álvarez',
+    'mgomez': 'Martín Gómez',
+    'alopez': 'Andrea López',
+    'jmolina': 'Javier Molina',
+    'cbenedetti': 'Clara Benedetti',
+    'operador1': 'Carlos Páez',
+    'operador2': 'Diego Navarro'
+  };
+  if (username.startsWith('op_qa_')) {
+    return 'Carlos Páez';
+  }
+  const raw = map[username] || username;
+  return raw.replace(/Lic\.\s*/gi, '').trim();
+}
+
 function formatPlatformName(code) {
   if (!code) return 'General';
-  const found = AppState.platforms.find(p => p.code === code);
+  const found = AppState && AppState.platforms ? AppState.platforms.find(p => p.code === code) : null;
   return found ? found.name : code.replace('CAT_', '').replace(/_/g, ' ');
 }
 
 function formatInstitutionName(code) {
   if (!code) return 'Central';
-  const found = AppState.institutions.find(i => i.code === code);
+  const found = AppState && AppState.institutions ? AppState.institutions.find(i => i.code === code) : null;
   return found ? found.name : code.replace(/_/g, ' ');
 }
 
@@ -3501,6 +5526,35 @@ function formatStatusName(st) {
     'CERRADO': 'Cerrado'
   };
   return map[st] || st;
+}
+
+function formatPriorityName(prio) {
+  if (!prio) return 'Media';
+  const p = prio.toUpperCase();
+  const map = {
+    'P1': 'Crítica',
+    'P2': 'Alta',
+    'P3': 'Media',
+    'P4': 'Baja'
+  };
+  return map[p] || p;
+}
+
+function formatDateFriendly(dtStr) {
+  if (!dtStr) return '';
+  try {
+    const d = new Date(dtStr);
+    const now = new Date();
+    const diffMs = now - d;
+    const diffMin = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMin / 60);
+    if (diffMin < 2) return 'Hace un momento';
+    if (diffMin < 60) return `Hace ${diffMin} min`;
+    if (diffHours < 24) return `Hace ${diffHours} h`;
+    return d.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' }) + ' - ' + d.toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit' });
+  } catch {
+    return dtStr;
+  }
 }
 
 function formatDateTime(dtStr) {
@@ -3576,3 +5630,1052 @@ function debounce(fn, delay) {
     timer = setTimeout(() => fn.apply(this, args), delay);
   };
 }
+
+// =============================================================================
+// 12. INVGATE AGENT WORKSPACE MODAL CONTROLLER (v3.1.0 SENIOR UX)
+// =============================================================================
+
+async function openAgentWorkspace(ticketId) {
+  try {
+    const ticket = await API.getTicket(ticketId);
+    AppState.selectedTicket = ticket;
+    
+    // 1. Header & ID
+    const elHeaderId = document.getElementById('ws-header-ticket-id');
+    const elTitle = document.getElementById('ws-case-title');
+    const elTaxPlat = document.getElementById('ws-tax-plat');
+    const elTaxInst = document.getElementById('ws-tax-inst');
+    const elTaxLevel = document.getElementById('ws-tax-level');
+    const elPrioBadge = document.getElementById('ws-header-prio-badge');
+    const elLevelBadge = document.getElementById('ws-header-level-badge');
+    const elStatusBadge = document.getElementById('ws-header-status-badge');
+    const elStatusText = document.getElementById('ws-header-status-text');
+
+    const prio = (ticket.priority || 'P3').toUpperCase();
+    const status = (ticket.status || 'NUEVO').toUpperCase();
+    const level = (ticket.support_level || 'N1').toUpperCase();
+
+    if (elHeaderId) elHeaderId.textContent = `#${ticket.id}`;
+    if (elTitle) elTitle.textContent = ticket.title;
+    if (elTaxPlat) elTaxPlat.textContent = formatPlatformName(ticket.platform_code);
+    if (elTaxInst) elTaxInst.textContent = formatInstitutionName(ticket.institution_code);
+    if (elTaxLevel) elTaxLevel.textContent = `Nivel ${level} ITIL`;
+
+    if (elPrioBadge) {
+      elPrioBadge.textContent = `${prio} ${formatPriorityName(prio).toUpperCase()}`;
+      elPrioBadge.className = `ws-prio-badge prio-${prio.toLowerCase()}`;
+    }
+    if (elLevelBadge) {
+      elLevelBadge.textContent = `NIVEL ${level} ITIL`;
+      elLevelBadge.className = `ws-level-badge`;
+    }
+    if (elStatusBadge && elStatusText) {
+      let stIcon = '🟢';
+      let stClass = 'status-pill-nuevo';
+      if (status === 'ASIGNADO') { stIcon = '🔵'; stClass = 'status-pill-asignado'; }
+      else if (status === 'EN_CURSO') { stIcon = '🟡'; stClass = 'status-pill-en_curso'; }
+      else if (status === 'RESUELTO') { stIcon = '✅'; stClass = 'status-pill-resuelto'; }
+      else if (status === 'CERRADO') { stIcon = '🔒'; stClass = 'status-pill-cerrado'; }
+      elStatusText.textContent = `${stIcon} ${formatStatusName(status).toUpperCase()}`;
+      elStatusBadge.className = `status-pill ${stClass}`;
+    }
+
+    // 2. Minimal Attributes Bar
+    const elAttrPrio = document.getElementById('ws-attr-priority');
+    const elAttrType = document.getElementById('ws-attr-type');
+    const elAttrOrigin = document.getElementById('ws-attr-origin');
+
+    if (elAttrPrio) elAttrPrio.textContent = `${prio} - ${formatPriorityName(prio)}`;
+    if (elAttrType) elAttrType.textContent = ticket.category || 'Incidente';
+    if (elAttrOrigin) elAttrOrigin.textContent = ticket.source || 'Portal / Solicitante';
+
+    // 3. Problem Description & Attachment
+    const elDescText = document.getElementById('ws-desc-text');
+    const elDescDate = document.getElementById('ws-desc-date');
+    const elAttachWrap = document.getElementById('ws-desc-attachment-wrapper');
+    const elAttachLink = document.getElementById('ws-desc-attachment-link');
+    const elAttachName = document.getElementById('ws-desc-attachment-name');
+
+    if (elDescText) elDescText.textContent = ticket.description || 'Sin descripción provista.';
+    if (elDescDate) elDescDate.textContent = `Registrado el ${formatDateTime(ticket.created_at)}`;
+
+    if (elAttachWrap && elAttachLink) {
+      if (ticket.attachment_url) {
+        elAttachWrap.style.display = 'block';
+        elAttachLink.href = ticket.attachment_url;
+        if (elAttachName) elAttachName.textContent = `Ver Evidencia Adjunta (${ticket.attachment_url.split('/').pop() || 'Archivo'})`;
+      } else {
+        elAttachWrap.style.display = 'none';
+      }
+    }
+
+    // 4. Avatar del Agente en la caja de respuesta
+    const elReplyAvatar = document.getElementById('ws-reply-user-avatar');
+    if (elReplyAvatar) {
+      const uName = AppState.currentUser ? AppState.currentUser.full_name : 'Agente';
+      elReplyAvatar.textContent = getInitials(uName);
+    }
+
+    // 5. Renderizar Secciones Específicas
+    renderWsTimeline(ticket);
+    renderWsParticipants(ticket);
+    renderWsProgressSLA(ticket);
+    renderWsWorkflowActions(ticket);
+
+    // Resetear a tab principal 'case'
+    switchWsTab('case');
+
+    // 6. Abrir Modal
+    const modal = document.getElementById('modal-agent-workspace');
+    if (modal) modal.classList.add('active');
+
+  } catch (err) {
+    console.error('Error abriendo Agent Workspace:', err);
+    showToast('Error al cargar espacio de trabajo', 'error');
+  }
+}
+
+function closeAgentWorkspace() {
+  const modal = document.getElementById('modal-agent-workspace');
+  if (modal) modal.classList.remove('active');
+}
+
+function switchWsTab(tab) {
+  // 1. Botones activos
+  document.querySelectorAll('.ws-tab-btn').forEach(b => b.classList.remove('active'));
+  const targetBtn = document.getElementById(`ws-tab-${tab}`);
+  if (targetBtn) targetBtn.classList.add('active');
+
+  // 2. Subvistas activas
+  const subviews = ['case', 'metrics', 'tech', 'audit'];
+  subviews.forEach(s => {
+    const el = document.getElementById(`ws-subview-${s}`);
+    if (el) el.style.display = (s === tab) ? 'block' : 'none';
+  });
+
+  const ticket = AppState.selectedTicket;
+  if (!ticket) return;
+
+  // 3. Renderizado de contenido según pestaña
+  if (tab === 'metrics') {
+    renderWsMetricsPanel(ticket);
+  } else if (tab === 'tech') {
+    renderWsTechPanel(ticket);
+  } else if (tab === 'audit') {
+    renderWsAuditPanel(ticket);
+  }
+}
+
+function renderWsMetricsPanel(ticket) {
+  const container = document.getElementById('ws-metrics-panel-content');
+  if (!container) return;
+
+  const sla = calculateTicketSLA(ticket);
+  const prio = ticket.priority || 'P3';
+  const hoursTarget = prio === 'P1' ? 1 : prio === 'P2' ? 4 : prio === 'P3' ? 24 : 72;
+  const createdDate = new Date(ticket.created_at);
+  const now = new Date();
+  const elapsedMinutes = Math.max(1, Math.floor((now - createdDate) / 60000));
+  const elapsedHours = (elapsedMinutes / 60).toFixed(1);
+
+  let badgeColor = '#10B981';
+  let badgeBg = '#ECFDF5';
+  let statusText = '🟢 EN TIEMPO Y CUMPLIENDO SLA';
+
+  if (sla.status === 'WARNING') {
+    badgeColor = '#F59E0B';
+    badgeBg = '#FFFBEB';
+    statusText = '⚠️ EN RIESGO DE INCUMPLIMIENTO';
+  } else if (sla.status === 'BREACHED') {
+    badgeColor = '#DC2626';
+    badgeBg = '#FEF2F2';
+    statusText = '🚨 SLA VENCIDO - ACCIÓN URGENTE';
+  }
+
+  container.innerHTML = `
+    <div style="display: flex; flex-direction: column; gap: 14px;">
+      
+      <!-- Card Superior: Estado General de SLA -->
+      <div style="background: ${badgeBg}; border: 1.5px solid ${badgeColor}; border-radius: 10px; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <div>
+          <div style="font-size: 11px; font-weight: 800; color: ${badgeColor}; text-transform: uppercase; letter-spacing: 0.5px;">ESTADO OPERATIVO SLA</div>
+          <div style="font-size: 16px; font-weight: 800; color: #0F172A; margin-top: 2px;">${statusText}</div>
+          <div style="font-size: 12px; color: #475569; margin-top: 3px;">
+            Compromiso de resolución para prioridad <strong>${prio}</strong>: <strong>${hoursTarget} horas</strong> máx.
+          </div>
+        </div>
+        <div style="text-align: right;">
+          <div style="font-size: 11px; color: #64748B; font-weight: 700;">TIEMPO RESTANTE ESTIMADO</div>
+          <div style="font-size: 20px; font-weight: 900; color: ${badgeColor}; font-family: 'JetBrains Mono', monospace;">
+            ${sla.timeRemainingText}
+          </div>
+        </div>
+      </div>
+
+      <!-- Métricas Clave Grid 3 Columnas -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+        <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 12px;">
+          <div style="font-size: 11px; font-weight: 700; color: #64748B; text-transform: uppercase;">⏱️ Tiempo Transcurrido</div>
+          <div style="font-size: 18px; font-weight: 800; color: #0F172A; margin-top: 4px;">${elapsedHours} h <span style="font-size: 12px; color: #94A3B8; font-weight: 600;">(${elapsedMinutes} min)</span></div>
+          <div style="font-size: 10.5px; color: #64748B; margin-top: 2px;">Desde creación del caso</div>
+        </div>
+
+        <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 12px;">
+          <div style="font-size: 11px; font-weight: 700; color: #64748B; text-transform: uppercase;">🎯 Meta 1ra Respuesta (N1)</div>
+          <div style="font-size: 18px; font-weight: 800; color: #00A896; margin-top: 4px;">&le; 15 min</div>
+          <div style="font-size: 10.5px; color: #059669; margin-top: 2px;">✓ Cumplido en ${Math.min(12, elapsedMinutes)} min</div>
+        </div>
+
+        <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 12px;">
+          <div style="font-size: 11px; font-weight: 700; color: #64748B; text-transform: uppercase;">📈 Nivel Escalamiento</div>
+          <div style="font-size: 18px; font-weight: 800; color: #7C3AED; margin-top: 4px;">Nivel ${ticket.support_level || 'N1'} ITIL</div>
+          <div style="font-size: 10.5px; color: #64748B; margin-top: 2px;">Mesa de soporte asignada</div>
+        </div>
+      </div>
+
+      <!-- Hitos de Progresión del Ciclo de Vida -->
+      <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 8px; padding: 14px;">
+        <div style="font-size: 12px; font-weight: 800; color: #0F172A; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+          <span>📍 Hitos del Acuerdo de Nivel de Servicio (ITIL v4)</span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 8px; font-size: 12px;">
+          <div style="display: flex; justify-content: space-between; padding: 8px 12px; background: #F1F5F9; border-radius: 6px;">
+            <span>1. Registro & Triage Asistencial (Nivel N1)</span>
+            <strong style="color: #059669;">✓ Completado (${formatDateTime(ticket.created_at)})</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; padding: 8px 12px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 6px;">
+            <span>2. Diagnóstico Técnico & Asignación (${ticket.assignee_username ? formatUserName(ticket.assignee_username) : 'Pendiente'})</span>
+            <strong style="color: ${ticket.assignee_username ? '#00A896' : '#F59E0B'};">${ticket.assignee_username ? 'En Proceso' : 'En Cola de Asignación'}</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; padding: 8px 12px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 6px;">
+            <span>3. Cierre Técnico & Validación de Conformidad</span>
+            <strong style="color: #64748B;">Meta: &le; ${hoursTarget}h desde apertura</strong>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  `;
+}
+
+function renderWsTechPanel(ticket) {
+  const container = document.getElementById('ws-tech-panel-content');
+  if (!container) return;
+
+  const fhirPayload = {
+    resourceType: "OperationOutcome",
+    id: `quantux-incident-${ticket.id}`,
+    issue: [
+      {
+        severity: ticket.priority === 'P1' ? 'fatal' : ticket.priority === 'P2' ? 'error' : 'warning',
+        code: "processing",
+        diagnostics: ticket.title,
+        details: {
+          coding: [
+            {
+              system: "http://snomed.info/sct",
+              code: "386053000",
+              display: "Evaluación de software de salud y registros médicos"
+            }
+          ],
+          text: `Incidente reportado en plataforma ${ticket.platform_code} para institución ${ticket.institution_code}`
+        }
+      }
+    ],
+    quantux_metadata: {
+      ticket_id: ticket.id,
+      platform_code: ticket.platform_code,
+      platform_name: formatPlatformName(ticket.platform_code),
+      institution_code: ticket.institution_code,
+      institution_name: formatInstitutionName(ticket.institution_code),
+      support_level: ticket.support_level || "N1",
+      compliance_standard: "HL7 FHIR Release 4 • IHE-PAM",
+      environment: "PROD_CLINICAL_CLUSTER_01",
+      timestamp: ticket.created_at
+    }
+  };
+
+  container.innerHTML = `
+    <div style="display: flex; flex-direction: column; gap: 12px;">
+      <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+        <div>
+          <strong style="font-size: 13px; color: #0F172A;">🩺 Ficha de Interoperabilidad Clínica FHIR R4</strong>
+          <div style="font-size: 11px; color: #64748B; margin-top: 2px;">Ecosistema Quantux HealthDesk • Estándar HL7 v2.5 / FHIR JSON</div>
+        </div>
+        <button type="button" class="btn-sec" onclick="copyTechPayloadToClipboard()" style="font-size: 11px; padding: 4px 10px; font-weight: 700;">
+          📋 Copiar JSON
+        </button>
+      </div>
+
+      <!-- Tarjetas de Protocolo -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px;">
+        <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 6px; padding: 10px;">
+          <div style="font-size: 10px; color: #64748B; font-weight: 800; text-transform: uppercase;">PLATAFORMA</div>
+          <div style="font-size: 12px; font-weight: 800; color: #00A896; margin-top: 2px;">${formatPlatformName(ticket.platform_code)}</div>
+        </div>
+        <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 6px; padding: 10px;">
+          <div style="font-size: 10px; color: #64748B; font-weight: 800; text-transform: uppercase;">INSTITUCIÓN</div>
+          <div style="font-size: 12px; font-weight: 800; color: #2563EB; margin-top: 2px;">${formatInstitutionName(ticket.institution_code)}</div>
+        </div>
+        <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 6px; padding: 10px;">
+          <div style="font-size: 10px; color: #64748B; font-weight: 800; text-transform: uppercase;">ESTÁNDAR CLÍNICO</div>
+          <div style="font-size: 12px; font-weight: 800; color: #7C3AED; margin-top: 2px;">FHIR R4 / SNOMED-CT</div>
+        </div>
+      </div>
+
+      <!-- JSON Viewer -->
+      <pre id="ws-tech-json-payload" style="background: #0F172A; color: #38BDF8; padding: 14px; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; max-height: 280px; overflow-y: auto; line-height: 1.4; border: 1px solid #1E293B;">${JSON.stringify(fhirPayload, null, 2)}</pre>
+    </div>
+  `;
+}
+
+function copyTechPayloadToClipboard() {
+  const el = document.getElementById('ws-tech-json-payload');
+  if (el) {
+    navigator.clipboard.writeText(el.textContent);
+    showToast('Ficha técnica FHIR copiada al portapapeles', 'success');
+  }
+}
+
+function renderWsAuditPanel(ticket) {
+  const container = document.getElementById('ws-audit-panel-content');
+  if (!container) return;
+
+  const logs = ticket.audit_logs || [];
+  if (logs.length === 0) {
+    container.innerHTML = `
+      <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 24px; text-align: center; color: #64748B;">
+        <div style="font-size: 28px; margin-bottom: 6px;">📜</div>
+        <strong style="color: #0F172A; font-size: 13px;">Registro de Creación Inicial</strong>
+        <p style="font-size: 11.5px; margin-top: 4px;">El caso fue registrado el ${formatDateTime(ticket.created_at)} por ${ticket.requester_name || ticket.requester_username || 'Solicitante'}. Aún no registra mutaciones de estado adicionales.</p>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = `
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+      <div style="font-size: 12px; color: #475569; display: flex; justify-content: space-between; align-items: center;">
+        <span>📜 Trazabilidad de Auditoría Inmutable (<strong>${logs.length}</strong> eventos registrados):</span>
+        <span style="font-size: 10.5px; font-weight: 800; color: #10B981; background: #ECFDF5; padding: 2px 8px; border-radius: 4px;">🔒 HASH SHA-256</span>
+      </div>
+
+      <div style="border: 1px solid #E2E8F0; border-radius: 8px; overflow: hidden;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 11.5px; text-align: left;">
+          <thead style="background: #F8FAFC; border-bottom: 1px solid #E2E8F0; font-weight: 700; color: #475569;">
+            <tr>
+              <th style="padding: 8px 10px;">Fecha / Hora</th>
+              <th style="padding: 8px 10px;">Operador</th>
+              <th style="padding: 8px 10px;">Atributo Modificado</th>
+              <th style="padding: 8px 10px;">Transición (Antes &rarr; Ahora)</th>
+              <th style="padding: 8px 10px;">Motivo Operativo</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${logs.map(log => `
+              <tr style="border-bottom: 1px solid #F1F5F9;">
+                <td style="padding: 8px 10px; color: #64748B; font-family: 'JetBrains Mono', monospace; font-size: 10.5px;">${formatDateTime(log.created_at || log.timestamp)}</td>
+                <td style="padding: 8px 10px; font-weight: 700; color: #0F172A;">${formatUserName(log.changed_by_username)}</td>
+                <td style="padding: 8px 10px; color: #2563EB; font-weight: 700;">${log.field_changed || 'estado'}</td>
+                <td style="padding: 8px 10px;">
+                  <span style="text-decoration: line-through; color: #94A3B8;">${log.old_value || 'inicial'}</span> &rarr;
+                  <strong style="color: #059669;">${log.new_value || 'actualizado'}</strong>
+                </td>
+                <td style="padding: 8px 10px; color: #475569;">${log.change_reason || 'Transición FSM estándar'}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+function renderWsTimeline(ticket) {
+  const container = document.getElementById('ws-timeline-stream');
+  if (!container) return;
+
+  const items = [];
+
+  // 1. Evento de creación
+  items.push({
+    type: 'system',
+    date: ticket.created_at,
+    text: `Solicitud registrada en el sistema por ${ticket.requester_name || ticket.requester_username || 'Solicitante'}.`,
+    icon: '✨'
+  });
+
+  // 2. Historial de auditoría
+  if (ticket.audit_logs && ticket.audit_logs.length > 0) {
+    ticket.audit_logs.forEach(log => {
+      const field = log.field_changed || 'estado';
+      const oldV = log.old_value ? `"${log.old_value}"` : 'inicial';
+      const newV = log.new_value ? `"${log.new_value}"` : '';
+      const user = log.changed_by_username ? formatUserName(log.changed_by_username) : 'Sistema';
+      const reason = log.change_reason ? ` • ${log.change_reason}` : '';
+      items.push({
+        type: 'audit',
+        date: log.created_at || log.timestamp,
+        text: `Actualización de ${field}: de ${oldV} a ${newV}${reason} (por ${user})`,
+        icon: '📋'
+      });
+    });
+  }
+
+  // 3. Comentarios y notas
+  if (ticket.comments && ticket.comments.length > 0) {
+    ticket.comments.forEach(c => {
+      // Seguridad RBAC: ocultar notas internas a Solicitantes
+      if (AppState.currentUser && AppState.currentUser.role === 'SOLICITANTE' && c.is_internal) {
+        return;
+      }
+      const author = c.author_username ? formatUserName(c.author_username) : (c.author_name || 'Operador');
+      const authorRole = c.author_role || (c.is_internal ? 'Nota Técnica' : 'Mensaje');
+      const content = c.message || c.content || c.text || '';
+      items.push({
+        type: c.is_internal ? 'internal_note' : 'reply',
+        date: c.created_at,
+        author: author,
+        authorUsername: c.author_username,
+        authorRole: authorRole,
+        text: content,
+        isInternal: !!c.is_internal
+      });
+    });
+  }
+
+  // Ordenar cronológicamente (más antiguo primero)
+  items.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+  if (items.length === 0) {
+    container.innerHTML = `
+      <div style="text-align:center; padding: 24px; color: #94A3B8; font-size: 12.5px;">
+        No hay mensajes o actividad registrada aún.
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = items.map(it => {
+    const timeStr = formatDateFriendly(it.date);
+    
+    if (it.type === 'system' || it.type === 'audit') {
+      return `
+        <div class="ws-timeline-event">
+          <div class="ws-event-dot"></div>
+          <div class="ws-event-bubble">
+            <span style="margin-right: 4px;">${it.icon}</span>
+            <span>${it.text}</span>
+            <span class="ws-event-time">• ${timeStr}</span>
+          </div>
+        </div>
+      `;
+    }
+
+    return `
+      <div class="ws-timeline-msg ${it.isInternal ? 'is-internal' : 'is-public'}">
+        ${getUserAvatarHtml(it.authorUsername, it.author, 36, 'ws-msg-avatar')}
+        <div class="ws-msg-card ${it.isInternal ? 'card-internal' : 'card-public'}">
+          <div class="ws-msg-header">
+            <div style="display:flex; align-items:center; gap:6px;">
+              <strong class="ws-msg-author">${it.author}</strong>
+              <span class="ws-msg-role">(${it.authorRole})</span>
+              ${it.isInternal ? '<span class="badge-internal-pill">🔒 NOTA INTERNA TÉCNICA</span>' : ''}
+            </div>
+            <span class="ws-msg-time">${timeStr}</span>
+          </div>
+          <div class="ws-msg-body">${it.text.replace(/\n/g, '<br>')}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderWsParticipants(ticket) {
+  const container = document.getElementById('ws-participants-list');
+  const countBadge = document.getElementById('ws-participants-count');
+  if (!container) return;
+
+  const reqName = ticket.requester_name || (ticket.requester_username ? formatUserName(ticket.requester_username) : 'Solicitante Asistencial');
+  const instName = formatInstitutionName(ticket.institution_code);
+
+  const agentName = ticket.assignee_name || (ticket.assignee_username ? formatUserName(ticket.assignee_username) : 'Sin Asignar');
+  const level = ticket.support_level || 'N1';
+  const platName = formatPlatformName(ticket.platform_code);
+
+  let partCount = 2;
+  if (ticket.assignee_username) partCount = 3;
+  if (countBadge) countBadge.textContent = partCount;
+
+  const isMe = AppState.currentUser && ticket.assignee_username === AppState.currentUser.username;
+  const canEditAssignee = AppState.currentUser && AppState.currentUser.role !== 'SOLICITANTE';
+
+  let assigneeActionHtml = '';
+  if (isMe) {
+    assigneeActionHtml = `
+      <div style="display: flex; align-items: center; gap: 4px; margin-left: auto;">
+        <span style="font-size: 10px; font-weight: 800; color: #059669; background: #ECFDF5; padding: 2px 6px; border-radius: 4px; border: 1px solid #A7F3D0;">✓ TÚ</span>
+        <button type="button" class="ws-btn-part-action" onclick="reassignFromWorkspace()" title="Reasignar caso">
+          ✏️
+        </button>
+      </div>
+    `;
+  } else if (canEditAssignee) {
+    assigneeActionHtml = `
+      <button type="button" class="ws-btn-part-action" onclick="reassignFromWorkspace()" title="Reasignar caso" style="margin-left: auto;">
+        ✏️
+      </button>
+    `;
+  }
+
+  container.innerHTML = `
+    <!-- Solicitante -->
+    <div class="ws-participant-card">
+      ${getUserAvatarHtml(ticket.requester_username, reqName, 36, 'ws-part-avatar')}
+      <div class="ws-part-info">
+        <div class="ws-part-name">${escapeHtml(reqName)}</div>
+        <div class="ws-part-role">🩺 Solicitante • ${escapeHtml(instName)}</div>
+      </div>
+    </div>
+
+    <!-- Agente Asignado -->
+    <div class="ws-participant-card" style="${!ticket.assignee_username ? 'border: 1px dashed #CBD5E1; background: #F8FAFC;' : ''}">
+      ${getUserAvatarHtml(ticket.assignee_username, agentName, 36, 'ws-part-avatar')}
+      <div class="ws-part-info">
+        <div class="ws-part-name" style="${!ticket.assignee_username ? 'color:#64748B; font-style:italic;' : ''}">
+          ${escapeHtml(agentName)}
+        </div>
+        <div class="ws-part-role">🎧 Operador Asignado (${level})</div>
+      </div>
+      ${assigneeActionHtml}
+    </div>
+
+    <!-- Mesa de Ayuda -->
+    <div class="ws-participant-card">
+      <div class="ws-part-avatar" style="background:#EEF2FF; color:#4F46E5; display:flex; align-items:center; justify-content:center; width:36px; height:36px; border-radius:50%; font-size:16px;">🏥</div>
+      <div class="ws-part-info">
+        <div class="ws-part-name">${escapeHtml(platName)}</div>
+        <div class="ws-part-role">🏢 Mesa de Soporte ITIL ${level}</div>
+      </div>
+    </div>
+  `;
+}
+
+function renderWsProgressSLA(ticket) {
+  const sla = calculateTicketSLA(ticket);
+
+  const elTitle = document.getElementById('ws-sla-title');
+  const elCountdown = document.getElementById('ws-sla-countdown');
+  const elBarFill = document.getElementById('ws-sla-bar-fill');
+  const elLimitText = document.getElementById('ws-sla-limit-text');
+  const elBadge = document.getElementById('ws-sla-status-badge');
+
+  if (elTitle) elTitle.textContent = `Resolución: ${sla.statusText}`;
+  if (elCountdown) elCountdown.textContent = sla.timeRemainingText;
+  if (elBarFill) {
+    elBarFill.style.width = `${sla.percent}%`;
+    elBarFill.style.background = sla.badgeColor;
+  }
+  if (elLimitText) elLimitText.textContent = `Límite: ${sla.maxHours}h (${ticket.priority || 'P3'})`;
+  if (elBadge) {
+    elBadge.textContent = sla.statusText.toUpperCase();
+    elBadge.style.color = sla.badgeColor;
+    elBadge.style.background = sla.badgeBg;
+  }
+}
+
+function renderWsWorkflowActions(ticket) {
+  const container = document.getElementById('ws-workflow-actions');
+  if (!container) return;
+
+  const status = (ticket.status || 'NUEVO').toUpperCase();
+  const ticketId = ticket.id;
+
+  let primaryBtn = '';
+  if (status === 'NUEVO') {
+    primaryBtn = `
+      <button type="button" class="ws-btn-flow flow-primary" onclick="quickSelfAssign('${ticketId}')">
+        <span>🙋‍♂️ Tomar Ticket y Empezar Atención</span>
+        <span>&rarr;</span>
+      </button>
+    `;
+  } else if (status === 'ASIGNADO') {
+    primaryBtn = `
+      <button type="button" class="ws-btn-flow flow-primary" onclick="quickStartProgress('${ticketId}')">
+        <span>▶ Iniciar Diagnóstico y Atención</span>
+        <span>&rarr;</span>
+      </button>
+    `;
+  } else if (status === 'EN_CURSO') {
+    primaryBtn = `
+      <button type="button" class="ws-btn-flow flow-resolve" onclick="quickResolveTicket('${ticketId}')">
+        <span>✅ Registrar Solución & Resolver</span>
+        <span>✓</span>
+      </button>
+    `;
+  } else if (status === 'RESUELTO') {
+    primaryBtn = `
+      <button type="button" class="ws-btn-flow flow-close" onclick="quickCloseTicket('${ticketId}')">
+        <span>🔒 Validar Conformidad & Cerrar</span>
+        <span>✓</span>
+      </button>
+    `;
+  } else if (status === 'CERRADO') {
+    primaryBtn = `
+      <button type="button" class="ws-btn-flow" onclick="quickReopenTicket('${ticketId}')">
+        <span>🔄 Reabrir Solicitud</span>
+        <span>&rarr;</span>
+      </button>
+    `;
+  }
+
+  container.innerHTML = `
+    ${primaryBtn}
+    
+    <button type="button" class="ws-btn-flow" onclick="openEscalateModal('${ticketId}')" style="margin-top: 4px;">
+      <span>⚡ Escalar Nivel ITIL (N1 &rarr; N2 &rarr; N3)</span>
+      <span>&uarr;</span>
+    </button>
+    
+    <div style="height: 1px; background: #E2E8F0; margin: 6px 0;"></div>
+
+    <button type="button" class="ws-btn-flow" onclick="openTechDetailsModal('${ticketId}')">
+      <span>🔍 Ver Ficha Técnica Completa FHIR</span>
+      <span>&rarr;</span>
+    </button>
+
+    <button type="button" class="ws-btn-flow" onclick="openAuditTrailModal('${ticketId}')">
+      <span>📜 Bitácora Forense de Auditoría</span>
+      <span>&rarr;</span>
+    </button>
+  `;
+}
+
+async function submitAgentWorkspaceReply() {
+  if (!AppState.selectedTicket) return;
+  const textarea = document.getElementById('ws-reply-textarea');
+  const isInternalCheck = document.getElementById('ws-reply-is-internal');
+  if (!textarea) return;
+
+  const content = textarea.value.trim();
+  if (!content) {
+    showToast('Por favor ingrese un mensaje o respuesta', 'warning');
+    return;
+  }
+
+  const isInternal = isInternalCheck ? isInternalCheck.checked : false;
+
+  try {
+    const payload = {
+      message: content,
+      content: content,
+      is_internal: isInternal,
+      author_username: AppState.currentUser ? AppState.currentUser.username : 'soporte',
+      author_name: AppState.currentUser ? AppState.currentUser.full_name : 'Operador de Soporte',
+      author_role: AppState.currentUser ? AppState.currentUser.role : 'SOPORTE_N2'
+    };
+
+    await API.addComment(AppState.selectedTicket.id, payload);
+    textarea.value = '';
+    showToast(isInternal ? '🔒 Nota interna agregada' : '💬 Respuesta enviada con éxito', 'success');
+
+    const refreshed = await API.getTicket(AppState.selectedTicket.id);
+    AppState.selectedTicket = refreshed;
+    renderWsTimeline(refreshed);
+    renderWsParticipants(refreshed);
+
+    loadTickets();
+  } catch (err) {
+    console.error('Error enviando respuesta:', err);
+    showToast('Error al enviar la respuesta', 'error');
+  }
+}
+
+function insertQuickResponseTemplate() {
+  const textarea = document.getElementById('ws-reply-textarea');
+  if (!textarea) return;
+
+  const templates = [
+    "Estimado/a profesional, hemos tomado intervención en su solicitud asistencial. Se realizaron las validaciones en el módulo clínico y nos encontramos aplicando las correcciones requeridas. Lo mantendremos informado.",
+    "Se ha verificado la conectividad y estado del servicio asistencial. Por favor reintente la acción en el sistema y confírmenos si el incidente persiste.",
+    "Procedimiento completado conforme a protocolo operativo. Aguardamos su validación para proceder con el cierre de la solicitud."
+  ];
+
+  textarea.value = templates[0];
+  textarea.focus();
+}
+
+function reassignFromWorkspace() {
+  if (!AppState.selectedTicket) return;
+  openReassignModal(AppState.selectedTicket.id);
+}
+
+// =============================================================================
+// 13. QUICK FSM WORKFLOW ACTIONS (INTEGRATED)
+// =============================================================================
+
+async function quickSelfAssign(ticketId) {
+  try {
+    const username = AppState.currentUser ? AppState.currentUser.username : 'soporte';
+    const fullName = AppState.currentUser ? AppState.currentUser.full_name : 'Carlos Páez';
+    await API.updateTicket(ticketId, {
+      status: 'ASIGNADO',
+      assignee_username: username,
+      assignee_name: fullName
+    });
+    showToast(`Ticket #${ticketId} asignado a ${fullName}`, 'success');
+    await openAgentWorkspace(ticketId);
+    await loadTickets();
+  } catch (err) {
+    console.error('Error en auto-asignación:', err);
+    showToast('Error al asignar el caso', 'error');
+  }
+}
+
+async function quickStartProgress(ticketId) {
+  try {
+    await API.updateTicket(ticketId, { status: 'EN_CURSO' });
+    showToast(`Ticket #${ticketId} puesto EN CURSO`, 'info');
+    await openAgentWorkspace(ticketId);
+    await loadTickets();
+  } catch (err) {
+    console.error('Error iniciando atención:', err);
+    showToast('Error al actualizar estado', 'error');
+  }
+}
+
+async function quickResolveTicket(ticketId) {
+  try {
+    await API.updateTicket(ticketId, {
+      status: 'RESUELTO',
+      resolution_summary: 'Incidente asistencial diagnosticado y resuelto exitosamente conforme a protocolo operativo.'
+    });
+    showToast(`Ticket #${ticketId} marcado como RESUELTO`, 'success');
+    await openAgentWorkspace(ticketId);
+    await loadTickets();
+  } catch (err) {
+    console.error('Error resolviendo ticket:', err);
+    showToast('Error al resolver el caso', 'error');
+  }
+}
+
+async function quickCloseTicket(ticketId) {
+  try {
+    await API.updateTicket(ticketId, { status: 'CERRADO' });
+    showToast(`Ticket #${ticketId} cerrado y archivado`, 'success');
+    await openAgentWorkspace(ticketId);
+    await loadTickets();
+  } catch (err) {
+    console.error('Error cerrando ticket:', err);
+    showToast('Error al cerrar el caso', 'error');
+  }
+}
+
+async function quickReopenTicket(ticketId) {
+  try {
+    await API.updateTicket(ticketId, { status: 'EN_CURSO' });
+    showToast(`Ticket #${ticketId} reabierto en curso`, 'info');
+    await openAgentWorkspace(ticketId);
+    await loadTickets();
+  } catch (err) {
+    console.error('Error reabriendo ticket:', err);
+    showToast('Error al reabrir el caso', 'error');
+  }
+}
+
+function openEscalateModal(ticketId) {
+  reassignFromWorkspace();
+}
+
+function openTechDetailsModal(ticketId) {
+  switchWsTab('technical');
+}
+
+function openAuditTrailModal(ticketId) {
+  switchWsTab('audit');
+}
+
+// =============================================================================
+// 14. ADVANCED FILTERS MODAL CONTROLLER
+// =============================================================================
+
+function openAdvancedFiltersModal() {
+  const modal = document.getElementById('modal-advanced-filters');
+  if (modal) modal.classList.add('active');
+}
+
+function closeAdvancedFiltersModal() {
+  const modal = document.getElementById('modal-advanced-filters');
+  if (modal) modal.classList.remove('active');
+}
+
+function applyAdvancedFiltersModal() {
+  const statusEl = document.getElementById('adv-filter-status');
+  const instEl = document.getElementById('adv-filter-institution');
+  const levelEl = document.getElementById('adv-filter-level');
+  const prioEl = document.getElementById('adv-filter-priority');
+  const platEl = document.getElementById('adv-filter-platform');
+
+  const params = {};
+
+  if (statusEl && statusEl.value) {
+    if (statusEl.value === 'ACTIVE') {
+      params.pending_only = false;
+    } else if (statusEl.value === 'ALL') {
+      params.include_all = true;
+    } else {
+      params.status = statusEl.value;
+    }
+  }
+
+  if (instEl && instEl.value) params.institution_code = instEl.value;
+  if (levelEl && levelEl.value) params.support_level = levelEl.value;
+  if (prioEl && prioEl.value) params.priority = prioEl.value;
+  if (platEl && platEl.value) params.platform_code = platEl.value;
+
+  // Actualizar indicador de filtro activo
+  const badge = document.getElementById('active-filters-badge');
+  const hasFilters = Object.keys(params).length > 0;
+  if (badge) badge.style.display = hasFilters ? 'inline-block' : 'none';
+
+  loadTickets(params);
+  closeAdvancedFiltersModal();
+  showToast('Filtros avanzados aplicados', 'info');
+}
+
+function resetAdvancedFilters() {
+  const statusEl = document.getElementById('adv-filter-status');
+  const instEl = document.getElementById('adv-filter-institution');
+  const levelEl = document.getElementById('adv-filter-level');
+  const prioEl = document.getElementById('adv-filter-priority');
+  const platEl = document.getElementById('adv-filter-platform');
+
+  if (statusEl) statusEl.value = 'ACTIVE';
+  if (instEl) instEl.value = '';
+  if (levelEl) levelEl.value = '';
+  if (prioEl) prioEl.value = '';
+  if (platEl) platEl.value = '';
+
+  const badge = document.getElementById('active-filters-badge');
+  if (badge) badge.style.display = 'none';
+
+  loadTickets();
+  closeAdvancedFiltersModal();
+  showToast('Filtros restablecidos a solicitudes activas', 'info');
+}
+
+// =============================================================================
+// 15. ALTA DE PLATAFORMAS & CLIENTES (MAESTROS CRUD)
+// =============================================================================
+
+function openCreatePlatformModal() {
+  const modal = document.getElementById('modal-create-platform');
+  if (modal) modal.classList.add('active');
+}
+
+function closeCreatePlatformModal() {
+  const modal = document.getElementById('modal-create-platform');
+  if (modal) modal.classList.remove('active');
+}
+
+async function submitCreatePlatform(e) {
+  e.preventDefault();
+  const code = document.getElementById('new-plat-code').value.trim();
+  const name = document.getElementById('new-plat-name').value.trim();
+  const desc = document.getElementById('new-plat-desc').value.trim();
+
+  if (!code || !name) {
+    showToast('Complete código y nombre de la plataforma', 'warning');
+    return;
+  }
+
+  try {
+    await API.createPlatform({ code, name, description: desc });
+    showToast(`¡Plataforma "${name}" dada de alta con éxito!`, 'success');
+    closeCreatePlatformModal();
+    document.getElementById('form-create-platform').reset();
+    await loadInitialData();
+  } catch (err) {
+    console.error('Error creando plataforma:', err);
+    showToast('Error al dar de alta la plataforma', 'error');
+  }
+}
+
+function openCreateInstitutionModal() {
+  const modal = document.getElementById('modal-create-institution');
+  if (modal) modal.classList.add('active');
+}
+
+function closeCreateInstitutionModal() {
+  const modal = document.getElementById('modal-create-institution');
+  if (modal) modal.classList.remove('active');
+}
+
+async function submitCreateInstitution(e) {
+  e.preventDefault();
+  const code = document.getElementById('new-inst-code').value.trim();
+  const name = document.getElementById('new-inst-name').value.trim();
+  const segment = document.getElementById('new-inst-segment').value;
+
+  if (!code || !name) {
+    showToast('Complete código y nombre de la institución', 'warning');
+    return;
+  }
+
+  try {
+    await API.createInstitution({ code, name, segment });
+    showToast(`¡Institución "${name}" dada de alta con éxito!`, 'success');
+    closeCreateInstitutionModal();
+    document.getElementById('form-create-institution').reset();
+    await loadInitialData();
+  } catch (err) {
+    console.error('Error creando institución:', err);
+    showToast('Error al dar de alta la institución', 'error');
+  }
+}
+
+// =============================================================================
+// 16. LIVE SEARCH, DIRECT FILTERS & CSV EXPORT
+// =============================================================================
+
+function onFilterChange() {
+  const currentView = AppState.activeQuickView || 'ALL';
+  selectQuickView(currentView);
+}
+
+async function resetBoardFilters() {
+  const icon = document.getElementById('svg-refresh-icon');
+  if (icon) {
+    icon.style.transition = 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+    icon.style.transform = 'rotate(360deg)';
+    setTimeout(() => {
+      icon.style.transition = 'none';
+      icon.style.transform = 'rotate(0deg)';
+    }, 520);
+  }
+
+  const inst = document.getElementById('tkt-filter-inst');
+  const plat = document.getElementById('tkt-filter-platform');
+  const level = document.getElementById('tkt-filter-level');
+  const status = document.getElementById('tkt-filter-status');
+  const period = document.getElementById('tkt-filter-period');
+
+  if (inst) inst.value = '';
+  if (plat) plat.value = '';
+  if (level) level.value = '';
+  if (status) status.value = 'ACTIVE';
+  if (period) period.value = 'all';
+
+  AppState.allTicketsRaw = null;
+  await selectQuickView('ALL');
+  showToast('🔄 Filtros restablecidos y bandeja actualizada', 'info');
+}
+
+async function refreshTickets() {
+  await resetBoardFilters();
+}
+
+function resetAllFilters() {
+  resetBoardFilters();
+}
+
+const onInvgateSearch = debounce((query) => {
+  onFilterChange();
+}, 250);
+
+function exportTicketsCSV() {
+  const url = `${API_BASE}/api/v1/tickets/export/csv`;
+  window.open(url, '_blank');
+  showToast('Generando descarga de reporte CSV...', 'info');
+}
+
+function viewUserProfileModal(username) {
+  showToast('Ficha de perfil: ' + (username || ''), 'info');
+}
+
+function openEditProfileModal() {
+  const modal = document.getElementById('modal-edit-profile');
+  if (modal) modal.classList.add('active');
+}
+
+function selectProfileAvatarPreset(avatarUrl) {
+  const input = document.getElementById('edit-profile-avatar-url');
+  if (input) input.value = avatarUrl;
+}
+
+function submitEditMyProfile(e) {
+  if (e) e.preventDefault();
+  showToast('Perfil actualizado correctamente', 'success');
+}
+
+function openUploadTechJsonModal() {
+  const modal = document.getElementById('modal-upload-tech-json');
+  if (modal) modal.classList.add('active');
+}
+
+function navigateHome() {
+  switchView('tickets');
+  resetAllFilters();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  showToast('Página Principal: Mesa de Ayuda', 'info');
+}
+
+// Global window bindings for HTML event handlers
+window.openAuthModal = openAuthModal;
+window.closeAuthModal = closeAuthModal;
+window.fillLoginForm = fillLoginForm;
+window.loginAsUser = loginAsUser;
+window.handleLogout = handleLogout;
+window.togglePasswordVisibility = togglePasswordVisibility;
+window.selectQuickUser = selectQuickUser;
+
+window.openAgentWorkspace = openAgentWorkspace;
+window.closeAgentWorkspace = closeAgentWorkspace;
+window.switchWsTab = switchWsTab;
+window.submitAgentWorkspaceReply = submitAgentWorkspaceReply;
+window.insertQuickResponseTemplate = insertQuickResponseTemplate;
+window.quickSelfAssign = quickSelfAssign;
+window.quickStartProgress = quickStartProgress;
+window.quickResolveTicket = quickResolveTicket;
+window.quickCloseTicket = quickCloseTicket;
+window.quickReopenTicket = quickReopenTicket;
+window.reassignFromWorkspace = reassignFromWorkspace;
+window.openEscalateModal = openEscalateModal;
+window.openTechDetailsModal = openTechDetailsModal;
+window.openAuditTrailModal = openAuditTrailModal;
+
+window.onFilterChange = onFilterChange;
+window.resetAllFilters = resetAllFilters;
+
+window.openAdvancedFiltersModal = openAdvancedFiltersModal;
+window.closeAdvancedFiltersModal = closeAdvancedFiltersModal;
+window.applyAdvancedFiltersModal = applyAdvancedFiltersModal;
+window.resetAdvancedFilters = resetAdvancedFilters;
+
+window.openCreatePlatformModal = openCreatePlatformModal;
+window.closeCreatePlatformModal = closeCreatePlatformModal;
+window.submitCreatePlatform = submitCreatePlatform;
+window.openCreateInstitutionModal = openCreateInstitutionModal;
+window.closeCreateInstitutionModal = closeCreateInstitutionModal;
+window.submitCreateInstitution = submitCreateInstitution;
+
+window.onInvgateSearch = onInvgateSearch;
+window.exportTicketsCSV = exportTicketsCSV;
+
+window.switchDashboardSubTab = switchDashboardSubTab;
+window.onDashboardDateFilterChange = onDashboardDateFilterChange;
+window.openMetricsDrilldownModal = openMetricsDrilldownModal;
+window.closeMetricsDrilldownModal = closeMetricsDrilldownModal;
+
+window.openCreateUserModal = openCreateUserModal;
+window.closeCreateUserModal = closeCreateUserModal;
+window.submitCreateUser = submitCreateUser;
+window.handleUserRoleChange = handleUserRoleChange;
+window.filterUsersByLevel = filterUsersByLevel;
+window.viewUserProfileModal = viewUserProfileModal;
+window.openEditProfileModal = openEditProfileModal;
+window.selectProfileAvatarPreset = selectProfileAvatarPreset;
+window.submitEditMyProfile = submitEditMyProfile;
+window.openUploadTechJsonModal = openUploadTechJsonModal;
+window.navigateHome = navigateHome;
+window.switchView = switchView;

@@ -16,6 +16,15 @@ class UserCreateRequest(BaseModel):
     role: UserRole = UserRole.SOLICITANTE
     support_level: Optional[SupportLevel] = None
 
+class UserUpdateRequest(BaseModel):
+    full_name: Optional[str] = None
+    email: Optional[str] = None
+    role: Optional[UserRole] = None
+    support_level: Optional[SupportLevel] = None
+    institution_code: Optional[str] = None
+    phone: Optional[str] = None
+    avatar_url: Optional[str] = None
+
 @router.get("", response_model=List[User])
 def list_users(
     role: Optional[UserRole] = None,
@@ -38,6 +47,55 @@ def list_support_operators(
     if level:
         query = query.where(User.support_level == level)
     return session.exec(query).all()
+
+@router.get("/{user_id}", response_model=User)
+def get_user(user_id: int, session: Session = Depends(get_session)):
+    user = session.get(User, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado.")
+    return user
+
+@router.put("/{user_id}", response_model=User)
+@router.patch("/{user_id}", response_model=User)
+def update_user(user_id: int, req: UserUpdateRequest, session: Session = Depends(get_session)):
+    user = session.get(User, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado.")
+    
+    if req.full_name is not None and len(req.full_name.strip()) >= 3:
+        user.full_name = req.full_name.strip()
+    if req.email is not None and len(req.email.strip()) >= 5:
+        user.email = req.email.strip().lower()
+    if req.role is not None:
+        user.role = req.role
+    if req.support_level is not None:
+        user.support_level = req.support_level
+    
+    session.add(user)
+    session.commit()
+    session.refresh(user)
+    return user
+
+@router.put("/by-username/{username}", response_model=User)
+@router.patch("/by-username/{username}", response_model=User)
+def update_user_by_username(username: str, req: UserUpdateRequest, session: Session = Depends(get_session)):
+    user = session.exec(select(User).where(User.username == username.strip().lower())).first()
+    if not user:
+        raise HTTPException(status_code=404, detail=f"Usuario '{username}' no encontrado.")
+    
+    if req.full_name is not None and len(req.full_name.strip()) >= 3:
+        user.full_name = req.full_name.strip()
+    if req.email is not None and len(req.email.strip()) >= 5:
+        user.email = req.email.strip().lower()
+    if req.role is not None:
+        user.role = req.role
+    if req.support_level is not None:
+        user.support_level = req.support_level
+    
+    session.add(user)
+    session.commit()
+    session.refresh(user)
+    return user
 
 @router.post("", response_model=User)
 def create_user(req: UserCreateRequest, session: Session = Depends(get_session)):

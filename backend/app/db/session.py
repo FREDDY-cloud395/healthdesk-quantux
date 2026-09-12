@@ -1,14 +1,21 @@
+import os
 from pathlib import Path
 from sqlmodel import SQLModel, create_engine, Session, text
 
 DB_PATH = Path(__file__).resolve().parent.parent.parent / "healthdesk.db"
-SQLITE_URL = f"sqlite:///{DB_PATH}"
+DATABASE_URL = os.getenv("DATABASE_URL")
 
-engine = create_engine(
-    SQLITE_URL,
-    connect_args={"check_same_thread": False},
-    echo=False
-)
+if DATABASE_URL:
+    if DATABASE_URL.startswith("postgres://"):
+        DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+    engine = create_engine(DATABASE_URL, echo=False, pool_pre_ping=True)
+else:
+    SQLITE_URL = f"sqlite:///{DB_PATH}"
+    engine = create_engine(
+        SQLITE_URL,
+        connect_args={"check_same_thread": False},
+        echo=False
+    )
 
 def init_db():
     SQLModel.metadata.create_all(engine)

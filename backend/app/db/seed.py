@@ -18,11 +18,22 @@ def run_seed():
 
         print("Seeding Quantux HealthDesk Database...")
 
-        # 2. USUARIOS BASE (3 ROLES)
+        # 2. USUARIOS BASE (3 ROLES CON NIVELES ITIL)
         users = [
-            User(username="solicitante", full_name="Lic. Martín Gómez (Profesional de la Salud Prestador)", email="solicitante@quantux.com", role=UserRole.SOLICITANTE),
-            User(username="soporte", full_name="Laura Benítez (Operadora de Soporte)", email="soporte@quantux.com", role=UserRole.SOPORTE),
-            User(username="admin", full_name="Freddy Cortés (Administrador / Solution Owner)", email="admin@quantux.com", role=UserRole.ADMIN),
+            User(username="admin", full_name="Freddy Cortés", email="admin@quantux.com", role=UserRole.ADMIN, support_level=SupportLevel.N3),
+            User(username="mrodriguez", full_name="Mariana Rodríguez", email="mrodriguez@quantux.com", role=UserRole.ADMIN, support_level=SupportLevel.N3),
+            User(username="cpaez", full_name="Carlos Páez", email="cpaez@quantux.com", role=UserRole.SOPORTE, support_level=SupportLevel.N1),
+            User(username="svaldez", full_name="Sofía Valdez", email="svaldez@quantux.com", role=UserRole.SOPORTE, support_level=SupportLevel.N1),
+            User(username="mflores", full_name="Marcos Flores", email="mflores@quantux.com", role=UserRole.SOPORTE, support_level=SupportLevel.N1),
+            User(username="soporte", full_name="Laura Benítez", email="soporte@quantux.com", role=UserRole.SOPORTE, support_level=SupportLevel.N2),
+            User(username="gfernandez", full_name="Gonzalo Fernández", email="gfernandez@quantux.com", role=UserRole.SOPORTE, support_level=SupportLevel.N2),
+            User(username="vromero", full_name="Valeria Romero", email="vromero@quantux.com", role=UserRole.SOPORTE, support_level=SupportLevel.N2),
+            User(username="dnavarro", full_name="Diego Navarro", email="dnavarro@quantux.com", role=UserRole.SOPORTE, support_level=SupportLevel.N3),
+            User(username="ealvarez", full_name="Esteban Álvarez", email="ealvarez@quantux.com", role=UserRole.SOPORTE, support_level=SupportLevel.N3),
+            User(username="solicitante", full_name="Dr. Martín Gómez", email="solicitante@quantux.com", role=UserRole.SOLICITANTE, support_level=None),
+            User(username="alopez", full_name="Dra. Andrea López", email="alopez@sanatorio.salud.ar", role=UserRole.SOLICITANTE, support_level=None),
+            User(username="jmolina", full_name="Dr. Javier Molina", email="jmolina@swissmedical.com.ar", role=UserRole.SOLICITANTE, support_level=None),
+            User(username="cbenedetti", full_name="Dra. Clara Benedetti", email="cbenedetti@hospitalaleman.com", role=UserRole.SOLICITANTE, support_level=None),
         ]
         for u in users:
             session.add(u)

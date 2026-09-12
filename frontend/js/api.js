@@ -31,8 +31,28 @@ const API = {
     return res.json();
   },
 
+  async createPlatform(payload) {
+    const res = await fetch(`${API_BASE}/api/v1/platforms`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw await res.json();
+    return res.json();
+  },
+
   async getInstitutions() {
     const res = await fetch(`${API_BASE}/api/v1/institutions`);
+    if (!res.ok) throw await res.json();
+    return res.json();
+  },
+
+  async createInstitution(payload) {
+    const res = await fetch(`${API_BASE}/api/v1/institutions`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
     if (!res.ok) throw await res.json();
     return res.json();
   },
@@ -58,6 +78,26 @@ const API = {
   async createUser(payload) {
     const res = await fetch(`${API_BASE}/api/v1/users`, {
       method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw await res.json();
+    return res.json();
+  },
+
+  async updateUser(userId, payload) {
+    const res = await fetch(`${API_BASE}/api/v1/users/${userId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw await res.json();
+    return res.json();
+  },
+
+  async updateUserByUsername(username, payload) {
+    const res = await fetch(`${API_BASE}/api/v1/users/by-username/${encodeURIComponent(username)}`, {
+      method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });

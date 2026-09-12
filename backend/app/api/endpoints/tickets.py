@@ -1,7 +1,7 @@
 import io
 import csv
 import unicodedata
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Optional, List
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, BackgroundTasks
 from sqlmodel import Session, select
@@ -75,8 +75,11 @@ class TicketCloseRequest(BaseModel):
     feedback: Optional[str] = None
 
 class TicketCommentRequest(BaseModel):
-    author_username: str
-    message: str
+    author_username: Optional[str] = "soporte"
+    message: Optional[str] = None
+    content: Optional[str] = None
+    author_name: Optional[str] = None
+    author_role: Optional[str] = None
     is_internal: bool = False
 
 import threading
@@ -111,16 +114,21 @@ def generate_ticket_id(session: Session) -> str:
             
         return candidate_id
 
-# 1. LISTAR TICKETS (BANDEJA CON FILTROS Y BÚSQUEDA PROFUNDA)
+# 1. LISTAR TICKETS (BANDEJA CON FILTROS, FECHAS Y BÚSQUEDA PROFUNDA)
 @router.get("", response_model=List[Ticket])
 def list_tickets(
     status: Optional[TicketStatus] = None,
     priority: Optional[PriorityLevel] = None,
     support_level: Optional[SupportLevel] = None,
     platform_code: Optional[str] = None,
+    platform: Optional[str] = None,
     institution_code: Optional[str] = None,
+    institution: Optional[str] = None,
     requester_username: Optional[str] = None,
     assignee_username: Optional[str] = None,
+    period: Optional[str] = None,
+    date_from: Optional[str] = None,
+    date_to: Optional[str] = None,
     search: Optional[str] = None,
     session: Session = Depends(get_session)
 ):
@@ -131,14 +139,47 @@ def list_tickets(
         query = query.where(Ticket.priority == priority)
     if support_level:
         query = query.where(Ticket.support_level == support_level)
-    if platform_code:
-        query = query.where(Ticket.platform_code == platform_code)
-    if institution_code:
-        query = query.where(Ticket.institution_code == institution_code)
+    
+    target_plat = platform_code or platform
+    if target_plat:
+        query = query.where(Ticket.platform_code == target_plat)
+    
+    target_inst = institution_code or institution
+    if target_inst:
+        query = query.where(Ticket.institution_code == target_inst)
+        
     if requester_username:
         query = query.where(Ticket.requester_username == requester_username)
     if assignee_username:
-        query = query.where(Ticket.assignee_username == assignee_username)
+        if assignee_username == '__unassigned__':
+            query = query.where(Ticket.assignee_username.is_(None))
+        else:
+            query = query.where(Ticket.assignee_username == assignee_username)
+
+    # Filtros temporales
+    now = datetime.utcnow()
+    if period == "today":
+        today_start = datetime(now.year, now.month, now.day)
+        query = query.where(Ticket.created_at >= today_start)
+    elif period == "7days":
+        since = now - timedelta(days=7)
+        query = query.where(Ticket.created_at >= since)
+    elif period == "30days":
+        since = now - timedelta(days=30)
+        query = query.where(Ticket.created_at >= since)
+    
+    if date_from:
+        try:
+            d_from = datetime.fromisoformat(date_from.replace("Z", ""))
+            query = query.where(Ticket.created_at >= d_from)
+        except Exception:
+            pass
+    if date_to:
+        try:
+            d_to = datetime.fromisoformat(date_to.replace("Z", ""))
+            query = query.where(Ticket.created_at <= d_to)
+        except Exception:
+            pass
     
     results = session.exec(query).all()
     
@@ -191,6 +232,9 @@ def list_tickets(
 def get_tickets_metrics(
     institution_code: Optional[str] = None,
     platform_code: Optional[str] = None,
+    period: Optional[str] = None,
+    date_from: Optional[str] = None,
+    date_to: Optional[str] = None,
     session: Session = Depends(get_session)
 ):
     query = select(Ticket)
@@ -198,6 +242,31 @@ def get_tickets_metrics(
         query = query.where(Ticket.institution_code == institution_code)
     if platform_code:
         query = query.where(Ticket.platform_code == platform_code)
+
+    # Filtros temporales para métricas
+    now = datetime.utcnow()
+    if period == "today":
+        today_start = datetime(now.year, now.month, now.day)
+        query = query.where(Ticket.created_at >= today_start)
+    elif period == "7days":
+        since = now - timedelta(days=7)
+        query = query.where(Ticket.created_at >= since)
+    elif period == "30days":
+        since = now - timedelta(days=30)
+        query = query.where(Ticket.created_at >= since)
+    
+    if date_from:
+        try:
+            d_from = datetime.fromisoformat(date_from.replace("Z", ""))
+            query = query.where(Ticket.created_at >= d_from)
+        except Exception:
+            pass
+    if date_to:
+        try:
+            d_to = datetime.fromisoformat(date_to.replace("Z", ""))
+            query = query.where(Ticket.created_at <= d_to)
+        except Exception:
+            pass
         
     tickets = session.exec(query).all()
     total = len(tickets)
@@ -655,10 +724,11 @@ def add_comment(ticket_id: str, req: TicketCommentRequest, session: Session = De
     if not ticket:
         raise HTTPException(status_code=404, detail="Ticket no encontrado.")
     
+    text_msg = req.message or req.content or ""
     comment = TicketComment(
         ticket_id=ticket_id,
-        author_username=req.author_username,
-        message=req.message,
+        author_username=req.author_username or "soporte",
+        message=text_msg,
         is_internal=req.is_internal,
         created_at=datetime.utcnow()
     )

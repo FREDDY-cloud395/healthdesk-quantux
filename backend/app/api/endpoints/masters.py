@@ -21,9 +21,57 @@ def normalize_text(s: str) -> str:
 def list_platforms(session: Session = Depends(get_session)):
     return session.exec(select(Platform).where(Platform.is_active == True)).all()
 
+class PlatformCreateRequest(BaseModel):
+    code: str
+    name: str
+    description: Optional[str] = ""
+
+@router.post("/platforms", response_model=Platform)
+def create_platform(req: PlatformCreateRequest, session: Session = Depends(get_session)):
+    clean_code = req.code.strip().upper()
+    if not clean_code or not req.name.strip():
+        raise HTTPException(status_code=400, detail="El código y nombre de la plataforma son obligatorios.")
+    existing = session.exec(select(Platform).where(Platform.code == clean_code)).first()
+    if existing:
+        raise HTTPException(status_code=400, detail=f"Ya existe una plataforma con el código '{clean_code}'.")
+    plat = Platform(
+        code=clean_code,
+        name=req.name.strip(),
+        description=req.description.strip() if req.description else "",
+        is_active=True
+    )
+    session.add(plat)
+    session.commit()
+    session.refresh(plat)
+    return plat
+
 @router.get("/institutions", response_model=List[Institution])
 def list_institutions(session: Session = Depends(get_session)):
     return session.exec(select(Institution).where(Institution.is_active == True)).all()
+
+class InstitutionCreateRequest(BaseModel):
+    code: str
+    name: str
+    segment: Optional[str] = "Sanatorio / Clínica"
+
+@router.post("/institutions", response_model=Institution)
+def create_institution(req: InstitutionCreateRequest, session: Session = Depends(get_session)):
+    clean_code = req.code.strip().upper()
+    if not clean_code or not req.name.strip():
+        raise HTTPException(status_code=400, detail="El código y nombre de la institución son obligatorios.")
+    existing = session.exec(select(Institution).where(Institution.code == clean_code)).first()
+    if existing:
+        raise HTTPException(status_code=400, detail=f"Ya existe una institución/cliente con el código '{clean_code}'.")
+    inst = Institution(
+        code=clean_code,
+        name=req.name.strip(),
+        segment=req.segment.strip() if req.segment else "Sanatorio / Clínica",
+        is_active=True
+    )
+    session.add(inst)
+    session.commit()
+    session.refresh(inst)
+    return inst
 
 @router.get("/calculate-priority")
 def get_calculated_priority(impact: ImpactLevel, urgency: UrgencyLevel):
@@ -853,7 +901,7 @@ _helpdesk_levels_config = {
             {
                 "id": "team_n2_receta",
                 "name": "Mesa Especialista Receta & Firma Digital (PKI)",
-                "lead": "Lic. Carlos Paez",
+                "lead": "Carlos Páez",
                 "operators_count": 5,
                 "shift": "24/7 Guardia Farmacéutica",
                 "platforms": ["CAT_RECETA"]
@@ -874,7 +922,7 @@ _helpdesk_levels_config = {
         ],
         "operators": [
             {"username": "sofia.esp", "name": "Ing. Sofía Valenzuela", "role": "Especialista Interoperabilidad N2", "status": "ONLINE", "active_tickets": 2},
-            {"username": "carlos.receta", "name": "Lic. Carlos Paez", "role": "Especialista Receta Digital N2", "status": "ONLINE", "active_tickets": 4},
+            {"username": "carlos.receta", "name": "Carlos Páez", "role": "Especialista Receta Digital N2", "status": "ONLINE", "active_tickets": 4},
             {"username": "fernando.his", "name": "Dr. Fernando Ruiz", "role": "Especialista HIS Core N2", "status": "ONLINE", "active_tickets": 1}
         ]
     },

@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv/
+
+# Database & SQLite
+*.db-journal
+*.sqlite3-journal
+
+# Screenshots & Local Test Dumps
+*.png
+*.jpg
+*.jpeg
+scratch/
+qa_screenshots/
+
+# Environment Variables (Secrets)
+.env
+.env.local
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

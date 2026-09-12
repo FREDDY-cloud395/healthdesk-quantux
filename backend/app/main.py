@@ -4,9 +4,9 @@ from app.db.seed import run_seed
 from app.api.endpoints import auth, tickets, masters, users
 
 app = FastAPI(
-    title="HealthDesk Quantux API",
-    description="Backend oficial del Sistema Centralizado de Gestión de Tickets de Soporte de Quantux Salud",
-    version="3.0.0"
+    title="Quantux ServiceDesk API",
+    description="Backend oficial de Quantux ServiceDesk para Plataformas HealthTech (Producción Homologada)",
+    version="3.2.0-PROD"
 )
 
 # CORS para permitir conexion desde la UI Cockpit
@@ -82,13 +82,14 @@ def serve_presentacion():
     return {"message": "Presentación no encontrada"}
 
 @app.get("/api")
+@app.get("/health")
 def api_status():
     return {
-        "system": "HealthDesk Quantux",
-        "organization": "Quantux Salud",
+        "system": "Quantux ServiceDesk",
+        "organization": "Quantux Salud & HealthTech",
         "status": "ONLINE",
-        "version": "2.5.0",
-        "release": "ITIL Tiered Support & Multi-Helpdesk Edition (N1/N2/N3)",
+        "version": "3.2.0-PROD",
+        "release": "Executive Redesign & Production Cloud Edition",
         "cockpit_url": "/cockpit",
         "scrumban_url": "/scrumban",
         "presentacion_url": "/presentacion",

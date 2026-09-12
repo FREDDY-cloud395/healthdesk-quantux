@@ -3,19 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Quantux Salud — Mesa de Ayuda y Gestión de Soporte</title>
-  <link rel="stylesheet" href="/css/styles.css?v=20260831_11">
+  <title>Quantux ServiceDesk — Soporte para Plataformas HealthTech</title>
+  <link rel="stylesheet" href="/css/styles.css?v=3.0.0_tqm_senior_ux">
   <style>
-    /* Inlined Critical Grid Styles for Cockpit & Split Detail (Senior UX) */
+    /* Inlined Critical Grid & Senior UX UI Styles */
     .cockpit-container {
       display: grid !important;
-      grid-template-columns: 340px minmax(0, 1fr) !important;
-      gap: 12px !important;
-      padding: 12px 14px !important;
+      grid-template-columns: 360px minmax(0, 1fr) !important;
+      gap: 14px !important;
+      padding: 12px 16px !important;
       height: 100% !important;
       overflow: hidden !important;
       width: 100% !important;
       min-width: 0 !important;
+      background: #F8FAFC !important;
     }
     .cockpit-column {
       min-width: 0 !important;
@@ -23,38 +24,175 @@
       display: flex !important;
       flex-direction: column !important;
       overflow: hidden !important;
-    }
-    .ticket-detail-grid {
-      display: grid !important;
-      grid-template-columns: minmax(0, 1.75fr) minmax(280px, 1fr) !important;
-      flex: 1 1 0% !important;
-      min-height: 0 !important;
-      height: 100% !important;
-      overflow: hidden !important;
+      border-radius: 12px !important;
       background: #FFFFFF !important;
+      border: 1px solid #E2E8F0 !important;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
     }
-    .ticket-main-canvas {
-      padding: 16px 20px !important;
-      overflow-y: auto !important;
-      overflow-x: hidden !important;
+
+    /* ACTION BUTTONS SENIOR UX */
+    .btn-action-primary {
+      background: #00A896 !important;
+      color: #FFFFFF !important;
+      font-weight: 700 !important;
+      border: none !important;
+      border-radius: 8px !important;
+      padding: 8px 14px !important;
+      font-size: 12px !important;
+      cursor: pointer !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 6px !important;
+      transition: all 0.15s ease !important;
+      box-shadow: 0 1px 3px rgba(0,168,150,0.2) !important;
+    }
+    .btn-action-primary:hover {
+      background: #028090 !important;
+      transform: translateY(-1px) !important;
+    }
+
+    .btn-action-resolve {
+      background: #10B981 !important;
+      color: #FFFFFF !important;
+      font-weight: 700 !important;
+      border: none !important;
+      border-radius: 8px !important;
+      padding: 8px 14px !important;
+      font-size: 12px !important;
+      cursor: pointer !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 6px !important;
+      transition: all 0.15s ease !important;
+      box-shadow: 0 1px 3px rgba(16,185,129,0.2) !important;
+    }
+    .btn-action-resolve:hover {
+      background: #059669 !important;
+      transform: translateY(-1px) !important;
+    }
+
+    .btn-action-escalate {
+      background: #FEF2F2 !important;
+      color: #DC2626 !important;
+      border: 1px solid #FECACA !important;
+      font-weight: 700 !important;
+      border-radius: 8px !important;
+      padding: 8px 14px !important;
+      font-size: 12px !important;
+      cursor: pointer !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 6px !important;
+      transition: all 0.15s ease !important;
+    }
+    .btn-action-escalate:hover {
+      background: #FEE2E2 !important;
+      border-color: #F87171 !important;
+    }
+
+    .btn-action-secondary {
+      background: #F1F5F9 !important;
+      color: #334155 !important;
+      border: 1px solid #CBD5E1 !important;
+      font-weight: 600 !important;
+      border-radius: 8px !important;
+      padding: 8px 14px !important;
+      font-size: 12px !important;
+      cursor: pointer !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 6px !important;
+      transition: all 0.15s ease !important;
+    }
+    .btn-action-secondary:hover {
+      background: #E2E8F0 !important;
+      color: #0F172A !important;
+    }
+
+    .btn-action-popup {
+      background: #FFFFFF !important;
+      color: #0F172A !important;
+      border: 1px solid #CBD5E1 !important;
+      font-weight: 700 !important;
+      font-size: 11.5px !important;
+      border-radius: 8px !important;
+      padding: 7px 12px !important;
+      cursor: pointer !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 6px !important;
+      transition: all 0.15s ease !important;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04) !important;
+    }
+    .btn-action-popup:hover {
+      background: #F1F5F9 !important;
+      border-color: #94A3B8 !important;
+      transform: translateY(-1px) !important;
+    }
+
+    /* TABS BAR */
+    .detail-tabs-bar {
       display: flex !important;
-      flex-direction: column !important;
-      gap: 14px !important;
-      background: #FFFFFF !important;
-      min-width: 0 !important;
-    }
-    .ticket-inspector-sidebar {
       background: #F8FAFC !important;
-      border-left: 1px solid #E2E8F0 !important;
-      padding: 16px 14px !important;
-      overflow-y: auto !important;
-      overflow-x: hidden !important;
-      display: flex !important;
-      flex-direction: column !important;
-      gap: 12px !important;
-      min-width: 0 !important;
+      border-bottom: 1px solid #E2E8F0 !important;
+      padding: 0 16px !important;
+      flex-shrink: 0 !important;
+      gap: 4px !important;
     }
-    
+    .detail-tab-btn-clean {
+      padding: 12px 14px !important;
+      font-size: 12px !important;
+      font-weight: 700 !important;
+      color: #64748B !important;
+      background: transparent !important;
+      border: none !important;
+      border-bottom: 2.5px solid transparent !important;
+      cursor: pointer !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 7px !important;
+      transition: all 0.15s ease !important;
+    }
+    .detail-tab-btn-clean:hover {
+      color: #1E293B !important;
+      background: rgba(0,0,0,0.02) !important;
+    }
+    .detail-tab-btn-clean.active {
+      color: #00A896 !important;
+      border-bottom-color: #00A896 !important;
+      font-weight: 800 !important;
+    }
+
+    /* TICKET CARDS */
+    .ticket-card-clean {
+      background: #FFFFFF !important;
+      border: 1px solid #E2E8F0 !important;
+      border-left: 4px solid #CBD5E1 !important;
+      border-radius: 10px !important;
+      padding: 12px 14px !important;
+      margin-bottom: 8px !important;
+      cursor: pointer !important;
+      transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1) !important;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02) !important;
+    }
+    .ticket-card-clean:hover {
+      background: #F8FAFC !important;
+      border-color: #CBD5E1 !important;
+      transform: translateY(-1px) !important;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
+    }
+    .ticket-card-clean.active {
+      background: #F0FDF4 !important;
+      border-color: #00A896 !important;
+      border-left-color: #00A896 !important;
+      box-shadow: 0 2px 8px rgba(0, 168, 150, 0.12) !important;
+    }
+    .prio-p1 { border-left-color: #EF4444 !important; }
+    .prio-p2 { border-left-color: #F59E0B !important; }
+    .prio-p3 { border-left-color: #3B82F6 !important; }
+    .prio-p4 { border-left-color: #64748B !important; }
+    .prio-p5 { border-left-color: #8B5CF6 !important; }
+
     /* ESTILOS DE NIVELES DE ATENCIÓN ITIL (N1 / N2 / N3) */
     .badge-tier {
       display: inline-flex;
@@ -83,59 +221,6 @@
       border: 1px solid #FECACA;
     }
 
-    /* STEPPER ITIL HORIZONTAL */
-    .itil-stepper {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      margin: 8px 0;
-      padding: 6px;
-      background: #F8FAFC;
-      border-radius: 8px;
-      border: 1px solid #E2E8F0;
-    }
-    .itil-step {
-      flex: 1;
-      text-align: center;
-      padding: 6px 4px;
-      border-radius: 6px;
-      font-size: 10.5px;
-      font-weight: 700;
-      color: #64748B;
-      background: #FFFFFF;
-      border: 1px solid #E2E8F0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 2px;
-      transition: all 0.2s ease;
-    }
-    .itil-step.active {
-      font-weight: 800;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-    }
-    .itil-step.active.step-n1 {
-      background: #EFF6FF;
-      color: #0284C7;
-      border-color: #93C5FD;
-    }
-    .itil-step.active.step-n2 {
-      background: #F5F3FF;
-      color: #7C3AED;
-      border-color: #C4B5FD;
-    }
-    .itil-step.active.step-n3 {
-      background: #FEF2F2;
-      color: #DC2626;
-      border-color: #FCA5A5;
-    }
-    .itil-step-arrow {
-      color: #94A3B8;
-      font-size: 11px;
-      font-weight: 800;
-      user-select: none;
-    }
-
     /* PÍLDORAS DE FILTRO */
     .filter-tab-pill {
       border: 1px solid #CBD5E1;
@@ -161,43 +246,11 @@
       border-color: #0F172A;
     }
 
-    /* TARJETAS DE NIVELES EN CONFIGURACIÓN */
-    .level-card-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 16px;
-      margin-bottom: 20px;
-    }
-    .level-card {
-      background: #FFFFFF;
-      border-radius: 10px;
-      border: 1.5px solid #E2E8F0;
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
-    }
-    .level-card:hover {
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    }
-    .level-card.card-n1 { border-top: 4px solid #0284C7; }
-    .level-card.card-n2 { border-top: 4px solid #7C3AED; }
-    .level-card.card-n3 { border-top: 4px solid #DC2626; }
-
     @media (max-width: 768px) {
       .cockpit-container {
         display: flex !important;
         flex-direction: column !important;
         padding: 0 !important;
-      }
-      .ticket-detail-grid {
-        grid-template-columns: 1fr !important;
-        overflow-y: auto !important;
-      }
-      .level-card-grid {
-        grid-template-columns: 1fr !important;
       }
     }
   </style>
@@ -215,20 +268,18 @@
     <aside class="app-sidebar" id="app-sidebar">
       <div class="sidebar-top">
         
-        <!-- Logo / Marca Oficial de Soporte Quantux -->
+        <!-- Logo / Marca Oficial: Quantux ServiceDesk -->
         <div class="brand-box">
-          <div class="brand-left-group">
-            <div class="brand-icon-wrapper" title="Quantux Salud - Mesa de Ayuda">
-              <svg class="brand-logo-svg" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 22px; height: 22px;">
-                <!-- Headset de Soporte Técnico -->
-                <path d="M6 18C6 11.3726 11.3726 6 18 6C24.6274 6 30 11.3726 30 18V24C30 26.2091 28.2091 28 26 28H25V19H28C28 13.4772 23.5228 9 18 9C12.4772 9 8 13.4772 8 19H11V28H10C7.79086 28 6 26.2091 6 24V18Z" fill="#FFFFFF"/>
-                <path d="M26 24V28C26 29.1046 25.1046 30 24 30H19" stroke="#00E5CC" stroke-width="2.2" stroke-linecap="round"/>
-                <circle cx="18" cy="30" r="1.5" fill="#00E5CC"/>
+          <div class="brand-left-group" id="brand-home-link" onclick="navigateHome()" title="Ir a la Página Principal - Quantux ServiceDesk" style="cursor: pointer; display: flex; align-items: center; gap: 10px; text-decoration: none;">
+            <div class="brand-logo-icon" style="background: linear-gradient(135deg, #00A896 0%, #0284C7 100%); width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0, 168, 150, 0.35); flex-shrink: 0;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px;">
+                <path d="M3 18v-6a9 9 0 0 1 18 0v6"></path>
+                <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path>
               </svg>
             </div>
             <div class="brand-info">
-              <div class="brand-name">QUANTUX<span>SALUD</span></div>
-              <div class="brand-sub">MESA DE AYUDA • v2.5 ITIL</div>
+              <div class="brand-name" style="font-size: 15px; font-weight: 800; color: #FFFFFF; letter-spacing: 0.5px; line-height: 1.2;">QUANTUX <span style="color: #00E5C9; font-weight: 700;">ServiceDesk</span></div>
+              <div class="brand-sub" style="font-size: 9.5px; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 700; margin-top: 2px;">Soporte HealthTech</div>
             </div>
           </div>
           <button class="sidebar-close-btn" id="btn-sidebar-close" aria-label="Cerrar Menú">&times;</button>
@@ -251,7 +302,7 @@
               <svg class="nav-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 17px; height: 17px;"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></svg>
               <span>Mesa de Ayuda</span>
             </div>
-            <span class="sidebar-badge" id="sidebar-ticket-count">0</span>
+            <span class="sidebar-badge" id="sidebar-ticket-count">143</span>
           </div>
 
           <div class="nav-link-item nav-hub-tab" data-view="dashboard" id="tab-dashboard">
@@ -271,7 +322,7 @@
           <div class="nav-link-item nav-hub-tab" data-view="platforms" id="tab-platforms">
             <div class="nav-link-left">
               <svg class="nav-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 17px; height: 17px;"><rect x="2" y="2" width="20" height="8" rx="2"></rect><rect x="2" y="14" width="20" height="8" rx="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
-              <span>Plataformas & Clientes</span>
+              <span>Plataformas & Instituciones</span>
             </div>
             <span class="sidebar-badge">9</span>
           </div>
@@ -294,9 +345,8 @@
 
       </div>
 
-      <!-- Footer del Menú Izquierdo (Estado del Sistema & Perfil) -->
+      <!-- Footer del Menú Izquierdo (Estado del Sistema & Perfil de Usuario) -->
       <div class="sidebar-bottom">
-        
         <div class="sidebar-sys-status">
           <div class="status-indicator">
             <span class="dot-green"></span>
@@ -305,18 +355,17 @@
           <span>SLA: <strong style="color: #10B981;">98.4%</strong></span>
         </div>
 
-        <!-- Widget de Usuario Activo -->
-        <div class="user-profile-widget" id="btn-sidebar-user-profile" title="Clic para Cambiar de Usuario o Cerrar Sesión" style="cursor: pointer;">
-          <div class="user-avatar-sm" id="profile-avatar">AD</div>
+        <!-- Widget de Usuario Activo en Sidebar -->
+        <div class="user-profile-widget" id="btn-sidebar-user-profile" onclick="openAuthModal(false)" title="Clic para Cambiar de Usuario o Cerrar Sesión" style="cursor: pointer;">
+          <div class="user-avatar-sm" id="profile-avatar">FC</div>
           <div class="user-details" style="flex: 1; min-width: 0;">
-            <span class="user-full-name" id="profile-full-name">Administrador General</span>
-            <span class="user-role-badge" id="profile-role-sub">ROL: ADMIN</span>
+            <span class="user-full-name" id="profile-full-name">Freddy Cortés</span>
+            <span class="user-role-badge" id="profile-role-sub">ROL: ADMIN N2</span>
           </div>
           <button type="button" class="btn-logout-icon" id="btn-sidebar-logout" title="Cambiar de Usuario / Cerrar Sesión" style="background: none; border: none; color: #94A3B8; cursor: pointer; padding: 4px; border-radius: 4px; display: flex; align-items: center;" aria-label="Cambiar Usuario">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px;"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
           </button>
         </div>
-
       </div>
     </aside>
 
@@ -325,82 +374,25 @@
          ======================================================================= -->
     <div class="app-main">
       
-      <!-- Barra Superior Principal (Top Navbar Estilo OSDE PAU) -->
-      <header class="top-navbar" style="height: 54px; min-height: 54px; background: #FFFFFF; border-bottom: 1px solid #E2E8F0; display: flex; align-items: center; justify-content: space-between; padding: 0 18px; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05); z-index: 30; gap: 14px;">
-        <!-- Izquierda: Título de Sección -->
-        <div class="navbar-left" style="display: flex; align-items: center; gap: 10px; flex-shrink: 0;">
+      <!-- Barra Superior Principal Unificada -->
+      <header class="top-navbar" id="app-top-navbar">
+        <div class="navbar-left">
           <button class="btn-hamburger" id="btn-sidebar-toggle" aria-label="Abrir Menú">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px;"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
           </button>
-          <div class="view-heading-title" id="top-view-title" style="font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 800; color: #334155; text-transform: uppercase; letter-spacing: 0.6px; display: flex; align-items: center; gap: 6px;">
-            <span id="top-view-title-text">SOLICITUDES</span>
+          <div class="view-heading-title" id="top-view-title">
+            <svg class="top-view-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 17px; height: 17px; color: #00A896;"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></svg>
+            <span id="top-view-title-text">Mesa de Ayuda</span>
           </div>
         </div>
 
-        <!-- Centro: Omni-Buscador Instantáneo en la Barra Superior -->
-        <div class="header-omni-search" id="ribbon-search-box" style="flex: 1; max-width: 580px; position: relative; margin: 0 12px;">
-          <input type="text" id="search-input" class="search-input" placeholder="Buscar en la instancia. Use &quot;comillas&quot; para resultados más precisos" style="width: 100%; height: 36px; padding: 0 16px 0 38px; border-radius: 20px; border: 1px solid #CBD5E1; font-size: 12.5px; background: #FFFFFF; outline: none; transition: all 0.2s ease; box-shadow: 0 1px 2px rgba(0,0,0,0.03);">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 13px; top: 10px; width: 16px; height: 16px; color: #94A3B8;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-        </div>
-
-        <!-- Derecha: Notificaciones y Avatar de Usuario -->
-        <div class="navbar-right" style="display: flex; align-items: center; gap: 12px; flex-shrink: 0;">
-          <!-- Campana de Notificaciones con Badge de Alertas -->
-          <div class="top-bell-wrapper" id="btn-top-notifications" style="position: relative; cursor: pointer; width: 34px; height: 34px; border-radius: 50%; background: #F1F5F9; display: flex; align-items: center; justify-content: center; transition: all 0.15s ease;" title="19 Notificaciones Pendientes" onclick="applyTicketPreset('p1')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 17px; height: 17px; color: #64748B;"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-            <span style="position: absolute; top: -2px; right: -2px; background: #EF4444; color: #FFFFFF; font-size: 9.5px; font-weight: 800; padding: 1px 5px; border-radius: 10px; line-height: 1; border: 2px solid #FFFFFF;">19</span>
-          </div>
-
-          <!-- Avatar Circular del Usuario (Clic para cambiar usuario / cerrar sesión) -->
-          <div class="user-avatar-pill" id="btn-top-switch-user" title="Freddy Cortés (ADMIN) - Clic para cambiar perfil o cerrar sesión" style="width: 34px; height: 34px; border-radius: 50%; background: #6366F1; color: #FFFFFF; font-weight: 800; font-size: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 2px solid #E0E7FF; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-            <span id="top-user-avatar">FC</span>
-          </div>
+        <div class="navbar-right" id="top-navbar-right">
+          <button type="button" class="invgate-btn-tool" id="btn-export-csv-direct" onclick="exportTicketsCSV()" title="Exportar listado a CSV" style="height: 32px; padding: 0 12px; font-weight: 700; font-size: 12px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 12px; height: 12px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            <span>Exportar CSV</span>
+          </button>
         </div>
       </header>
-
-      <!-- Sub-Barra Contextual Superior (Pestañas de Filtro Estilo OSDE PAU) -->
-      <div id="sub-nav-ribbon" style="background: #F8FAFC; border-bottom: 1px solid #E2E8F0; padding: 6px 16px; display: flex; justify-content: space-between; align-items: center; gap: 10px;">
-        <div class="sub-pills-bar" id="sub-nav-pills-container" style="display: flex; align-items: center; gap: 4px; overflow-x: auto;">
-          <!-- Renderizado dinámico según la vista activa -->
-        </div>
-        <div class="sub-nav-tools" id="sub-nav-right-tools" style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
-          <!-- Filtro de Institución / Sede (Multi-Tenant) -->
-          <div class="sub-nav-inst-filter" style="display: flex; align-items: center; gap: 5px; background: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 6px; padding: 2px 8px; height: 26px; box-shadow: 0 1px 2px rgba(0,0,0,0.03);">
-            <span style="font-size: 11px;">🏥</span>
-            <select id="filter-institution" class="filter-select-inline" title="Filtrar por Institución / Sede Asistencial" style="border: none; background: transparent; font-size: 11px; font-weight: 700; color: #1E293B; outline: none; cursor: pointer; max-width: 170px;">
-              <option value="">Todas las Instituciones</option>
-            </select>
-          </div>
-
-          <!-- Filtro de Prioridad ITIL (P1 a P5) -->
-          <div class="sub-nav-prio-filter" style="display: flex; align-items: center; gap: 5px; background: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 6px; padding: 2px 8px; height: 26px; box-shadow: 0 1px 2px rgba(0,0,0,0.03);">
-            <span style="font-size: 11px;">⚡</span>
-            <select id="filter-priority" class="filter-select-inline" title="Filtrar por Nivel de Prioridad ITIL" style="border: none; background: transparent; font-size: 11px; font-weight: 700; color: #1E293B; outline: none; cursor: pointer;">
-              <option value="">Todas las Prioridades</option>
-              <option value="P1">🚨 P1 - Crítica (SLA 2h)</option>
-              <option value="P2">⚠️ P2 - Alta (SLA 8h)</option>
-              <option value="P3">🔷 P3 - Media (SLA 24h)</option>
-              <option value="P4">⚪ P4 - Baja (SLA 48h)</option>
-              <option value="P5">📅 P5 - Planificada (SLA 72h)</option>
-            </select>
-          </div>
-
-          <!-- Exportar CSV -->
-          <button id="btn-export-csv" class="btn-table-action" title="Exportar solicitudes a archivo CSV" style="padding: 4px 9px; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; height: 26px; border-radius: 6px; background: #FFFFFF; border: 1px solid #CBD5E1; color: #334155; cursor: pointer;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 12px; height: 12px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-            <span>CSV</span>
-          </button>
-          <!-- Refrescar -->
-          <button id="btn-refresh" class="btn-table-action" title="Refrescar solicitudes" style="padding: 4px 9px; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; height: 26px; border-radius: 6px; background: #FFFFFF; border: 1px solid #CBD5E1; color: #334155; cursor: pointer;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 12px; height: 12px;"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
-            <span>Refrescar</span>
-          </button>
-          <!-- Alertas Críticas P1 -->
-          <div style="font-size: 11px; color: var(--q-text-muted); font-weight: 600; white-space: nowrap; margin-left: 4px;" id="sub-nav-right-info">
-            <span>🚨 P1: <strong id="ribbon-p1-count" style="color: #DC2626;">0</strong></span>
-          </div>
-        </div>
-      </div>
 
       <!-- Contenedor de Vistas SPA -->
       <main class="app-view-container">
@@ -411,223 +403,389 @@
         <section class="app-view" id="view-dashboard">
           <div class="dashboard-scroll">
             
-            <!-- Toolbar de Filtros del Dashboard -->
-            <div class="dashboard-toolbar">
-              <div style="display: flex; align-items: center; gap: 8px;">
-                <span style="font-weight: 700; color: var(--q-text-dark); font-size: 11.5px; white-space: nowrap;">🏥 Institución:</span>
-                <select id="dash-filter-inst" class="filter-select">
-                  <option value="">Todas las Instituciones (14 Sedes)</option>
-                </select>
+            <!-- Toolbar Superior del Dashboard con Filtros de Institución, Fechas y Acciones -->
+            <div class="dashboard-toolbar" style="flex-direction: column; align-items: stretch; gap: 12px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 12px;">
+                  
+                  <!-- Filtro Institución -->
+                  <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="font-weight: 800; color: #334155; font-size: 12.5px;">🏥 Institución:</span>
+                    <select id="dash-filter-inst" class="filter-select" onchange="renderDashboard()" style="min-width: 220px; font-weight: 600;">
+                      <option value="">Todas las Instituciones (14 Sedes)</option>
+                    </select>
+                  </div>
+
+                  <!-- Filtro de Fechas y Períodos -->
+                  <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="font-weight: 800; color: #334155; font-size: 12.5px;">📅 Período:</span>
+                    <select id="dash-filter-period" class="filter-select" onchange="onDashboardDateFilterChange()" style="min-width: 175px; font-weight: 600;">
+                      <option value="all" selected>📅 Todo el Historial</option>
+                      <option value="today">📅 Hoy (Guardia en Vivo)</option>
+                      <option value="7days">📅 Últimos 7 Días</option>
+                      <option value="30days">📅 Últimos 30 Días (Mes)</option>
+                      <option value="custom">📅 Personalizado (Rango)...</option>
+                    </select>
+                  </div>
+
+                  <!-- Rango personalizado interactivo -->
+                  <div id="dash-custom-date-box" style="display: none; align-items: center; gap: 6px; background: #F1F5F9; padding: 3px 8px; border-radius: 6px; border: 1px solid #CBD5E1;">
+                    <span style="font-size: 11px; font-weight: 700; color: #64748B;">Desde:</span>
+                    <input type="date" id="dash-date-from" class="form-control" style="font-size: 11.5px; height: 30px; padding: 2px 6px;" onchange="onDashboardDateFilterChange()">
+                    <span style="font-size: 11px; font-weight: 700; color: #64748B;">Hasta:</span>
+                    <input type="date" id="dash-date-to" class="form-control" style="font-size: 11.5px; height: 30px; padding: 2px 6px;" onchange="onDashboardDateFilterChange()">
+                  </div>
+
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <button class="btn-table-action" id="btn-refresh-dash" onclick="onDashboardDateFilterChange()" style="background: var(--q-primary); color: #fff; padding: 7px 14px; border: none; font-weight: 700; border-radius: 8px; box-shadow: 0 1px 3px rgba(0, 168, 150, 0.3);">
+                    🔄 Actualizar Datos
+                  </button>
+                </div>
               </div>
 
-              <button class="btn-table-action" id="btn-refresh-dash" style="background: var(--q-primary); color: #fff; padding: 6px 12px; border: none;">
-                🔄 Actualizar Métricas
-              </button>
+              <!-- Píldoras de Navegación entre Sub-Vistas del Dashboard -->
+              <div style="display: flex; gap: 6px; border-top: 1px solid #F1F5F9; padding-top: 10px; overflow-x: auto;">
+                <button class="filter-tab-pill active" id="btn-dash-sub-summary" onclick="switchDashboardSubTab('summary')">
+                  📊 Resumen Ejecutivo
+                </button>
+                <button class="filter-tab-pill" id="btn-dash-sub-critical" onclick="switchDashboardSubTab('critical')">
+                  ⏱️ Incidentes Críticos & SLA
+                </button>
+                <button class="filter-tab-pill" id="btn-dash-sub-platforms" onclick="switchDashboardSubTab('platforms')">
+                  🩺 Por Plataforma Asistencial
+                </button>
+                <button class="filter-tab-pill" id="btn-dash-sub-institutions" onclick="switchDashboardSubTab('institutions')">
+                  🏥 Por Institución Sanitaria
+                </button>
+                <button class="filter-tab-pill" id="btn-dash-sub-audit" onclick="switchDashboardSubTab('audit')">
+                  ⚖️ Auditoría & Conformidad
+                </button>
+              </div>
             </div>
 
-            <!-- 6 HERO KPI CARDS (Responsive Grid) -->
-            <div class="kpi-cards-grid">
+            <!-- SUB-VISTA 1: RESUMEN EJECUTIVO (KPIs + DONUTS + BARS) -->
+            <div class="dash-subview active" id="dash-subview-summary">
               
-              <div class="kpi-card kpi-total">
-                <div class="kpi-card-header">
-                  <span class="kpi-title">Total Solicitudes</span>
-                  <span class="kpi-icon">📁</span>
+              <!-- 6 HERO KPI CARDS -->
+              <div class="kpi-cards-grid">
+                <div class="kpi-card kpi-total" onclick="openMetricsDrilldownModal('all', 'ALL', 'Total Solicitudes Registradas')" style="cursor: pointer;" title="Clic para ver detalle de solicitudes">
+                  <div class="kpi-card-header">
+                    <span class="kpi-title">Total Solicitudes</span>
+                    <span class="kpi-icon">📁</span>
+                  </div>
+                  <div class="kpi-value" id="kpi-total-tickets">0</div>
+                  <div class="kpi-subtext">Histórico acumulado 🔍</div>
                 </div>
-                <div class="kpi-value" id="kpi-total-tickets">0</div>
-                <div class="kpi-subtext">Histórico acumulado</div>
+
+                <div class="kpi-card kpi-crit" onclick="openMetricsDrilldownModal('priority', 'P1', 'Incidentes Críticos P1')" style="cursor: pointer;" title="Clic para ver detalle de incidentes críticos">
+                  <div class="kpi-card-header">
+                    <span class="kpi-title" style="color: #DC2626;">Críticos P1 Servicio</span>
+                    <div class="pulse-dot"></div>
+                  </div>
+                  <div class="kpi-value" id="kpi-p1-tickets">0</div>
+                  <div class="kpi-subtext" style="color: #DC2626; font-weight: 700;">Atención Inmediata &lt; 1h 🔍</div>
+                </div>
+
+                <div class="kpi-card kpi-activos" onclick="openMetricsDrilldownModal('status', 'ACTIVE', 'Casos Activos en Proceso')" style="cursor: pointer;" title="Clic para ver casos activos">
+                  <div class="kpi-card-header">
+                    <span class="kpi-title">Casos Activos</span>
+                    <span class="kpi-icon">⚙️</span>
+                  </div>
+                  <div class="kpi-value" id="kpi-active-tickets" style="color: #0284C7;">0</div>
+                  <div class="kpi-subtext">En proceso de atención 🔍</div>
+                </div>
+
+                <div class="kpi-card kpi-sla" onclick="openMetricsDrilldownModal('sla', 'SLA', 'Casos con Cumplimiento de SLA')" style="cursor: pointer;" title="Clic para ver métricas de cumplimiento de SLA">
+                  <div class="kpi-card-header">
+                    <span class="kpi-title">Cumplimiento SLA</span>
+                    <span class="kpi-icon">⏱️</span>
+                  </div>
+                  <div class="kpi-value" id="kpi-sla-rate" style="color: #10B981;">98.4%</div>
+                  <div class="kpi-subtext">Meta hospitalaria: &ge; 95% 🔍</div>
+                </div>
+
+                <div class="kpi-card kpi-conformidad" onclick="openMetricsDrilldownModal('conformity', 'CONFORMITY', 'Casos Validados con Conformidad OK')" style="cursor: pointer;" title="Clic para ver detalle de conformidad">
+                  <div class="kpi-card-header">
+                    <span class="kpi-title">Tasa Conformidad</span>
+                    <span class="kpi-icon">✅</span>
+                  </div>
+                  <div class="kpi-value" id="kpi-conformity-rate" style="color: #059669;">96.5%</div>
+                  <div class="kpi-subtext">Cierres con validación OK 🔍</div>
+                </div>
+
+                <div class="kpi-card kpi-resueltos" onclick="openMetricsDrilldownModal('status', 'RESUELTO', 'Casos Resueltos')" style="cursor: pointer;" title="Clic para ver casos resueltos">
+                  <div class="kpi-card-header">
+                    <span class="kpi-title">Casos Resueltos</span>
+                    <span class="kpi-icon">🎉</span>
+                  </div>
+                  <div class="kpi-value" id="kpi-resolved-tickets" style="color: #7C3AED;">0</div>
+                  <div class="kpi-subtext">Solucionados / Cerrados 🔍</div>
+                </div>
               </div>
 
-              <div class="kpi-card kpi-crit">
-                <div class="kpi-card-header">
-                  <span class="kpi-title" style="color: #DC2626;">Críticos P1 Servicio en Producción</span>
-                  <div class="pulse-dot"></div>
+              <!-- 4 GRÁFICOS INTERACTIVOS (2 DONUTS + 2 BARS) -->
+              <div class="charts-grid-2x2">
+                
+                <!-- Gráfico 1: Torta/Donut Distribución por Estado Operativo -->
+                <div class="chart-card-modern">
+                  <div class="chart-card-header-modern">
+                    <div>
+                      <strong style="font-size: 13px; color: #0F172A;">🔄 Distribución por Estado Operativo</strong>
+                      <div style="font-size: 11px; color: #64748B;">Flujo de Estados FSM • Clic en porción para filtrar</div>
+                    </div>
+                    <span style="font-size: 10px; font-weight: 800; color: #00A896; background: rgba(0,168,150,0.1); padding: 3px 8px; border-radius: 6px;">MOTOR FSM</span>
+                  </div>
+                  <div class="chart-donut-container">
+                    <canvas id="chart-canvas-status" style="max-height: 210px;"></canvas>
+                    <div class="chart-donut-center-metric">
+                      <div class="chart-donut-center-val" id="chart-status-center-total">0</div>
+                      <div class="chart-donut-center-lbl">SOLICITUDES</div>
+                    </div>
+                  </div>
                 </div>
-                <div class="kpi-value" id="kpi-p1-tickets">0</div>
-                <div class="kpi-subtext" style="color: #DC2626; font-weight: 700;">Atención Inmediata &lt; 1h</div>
-              </div>
 
-              <div class="kpi-card kpi-activos">
-                <div class="kpi-card-header">
-                  <span class="kpi-title">Casos Activos</span>
-                  <span class="kpi-icon">⚙️</span>
+                <!-- Gráfico 2: Torta/Donut Matriz de Prioridad (P1 a P5) -->
+                <div class="chart-card-modern">
+                  <div class="chart-card-header-modern">
+                    <div>
+                      <strong style="font-size: 13px; color: #0F172A;">🎯 Matriz de Prioridad y Severidad</strong>
+                      <div style="font-size: 11px; color: #64748B;">Nivel de impacto asistencial P1 a P5 • Clic para desglose</div>
+                    </div>
+                    <span style="font-size: 10px; font-weight: 800; color: #DC2626; background: #FEE2E2; padding: 3px 8px; border-radius: 6px;">SEVERIDAD</span>
+                  </div>
+                  <div class="chart-donut-container">
+                    <canvas id="chart-canvas-priority" style="max-height: 210px;"></canvas>
+                    <div class="chart-donut-center-metric">
+                      <div class="chart-donut-center-val" id="chart-prio-center-crit" style="color: #DC2626;">0</div>
+                      <div class="chart-donut-center-lbl">CRÍTICOS P1/P2</div>
+                    </div>
+                  </div>
                 </div>
-                <div class="kpi-value" id="kpi-active-tickets" style="color: #0284C7;">0</div>
-                <div class="kpi-subtext">En proceso de atención</div>
-              </div>
 
-              <div class="kpi-card kpi-sla">
-                <div class="kpi-card-header">
-                  <span class="kpi-title">Cumplimiento SLA</span>
-                  <span class="kpi-icon">⏱️</span>
+                <!-- Gráfico 3: Barras por Plataforma Asistencial -->
+                <div class="chart-card-modern">
+                  <div class="chart-card-header-modern">
+                    <div>
+                      <strong style="font-size: 13px; color: #0F172A;">🩺 Demanda por Plataforma Asistencial</strong>
+                      <div style="font-size: 11px; color: #64748B;">Volumen de incidentes por sistema clínico</div>
+                    </div>
+                    <span style="font-size: 10px; font-weight: 800; color: #2563EB; background: #DBEAFE; padding: 3px 8px; border-radius: 6px;">9 PLATAFORMAS</span>
+                  </div>
+                  <div style="height: 220px; position: relative;">
+                    <canvas id="chart-canvas-platforms"></canvas>
+                  </div>
                 </div>
-                <div class="kpi-value" id="kpi-sla-rate" style="color: #10B981;">98.4%</div>
-                <div class="kpi-subtext">Meta hospitalaria: &ge; 95%</div>
-              </div>
 
-              <div class="kpi-card kpi-conformidad">
-                <div class="kpi-card-header">
-                  <span class="kpi-title">Tasa Conformidad</span>
-                  <span class="kpi-icon">✅</span>
+                <!-- Gráfico 4: Barras por Institución / Sanatorio -->
+                <div class="chart-card-modern">
+                  <div class="chart-card-header-modern">
+                    <div>
+                      <strong style="font-size: 13px; color: #0F172A;">🏥 Distribución por Institución Sanitaria</strong>
+                      <div style="font-size: 11px; color: #64748B;">Top instituciones con mayor volumen asistencial</div>
+                    </div>
+                    <span style="font-size: 10px; font-weight: 800; color: #7C3AED; background: #EDE9FE; padding: 3px 8px; border-radius: 6px;">14 INSTITUCIONES</span>
+                  </div>
+                  <div style="height: 220px; position: relative;">
+                    <canvas id="chart-canvas-institutions"></canvas>
+                  </div>
                 </div>
-                <div class="kpi-value" id="kpi-conformity-rate" style="color: #059669;">96.5%</div>
-                <div class="kpi-subtext">Cierres con validación OK</div>
-              </div>
 
-              <div class="kpi-card kpi-resueltos">
-                <div class="kpi-card-header">
-                  <span class="kpi-title">Casos Resueltos</span>
-                  <span class="kpi-icon">🎉</span>
-                </div>
-                <div class="kpi-value" id="kpi-resolved-tickets" style="color: #7C3AED;">0</div>
-                <div class="kpi-subtext">Solucionados / Cerrados</div>
               </div>
 
             </div>
 
-            <!-- 4 GRÁFICOS VISUALES INTERACTIVOS (2x2 Grid) -->
-            <div class="charts-grid-2x2">
-              
-              <!-- Gráfico 1: Distribución por Estado Operativo -->
-              <div class="chart-card">
-                <div class="chart-card-title">
-                  <span>🔄 Distribución por Estado Operativo</span>
-                  <span style="font-size: 10.5px; color: var(--q-primary); font-weight: 700;">MOTOR FSM</span>
+            <!-- SUB-VISTA 2: MONITOR DE INCIDENTES CRÍTICOS & SLA -->
+            <div class="dash-subview" id="dash-subview-critical">
+              <div class="chart-card-modern">
+                <div class="chart-card-header-modern">
+                  <div>
+                    <strong style="font-size: 14px; color: #DC2626; display: flex; align-items: center; gap: 6px;">
+                      <span class="pulse-dot"></span> Monitor en Vivo de Casos Activos & Tiempos de Respuesta
+                    </strong>
+                    <div style="font-size: 11.5px; color: #64748B; margin-top: 2px;">
+                      Priorización automática de incidentes de alto impacto en producción asistencial.
+                    </div>
+                  </div>
                 </div>
-                <div class="chart-bars-list" id="chart-bars-status">
-                  <!-- Renderizado dinámico -->
-                </div>
-              </div>
-
-              <!-- Gráfico 2: Demanda por Plataforma Asistencial -->
-              <div class="chart-card">
-                <div class="chart-card-title">
-                  <span>🩺 Volumen por Plataforma Asistencial</span>
-                  <span style="font-size: 10.5px; color: var(--q-primary); font-weight: 700;">9 SISTEMAS</span>
-                </div>
-                <div class="chart-bars-list" id="chart-bars-platforms">
-                  <!-- Renderizado dinámico -->
-                </div>
-              </div>
-
-              <!-- Gráfico 3: Distribución por Institución de Salud -->
-              <div class="chart-card">
-                <div class="chart-card-title">
-                  <span>🏥 Distribución por Institución / Sanatorio</span>
-                  <span style="font-size: 10.5px; color: var(--q-primary); font-weight: 700;">TOP CLIENTES</span>
-                </div>
-                <div class="chart-bars-list" id="chart-bars-institutions">
-                  <!-- Renderizado dinámico -->
-                </div>
-              </div>
-
-              <!-- Gráfico 4: Matriz de Prioridad (P1 a P5) -->
-              <div class="chart-card">
-                <div class="chart-card-title">
-                  <span>🎯 Matriz de Prioridad (P = I &times; U)</span>
-                  <span style="font-size: 10.5px; color: var(--q-primary); font-weight: 700;">SEVERIDAD</span>
-                </div>
-                <div class="chart-bars-list" id="chart-bars-priorities">
-                  <!-- Renderizado dinámico -->
-                </div>
-              </div>
-
-            </div>
-
-            <!-- MONITOR DE INCIDENTES CRÍTICOS & AUDITORÍA (Bottom Grid) -->
-            <div class="dashboard-bottom-grid">
-              
-              <div class="chart-card">
-                <div class="chart-card-title">
-                  <span>⏱️ Monitor de Casos Activos y Tiempos de Servicio en Producción</span>
-                  <span style="font-size: 10.5px; color: var(--q-text-muted);">Por criticidad</span>
-                </div>
-                <div class="table-responsive-wrapper" style="max-height: 240px; overflow-y: auto;">
+                <div class="table-responsive-wrapper">
                   <table class="table-dashboard" id="table-active-sla">
                     <thead>
                       <tr>
                         <th>ID Ticket</th>
                         <th>Prioridad</th>
-                        <th>Título / Asunto</th>
+                        <th>Título / Solicitud</th>
                         <th>Plataforma</th>
-                        <th>Responsable</th>
-                        <th>Acción</th>
+                        <th>Responsable Asignado</th>
+                        <th>Tiempo Restante SLA</th>
+                        <th style="text-align: center;">Acción</th>
                       </tr>
                     </thead>
                     <tbody id="tbody-active-sla">
-                      <!-- Renderizado dinámico -->
+                      <!-- Inyectado dinámicamente -->
                     </tbody>
                   </table>
                 </div>
               </div>
+            </div>
 
-              <div class="chart-card">
-                <div class="chart-card-title">
-                  <span>📜 Bitácora de Auditoría en Tiempo Real</span>
-                  <span style="font-size: 10.5px; color: #10B981; font-weight: 700;">🔒 INMUTABLE</span>
+            <!-- SUB-VISTA 3: PLATAFORMAS ASISTENCIALES -->
+            <div class="dash-subview" id="dash-subview-platforms">
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px;" id="grid-platform-health-cards">
+                <!-- Inyectado dinámicamente -->
+              </div>
+            </div>
+
+            <!-- SUB-VISTA 4: INSTITUCIONES SANITARIAS -->
+            <div class="dash-subview" id="dash-subview-institutions">
+              <div class="chart-card-modern">
+                <div class="chart-card-header-modern">
+                  <strong style="font-size: 14px; color: #0F172A;">🏥 Ranking Asistencial por Institución de Salud</strong>
                 </div>
-                <div style="overflow-y: auto; max-height: 240px; display: flex; flex-direction: column; gap: 6px;" id="feed-audit-logs">
-                  <!-- Renderizado dinámico -->
+                <div class="table-responsive-wrapper">
+                  <table class="table-dashboard" id="table-institutions-ranking">
+                    <thead>
+                      <tr>
+                        <th>Institución</th>
+                        <th>Segmento</th>
+                        <th>Total Solicitudes</th>
+                        <th>Casos Activos</th>
+                        <th>Cumplimiento SLA</th>
+                        <th>Tasa Conformidad</th>
+                        <th style="text-align: center;">Acción</th>
+                      </tr>
+                    </thead>
+                    <tbody id="tbody-institutions-ranking">
+                      <!-- Inyectado dinámicamente -->
+                    </tbody>
+                  </table>
                 </div>
               </div>
+            </div>
 
+            <!-- SUB-VISTA 5: AUDITORÍA & CONFORMIDAD -->
+            <div class="dash-subview" id="dash-subview-audit">
+              <div class="chart-card-modern">
+                <div class="chart-card-header-modern">
+                  <div>
+                    <strong style="font-size: 14px; color: #0F172A; display: flex; align-items: center; gap: 8px;">
+                      <span>📜 Bitácora de Auditoría en Tiempo Real</span>
+                      <span style="font-size: 10px; color: #10B981; font-weight: 800; background: #ECFDF5; padding: 2px 6px; border-radius: 4px;">🔒 INMUTABLE SHA-256</span>
+                    </strong>
+                    <div style="font-size: 11.5px; color: #64748B; margin-top: 2px;">Registro cronológico forense de modificaciones, asignaciones y cierres técnicos.</div>
+                  </div>
+                </div>
+                <div style="overflow-y: auto; max-height: 480px; display: flex; flex-direction: column; gap: 8px; padding: 8px 0;" id="feed-audit-logs">
+                  <!-- Inyectado dinámicamente -->
+                </div>
+              </div>
             </div>
 
           </div>
         </section>
 
         <!-- ===================================================================
-             VISTA: MESA DE AYUDA OPERATIVA (COCKPIT CENTRALIZADO UH-28)
+             VISTA 2: MESA DE AYUDA (BANDEJA OPERATIVA SENIOR ITIL)
              =================================================================== -->
         <section class="app-view active" id="view-tickets">
-          
-          <!-- Selector Segmentado para Pantallas Móviles -->
-          <div class="cockpit-mobile-nav" id="cockpit-mobile-nav">
-            <button class="mobile-cockpit-tab active" data-col="col-list">📥 Bandeja de Solicitudes</button>
-            <button class="mobile-cockpit-tab" data-col="col-detail">📝 Detalle & Gestión</button>
-          </div>
-
-          <div class="cockpit-container">
+          <div class="users-board-wrapper">
             
-            <!-- COLUMNA 1: BANDEJA DE ENTRADA / LISTA DE SOLICITUDES (UH-12, UH-28) -->
-            <div class="cockpit-column cockpit-col-inbox mobile-active" id="col-list">
-              <!-- Barra de Resumen y Filtro Rápido de Institución & Prioridad -->
-              <div style="padding: 8px 12px; background: #FFFFFF; border-bottom: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center; gap: 6px; flex-shrink: 0; flex-wrap: wrap;">
-                <div style="display: flex; align-items: center; gap: 6px;">
-                  <span style="font-size: 11px; font-weight: 800; color: #475569; text-transform: uppercase; letter-spacing: 0.5px;">Bandeja</span>
-                  <span class="badge-count" id="ticket-count-badge" style="background: #E2E8F0; color: #334155; font-size: 10px; font-weight: 800; padding: 1px 6px; border-radius: 10px;">0</span>
+            <!-- Toolbar Principal de la Mesa de Ayuda (Fijo Permanente) -->
+            <div class="dashboard-toolbar" style="flex-direction: column; align-items: stretch; gap: 12px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <div>
+                  <h2 style="margin: 0; font-size: 15px; font-weight: 800; color: #0F172A; display: flex; align-items: center; gap: 8px;">
+                    <span>🎧 Centro de Gestión de Solicitudes y Tickets</span>
+                    <span class="user-badge-role role-badge-admin" id="tickets-badge-total" style="font-size: 11px;">143 Solicitudes</span>
+                  </h2>
+                  <div style="font-size: 11.5px; color: #64748B; margin-top: 2px;">
+                    Mesa de ayuda asistencial ITIL: Triage N1, Especialistas N2, Ingeniería N3 y SLA HealthTech.
+                  </div>
                 </div>
-                <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-                  <!-- Selector Nivel de Atención ITIL (N1 / N2 / N3) -->
-                  <select id="col-filter-level" style="font-size: 10.5px; font-weight: 700; color: #1E293B; background: #F8FAFC; border: 1px solid #CBD5E1; border-radius: 4px; padding: 2px 5px; outline: none; cursor: pointer; max-width: 120px;" title="Filtrar por Nivel de Atención ITIL">
-                    <option value="">🏢 Todos Niveles</option>
-                    <option value="N1">🔵 N1 • Triage</option>
-                    <option value="N2">🟣 N2 • Especialista</option>
-                    <option value="N3">🔴 N3 • Ingeniería</option>
-                  </select>
-                  <!-- Selector Sede -->
-                  <select id="col-filter-institution" style="font-size: 10.5px; font-weight: 700; color: #1E293B; background: #F8FAFC; border: 1px solid #CBD5E1; border-radius: 4px; padding: 2px 5px; outline: none; cursor: pointer; max-width: 115px;" title="Filtrar por Institución">
-                    <option value="">🏥 Todas Sedes</option>
-                  </select>
-                  <!-- Selector Prioridad -->
-                  <select id="col-filter-priority" style="font-size: 10.5px; font-weight: 700; color: #1E293B; background: #F8FAFC; border: 1px solid #CBD5E1; border-radius: 4px; padding: 2px 5px; outline: none; cursor: pointer; max-width: 105px;" title="Filtrar por Nivel de Prioridad ITIL">
-                    <option value="">⚡ Prioridad</option>
-                    <option value="P1">🚨 P1 Crítica</option>
-                    <option value="P2">⚠️ P2 Alta</option>
-                    <option value="P3">🔷 P3 Media</option>
-                    <option value="P4">⚪ P4 Baja</option>
-                    <option value="P5">📅 P5 Planif.</option>
-                  </select>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                  <button type="button" class="btn-pri" onclick="openNewTicketModal()" style="display: flex; align-items: center; gap: 6px; font-size: 12px; padding: 7px 16px; border-radius: 8px; background: #00A896; border-color: #00A896; color: #FFF; font-weight: 800; cursor: pointer;">
+                    <span>➕</span> Dar de Alta Solicitud
+                  </button>
                 </div>
               </div>
-              <div class="ticket-list" id="ticket-list">
-                <!-- Renderizado dinámico desde app.js -->
+
+              <!-- Píldoras de Filtro Rápido ITIL (Vistas Rápidas) -->
+              <div style="display: flex; gap: 6px; border-top: 1px solid #F1F5F9; padding-top: 10px; overflow-x: auto; align-items: center;">
+                <span style="font-size: 11px; font-weight: 800; color: #64748B; text-transform: uppercase; margin-right: 4px;">Filtrar:</span>
+                <button type="button" class="filter-tab-pill active" id="qv-all" onclick="selectQuickView('ALL')">Todos los Tickets</button>
+                <button type="button" class="filter-tab-pill" id="qv-mine" onclick="selectQuickView('MINE')">👤 Asignados a Mí <span class="qv-pill-count" id="qv-count-mine">0</span></button>
+                <button type="button" class="filter-tab-pill" id="qv-unassigned" onclick="selectQuickView('UNASSIGNED')">⚪ Sin Asignar <span class="qv-pill-count" id="qv-count-unassigned">0</span></button>
+                <button type="button" class="filter-tab-pill pill-p1-alert" id="qv-p1" onclick="selectQuickView('P1')">🚨 Críticos P1 <span class="qv-pill-count" id="qv-count-p1">0</span></button>
+                <button type="button" class="filter-tab-pill" id="qv-n1" onclick="selectQuickView('N1')">🔵 Nivel 1 • Guardia</button>
+                <button type="button" class="filter-tab-pill" id="qv-resolved" onclick="selectQuickView('RESOLVED')">✅ Resueltos / Archivados</button>
+              </div>
+
+              <!-- Fila Secundaria: Filtros Desplegables de Precisión -->
+              <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 6px 10px; margin-top: 2px;">
+                <select id="tkt-filter-inst" class="invgate-filter-select" onchange="onFilterChange()" title="Filtrar por Institución">
+                  <option value="">🏥 Todas las Instituciones</option>
+                </select>
+                <select id="tkt-filter-platform" class="invgate-filter-select" onchange="onFilterChange()" title="Filtrar por Plataforma / Módulo">
+                  <option value="">💻 Todas las Plataformas</option>
+                </select>
+                <select id="tkt-filter-level" class="invgate-filter-select" onchange="onFilterChange()" title="Filtrar por Nivel de Soporte">
+                  <option value="">⚡ Todos los Niveles</option>
+                  <option value="N1">N1 • Mesa Guardia</option>
+                  <option value="N2">N2 • Especialistas</option>
+                  <option value="N3">N3 • Ingeniería</option>
+                </select>
+                <select id="tkt-filter-status" class="invgate-filter-select" onchange="onFilterChange()" title="Filtrar por Estado Operativo">
+                  <option value="ACTIVE">📊 Activos (En gestión)</option>
+                  <option value="ALL">📊 Todos (Inc. Resueltos)</option>
+                  <option value="NUEVO">🟢 Nuevos</option>
+                  <option value="ASIGNADO">🔵 Asignados</option>
+                  <option value="EN_CURSO">🟡 En Curso</option>
+                  <option value="RESUELTO">✅ Resueltos</option>
+                  <option value="CERRADO">🔒 Cerrados</option>
+                </select>
+                <select id="tkt-filter-period" class="invgate-filter-select" onchange="onFilterChange()" title="Filtrar por Período de Creación">
+                  <option value="all">📅 Todas las Fechas</option>
+                  <option value="today">📅 Hoy (Guardia)</option>
+                  <option value="7days">📅 Últimos 7 Días</option>
+                  <option value="30days">📅 Últimos 30 Días</option>
+                </select>
+                <button type="button" class="invgate-btn-tool" id="btn-refresh-tickets" onclick="resetBoardFilters()" title="Restablecer filtros y refrescar bandeja" style="padding: 0 10px; height: 32px; display: flex; align-items: center; justify-content: center; background: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 6px; cursor: pointer; transition: all 0.2s ease;">
+                  <svg id="svg-refresh-icon" viewBox="0 0 24 24" fill="none" stroke="#334155" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px; transition: transform 0.45s ease;"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                </button>
               </div>
             </div>
 
-            <!-- COLUMNA 2: DETALLE INTEGRAL, GESTIÓN Y TRAZABILIDAD (UH-13 a UH-27, UH-28) -->
-            <div class="cockpit-column cockpit-col-detail" id="col-detail">
-              <div class="detail-content" id="ticket-detail-container">
-                <!-- Renderizado dinámico desde app.js -->
+            <!-- Tabla Estilizada con Encabezado Azul Marino y Scroll Exclusivo de Filas -->
+            <div class="users-table-card">
+              <div class="table-responsive-wrapper">
+                <table class="users-table-styled invgate-tickets-table" id="table-tickets-directory">
+                  <thead>
+                    <tr>
+                      <th style="width: 260px; min-width: 250px;">ID & Prioridad</th>
+                      <th style="min-width: 320px;">Detalle de la Solicitud & Taxonomía</th>
+                      <th style="width: 170px; min-width: 160px;">Estado & SLA</th>
+                      <th style="width: 180px; min-width: 170px;">Asignado a</th>
+                      <th style="width: 190px; min-width: 180px;">Solicitante / Institución</th>
+                    </tr>
+                  </thead>
+                  <tbody id="ticket-table-body">
+                    <!-- Renderizado dinámico desde app.js -->
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Footer de la Tabla: Conteo y Paginador -->
+              <div class="invgate-table-footer" style="background: #FFFFFF; border-top: 1px solid #E2E8F0; padding: 10px 18px;">
+                <div class="invgate-footer-count">
+                  <strong id="invgate-footer-count-num">0</strong> SOLICITUDES EN BANDEJA
+                  <span style="font-size: 11.5px; color: #94A3B8; font-weight: 500; margin-left: 8px;">(Casos resueltos y archivados accesibles vía filtros)</span>
+                </div>
+                <div class="invgate-pagination">
+                  <button type="button" class="invgate-page-btn" disabled>&lt;</button>
+                  <span class="invgate-page-info">1 / 1</span>
+                  <button type="button" class="invgate-page-btn" disabled>&gt;</button>
+                </div>
               </div>
             </div>
 
@@ -635,43 +793,56 @@
         </section>
 
         <!-- ===================================================================
-             VISTA 3: USUARIOS Y PERMISOS
+             VISTA 3: DIRECTORIO DE USUARIOS Y ROLES (INVGATE SENIOR DESIGN)
              =================================================================== -->
         <section class="app-view" id="view-users">
-          <div class="dashboard-scroll">
-            <div class="dashboard-toolbar">
-              <div>
-                <span style="font-weight: 800; font-size: 14px; color: var(--q-text-dark);">👥 Directorio General de Personal Asistencial y Soporte</span>
-                <div style="font-size: 11px; color: var(--q-text-muted); margin-top: 2px;">Gestione operadores por nivel de atención ITIL (N1, N2, N3) y profesionales solicitantes.</div>
+          <div class="users-board-wrapper">
+            
+            <!-- Toolbar Principal del Directorio (Fijo Permanente) -->
+            <div class="dashboard-toolbar" style="flex-direction: column; align-items: stretch; gap: 12px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <div>
+                  <h2 style="margin: 0; font-size: 15px; font-weight: 800; color: #0F172A; display: flex; align-items: center; gap: 8px;">
+                    <span>👥 Directorio General de Personal Asistencial y Soporte</span>
+                    <span class="user-badge-role role-badge-admin" id="users-badge-total" style="font-size: 11px;">14 Usuarios</span>
+                  </h2>
+                  <div style="font-size: 11.5px; color: #64748B; margin-top: 2px;">
+                    Gestión de operadores ITIL (Nivel 1 Triage, Nivel 2 Especialistas, Nivel 3 Ingeniería) y Médicos Solicitantes.
+                  </div>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                  <button class="btn-pri" onclick="openCreateUserModal()" style="display: flex; align-items: center; gap: 6px; font-size: 12px; padding: 7px 16px; border-radius: 8px; background: #00A896; border-color: #00A896; color: #FFF; font-weight: 800;">
+                    <span>➕</span> Dar de Alta Usuario
+                  </button>
+                </div>
               </div>
-              <button class="btn-sidebar-new" id="btn-open-user-modal" style="width: auto; padding: 6px 14px;">
-                <span>➕</span> Dar de Alta Usuario
-              </button>
+
+              <!-- Píldoras de Filtro por Rol / Nivel -->
+              <div style="display: flex; gap: 6px; border-top: 1px solid #F1F5F9; padding-top: 10px; overflow-x: auto; align-items: center;">
+                <span style="font-size: 11px; font-weight: 800; color: #64748B; text-transform: uppercase; margin-right: 4px;">Filtrar:</span>
+                <button class="filter-tab-pill active" data-user-filter="all" onclick="filterUsersByLevel('all')">Todos los Usuarios</button>
+                <button class="filter-tab-pill" data-user-filter="N1" onclick="filterUsersByLevel('N1')">🔵 Nivel 1 • Guardia</button>
+                <button class="filter-tab-pill" data-user-filter="N2" onclick="filterUsersByLevel('N2')">🟣 Nivel 2 • Especialistas</button>
+                <button class="filter-tab-pill" data-user-filter="N3" onclick="filterUsersByLevel('N3')">🔴 Nivel 3 • Ingeniería</button>
+                <button class="filter-tab-pill" data-user-filter="ADMIN" onclick="filterUsersByLevel('ADMIN')">👑 Administradores</button>
+                <button class="filter-tab-pill" data-user-filter="SOLICITANTE" onclick="filterUsersByLevel('SOLICITANTE')">🩺 Médicos y Solicitantes</button>
+              </div>
             </div>
 
-            <!-- Píldoras de Filtro por Nivel de Atención -->
-            <div style="display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; align-items: center;">
-              <span style="font-size: 11px; font-weight: 800; color: #64748B; text-transform: uppercase;">Filtrar por Nivel:</span>
-              <button class="filter-tab-pill active" data-user-filter="all" onclick="filterUsersByLevel('all')">Todos los Usuarios</button>
-              <button class="filter-tab-pill" data-user-filter="N1" onclick="filterUsersByLevel('N1')">🔵 Nivel 1 • Triage</button>
-              <button class="filter-tab-pill" data-user-filter="N2" onclick="filterUsersByLevel('N2')">🟣 Nivel 2 • Especialistas</button>
-              <button class="filter-tab-pill" data-user-filter="N3" onclick="filterUsersByLevel('N3')">🔴 Nivel 3 • Ingeniería</button>
-              <button class="filter-tab-pill" data-user-filter="SOLICITANTE" onclick="filterUsersByLevel('SOLICITANTE')">🩺 Médicos y Solicitantes</button>
-            </div>
-
-            <div class="chart-card">
+            <!-- Tabla Estilizada InvGate con Scroll Exclusivo de Filas -->
+            <div class="users-table-card">
               <div class="table-responsive-wrapper">
-                <table class="table-dashboard" id="table-users-directory">
+                <table class="users-table-styled" id="table-users-directory">
                   <thead>
                     <tr>
                       <th>Nombre y Apellido</th>
-                      <th>Usuario</th>
-                      <th>Correo Electrónico</th>
+                      <th>Usuario (ID)</th>
+                      <th>Correo Institucional</th>
                       <th>Rol / Perfil</th>
                       <th>Nivel ITIL</th>
                       <th>Institución / Sede</th>
-                      <th>Especialidad / Área</th>
                       <th>Estado</th>
+                      <th style="text-align: center;">Acción</th>
                     </tr>
                   </thead>
                   <tbody id="tbody-users-directory">
@@ -680,6 +851,7 @@
                 </table>
               </div>
             </div>
+
           </div>
         </section>
 
@@ -688,63 +860,18 @@
              =================================================================== -->
         <section class="app-view" id="view-articles">
           <div class="dashboard-scroll">
-            <div class="dashboard-toolbar" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-              <div>
-                <span style="font-weight: 800; font-size: 15px; color: var(--q-text-dark); display: flex; align-items: center; gap: 8px;">
-                  📚 Base de Conocimiento y Procedimientos Clínicos
-                  <span class="badge-status st-asignado" style="font-size: 10px;">Con Control de Versiones e Histórico</span>
-                </span>
-                <div style="font-size: 11.5px; color: var(--q-text-muted); margin-top: 2px;">
-                  Protocolos médicos, guías técnicas, procedimientos de contingencia y resoluciones de soporte con trazabilidad de cambios.
-                </div>
-              </div>
-              <div style="display: flex; gap: 8px;">
-                <button class="btn-pri" id="btn-open-article-modal" style="font-size: 11.5px; padding: 7px 14px; display: flex; align-items: center; gap: 6px;">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 14px; height: 14px;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                  <span>Publicar Nuevo Artículo / Protocolo</span>
-                </button>
-              </div>
-            </div>
 
-            <!-- Resumen de Métricas KB -->
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 16px;">
-              <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 8px; padding: 10px 14px; display: flex; align-items: center; gap: 12px;">
-                <div style="width: 36px; height: 36px; border-radius: 8px; background: #F0FDFA; color: #0D9488; font-size: 18px; display: flex; align-items: center; justify-content: center; font-weight: 800;">📚</div>
-                <div>
-                  <div style="font-size: 10px; font-weight: 700; color: #64748B; text-transform: uppercase;">Total Artículos Activos</div>
-                  <div style="font-size: 16px; font-weight: 800; color: #0F172A;" id="kb-kpi-total-articles">8</div>
-                </div>
-              </div>
-              <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 8px; padding: 10px 14px; display: flex; align-items: center; gap: 12px;">
-                <div style="width: 36px; height: 36px; border-radius: 8px; background: #EFF6FF; color: #2563EB; font-size: 18px; display: flex; align-items: center; justify-content: center; font-weight: 800;">📜</div>
-                <div>
-                  <div style="font-size: 10px; font-weight: 700; color: #64748B; text-transform: uppercase;">Revisiones Históricas</div>
-                  <div style="font-size: 16px; font-weight: 800; color: #0F172A;" id="kb-kpi-total-history">18</div>
-                </div>
-              </div>
-              <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 8px; padding: 10px 14px; display: flex; align-items: center; gap: 12px;">
-                <div style="width: 36px; height: 36px; border-radius: 8px; background: #FEF2F2; color: #DC2626; font-size: 18px; display: flex; align-items: center; justify-content: center; font-weight: 800;">🚨</div>
-                <div>
-                  <div style="font-size: 10px; font-weight: 700; color: #64748B; text-transform: uppercase;">Contingencias Críticas</div>
-                  <div style="font-size: 16px; font-weight: 800; color: #DC2626;" id="kb-kpi-contingencies">2</div>
-                </div>
-              </div>
-              <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 8px; padding: 10px 14px; display: flex; align-items: center; gap: 12px;">
-                <div style="width: 36px; height: 36px; border-radius: 8px; background: #ECFDF5; color: #059669; font-size: 18px; display: flex; align-items: center; justify-content: center; font-weight: 800;">🛡️</div>
-                <div>
-                  <div style="font-size: 10px; font-weight: 700; color: #64748B; text-transform: uppercase;">Auditoría Sanitaria</div>
-                  <div style="font-size: 13px; font-weight: 800; color: #059669;">100% Trazable</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Toolbar de Filtros y Búsqueda de Artículos -->
-            <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 10px; padding: 12px 16px; margin-bottom: 16px; display: flex; flex-direction: column; gap: 12px;">
+            <!-- Toolbar de Filtros y Búsqueda de Artículos (Fijo Permanente) -->
+            <div class="kb-sticky-toolbar">
               <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between;">
                 <div style="position: relative; flex: 1; min-width: 260px;">
                   <input type="text" id="kb-search-input" class="form-control" placeholder="Buscar por palabra clave, código de error, plataforma, protocolo..." style="padding-left: 32px; font-size: 12px; height: 36px; border-radius: 8px;">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position: absolute; left: 10px; top: 11px; width: 14px; height: 14px; color: #94A3B8;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                 </div>
+                <button class="btn-pri" id="btn-open-article-modal" style="font-size: 11.5px; padding: 7px 14px; display: flex; align-items: center; gap: 6px; border-radius: 8px;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 14px; height: 14px;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                  <span>+ Nuevo Artículo</span>
+                </button>
               </div>
               
               <!-- Category Filter Pills con diseño Quantux -->
@@ -792,50 +919,152 @@
         </section>
 
         <!-- ===================================================================
-             VISTA 5: GESTIÓN MULTI-CLIENTE DE PLATAFORMAS Y MESAS DE AYUDA
+             VISTA 5: CATÁLOGO: PLATAFORMAS & INSTITUCIONES (SENIOR UX)
              =================================================================== -->
         <section class="app-view" id="view-platforms">
           <div class="dashboard-scroll">
-            <div class="dashboard-toolbar" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-              <div>
-                <span style="font-weight: 800; font-size: 14px; color: var(--q-text-dark);">🏥 Gestión Multi-Cliente de Plataformas y Mesas de Ayuda</span>
-                <div style="font-size: 11.5px; color: var(--q-text-muted); margin-top: 2px;">
-                  Configure y habilite qué sistemas clínicos y colas de asistencia técnica opera cada cliente institucional.
+            
+            <!-- NAVEGACIÓN POR SUB-PESTAÑAS DE LA VISTA (Fijo Permanente) -->
+            <div class="platforms-subtabs-toolbar">
+              <div style="display: flex; gap: 8px; overflow-x: auto;">
+                <button type="button" class="dash-tab-btn active" id="btn-subtab-inst" onclick="switchPlatformsSubTab('institutions')" style="font-size: 12.5px; font-weight: 800; padding: 8px 16px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                  <span>🏥 Red de Instituciones Sanitarias</span>
+                  <span style="font-size: 10px; background: rgba(37,99,235,0.12); color: #2563EB; padding: 1px 6px; border-radius: 10px;">14</span>
+                </button>
+
+                <button type="button" class="dash-tab-btn" id="btn-subtab-plat" onclick="switchPlatformsSubTab('platforms')" style="font-size: 12.5px; font-weight: 800; padding: 8px 16px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                  <span>💻 Módulos & Sistemas de Software</span>
+                  <span style="font-size: 10px; background: rgba(0,168,150,0.12); color: #00A896; padding: 1px 6px; border-radius: 10px;">9</span>
+                </button>
+
+                <button type="button" class="dash-tab-btn" id="btn-subtab-matrix" onclick="switchPlatformsSubTab('matrix')" style="font-size: 12.5px; font-weight: 800; padding: 8px 16px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                  <span>🔄 Matriz Multi-Tenant de Habilitación</span>
+                  <span style="font-size: 10px; background: #FEF3C7; color: #D97706; padding: 1px 6px; border-radius: 10px;">Interactivo</span>
+                </button>
+              </div>
+
+              <div style="display: flex; gap: 8px;">
+                <button type="button" class="btn-sec" onclick="openCreatePlatformModal()" style="font-size: 11.5px; padding: 6px 12px; font-weight: 700; border-radius: 8px; display: inline-flex; align-items: center; gap: 5px;">
+                  <span>💻 + Alta Sistema</span>
+                </button>
+                <button type="button" class="btn-pri" onclick="openCreateInstitutionModal()" style="font-size: 11.5px; padding: 6px 14px; font-weight: 800; border-radius: 8px; background: #00A896; border: none; color: #FFF; display: inline-flex; align-items: center; gap: 5px;">
+                  <span>🏥 + Alta Institución</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- ===============================================================
+                 SUB-VISTA 1: CATÁLOGO DE INSTITUCIONES SANITARIAS
+                 =============================================================== -->
+            <div class="platforms-subview active" id="platforms-subview-institutions">
+              
+              <!-- Toolbar de Búsqueda, Filtros y Selector de Modo de Vista (Cards vs Tabla) -->
+              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; background: #FFFFFF; padding: 10px 14px; border-radius: 10px; border: 1px solid #E2E8F0;">
+                <div style="position: relative; max-width: 340px; flex: 1;">
+                  <input type="text" id="filter-inst-cards-input" class="form-control" placeholder="Buscar institución, código o sede..." style="padding-left: 32px; font-size: 12px; height: 34px; border-radius: 8px;" oninput="filterInstitutionCards(this.value)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position: absolute; left: 10px; top: 10px; width: 14px; height: 14px; color: #94A3B8;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                </div>
+
+                <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+                  <button type="button" class="btn-clean-action active" data-inst-type-filter="all" onclick="filterInstitutionCardsByType('all')" style="padding: 5px 10px; font-size: 11px; font-weight: 700; border-radius: 6px;">Todas (14)</button>
+                  <button type="button" class="btn-clean-action" data-inst-type-filter="PREPAGA" onclick="filterInstitutionCardsByType('PREPAGA')" style="padding: 5px 10px; font-size: 11px; font-weight: 700; border-radius: 6px;">Prepagas (6)</button>
+                  <button type="button" class="btn-clean-action" data-inst-type-filter="SANATORIO" onclick="filterInstitutionCardsByType('SANATORIO')" style="padding: 5px 10px; font-size: 11px; font-weight: 700; border-radius: 6px;">Sanatorios (4)</button>
+                  <button type="button" class="btn-clean-action" data-inst-type-filter="HOSPITAL" onclick="filterInstitutionCardsByType('HOSPITAL')" style="padding: 5px 10px; font-size: 11px; font-weight: 700; border-radius: 6px;">Hospitales (4)</button>
+                  <button type="button" class="btn-clean-action" data-inst-type-filter="INCIDENTS" onclick="filterInstitutionCardsByType('INCIDENTS')" style="padding: 5px 10px; font-size: 11px; font-weight: 700; border-radius: 6px; color: #DC2626; border-color: #FECACA;">🚨 Con Incidentes</button>
+                </div>
+
+                <!-- Selector de Modo de Vista (Cuadrícula vs Tabla) -->
+                <div style="display: flex; background: #F1F5F9; padding: 2px; border-radius: 8px; gap: 2px;">
+                  <button type="button" id="btn-view-mode-cards" class="btn-view-mode active" onclick="togglePlatformsViewMode('cards')" title="Vista en Cuadrícula 360°" style="border: none; background: #FFFFFF; color: #0F172A; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 800; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.06); display: flex; align-items: center; gap: 4px;">
+                    <span>🔲</span> <span>Tarjetas</span>
+                  </button>
+                  <button type="button" id="btn-view-mode-table" class="btn-view-mode" onclick="togglePlatformsViewMode('table')" title="Vista en Tabla Ejecutiva" style="border: none; background: transparent; color: #64748B; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+                    <span>📋</span> <span>Tabla</span>
+                  </button>
                 </div>
               </div>
-              <div style="display: flex; align-items: center; gap: 8px;">
-                <span style="font-size: 11px; font-weight: 700; background: #ECFDF5; color: #047857; padding: 4px 10px; border-radius: 6px; border: 1px solid #A7F3D0;">
-                  Multi-Tenant Activo (14 Clientes)
+
+              <!-- Contenedor Cuadrícula de Tarjetas -->
+              <div id="grid-institutions-cards" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 14px;">
+                <!-- Se inyecta dinámicamente desde renderInstitutionsCatalog() -->
+              </div>
+
+              <!-- Contenedor Tabla Ejecutiva -->
+              <div id="container-institutions-table" style="display: none; background: #FFFFFF; border: 1.5px solid #E2E8F0; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
+                <div style="overflow-x: auto;">
+                  <table style="width: 100%; border-collapse: collapse; font-size: 12px; text-align: left;" id="table-institutions-executive">
+                    <thead style="background: #F8FAFC; border-bottom: 1.5px solid #E2E8F0; color: #475569; font-weight: 800; font-size: 11px; text-transform: uppercase;">
+                      <tr>
+                        <th style="padding: 12px 16px;">Institución Sanitaria</th>
+                        <th style="padding: 12px 16px;">Tipo / Sector</th>
+                        <th style="padding: 12px 16px;">Nivel SLA</th>
+                        <th style="padding: 12px 16px;">Módulos Asignados</th>
+                        <th style="padding: 12px 16px; text-align: center;">Salud Operativa</th>
+                        <th style="padding: 12px 16px; text-align: right;">Acción</th>
+                      </tr>
+                    </thead>
+                    <tbody id="tbody-institutions-table">
+                      <!-- Inyección dinámica -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- ===============================================================
+                 SUB-VISTA 2: CATÁLOGO DE MÓDULOS & SISTEMAS DE SOFTWARE
+                 =============================================================== -->
+            <div class="platforms-subview" id="platforms-subview-platforms" style="display: none;">
+              
+              <div style="margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <div style="font-size: 12px; color: #475569;">
+                  Módulos de software y plataformas tecnológicas provistas por Quantux activas en la red:
+                </div>
+                <span style="font-size: 11px; font-weight: 800; color: #00A896; background: #F0FDFA; padding: 4px 10px; border-radius: 6px; border: 1px solid #99F6E4;">
+                  🟢 9 Módulos Operativos • Uptime 99.98%
                 </span>
               </div>
+
+              <!-- Grid de Tarjetas de Plataformas -->
+              <div id="grid-platforms-cards" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 14px;">
+                <!-- Se inyecta dinámicamente desde renderClinicalPlatformsCards() -->
+              </div>
             </div>
 
-            <!-- Split Layout Multi-Tenant: Selector de Cliente (Izq) + Configurador de Plataformas (Der) -->
-            <div style="display: grid; grid-template-columns: 320px 1fr; gap: 16px; margin-top: 8px;">
+            <!-- ===============================================================
+                 SUB-VISTA 3: MATRIZ MULTI-TENANT DE HABILITACIÓN (INSTITUCIÓN ⟷ PLATAFORMA)
+                 =============================================================== -->
+            <div class="platforms-subview" id="platforms-subview-matrix" style="display: none;">
               
-              <!-- Columna Izquierda: Directorio de Clientes / Instituciones -->
-              <div class="card" style="padding: 14px; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 10px; height: fit-content;">
-                <div style="font-size: 12px; font-weight: 800; color: #0F172A; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
-                  <span>Instituciones Sanitarias</span>
-                  <span style="font-size: 10px; background: #F1F5F9; color: #475569; padding: 2px 6px; border-radius: 4px;">14 Conectadas</span>
+              <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 10px; padding: 16px; margin-bottom: 14px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
+                  <div>
+                    <h3 style="font-size: 14px; font-weight: 800; color: #0F172A; margin: 0;">
+                      Matriz Interactiva de Habilitación Multi-Tenant
+                    </h3>
+                    <p style="font-size: 11.5px; color: #64748B; margin: 2px 0 0 0;">
+                      Haga clic en los interruptores para activar o suspender módulos específicos por cada institución cliente en tiempo real.
+                    </p>
+                  </div>
+                  <button type="button" class="btn-sec" onclick="exportTenantMatrixCSV()" style="font-size: 11.5px; padding: 5px 12px; font-weight: 700; border-radius: 6px;">
+                    📥 Exportar Matriz CSV
+                  </button>
                 </div>
-                <div style="position: relative; margin-bottom: 10px;">
-                  <input type="text" id="tenant-search-input" class="form-control" placeholder="Filtrar clientes..." style="padding-left: 28px; font-size: 11.5px; height: 30px;" oninput="filterTenantInstitutions(this.value)">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position: absolute; left: 8px; top: 8px; width: 13px; height: 13px; color: #94A3B8;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                </div>
-                <div id="tenant-institutions-list" style="display: flex; flex-direction: column; gap: 6px; max-height: calc(100vh - 270px); overflow-y: auto;">
-                  <!-- Lista dinámica de instituciones -->
-                </div>
-              </div>
 
-              <!-- Columna Derecha: Configuración de Plataformas y Colas para la Institución Seleccionada -->
-              <div class="card" style="padding: 18px; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 10px;" id="tenant-platform-manager-panel">
-                <!-- Renderizado dinámico de plataformas activas / disponibles para el cliente -->
+                <!-- Tabla Matriz con Scroll Horizontal -->
+                <div style="overflow-x: auto; border: 1px solid #E2E8F0; border-radius: 8px;">
+                  <table style="width: 100%; border-collapse: collapse; font-size: 12px; text-align: center;" id="table-tenant-matrix">
+                    <!-- Se inyecta dinámicamente desde renderTenantMatrixTable() -->
+                  </table>
+                </div>
               </div>
 
             </div>
+
           </div>
         </section>
+
+        <!-- ===================================================================
 
         <!-- ===================================================================
              VISTA 6: CONFIGURACIÓN Y ADMINISTRACIÓN DEL SISTEMA
@@ -1084,7 +1313,7 @@
 
           <div class="form-grid-2" style="margin-bottom: 12px;">
             <div class="form-group">
-              <label class="form-label" for="article-category">Categoría Clínica / Módulo *</label>
+              <label class="form-label" for="article-category">Categoría del Servicio / Módulo *</label>
               <select id="article-category" class="form-control" required>
                 <option value="Receta Digital">Receta Digital</option>
                 <option value="Telemedicina">Telemedicina</option>
@@ -1145,7 +1374,7 @@
 
           <div class="form-grid-2" style="margin-bottom: 12px;">
             <div class="form-group">
-              <label class="form-label" for="edit-article-category">Categoría Clínica / Módulo *</label>
+              <label class="form-label" for="edit-article-category">Categoría del Servicio / Módulo *</label>
               <select id="edit-article-category" class="form-control" required>
                 <option value="Receta Digital">Receta Digital</option>
                 <option value="Telemedicina">Telemedicina</option>
@@ -1247,7 +1476,7 @@
           <span id="view-article-icon" style="font-size: 20px;">📄</span>
           <div>
             <div id="view-article-cat" style="font-size: 10.5px; font-weight: 800; color: #0D9488; text-transform: uppercase;">Receta Digital</div>
-            <span class="modal-title" id="view-article-title" style="font-size: 14px;">Protocolo Clínico</span>
+            <span class="modal-title" id="view-article-title" style="font-size: 14px;">Procedimiento Operativo</span>
           </div>
         </div>
         <button class="modal-close-btn" id="modal-view-article-close">&times;</button>
@@ -1278,93 +1507,267 @@
        ========================================================================= -->
 
   <div class="modal-overlay" id="modal-ticket">
-    <div class="modal-box">
-      <div class="modal-header">
+    <div class="modal-wizard-box">
+      <!-- HEADER CON ASISTENTE DE 4 PASOS -->
+      <div class="modal-header modal-header-senior">
         <span class="modal-title" style="display: flex; align-items: center; gap: 8px;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 16px; height: 16px; color: var(--q-primary);"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-          <span>Nueva Solicitud de Asistencia Técnica</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 18px; height: 18px; color: #00E5CC;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          <span style="font-weight: 800; font-size: 15px;">Asistente de Nueva Solicitud Asistencial</span>
         </span>
-        <button class="modal-close-btn" id="modal-close">&times;</button>
+        <button class="modal-close-btn" id="modal-close" style="color: #94A3B8;">&times;</button>
       </div>
-      
+
+      <div class="wizard-stepper-bar">
+        <div class="wizard-step-node active" id="step-node-1" onclick="goToWizardStep(1)">
+          <div class="wizard-step-circle">1</div>
+          <span>1. Institución & Tipo</span>
+        </div>
+        <div class="wizard-step-arrow">➔</div>
+        <div class="wizard-step-node" id="step-node-2" onclick="goToWizardStep(2)">
+          <div class="wizard-step-circle">2</div>
+          <span>2. Plataforma</span>
+        </div>
+        <div class="wizard-step-arrow">➔</div>
+        <div class="wizard-step-node" id="step-node-3" onclick="goToWizardStep(3)">
+          <div class="wizard-step-circle">3</div>
+          <span>3. Afectación & SLA</span>
+        </div>
+        <div class="wizard-step-arrow">➔</div>
+        <div class="wizard-step-node" id="step-node-4" onclick="goToWizardStep(4)">
+          <div class="wizard-step-circle">4</div>
+          <span>4. Descripción</span>
+        </div>
+      </div>
+
       <form id="form-new-ticket">
-        <div class="modal-body">
-          
-          <div class="form-grid-2">
-            <div class="form-group">
-              <label class="form-label" for="modal-platform">Plataforma / Sistema *</label>
-              <select id="modal-platform" class="form-control" required>
-                <option value="">Seleccione Plataforma (9)...</option>
-              </select>
-            </div>
+        <input type="hidden" id="modal-platform" name="platform" value="CAT_RECETA" required>
+        <input type="hidden" id="modal-type" name="ticket_type" value="INCIDENTE">
+        <input type="hidden" id="modal-impact" name="impact" value="MEDIO">
+        <input type="hidden" id="modal-urgency" name="urgency" value="MEDIO">
 
-            <div class="form-group">
-              <label class="form-label" for="modal-institution">Institución / Cliente *</label>
-              <select id="modal-institution" class="form-control" required>
-                <option value="">Seleccione Institución (14)...</option>
-              </select>
-            </div>
+        <!-- PASO 1: SEDE E INSTITUCIÓN Y TIPO DE REQUERIMIENTO -->
+        <div class="wizard-panel active" id="wizard-panel-1">
+          <div style="margin-bottom: 12px;">
+            <h4 style="font-size: 14px; font-weight: 800; color: #0F172A; margin: 0;">¿En qué Institución ocurre y qué tipo de solicitud es?</h4>
+            <p style="font-size: 12px; color: #64748B; margin-top: 4px;">Seleccione la institución sanitaria y el tipo de requerimiento asistencial.</p>
           </div>
 
-          <div class="form-grid-2">
-            <div class="form-group">
-              <label class="form-label" for="modal-type">Tipo de Solicitud *</label>
-              <select id="modal-type" class="form-control" required>
-                <option value="INCIDENTE" selected>Incidente (Falla o interrupción de servicio)</option>
-                <option value="REQUERIMIENTO">Requerimiento (Solicitud de configuración o alta)</option>
-                <option value="CONSULTA">Consulta (Duda técnica o funcional)</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="modal-attachment-url">Enlace de Evidencia / Captura</label>
-              <input type="url" id="modal-attachment-url" class="form-control" placeholder="https://drive.google.com/... o enlace de captura">
-            </div>
+          <div class="form-group" style="margin-bottom: 16px;">
+            <label class="form-label" for="modal-institution" style="font-weight: 800;">Institución Asistencial *</label>
+            <select id="modal-institution" class="form-control" required style="font-size: 13px; height: 42px; border-radius: 8px;">
+              <option value="">Seleccione Institución...</option>
+            </select>
           </div>
 
-          <div class="form-grid-2">
-            <div class="form-group">
-              <label class="form-label" for="modal-impact">Impacto *</label>
-              <select id="modal-impact" class="form-control" required>
-                <option value="CRITICO">Crítico (Bloqueo en servicio en producción/quirófano)</option>
-                <option value="ALTO">Alto (Falla grave con alternativa)</option>
-                <option value="MEDIO" selected>Medio (Inconveniente puntual)</option>
-                <option value="BAJO">Bajo (Consulta operativa)</option>
-              </select>
+          <label class="form-label" style="font-weight: 800; margin-bottom: 8px; display: block;">Tipo de Solicitud *</label>
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 18px;">
+            <div class="impact-card-choice selected" id="type-card-incidente" onclick="selectTypeCard('INCIDENTE', this)">
+              <div class="impact-card-icon">🚨</div>
+              <div>
+                <div class="impact-card-title">Incidente</div>
+                <div class="impact-card-desc">Falla o corte del servicio en producción</div>
+              </div>
             </div>
-
-            <div class="form-group">
-              <label class="form-label" for="modal-urgency">Urgencia *</label>
-              <select id="modal-urgency" class="form-control" required>
-                <option value="CRITICO">Crítica (Inmediata)</option>
-                <option value="ALTO">Alta (&lt; 4h)</option>
-                <option value="MEDIO" selected>Media (Mismo turno)</option>
-                <option value="BAJO">Baja (Programada)</option>
-              </select>
+            <div class="impact-card-choice" id="type-card-requerimiento" onclick="selectTypeCard('REQUERIMIENTO', this)">
+              <div class="impact-card-icon">🛠️</div>
+              <div>
+                <div class="impact-card-title">Requerimiento</div>
+                <div class="impact-card-desc">Nueva configuración, usuario o permiso</div>
+              </div>
+            </div>
+            <div class="impact-card-choice" id="type-card-consulta" onclick="selectTypeCard('CONSULTA', this)">
+              <div class="impact-card-icon">❓</div>
+              <div>
+                <div class="impact-card-title">Consulta</div>
+                <div class="impact-card-desc">Duda de uso o inquietud operativa</div>
+              </div>
             </div>
           </div>
 
-          <div style="margin-bottom: 12px; padding: 6px 12px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 6px; display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-size: 11px; color: #475569; font-weight: 600;">Prioridad Estimada (Matriz ITIL P = I &times; U):</span>
-            <span id="modal-calculated-priority" class="badge-prio badge-p3" style="font-size: 10.5px;">P3 - MEDIA (Respuesta en 24h)</span>
+          <div style="margin-top: 20px; display: flex; justify-content: flex-end;">
+            <button type="button" class="btn-pri" onclick="goToWizardStep(2)" id="btn-wizard-next-1">
+              <span>Continuar a Plataforma</span> ➔
+            </button>
           </div>
-
-          <div class="form-group">
-            <label class="form-label" for="modal-title">Título breve del problema *</label>
-            <input type="text" id="modal-title" class="form-control" placeholder="Ej: Error al emitir receta digital en consultorio 3" required>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="modal-description">Descripción detallada *</label>
-            <textarea id="modal-description" class="form-control" rows="4" placeholder="Explique qué estaba realizando y el mensaje de error observado..." required></textarea>
-          </div>
-
         </div>
 
-        <div class="modal-footer">
-          <button type="button" class="btn-sec" id="btn-cancel-modal">Cancelar</button>
-          <button type="submit" class="btn-pri" id="btn-submit-ticket">Confirmar y Enviar Solicitud</button>
+        <!-- PASO 2: SELECCIÓN VISUAL DE PLATAFORMA -->
+        <div class="wizard-panel" id="wizard-panel-2">
+          <div style="margin-bottom: 12px;">
+            <h4 style="font-size: 14px; font-weight: 800; color: #0F172A; margin: 0;">¿En qué sistema o plataforma se presenta la incidencia?</h4>
+            <p style="font-size: 12px; color: #64748B; margin-top: 4px;">Haga clic en el módulo asistencial afectado.</p>
+          </div>
+
+          <div class="platform-grid-selector" id="platform-grid-container">
+            <div class="platform-card-choice selected" data-platform="CAT_RECETA" onclick="selectPlatformCard('CAT_RECETA', this)">
+              <div class="platform-icon-big">🩺</div>
+              <div class="platform-name-bold">Receta Electrónica</div>
+              <div class="platform-desc-small">Firma electrónica, validación y dispensación</div>
+            </div>
+            <div class="platform-card-choice" data-platform="CAT_TELEMEDICINA" onclick="selectPlatformCard('CAT_TELEMEDICINA', this)">
+              <div class="platform-icon-big">📹</div>
+              <div class="platform-name-bold">Telemedicina</div>
+              <div class="platform-desc-small">Salas WebRTC, audio/video y videoconsultas</div>
+            </div>
+            <div class="platform-card-choice" data-platform="CAT_CONSULTORIO_DIGITAL" onclick="selectPlatformCard('CAT_CONSULTORIO_DIGITAL', this)">
+              <div class="platform-icon-big">📁</div>
+              <div class="platform-name-bold">Consultorio Digital (HCE)</div>
+              <div class="platform-desc-small">Evoluciones, anamnesis y registros médicos</div>
+            </div>
+            <div class="platform-card-choice" data-platform="CAT_REGISTRO_INTEROP" onclick="selectPlatformCard('CAT_REGISTRO_INTEROP', this)">
+              <div class="platform-icon-big">🧪</div>
+              <div class="platform-name-bold">Interoperabilidad & HL7</div>
+              <div class="platform-desc-small">Resultados, integración y protocolos FHIR</div>
+            </div>
+            <div class="platform-card-choice" data-platform="CAT_RPM_MONITOREO" onclick="selectPlatformCard('CAT_RPM_MONITOREO', this)">
+              <div class="platform-icon-big">🩻</div>
+              <div class="platform-name-bold">Monitoreo Remoto (RPM)</div>
+              <div class="platform-desc-small">Telemetría de pacientes crónicos</div>
+            </div>
+            <div class="platform-card-choice" data-platform="CAT_AFILIADOS_PORTAL" onclick="selectPlatformCard('CAT_AFILIADOS_PORTAL', this)">
+              <div class="platform-icon-big">🏥</div>
+              <div class="platform-name-bold">Portal Paciente</div>
+              <div class="platform-desc-small">Turnos online, consultas y credenciales</div>
+            </div>
+            <div class="platform-card-choice" data-platform="CAT_COPAGOS_PAGOS" onclick="selectPlatformCard('CAT_COPAGOS_PAGOS', this)">
+              <div class="platform-icon-big">💳</div>
+              <div class="platform-name-bold">Copagos & Financiadores</div>
+              <div class="platform-desc-small">Validación con prepagas, copagos y aranceles</div>
+            </div>
+            <div class="platform-card-choice" data-platform="CAT_INTERNACION_DOM" onclick="selectPlatformCard('CAT_INTERNACION_DOM', this)">
+              <div class="platform-icon-big">🏠</div>
+              <div class="platform-name-bold">Internación Domiciliaria</div>
+              <div class="platform-desc-small">Visitas, insumos y seguimiento domiciliario</div>
+            </div>
+            <div class="platform-card-choice" data-platform="CAT_CARTILLA_TURNOS" onclick="selectPlatformCard('CAT_CARTILLA_TURNOS', this)">
+              <div class="platform-icon-big">🌐</div>
+              <div class="platform-name-bold">Cartilla Asistencial & Turnos</div>
+              <div class="platform-desc-small">Reserva de citas y geolocalización</div>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+            <button type="button" class="btn-sec" onclick="goToWizardStep(1)">⬅️ Volver a Institución</button>
+            <button type="button" class="btn-pri" onclick="goToWizardStep(3)">Continuar a Afectación ➔</button>
+          </div>
         </div>
+
+        <!-- PASO 3: EVALUACIÓN ASISTENCIAL DE CRITICIDAD Y SLA -->
+        <div class="wizard-panel" id="wizard-panel-3">
+          <div style="margin-bottom: 12px;">
+            <h4 style="font-size: 14px; font-weight: 800; color: #0F172A; margin: 0;">Evaluación de Criticidad y SLA Asistencial</h4>
+            <p style="font-size: 12px; color: #64748B; margin-top: 4px;">El sistema ITIL calculará automáticamente el tiempo máximo de atención.</p>
+          </div>
+
+          <label class="form-label" style="font-weight: 800; margin-bottom: 6px; display: block;">¿Cuál es el alcance del problema? (Impacto)</label>
+          <div class="impact-cards-grid" id="wizard-impact-grid" style="margin-bottom: 16px;">
+            <div class="impact-card-choice" id="impact-card-critico" onclick="selectImpactCard('CRITICO', this)">
+              <div class="impact-card-icon">🔴</div>
+              <div>
+                <div class="impact-card-title">Crítico / Bloqueo Total</div>
+                <div class="impact-card-desc">Afecta a toda la guardia o servicio médico sin alternativa</div>
+              </div>
+            </div>
+            <div class="impact-card-choice" id="impact-card-alto" onclick="selectImpactCard('ALTO', this)">
+              <div class="impact-card-icon">🟠</div>
+              <div>
+                <div class="impact-card-title">Alto / Múltiples Puestos</div>
+                <div class="impact-card-desc">Falla grave con alternativa manual o contingencia parcial</div>
+              </div>
+            </div>
+            <div class="impact-card-choice selected" id="impact-card-medio" onclick="selectImpactCard('MEDIO', this)">
+              <div class="impact-card-icon">🟡</div>
+              <div>
+                <div class="impact-card-title">Medio / Puesto Individual</div>
+                <div class="impact-card-desc">Inconveniente puntual en 1 profesional o consultorio</div>
+              </div>
+            </div>
+            <div class="impact-card-choice" id="impact-card-bajo" onclick="selectImpactCard('BAJO', this)">
+              <div class="impact-card-icon">🟢</div>
+              <div>
+                <div class="impact-card-title">Bajo / Operativo</div>
+                <div class="impact-card-desc">Duda operativa o solicitud sin afectación a pacientes</div>
+              </div>
+            </div>
+          </div>
+
+          <label class="form-label" style="font-weight: 800; margin-bottom: 6px; display: block;">¿Con qué urgencia se requiere solución? (Urgencia)</label>
+          <div class="impact-cards-grid" id="wizard-urgency-grid">
+            <div class="impact-card-choice" id="urgency-card-critico" onclick="selectUrgencyCard('CRITICO', this)">
+              <div class="impact-card-icon">⚡</div>
+              <div>
+                <div class="impact-card-title">Inmediata (Atención en Curso)</div>
+                <div class="impact-card-desc">Paciente en espera inmediata o procedimiento activo</div>
+              </div>
+            </div>
+            <div class="impact-card-choice" id="urgency-card-alto" onclick="selectUrgencyCard('ALTO', this)">
+              <div class="impact-card-icon">⏱️</div>
+              <div>
+                <div class="impact-card-title">Alta (&lt; 4 Horas)</div>
+                <div class="impact-card-desc">Debe resolverse antes de finalizar el turno médico actual</div>
+              </div>
+            </div>
+            <div class="impact-card-choice selected" id="urgency-card-medio" onclick="selectUrgencyCard('MEDIO', this)">
+              <div class="impact-card-icon">🕒</div>
+              <div>
+                <div class="impact-card-title">Media (Mismo Día)</div>
+                <div class="impact-card-desc">Resolver dentro de la jornada habitual de soporte</div>
+              </div>
+            </div>
+            <div class="impact-card-choice" id="urgency-card-bajo" onclick="selectUrgencyCard('BAJO', this)">
+              <div class="impact-card-icon">📅</div>
+              <div>
+                <div class="impact-card-title">Baja (Programable)</div>
+                <div class="impact-card-desc">Planificable para los próximos días según agenda</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Banner de Prioridad y SLA Dinámico en Vivo -->
+          <div class="prio-live-banner" id="wizard-prio-banner" style="margin-top: 14px; padding: 12px 16px; border-radius: 10px; background: #F8FAFC; border: 1px solid #E2E8F0; display: flex; align-items: center; justify-content: space-between;">
+            <div class="prio-live-left">
+              <span class="prio-live-title" style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: #475569;">Prioridad y Tiempo de SLA Estimado:</span>
+              <span class="prio-live-desc" id="wizard-sla-explanation" style="font-size: 11.5px; color: #64748B;">Respuesta inicial garantizada en 4h • Resolución en 24h</span>
+            </div>
+            <span id="modal-calculated-priority" class="badge-prio badge-p3" style="font-size: 12px; font-weight: 800; padding: 4px 10px;">P3 • MEDIA</span>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+            <button type="button" class="btn-sec" onclick="goToWizardStep(2)">⬅️ Volver a Sede</button>
+            <button type="button" class="btn-pri" onclick="goToWizardStep(4)">Continuar a Descripción ➔</button>
+          </div>
+        </div>
+
+        <!-- PASO 4: TÍTULO, DESCRIPCIÓN Y EVIDENCIAS -->
+        <div class="wizard-panel" id="wizard-panel-4">
+          <div style="margin-bottom: 12px;">
+            <h4 style="font-size: 14px; font-weight: 800; color: #0F172A; margin: 0;">Detalles de la Incidencia y Evidencias</h4>
+            <p style="font-size: 12px; color: #64748B; margin-top: 4px;">Ingrese un título claro y adjunte capturas de pantalla para agilizar el diagnóstico.</p>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 14px;">
+            <label class="form-label" for="modal-title" style="font-weight: 800;">Título Breve del Problema *</label>
+            <input type="text" id="modal-title" class="form-control" placeholder="Ej: Error de firma digital al emitir receta OSDE en consultorio 3" required style="font-size: 13px; height: 38px; border-radius: 8px;">
+          </div>
+
+          <div class="form-group" style="margin-bottom: 14px;">
+            <label class="form-label" for="modal-description" style="font-weight: 800;">Descripción Detallada y Pasos para Reproducir *</label>
+            <textarea id="modal-description" class="form-control" rows="4" placeholder="Indique qué acción realizaba el profesional, mensaje exacto de error en pantalla y datos relevantes (DNI/Nro de Receta si aplica)..." required style="font-size: 12.5px; border-radius: 8px;"></textarea>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 18px;">
+            <label class="form-label" for="modal-attachment-url" style="font-weight: 700;">Enlace de Captura / Evidencia Adjunta (Opcional)</label>
+            <input type="url" id="modal-attachment-url" class="form-control" placeholder="https://drive.google.com/... o enlace de captura de pantalla" style="font-size: 12.5px; height: 38px; border-radius: 8px;">
+          </div>
+
+          <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+            <button type="button" class="btn-sec" onclick="goToWizardStep(3)">⬅️ Volver a Afectación</button>
+            <button type="submit" class="btn-pri" id="btn-submit-ticket" style="background: #00A896; padding: 10px 22px; font-weight: 800;">
+              🚀 Confirmar y Enviar Solicitud
+            </button>
+          </div>
+        </div>
+
       </form>
     </div>
   </div>
@@ -1389,7 +1792,7 @@
               <select id="edit-platform" class="form-control" required></select>
             </div>
             <div class="form-group">
-              <label class="form-label" for="edit-institution">Institución / Cliente *</label>
+              <label class="form-label" for="edit-institution">Institución Asistencial *</label>
               <select id="edit-institution" class="form-control" required></select>
             </div>
           </div>
@@ -1445,7 +1848,7 @@
         <div class="modal-body">
           <div class="form-group">
             <label class="form-label" for="user-fullname">Nombre y Apellido *</label>
-            <input type="text" id="user-fullname" class="form-control" placeholder="Ej: Lic. Mariana Torres" required>
+            <input type="text" id="user-fullname" class="form-control" placeholder="Ej: Mariana Torres" required>
           </div>
 
           <div class="form-grid-2">
@@ -1699,39 +2102,90 @@
 
   <!-- MODAL AUTENTICACIÓN / CONTROL DE ACCESO (AUTH GATE & LOGIN) -->
   <div class="modal-overlay" id="modal-auth-login">
-    <div class="modal-box" style="max-width: 440px; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2), 0 10px 10px -5px rgba(0,0,0,0.1);">
+    <div class="modal-box" style="max-width: 480px; border-radius: 14px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25);">
       <div class="modal-header" style="background: #0F172A; color: #FFFFFF; display: flex; align-items: center; justify-content: space-between; padding: 14px 20px;">
         <div style="display: flex; align-items: center; gap: 8px;">
-          <span style="font-size: 17px;">🏥</span>
-          <span class="modal-title" id="auth-modal-title" style="font-size: 14px; font-weight: 800; letter-spacing: 0.3px;">HealthDesk Quantux</span>
+          <span style="font-size: 18px;">🏥</span>
+          <span class="modal-title" id="auth-modal-title" style="font-size: 14.5px; font-weight: 800; letter-spacing: 0.3px;">HealthDesk Quantux • Acceso al Sistema</span>
         </div>
-        <button class="modal-close-btn" id="modal-auth-login-close" title="Cerrar ventana" style="display: none; color: #94A3B8;">&times;</button>
+        <button class="modal-close-btn" id="modal-auth-login-close" onclick="closeAuthModal()" title="Cerrar ventana" style="color: #94A3B8; font-size: 20px; background: none; border: none; cursor: pointer;">&times;</button>
       </div>
 
-      <div class="modal-body" style="padding: 24px 24px 20px 24px; background: #FFFFFF;">
-        <div style="text-align: center; margin-bottom: 20px;">
-          <div style="display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; background: #F0FDFA; border-radius: 12px; color: var(--q-primary); margin-bottom: 8px; border: 1px solid #CCFBF1;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 24px; height: 24px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+      <div class="modal-body" style="padding: 22px 24px; background: #FFFFFF;">
+        <div style="text-align: center; margin-bottom: 18px;">
+          <div style="display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; background: #F0FDFA; border-radius: 12px; color: #00A896; margin-bottom: 8px; border: 1px solid #CCFBF1;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 22px; height: 22px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
           </div>
-          <h3 style="font-size: 17px; font-weight: 800; color: #0F172A; margin: 0;">Iniciar Sesión</h3>
+          <h3 style="font-size: 16.5px; font-weight: 800; color: #0F172A; margin: 0;" id="auth-modal-heading">Iniciar Sesión de Operador</h3>
           <p style="font-size: 12px; color: #64748B; margin: 4px 0 0 0;" id="auth-modal-subtitle">
-            Ingrese sus credenciales para acceder a la mesa de ayuda hospitalaria.
+            Seleccione un perfil de acceso rápido o ingrese sus credenciales.
           </p>
         </div>
 
         <!-- Banner de Error Dinámico -->
-        <div id="login-error-msg" style="display: none; background: #FEF2F2; border: 1px solid #FECACA; color: #DC2626; font-size: 12px; font-weight: 600; padding: 10px 14px; border-radius: 8px; margin-bottom: 16px;">
+        <div id="login-error-msg" style="display: none; background: #FEF2F2; border: 1px solid #FECACA; color: #DC2626; font-size: 12px; font-weight: 600; padding: 10px 14px; border-radius: 8px; margin-bottom: 14px;">
           ❌ Credenciales inválidas.
+        </div>
+
+        <!-- SECCIÓN DE ACCESO RÁPIDO POR ROL (DEMOSTRACIÓN SENIOR UX) -->
+        <div style="margin-bottom: 18px;">
+          <div style="font-size: 11px; font-weight: 800; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+            <span>⚡ Perfiles Rápidos de Demostración:</span>
+            <span style="font-weight: 600; color: #94A3B8; text-transform: none; font-size: 10.5px;">1 clic para ingresar</span>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <!-- Perfil 1: Admin -->
+            <div class="quick-login-card" onclick="fillLoginForm('admin', 'quantux123')" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border: 1px solid #E2E8F0; border-radius: 10px; cursor: pointer; transition: all 0.15s ease; background: #F8FAFC;">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <div style="width: 32px; height: 32px; border-radius: 50%; background: #00A896; color: #FFF; font-weight: 800; font-size: 11px; display: flex; align-items: center; justify-content: center;">FC</div>
+                <div>
+                  <div style="font-size: 12.5px; font-weight: 700; color: #0F172A;">Freddy Cortés</div>
+                  <div style="font-size: 11px; color: #64748B;">@admin • Administrador General</div>
+                </div>
+              </div>
+              <span style="background: #E0F2FE; color: #0369A1; font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 6px;">ADMIN</span>
+            </div>
+
+            <!-- Perfil 2: Soporte N2 -->
+            <div class="quick-login-card" onclick="fillLoginForm('soporte', 'quantux123')" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border: 1px solid #E2E8F0; border-radius: 10px; cursor: pointer; transition: all 0.15s ease; background: #F8FAFC;">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <div style="width: 32px; height: 32px; border-radius: 50%; background: #6366F1; color: #FFF; font-weight: 800; font-size: 11px; display: flex; align-items: center; justify-content: center;">LB</div>
+                <div>
+                  <div style="font-size: 12.5px; font-weight: 700; color: #0F172A;">Laura Benítez</div>
+                  <div style="font-size: 11px; color: #64748B;">@soporte • Soporte Especialista N2</div>
+                </div>
+              </div>
+              <span style="background: #EEF2FF; color: #4338CA; font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 6px;">SOPORTE N2</span>
+            </div>
+
+            <!-- Perfil 3: Solicitante Asistencial -->
+            <div class="quick-login-card" onclick="fillLoginForm('solicitante', 'quantux123')" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border: 1px solid #E2E8F0; border-radius: 10px; cursor: pointer; transition: all 0.15s ease; background: #F8FAFC;">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <div style="width: 32px; height: 32px; border-radius: 50%; background: #10B981; color: #FFF; font-weight: 800; font-size: 11px; display: flex; align-items: center; justify-content: center;">MG</div>
+                <div>
+                  <div style="font-size: 12.5px; font-weight: 700; color: #0F172A;">Dr. Martín Gómez</div>
+                  <div style="font-size: 11px; color: #64748B;">@solicitante • Médico de Guardia</div>
+                </div>
+              </div>
+              <span style="background: #ECFDF5; color: #047857; font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 6px;">SOLICITANTE</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 10px; margin: 16px 0;">
+          <div style="flex: 1; height: 1px; background: #E2E8F0;"></div>
+          <span style="font-size: 11px; color: #94A3B8; font-weight: 700; text-transform: uppercase;">O ingresá con usuario y clave</span>
+          <div style="flex: 1; height: 1px; background: #E2E8F0;"></div>
         </div>
 
         <!-- FORMULARIO DE LOGIN PRINCIPAL -->
         <form id="form-auth-login">
-          <div class="form-group" style="margin-bottom: 14px;">
-            <label class="form-label" for="login-username-input" style="font-weight: 700; font-size: 12px; color: #334155;">Usuario o Correo Institucional *</label>
+          <div class="form-group" style="margin-bottom: 12px;">
+            <label class="form-label" for="login-username-input" style="font-weight: 700; font-size: 12px; color: #334155;">Usuario Institucional *</label>
             <input type="text" id="login-username-input" class="form-control" placeholder="Ej: admin, soporte, solicitante" required autocomplete="username" style="height: 38px; font-size: 13px; border-radius: 8px;">
           </div>
 
-          <div class="form-group" style="margin-bottom: 18px;">
+          <div class="form-group" style="margin-bottom: 16px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
               <label class="form-label" for="login-password-input" style="font-weight: 700; font-size: 12px; color: #334155; margin: 0;">Contraseña *</label>
             </div>
@@ -1743,38 +2197,936 @@
             </div>
           </div>
 
-          <button type="submit" id="btn-submit-auth-login" class="btn-pri" style="width: 100%; height: 42px; font-size: 13.5px; font-weight: 800; border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+          <button type="submit" id="btn-submit-auth-login" class="btn-pri" style="width: 100%; height: 40px; font-size: 13px; font-weight: 800; border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 8px; background: #00A896; border-color: #00A896; color: #FFF;">
             <span>Ingresar al Sistema</span>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 15px; height: 15px;"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
           </button>
         </form>
 
-        <!-- SECCIÓN DE ACCESO RÁPIDO PARA DEMOSTRACIÓN -->
-        <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid #E2E8F0; text-align: center;">
-          <p style="font-size: 11px; color: #64748B; margin-bottom: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
-            💡 Accesos Rápidos de Demostración:
-          </p>
-          <div style="display: flex; gap: 6px; justify-content: center; flex-wrap: wrap;">
-            <button type="button" class="btn-demo-pill" onclick="fillLoginForm('admin', 'quantux123')">
-              🛡️ Admin
-            </button>
-            <button type="button" class="btn-demo-pill" onclick="fillLoginForm('soporte', 'quantux123')">
-              🎧 Soporte N2
-            </button>
-            <button type="button" class="btn-demo-pill" onclick="fillLoginForm('solicitante', 'quantux123')">
-              👤 Solicitante
-            </button>
-          </div>
+        <div style="margin-top: 14px; padding-top: 12px; border-top: 1px solid #F1F5F9; display: flex; justify-content: space-between; align-items: center;">
+          <button type="button" id="btn-cancel-auth-login" class="btn-sec" onclick="closeAuthModal()" style="font-size: 11.5px; padding: 6px 12px; border-radius: 6px;">
+            Continuar trabajando
+          </button>
+          <button type="button" onclick="handleLogout()" class="btn-clean-action" style="font-size: 11.5px; color: #EF4444; font-weight: 700; background: none; border: none; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+            <span>🚪 Cerrar Sesión</span>
+          </button>
         </div>
 
       </div>
     </div>
   </div>
 
+  <!-- =========================================================================
+       DEDICATED POPUPS / MODALES ESPECIALIZADOS SENIOR UX (v3.0)
+       ========================================================================= -->
+
+  <!-- 1. MODAL POPUP: FICHA TÉCNICA & DIAGNÓSTICO INTEGRAL -->
+  <div class="modal-overlay" id="modal-view-tech-details">
+    <div class="modal-box modal-box-senior" style="max-width: 680px;">
+      <div class="modal-header modal-header-senior">
+        <span class="modal-title" style="display: flex; align-items: center; gap: 8px;">
+          <span>🔍 Ficha Técnica & Diagnóstico Completo</span>
+        </span>
+        <button class="modal-close-btn" onclick="closeTechDetailsModal()">&times;</button>
+      </div>
+      <div class="modal-body modal-body-senior" id="tech-details-modal-body">
+        <!-- Renderizado dinámico -->
+      </div>
+      <div class="modal-footer modal-footer-senior">
+        <button type="button" class="btn-pri" onclick="closeTechDetailsModal()">Cerrar Ficha Técnica</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. MODAL POPUP: HISTORIAL & TRAZABILIDAD FORENSE -->
+  <div class="modal-overlay" id="modal-audit-trail">
+    <div class="modal-box modal-box-senior" style="max-width: 650px;">
+      <div class="modal-header modal-header-senior">
+        <span class="modal-title" style="display: flex; align-items: center; gap: 8px;">
+          <span>📜 Historial y Trazabilidad Forense Inmutable</span>
+        </span>
+        <button class="modal-close-btn" onclick="closeAuditTrailModal()">&times;</button>
+      </div>
+      <div class="modal-body modal-body-senior" id="audit-trail-modal-body">
+        <!-- Renderizado dinámico -->
+      </div>
+      <div class="modal-footer modal-footer-senior">
+        <button type="button" class="btn-pri" onclick="closeAuditTrailModal()">Cerrar Historial</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. MODAL POPUP: CHAT & MENSAJERÍA ASISTENCIAL AMPLIADA -->
+  <div class="modal-overlay" id="modal-chat-expanded">
+    <div class="modal-box modal-box-senior" style="max-width: 720px;">
+      <div class="modal-header modal-header-senior">
+        <span class="modal-title" style="display: flex; align-items: center; gap: 8px;">
+          <span>💬 Centro de Comunicación Asistencial y Notas de Trabajo</span>
+        </span>
+        <button class="modal-close-btn" onclick="closeChatExpandedModal()">&times;</button>
+      </div>
+      <div class="modal-body modal-body-senior" style="display: flex; flex-direction: column; max-height: 60vh;">
+        <div id="chat-expanded-stream" class="chat-stream-clean" style="flex: 1; overflow-y: auto; padding-right: 6px; min-height: 220px; max-height: 380px;">
+          <!-- Mensajes dinámicos -->
+        </div>
+        <div class="chat-input-box" style="margin-top: 12px;">
+          <textarea id="chat-expanded-msg-input" class="form-control" rows="3" placeholder="Escriba un mensaje para el solicitante o una nota interna de trabajo..." style="font-size: 13px;"></textarea>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
+            <label style="font-size: 12px; color: #92400E; display: flex; align-items: center; gap: 6px; cursor: pointer;">
+              <input type="checkbox" id="chat-expanded-is-internal" style="accent-color: #F59E0B;">
+              <span>🔒 Nota Privada Interna (Visible solo para operadores)</span>
+            </label>
+            <button type="button" class="btn-pri" onclick="submitExpandedChatMessage()" style="font-size: 12px; padding: 7px 16px;">
+              Enviar Mensaje
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer modal-footer-senior">
+        <button type="button" class="btn-sec" onclick="closeChatExpandedModal()">Cerrar Ventana</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. MODAL POPUP: DETALLES DE USUARIO / PERFIL -->
+  <div class="modal-overlay" id="modal-user-profile-view">
+    <div class="modal-box modal-box-senior" style="max-width: 550px;">
+      <div class="modal-header modal-header-senior">
+        <span class="modal-title" style="display: flex; align-items: center; gap: 8px;">
+          <span>👤 Perfil de Usuario y Métricas de Desempeño</span>
+        </span>
+        <button class="modal-close-btn" onclick="closeUserProfileModal()">&times;</button>
+      </div>
+      <div class="modal-body modal-body-senior" id="user-profile-modal-body">
+        <!-- Renderizado dinámico -->
+      </div>
+      <div class="modal-footer modal-footer-senior">
+        <button type="button" class="btn-pri" onclick="closeUserProfileModal()">Cerrar Perfil</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. MODAL POPUP: DESGLOSE ANALÍTICO DE MÉTRICAS -->
+  <div class="modal-overlay" id="modal-metrics-drilldown">
+    <div class="modal-box modal-box-senior" style="max-width: 680px;">
+      <div class="modal-header modal-header-senior">
+        <span class="modal-title-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px;"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+          <strong id="drilldown-modal-title">📊 Desglose Detallado de Métricas</strong>
+        </span>
+        <button class="modal-close-btn" onclick="closeMetricsDrilldownModal()">&times;</button>
+      </div>
+      <div class="modal-body modal-body-senior" id="metrics-drilldown-modal-body">
+        <!-- Renderizado dinámico -->
+      </div>
+      <div class="modal-footer modal-footer-senior">
+        <button type="button" class="btn-pri" onclick="closeMetricsDrilldownModal()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       6. MODAL POPUP: FILTROS AVANZADOS DE BANDEJA (SENIOR UX)
+       ========================================================================= -->
+  <div class="modal-overlay" id="modal-advanced-filters">
+    <div class="modal-box modal-box-senior" style="max-width: 540px; padding: 24px; border-radius: 16px;">
+      <div class="modal-header modal-header-senior" style="padding-bottom: 14px; border-bottom: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="width: 38px; height: 38px; border-radius: 10px; background: rgba(0,168,150,0.1); display: flex; align-items: center; justify-content: center; color: #00A896;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px;"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+          </div>
+          <div>
+            <h3 style="margin: 0; font-size: 16px; font-weight: 800; color: #0F172A;">Filtros de Solicitudes</h3>
+            <p style="margin: 2px 0 0 0; font-size: 12px; color: #64748B;">Ajuste los criterios para refinar la bandeja operativa sin sobrecarga visual.</p>
+          </div>
+        </div>
+        <button type="button" class="modal-close-btn" onclick="closeAdvancedFiltersModal()">&times;</button>
+      </div>
+
+        <!-- Filtro Estado del Caso (Por defecto oculta resueltos y cerrados) -->
+        <div class="form-group" style="margin-bottom: 0;">
+          <label style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+            📊 Estado del Caso:
+          </label>
+          <select id="adv-filter-status" class="form-control" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid #CBD5E1; font-size: 13px;">
+            <option value="ACTIVE" selected>⚡ Solo Casos Activos (Ocultar Resueltos y Cerrados)</option>
+            <option value="ALL">🌐 Todos los Estados (Incluir Resueltos y Cerrados)</option>
+            <option value="NUEVO">✨ NUEVO (Sin Asignar)</option>
+            <option value="ASIGNADO">👤 ASIGNADO (En Cola)</option>
+            <option value="EN_CURSO">⚙️ EN CURSO (En Diagnóstico)</option>
+            <option value="RESUELTO">✅ RESUELTO (Casos Resueltos)</option>
+            <option value="CERRADO">🔒 CERRADO (Casos Archivados)</option>
+          </select>
+        </div>
+
+        <!-- Filtro Institución -->
+        <div class="form-group" style="margin-bottom: 0;">
+          <label style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+            🏥 Institución / Sede Asistencial:
+          </label>
+          <select id="adv-filter-institution" class="form-control" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid #CBD5E1; font-size: 13px;">
+            <option value="">Todas las Instituciones (Multi-Sede)</option>
+          </select>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+          <!-- Filtro Nivel ITIL -->
+          <div class="form-group" style="margin-bottom: 0;">
+            <label style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+              🏢 Nivel de Soporte ITIL:
+            </label>
+            <select id="adv-filter-level" class="form-control" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid #CBD5E1; font-size: 13px;">
+              <option value="">Todos los Niveles</option>
+              <option value="N1">🔵 Nivel 1 • Triage</option>
+              <option value="N2">🟣 Nivel 2 • Especialista</option>
+              <option value="N3">🔴 Nivel 3 • Ingeniería</option>
+            </select>
+          </div>
+
+          <!-- Filtro Prioridad ITIL -->
+          <div class="form-group" style="margin-bottom: 0;">
+            <label style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+              ⚡ Prioridad ITIL:
+            </label>
+            <select id="adv-filter-priority" class="form-control" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid #CBD5E1; font-size: 13px;">
+              <option value="">Todas las Prioridades</option>
+              <option value="P1">🚨 P1 - Crítica (SLA 2h)</option>
+              <option value="P2">⚠️ P2 - Alta (SLA 8h)</option>
+              <option value="P3">🔷 P3 - Media (SLA 24h)</option>
+              <option value="P4">⚪ P4 - Baja (SLA 48h)</option>
+              <option value="P5">📅 P5 - Planificada (SLA 72h)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Filtro Plataforma / Sistema -->
+        <div class="form-group" style="margin-bottom: 0;">
+          <label style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+            💻 Plataforma / Módulo de Servicio:
+          </label>
+          <select id="adv-filter-platform" class="form-control" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid #CBD5E1; font-size: 13px;">
+            <option value="">Todas las Plataformas y Módulos</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="modal-footer modal-footer-senior" style="padding-top: 14px; border-top: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center;">
+        <button type="button" class="btn-sec" onclick="resetAdvancedFilters()" style="padding: 8px 14px; font-size: 12.5px; font-weight: 700; border-radius: 8px;">
+          🔄 Restablecer
+        </button>
+        <div style="display: flex; gap: 10px;">
+          <button type="button" class="btn-sec" onclick="closeAdvancedFiltersModal()" style="padding: 8px 14px; font-size: 12.5px; font-weight: 700; border-radius: 8px;">
+            Cancelar
+          </button>
+          <button type="button" class="btn-pri" onclick="applyAdvancedFiltersModal()" style="padding: 8px 18px; font-size: 12.5px; font-weight: 700; border-radius: 8px; background: #00A896; border-color: #00A896; color: #FFF;">
+            Aplicar Filtros
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       7. MODAL WORKSPACE DE TRABAJO DEL AGENTE (INVGATE / OSDE PAU STYLE)
+       ========================================================================= -->
+  <div class="modal-overlay modal-overlay-fullscreen" id="modal-agent-workspace">
+    <div class="agent-workspace-container" id="agent-workspace-container">
+      
+      <!-- Topbar del Workspace (ID, Tabs de Modo, Estado, Acciones & Botón Cerrar) -->
+      <div class="ws-topbar">
+        <div class="ws-topbar-left">
+          <div class="ws-ticket-id-badge" id="ws-ticket-id-display">
+            <span style="font-size: 11px; opacity: 0.8; font-weight: 600;">SOLICITUD</span>
+            <strong id="ws-header-ticket-id">#TICK-202608-0001</strong>
+          </div>
+
+          <!-- Pestañas de Navegación del Workspace -->
+          <div class="ws-tabs-group">
+            <button class="ws-tab-btn active" id="ws-tab-case" onclick="switchWsTab('case')" title="Historial conversacional y respuesta operativa">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+              <span>Conversación</span>
+            </button>
+            <button class="ws-tab-btn" id="ws-tab-metrics" onclick="switchWsTab('metrics')" title="Métricas de respuesta, tiempos y SLA">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+              <span>Métricas & SLA</span>
+            </button>
+            <button class="ws-tab-btn" id="ws-tab-tech" onclick="switchWsTab('tech')" title="Ficha técnica de integración, endpoints y especificación">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+              <span>Ficha Técnica & APIs</span>
+            </button>
+            <button class="ws-tab-btn" id="ws-tab-audit" onclick="switchWsTab('audit')" title="Registro de auditoría forense inmutable">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+              <span>Auditoría Forense</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="ws-topbar-right">
+          <!-- Badges de Estado, Prioridad y Nivel -->
+          <div id="ws-header-status-badge" class="status-pill status-pill-nuevo" style="font-size: 11px; padding: 4px 10px; font-weight: 800;">
+            <span id="ws-header-status-text">🟢 NUEVO</span>
+          </div>
+          <div id="ws-header-prio-badge" class="ws-prio-badge prio-p1">P1 CRÍTICA</div>
+          <div id="ws-header-level-badge" class="ws-level-badge">NIVEL 1 ITIL</div>
+
+          <!-- Botón Cerrar Workspace -->
+          <button type="button" class="ws-btn-close" onclick="closeAgentWorkspace()" title="Cerrar espacio de trabajo (Esc)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 18px; height: 18px;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Cuerpo Principal del Workspace (Split: Área de Trabajo Izquierda + Sidebar de Participantes Derecha) -->
+      <div class="ws-body-grid">
+        
+        <!-- PANE IZQUIERDO: TÍTULO, ATRIBUTOS, CAJA DE RESPUESTA Y FEED CONVERSACIONAL -->
+        <div class="ws-main-pane">
+          
+          <!-- Encabezado del Caso: Título & Taxonomía Asistencial -->
+          <div class="ws-case-header">
+            <h1 class="ws-case-title" id="ws-case-title">Cargando información del caso...</h1>
+            <div class="ws-case-taxonomy" id="ws-case-taxonomy">
+              <span>Mesa de Ayuda</span> &raquo; <span id="ws-tax-plat">Plataforma</span> &raquo; <span id="ws-tax-inst">Institución</span> &raquo; <span id="ws-tax-level">Nivel ITIL</span>
+            </div>
+          </div>
+
+          <!-- SUBVIEW 1: CONVERSACIÓN & CASO PRINCIPAL -->
+          <div id="ws-subview-case" class="ws-subview-content">
+            <!-- Resumen Minimalista de 3 Atributos (Estilo InvGate / PAU) -->
+            <div class="ws-attributes-bar">
+              <div class="ws-attr-item">
+                <span class="ws-attr-label">Prioridad</span>
+                <strong class="ws-attr-val" id="ws-attr-priority">Baja</strong>
+              </div>
+              <div class="ws-attr-item">
+                <span class="ws-attr-label">Tipo</span>
+                <strong class="ws-attr-val" id="ws-attr-type">Pedido de servicio</strong>
+              </div>
+              <div class="ws-attr-item">
+                <span class="ws-attr-label">Origen</span>
+                <strong class="ws-attr-val" id="ws-attr-origin">Web / Portal</strong>
+              </div>
+            </div>
+
+            <!-- Descripción del Requerimiento / Solicitud con Desplegable -->
+            <div class="ws-case-description-box" id="ws-case-desc-box">
+              <div class="ws-desc-header">
+                <span style="font-weight: 700; color: #475569; font-size: 11.5px; text-transform: uppercase;">Detalle de la Solicitud Inicial:</span>
+                <span style="font-size: 11px; color: #94A3B8;" id="ws-desc-date">Creado hace momentos</span>
+              </div>
+              <div class="ws-desc-content" id="ws-desc-text">
+                Descripción del incidente o requerimiento operativo.
+              </div>
+              <div id="ws-desc-attachment-wrapper" style="margin-top: 8px; display: none;">
+                <a href="#" target="_blank" id="ws-desc-attachment-link" class="ws-attachment-chip">
+                  📎 <span id="ws-desc-attachment-name">Ver Evidencia / Adjunto</span>
+                </a>
+              </div>
+            </div>
+
+            <!-- CAJA DE RESPUESTA DEL AGENTE (CENTRO OPERATIVO INVGATE) -->
+            <div class="ws-reply-container">
+              <div class="ws-reply-avatar" id="ws-reply-user-avatar">FC</div>
+              
+              <div class="ws-reply-card">
+                <textarea id="ws-reply-textarea" class="ws-reply-textarea" rows="3" placeholder="Escriba una respuesta aquí..."></textarea>
+                
+                <div class="ws-reply-toolbar">
+                  <div class="ws-reply-tools-left">
+                    <button type="button" class="ws-tool-icon-btn" title="Adjuntar Archivo" onclick="showToast('Habilitado para adjuntar logs y capturas PNG/PDF', 'info')">
+                      📎
+                    </button>
+                    <button type="button" class="ws-tool-icon-btn" title="Insertar Imagen" onclick="showToast('Pegue capturas de pantalla directamente', 'info')">
+                      🖼️
+                    </button>
+                    <button type="button" class="ws-tool-icon-btn" id="ws-btn-canned-template" title="Plantillas de Respuesta Rápida" onclick="insertQuickResponseTemplate()">
+                      📄
+                    </button>
+                    <button type="button" class="ws-tool-icon-btn" title="Procedimiento de Base de Conocimiento" onclick="switchView('articles')">
+                      📚
+                    </button>
+                  </div>
+
+                  <div class="ws-reply-tools-right">
+                    <label class="ws-checkbox-internal" title="Marque si este mensaje es una nota privada visible solo para el equipo técnico">
+                      <input type="checkbox" id="ws-reply-is-internal">
+                      <span>Interno</span>
+                    </label>
+
+                    <button type="button" class="btn-pri ws-btn-submit-reply" id="ws-btn-send-reply" onclick="submitAgentWorkspaceReply()">
+                      <span>Responder</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Separador de Línea de Tiempo & Feed de Conversaciones -->
+            <div class="ws-timeline-divider">
+              <span>HISTORIAL Y COMUNICACIÓN ASISTENCIAL</span>
+            </div>
+
+            <!-- Stream de Mensajes y Eventos -->
+            <div class="ws-timeline-stream" id="ws-timeline-stream">
+              <!-- Renderizado dinámico desde app.js -->
+            </div>
+          </div>
+
+          <!-- SUBVIEW 2: MÉTRICAS Y SLA DETALLADAS DEL CASO -->
+          <div id="ws-subview-metrics" class="ws-subview-content" style="display: none; padding-top: 10px;">
+            <div id="ws-metrics-panel-content">
+              <!-- Renderizado dinámico desde renderWsMetricsPanel() -->
+            </div>
+          </div>
+
+          <!-- SUBVIEW 3: FICHA TÉCNICA FHIR Y PAYLOAD CLÍNICO -->
+          <div id="ws-subview-tech" class="ws-subview-content" style="display: none; padding-top: 10px;">
+            <div id="ws-tech-panel-content">
+              <!-- Renderizado dinámico desde renderWsTechPanel() -->
+            </div>
+          </div>
+
+          <!-- SUBVIEW 4: HISTORIAL Y AUDITORÍA FORENSE INMUTABLE -->
+          <div id="ws-subview-audit" class="ws-subview-content" style="display: none; padding-top: 10px;">
+            <div id="ws-audit-panel-content">
+              <!-- Renderizado dinámico desde renderWsAuditPanel() -->
+            </div>
+          </div>
+
+        </div>
+
+        <!-- PANE DERECHO (SIDEBAR): PARTICIPANTES, PROGRESO SLA Y ACCIONES DE TRABAJO -->
+        <div class="ws-side-pane">
+          
+          <!-- SECCIÓN 1: PARTICIPANTES -->
+          <div class="ws-side-section">
+            <div class="ws-side-section-header">
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <span class="ws-count-bubble" id="ws-participants-count">2</span>
+                <span style="font-weight: 800; font-size: 12.5px; color: #334155;">Participantes</span>
+              </div>
+              <button type="button" class="ws-btn-add-part" title="Reasignar o invitar participante" onclick="reassignFromWorkspace()">
+                +
+              </button>
+            </div>
+
+            <div class="ws-participants-list" id="ws-participants-list">
+              <!-- Renderizado dinámico: Solicitante, Agente Asignado, Mesa de Ayuda -->
+            </div>
+          </div>
+
+          <!-- SECCIÓN 2: PROGRESO Y CONTROL DE SLA -->
+          <div class="ws-side-section">
+            <div class="ws-side-section-header">
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <span class="ws-count-bubble" style="background: #3B82F6;">⏱️</span>
+                <span style="font-weight: 800; font-size: 12.5px; color: #334155;">Progreso & SLA</span>
+              </div>
+            </div>
+
+            <div class="ws-progress-card">
+              <div class="ws-progress-title" id="ws-sla-title">Resolución en Tiempo</div>
+              <div class="ws-progress-countdown" id="ws-sla-countdown">~ 7h 41m restantes</div>
+              
+              <div class="ws-progress-bar-track">
+                <div class="ws-progress-bar-fill" id="ws-sla-bar-fill" style="width: 25%; background: #10B981;"></div>
+              </div>
+
+              <div class="ws-progress-footer">
+                <span id="ws-sla-limit-text">Límite: 2h (P1 Crítica)</span>
+                <span id="ws-sla-status-badge" class="badge-status st-en-curso">EN TIEMPO</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- SECCIÓN 3: ACCIONES RÁPIDAS DE ESTADO FSM -->
+          <div class="ws-side-section">
+            <div class="ws-side-section-header">
+              <span style="font-weight: 800; font-size: 12.5px; color: #334155;">Acciones de Ciclo de Vida</span>
+            </div>
+
+            <div class="ws-workflow-actions" id="ws-workflow-actions">
+              <!-- Botones de transición rápida FSM -->
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       7. MODAL POPUP: ALTA DE NUEVA PLATAFORMA / SISTEMA
+       ========================================================================= -->
+  <div class="modal-overlay" id="modal-create-platform">
+    <div class="modal-box modal-box-senior" style="max-width: 500px; padding: 24px; border-radius: 16px;">
+      <div class="modal-header modal-header-senior" style="padding-bottom: 14px; border-bottom: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="width: 38px; height: 38px; border-radius: 10px; background: rgba(37,99,235,0.1); display: flex; align-items: center; justify-content: center; color: #2563EB;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px;"><rect x="2" y="2" width="20" height="8" rx="2"></rect><rect x="2" y="14" width="20" height="8" rx="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
+          </div>
+          <div>
+            <h3 style="margin: 0; font-size: 16px; font-weight: 800; color: #0F172A;">Alta de Plataforma / Sistema</h3>
+            <p style="margin: 2px 0 0 0; font-size: 12px; color: #64748B;">Registre un nuevo sistema de software o módulo de servicio.</p>
+          </div>
+        </div>
+        <button type="button" class="modal-close-btn" onclick="closeCreatePlatformModal()">&times;</button>
+      </div>
+
+      <form id="form-create-platform" onsubmit="submitCreatePlatform(event)">
+        <div class="modal-body modal-body-senior" style="padding: 18px 0; display: flex; flex-direction: column; gap: 14px;">
+          <div class="form-group" style="margin-bottom: 0;">
+            <label style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px; display: block;">
+              Código Único de Plataforma * (ej: CAT_FARMACIA_HOSP, CAT_PORTAL_PACIENTES, CAT_INFRAESTRUCTURA)
+            </label>
+            <input type="text" id="new-plat-code" class="form-control" placeholder="CAT_NOMBRE_MODULO" required style="text-transform: uppercase; font-family: 'JetBrains Mono', monospace; font-size: 13px;">
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0;">
+            <label style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px; display: block;">
+              Nombre de la Plataforma * (ej: Farmacia & Dispensación, Infraestructura IT)
+            </label>
+            <input type="text" id="new-plat-name" class="form-control" placeholder="Nombre visible del sistema o módulo" required style="font-size: 13px;">
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0;">
+            <label style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px; display: block;">
+              Descripción Funcional & Alcance
+            </label>
+            <textarea id="new-plat-desc" class="form-control" rows="3" placeholder="Detalle los procesos que cubre esta plataforma..." style="font-size: 12.5px;"></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer modal-footer-senior" style="padding-top: 14px; border-top: 1px solid #E2E8F0; display: flex; justify-content: flex-end; gap: 10px;">
+          <button type="button" class="btn-sec" onclick="closeCreatePlatformModal()" style="padding: 8px 14px; font-size: 12.5px; font-weight: 700; border-radius: 8px;">
+            Cancelar
+          </button>
+          <button type="submit" class="btn-pri" style="padding: 8px 18px; font-size: 12.5px; font-weight: 700; border-radius: 8px; background: #2563EB; border-color: #2563EB; color: #FFF;">
+            + Guardar Plataforma
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       8. MODAL POPUP: ALTA DE NUEVA INSTITUCIÓN SANITARIA
+       ========================================================================= -->
+  <div class="modal-overlay" id="modal-create-institution">
+    <div class="modal-box modal-box-senior" style="max-width: 500px; padding: 24px; border-radius: 16px;">
+      <div class="modal-header modal-header-senior" style="padding-bottom: 14px; border-bottom: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="width: 38px; height: 38px; border-radius: 10px; background: rgba(16,185,129,0.1); display: flex; align-items: center; justify-content: center; color: #10B981;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+          </div>
+          <div>
+            <h3 style="margin: 0; font-size: 16px; font-weight: 800; color: #0F172A;">Alta de Institución Sanitaria</h3>
+            <p style="margin: 2px 0 0 0; font-size: 12px; color: #64748B;">Incorpore un nuevo prestador, sanatorio o financiador.</p>
+          </div>
+        </div>
+        <button type="button" class="modal-close-btn" onclick="closeCreateInstitutionModal()">&times;</button>
+      </div>
+
+      <form id="form-create-institution" onsubmit="submitCreateInstitution(event)">
+        <div class="modal-body modal-body-senior" style="padding: 18px 0; display: flex; flex-direction: column; gap: 14px;">
+          <div class="form-group" style="margin-bottom: 0;">
+            <label style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px; display: block;">
+              Código Único de Institución * (ej: HOSP_ITALIANO, GALENO_MED, CL_ALEMAN)
+            </label>
+            <input type="text" id="new-inst-code" class="form-control" placeholder="CODIGO_INSTITUCION" required style="text-transform: uppercase; font-family: 'JetBrains Mono', monospace; font-size: 13px;">
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0;">
+            <label style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px; display: block;">
+              Razón Social / Nombre de la Institución * (ej: Hospital Italiano de Buenos Aires)
+            </label>
+            <input type="text" id="new-inst-name" class="form-control" placeholder="Nombre de la institución" required style="font-size: 13px;">
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0;">
+            <label style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px; display: block;">
+              Segmento / Tipo de Prestador *
+            </label>
+            <select id="new-inst-segment" class="form-control" required style="font-size: 13px;">
+              <option value="Sanatorio / Clínica">Sanatorio / Clínica de Agudos</option>
+              <option value="Financiador / Prepaga">Financiador / Obra Social / Prepaga</option>
+              <option value="Internación Domiciliaria">Internación Domiciliaria</option>
+              <option value="Centro de Diagnóstico">Centro de Diagnóstico & Laboratorio</option>
+              <option value="Red de Farmacias">Red de Farmacias Asistenciales</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-footer modal-footer-senior" style="padding-top: 14px; border-top: 1px solid #E2E8F0; display: flex; justify-content: flex-end; gap: 10px;">
+          <button type="button" class="btn-sec" onclick="closeCreateInstitutionModal()" style="padding: 8px 14px; font-size: 12.5px; font-weight: 700; border-radius: 8px;">
+            Cancelar
+          </button>
+          <button type="submit" class="btn-pri" style="padding: 8px 18px; font-size: 12.5px; font-weight: 700; border-radius: 8px; background: #10B981; border-color: #10B981; color: #FFF;">
+            + Guardar Institución
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 10. MODAL POPUP: ALTA DE USUARIO INSTITUCIONAL (SENIOR UX) -->
+  <div class="modal-overlay" id="modal-create-user">
+    <div class="modal-box modal-box-senior" style="max-width: 540px; padding: 24px; border-radius: 16px;">
+      <div class="modal-header modal-header-senior" style="padding-bottom: 14px; border-bottom: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="width: 38px; height: 38px; border-radius: 10px; background: rgba(0,168,150,0.1); display: flex; align-items: center; justify-content: center; color: #00A896;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px;"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>
+          </div>
+          <div>
+            <h3 style="margin: 0; font-size: 16px; font-weight: 800; color: #0F172A;">Alta de Usuario Institucional</h3>
+            <p style="margin: 2px 0 0 0; font-size: 12px; color: #64748B;">Habilitar un nuevo operador, especialista o profesional solicitante.</p>
+          </div>
+        </div>
+        <button type="button" class="modal-close-btn" onclick="closeCreateUserModal()">&times;</button>
+      </div>
+
+      <form id="form-create-user" onsubmit="submitCreateUser(event)" style="margin-top: 16px; display: flex; flex-direction: column; gap: 14px;">
+        <div class="form-group" style="margin-bottom: 0;">
+          <label style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px; display: block;">
+            Nombre y Apellido *
+          </label>
+          <input type="text" id="new-user-fullname" class="form-control" placeholder="Ej: Dr. Santiago Morales o Valeria Romero" required style="font-size: 13px;">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="form-group" style="margin-bottom: 0;">
+            <label style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px; display: block;">
+              Nombre de Usuario (ID) *
+            </label>
+            <input type="text" id="new-user-username" class="form-control" placeholder="Ej: smorales" required style="font-size: 13px;">
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0;">
+            <label style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px; display: block;">
+              Correo Electrónico *
+            </label>
+            <input type="email" id="new-user-email" class="form-control" placeholder="smorales@sanatorio.com" required style="font-size: 13px;">
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="form-group" style="margin-bottom: 0;">
+            <label style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px; display: block;">
+              Rol en el Sistema *
+            </label>
+            <select id="new-user-role" class="form-control" required style="font-size: 13px;" onchange="handleUserRoleChange()">
+              <option value="SOPORTE">SOPORTE (Operador)</option>
+              <option value="SOLICITANTE">SOLICITANTE (Médico / Prestador)</option>
+              <option value="ADMIN">ADMINISTRADOR (Gestión Total)</option>
+            </select>
+          </div>
+
+          <div class="form-group" id="group-user-level" style="margin-bottom: 0;">
+            <label style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px; display: block;">
+              Nivel de Atención ITIL *
+            </label>
+            <select id="new-user-level" class="form-control" style="font-size: 13px;">
+              <option value="N1">Nivel 1 • Triage & Guardia 24x7</option>
+              <option value="N2">Nivel 2 • Especialistas de Plataformas</option>
+              <option value="N3">Nivel 3 • Ingeniería Core & FHIR</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 0;">
+          <label style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px; display: block;">
+            Institución / Sanatorio Asignado *
+          </label>
+          <select id="new-user-institution" class="form-control" required style="font-size: 13px;">
+            <option value="OSDE">OSDE (Financiador / Prepaga)</option>
+            <option value="SWISS_MEDICAL">Swiss Medical (Financiador / Prepaga)</option>
+            <option value="GALENO">Galeno (Financiador / Prepaga)</option>
+            <option value="MEDIFE">Medifé (Financiador / Prepaga)</option>
+            <option value="OMINT">Omint (Financiador / Prepaga)</option>
+            <option value="PREVENCION_SALUD">Prevención Salud (Financiador / Prepaga)</option>
+            <option value="SANATORIO_FINOCHIETTO">Sanatorio Finochietto (Sanatorio / Hospital)</option>
+            <option value="HOSPITAL_BRITANICO">Hospital Británico (Sanatorio / Hospital)</option>
+            <option value="HOSPITAL_ALEMAN">Hospital Alemán (Sanatorio / Hospital)</option>
+            <option value="SANATORIO_TRINIDAD">Sanatorio de la Trinidad (Sanatorio / Hospital)</option>
+            <option value="IDOM">IDOM (Internación Domiciliaria)</option>
+            <option value="MEVATERAPIA">Mevaterapia (Internación Domiciliaria)</option>
+            <option value="ORIEN">ORIEN (Internación Domiciliaria)</option>
+            <option value="RED_ASISTENCIAL">Red Asistencial Integral (Internación Domiciliaria)</option>
+          </select>
+        </div>
+
+        <div class="modal-footer modal-footer-senior" style="padding-top: 14px; border-top: 1px solid #E2E8F0; display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px;">
+          <button type="button" class="btn-sec" onclick="closeCreateUserModal()" style="padding: 8px 14px; font-size: 12.5px; font-weight: 700; border-radius: 8px;">
+            Cancelar
+          </button>
+          <button type="submit" class="btn-pri" style="padding: 8px 18px; font-size: 12.5px; font-weight: 700; border-radius: 8px; background: #00A896; border-color: #00A896; color: #FFF;">
+            + Habilitar Usuario
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL: EDITAR MI PERFIL ASISTENCIAL (EDITAR PERFIL DE USUARIO)
+       ========================================================================= -->
+  <div class="modal-overlay" id="modal-edit-my-profile">
+    <div class="modal-box" style="max-width: 540px; border-radius: 14px; overflow: hidden; box-shadow: 0 10px 30px rgba(15, 23, 42, 0.25);">
+      <div class="modal-header" style="background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%); color: #FFFFFF; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(0, 229, 204, 0.2); display: flex; align-items: center; justify-content: center; font-size: 16px;">
+            👤
+          </div>
+          <div>
+            <h3 style="font-size: 15px; font-weight: 800; margin: 0; color: #FFFFFF;">Mi Perfil Asistencial / Datos de Cuenta</h3>
+            <p style="font-size: 11px; color: #94A3B8; margin: 2px 0 0 0;">Actualice su identidad médica, foto y preferencias operativas</p>
+          </div>
+        </div>
+        <button type="button" class="modal-close" onclick="closeEditProfileModal()" style="background: transparent; border: none; color: #94A3B8; font-size: 20px; cursor: pointer;">&times;</button>
+      </div>
+
+      <form id="form-edit-my-profile" onsubmit="submitEditMyProfile(event)" style="padding: 20px; background: #FFFFFF;">
+        <!-- Selector de Foto / Avatar -->
+        <div style="display: flex; align-items: center; gap: 16px; padding: 14px; background: #F8FAFC; border-radius: 12px; border: 1px solid #E2E8F0; margin-bottom: 16px;">
+          <div id="profile-edit-preview-avatar" style="width: 54px; height: 54px; border-radius: 50%; background: #00A896; color: #FFF; font-weight: 900; font-size: 20px; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 2px solid #00A896; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            AD
+          </div>
+          <div style="flex: 1;">
+            <label style="font-size: 11.5px; font-weight: 800; color: #334155; display: block; margin-bottom: 4px;">Seleccionar Foto / Avatar Rápido:</label>
+            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="Avatar 1" onclick="selectProfileAvatarPreset(this.src)" style="width: 28px; height: 28px; border-radius: 50%; cursor: pointer; object-fit: cover; border: 2px solid #CBD5E1;" title="Freddy / Ejecutivo">
+              <img src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=100&auto=format&fit=crop&q=80" alt="Avatar 2" onclick="selectProfileAvatarPreset(this.src)" style="width: 28px; height: 28px; border-radius: 50%; cursor: pointer; object-fit: cover; border: 2px solid #CBD5E1;" title="Dr. Médico">
+              <img src="https://images.unsplash.com/photo-1594824813590-798b3c959828?w=100&auto=format&fit=crop&q=80" alt="Avatar 3" onclick="selectProfileAvatarPreset(this.src)" style="width: 28px; height: 28px; border-radius: 50%; cursor: pointer; object-fit: cover; border: 2px solid #CBD5E1;" title="Dra. Especialista">
+              <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80" alt="Avatar 4" onclick="selectProfileAvatarPreset(this.src)" style="width: 28px; height: 28px; border-radius: 50%; cursor: pointer; object-fit: cover; border: 2px solid #CBD5E1;" title="Carlos / Soporte">
+              <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&auto=format&fit=crop&q=80" alt="Avatar 5" onclick="selectProfileAvatarPreset(this.src)" style="width: 28px; height: 28px; border-radius: 50%; cursor: pointer; object-fit: cover; border: 2px solid #CBD5E1;" title="Sofía / Operaciones">
+              <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=100&auto=format&fit=crop&q=80" alt="Avatar 6" onclick="selectProfileAvatarPreset(this.src)" style="width: 28px; height: 28px; border-radius: 50%; cursor: pointer; object-fit: cover; border: 2px solid #CBD5E1;" title="Lucía / Ingeniería">
+            </div>
+            <input type="hidden" id="edit-profile-avatar-url" value="">
+          </div>
+        </div>
+
+        <!-- Campos de Datos de Usuario -->
+        <div class="form-group" style="margin-bottom: 12px;">
+          <label style="font-size: 11.5px; font-weight: 700; color: #334155; margin-bottom: 4px; display: block;">
+            Nombre Completo / Título Profesional *
+          </label>
+          <input type="text" id="edit-profile-fullname" class="form-control" required style="font-size: 12.5px; height: 36px;" placeholder="Ej. Dr. Martín Gómez">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+          <div class="form-group" style="margin-bottom: 0;">
+            <label style="font-size: 11.5px; font-weight: 700; color: #334155; margin-bottom: 4px; display: block;">
+              Nombre de Usuario (Identificador)
+            </label>
+            <input type="text" id="edit-profile-username" class="form-control" readonly disabled style="font-size: 12.5px; height: 36px; background: #F1F5F9; color: #64748B;">
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label style="font-size: 11.5px; font-weight: 700; color: #334155; margin-bottom: 4px; display: block;">
+              Correo Electrónico Asistencial *
+            </label>
+            <input type="email" id="edit-profile-email" class="form-control" required style="font-size: 12.5px; height: 36px;" placeholder="correo@institucion.com.ar">
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+          <div class="form-group" style="margin-bottom: 0;">
+            <label style="font-size: 11.5px; font-weight: 700; color: #334155; margin-bottom: 4px; display: block;">
+              Rol Asistencial / Nivel
+            </label>
+            <select id="edit-profile-role" class="form-control" style="font-size: 12.5px; height: 36px;">
+              <option value="SOLICITANTE">SOLICITANTE (Médico / Asistencial)</option>
+              <option value="SOPORTE">SOPORTE (Mesa de Ayuda)</option>
+              <option value="ADMIN">ADMINISTRADOR (Gestión General)</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label style="font-size: 11.5px; font-weight: 700; color: #334155; margin-bottom: 4px; display: block;">
+              Institución Asignada
+            </label>
+            <select id="edit-profile-institution" class="form-control" style="font-size: 12.5px; height: 36px;">
+              <option value="OSDE">OSDE (Prepaga)</option>
+              <option value="SWISS_MEDICAL">Swiss Medical (Prepaga)</option>
+              <option value="GALENO">Galeno (Prepaga)</option>
+              <option value="MEDIFE">Medifé (Prepaga)</option>
+              <option value="OMINT">Omint (Prepaga)</option>
+              <option value="PREVENCION_SALUD">Prevención Salud (Prepaga)</option>
+              <option value="SANATORIO_FINOCHIETTO">Sanatorio Finochietto</option>
+              <option value="HOSPITAL_BRITANICO">Hospital Británico</option>
+              <option value="HOSPITAL_ALEMAN">Hospital Alemán</option>
+              <option value="SANATORIO_TRINIDAD">Sanatorio de la Trinidad</option>
+              <option value="IDOM">IDOM (Internación Domiciliaria)</option>
+              <option value="MEVATERAPIA">Mevaterapia</option>
+              <option value="ORIEN">ORIEN</option>
+              <option value="RED_ASISTENCIAL">Red Asistencial Integral</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-footer" style="padding-top: 14px; border-top: 1px solid #E2E8F0; display: flex; justify-content: flex-end; gap: 10px;">
+          <button type="button" class="btn-sec" onclick="closeEditProfileModal()" style="padding: 8px 14px; font-size: 12.5px; font-weight: 700; border-radius: 8px;">
+            Cancelar
+          </button>
+          <button type="submit" class="btn-pri" style="padding: 8px 18px; font-size: 12.5px; font-weight: 800; border-radius: 8px; background: #00A896; border-color: #00A896; color: #FFF;">
+            💾 Guardar Cambios de Perfil
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL: CARGAR / PEGAR PAYLOAD TÉCNICO FHIR (FICHA TÉCNICA)
+       ========================================================================= -->
+  <div class="modal-overlay" id="modal-upload-tech-json">
+    <div class="modal-box" style="max-width: 620px; border-radius: 14px; overflow: hidden; box-shadow: 0 10px 30px rgba(15, 23, 42, 0.25);">
+      <div class="modal-header" style="background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%); color: #FFFFFF; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(0, 229, 204, 0.2); display: flex; align-items: center; justify-content: center; font-size: 16px;">
+            📥
+          </div>
+          <div>
+            <h3 style="font-size: 15px; font-weight: 800; margin: 0; color: #FFFFFF;">Cargar / Pegar Payload Técnico FHIR</h3>
+            <p style="font-size: 11px; color: #94A3B8; margin: 2px 0 0 0;">Inyecte recursos JSON (OperationOutcome, Bundle, MedicationRequest) a la ficha técnica</p>
+          </div>
+        </div>
+        <button type="button" class="modal-close" onclick="closeUploadTechJsonModal()" style="background: transparent; border: none; color: #94A3B8; font-size: 20px; cursor: pointer;">&times;</button>
+      </div>
+
+      <div style="padding: 20px; background: #FFFFFF;">
+        <!-- Dropzone de archivo .json -->
+        <div style="border: 2px dashed #CBD5E1; border-radius: 10px; padding: 16px; text-align: center; background: #F8FAFC; margin-bottom: 14px; cursor: pointer;" onclick="document.getElementById('tech-json-file-input').click()">
+          <input type="file" id="tech-json-file-input" accept=".json,application/json" style="display: none;" onchange="handleTechJsonFileUpload(this.files[0])">
+          <div style="font-size: 24px; margin-bottom: 4px;">📂</div>
+          <div style="font-size: 12.5px; font-weight: 700; color: #1E293B;">Haga clic aquí para subir un archivo .JSON</div>
+          <div style="font-size: 11px; color: #64748B;">o pegue directamente el contenido en el editor inferior</div>
+        </div>
+
+        <!-- Editor Textarea -->
+        <div class="form-group" style="margin-bottom: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <label style="font-size: 11.5px; font-weight: 700; color: #334155; margin-bottom: 0;">
+              Payload JSON FHIR / Diagnóstico Técnico:
+            </label>
+            <span id="tech-json-validation-badge" style="font-size: 10.5px; font-weight: 800; padding: 2px 8px; border-radius: 10px; background: #E2E8F0; color: #475569;">
+              Esperando entrada...
+            </span>
+          </div>
+          <textarea id="tech-json-editor-textarea" class="form-control" rows="10" placeholder="{\n  &quot;resourceType&quot;: &quot;OperationOutcome&quot;,\n  &quot;issue&quot;: [\n    {\n      &quot;severity&quot;: &quot;error&quot;,\n      &quot;code&quot;: &quot;invalid&quot;,\n      &quot;diagnostics&quot;: &quot;Firma PSS revocada en nodo FHIR&quot;\n    }\n  ]\n}" style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; line-height: 1.4; background: #0F172A; color: #38BDF8; border-radius: 8px; padding: 10px;" oninput="validateTechJsonLive(this.value)"></textarea>
+        </div>
+
+        <div class="modal-footer" style="padding-top: 14px; border-top: 1px solid #E2E8F0; display: flex; justify-content: flex-end; gap: 10px;">
+          <button type="button" class="btn-sec" onclick="closeUploadTechJsonModal()" style="padding: 8px 14px; font-size: 12.5px; font-weight: 700; border-radius: 8px;">
+            Cancelar
+          </button>
+          <button type="button" class="btn-pri" onclick="submitCustomTechJson()" style="padding: 8px 18px; font-size: 12.5px; font-weight: 800; border-radius: 8px; background: #00A896; border-color: #00A896; color: #FFF;">
+            🔍 Validar y Guardar en Ficha Técnica
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL: FICHA INSTITUCIONAL 360° & GESTIÓN MULTI-TENANT (SENIOR UX)
+       ========================================================================= -->
+  <div class="modal-overlay" id="modal-institution-detail">
+    <div class="modal-box" style="max-width: 780px; width: 92%; border-radius: 14px; overflow: hidden; box-shadow: 0 15px 40px rgba(15, 23, 42, 0.3); max-height: 90vh; display: flex; flex-direction: column;">
+      
+      <!-- Modal Header Dinámico -->
+      <div id="modal-inst-detail-header" style="background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%); color: #FFFFFF; padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;">
+        <!-- Inyectado dinámicamente -->
+      </div>
+
+      <!-- Navegación por Pestañas Internas del Modal -->
+      <div style="display: flex; gap: 4px; background: #F8FAFC; border-bottom: 1.5px solid #E2E8F0; padding: 8px 20px 0 20px; flex-shrink: 0;">
+        <button type="button" class="dash-tab-btn active" id="btn-inst-tab-modules" onclick="switchInstModalTab('modules')" style="font-size: 12px; font-weight: 800; padding: 8px 14px; border-radius: 6px 6px 0 0;">
+          ⚙️ Módulos Habilitados
+        </button>
+        <button type="button" class="dash-tab-btn" id="btn-inst-tab-incidents" onclick="switchInstModalTab('incidents')" style="font-size: 12px; font-weight: 800; padding: 8px 14px; border-radius: 6px 6px 0 0;">
+          🚨 Incidentes en Curso (<span id="modal-inst-incidents-count">0</span>)
+        </button>
+        <button type="button" class="dash-tab-btn" id="btn-inst-tab-contract" onclick="switchInstModalTab('contract')" style="font-size: 12px; font-weight: 800; padding: 8px 14px; border-radius: 6px 6px 0 0;">
+          🏢 Contrato SLA & Sedes
+        </button>
+      </div>
+
+      <!-- Modal Body con Scroll -->
+      <div style="padding: 20px 24px; overflow-y: auto; flex: 1; background: #FFFFFF;">
+        
+        <!-- Tab 1: Módulos con Toggle Switches Interactivos -->
+        <div id="inst-tab-content-modules" class="inst-tab-pane active">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+            <div>
+              <h4 style="margin: 0; font-size: 13.5px; font-weight: 800; color: #0F172A;">Habilitación de Sistemas Quantux para esta Institución</h4>
+              <p style="margin: 2px 0 0 0; font-size: 11.5px; color: #64748B;">Active o desactive los módulos provistos en tiempo real:</p>
+            </div>
+            <span style="font-size: 11px; font-weight: 800; color: #00A896; background: #F0FDFA; padding: 3px 8px; border-radius: 6px;" id="modal-inst-active-modules-badge">0 de 9 activos</span>
+          </div>
+
+          <div id="modal-inst-modules-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 10px;">
+            <!-- Renderizado dinámico con switches -->
+          </div>
+        </div>
+
+        <!-- Tab 2: Incidentes en Curso -->
+        <div id="inst-tab-content-incidents" class="inst-tab-pane" style="display: none;">
+          <div id="modal-inst-incidents-list">
+            <!-- Renderizado dinámico de incidentes -->
+          </div>
+        </div>
+
+        <!-- Tab 3: Contrato SLA & Sedes -->
+        <div id="inst-tab-content-contract" class="inst-tab-pane" style="display: none;">
+          <div id="modal-inst-contract-info">
+            <!-- Renderizado dinámico -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="modal-footer" style="padding: 12px 24px; background: #F8FAFC; border-top: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
+        <button type="button" class="btn-sec" id="btn-modal-inst-filter-tickets" style="font-size: 12px; font-weight: 700; padding: 6px 14px; border-radius: 8px;">
+          📋 Ver Incidentes en Mesa de Ayuda
+        </button>
+        <button type="button" class="btn-pri" onclick="closeInstitutionDetailModal()" style="font-size: 12px; font-weight: 800; padding: 6px 18px; border-radius: 8px; background: #00A896; border: none; color: #FFF;">
+          Listo / Cerrar Ficha
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL: FICHA TÉCNICA DE PLATAFORMA / SISTEMA (SENIOR UX)
+       ========================================================================= -->
+  <div class="modal-overlay" id="modal-platform-detail">
+    <div class="modal-box" style="max-width: 680px; width: 90%; border-radius: 14px; overflow: hidden; box-shadow: 0 15px 40px rgba(15, 23, 42, 0.3); max-height: 85vh; display: flex; flex-direction: column;">
+      
+      <div id="modal-plat-detail-header" style="background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%); color: #FFFFFF; padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;">
+        <!-- Inyectado dinámicamente -->
+      </div>
+
+      <div id="modal-plat-detail-body" style="padding: 20px 24px; overflow-y: auto; flex: 1; background: #FFFFFF;">
+        <!-- Inyectado dinámicamente -->
+      </div>
+
+      <div class="modal-footer" style="padding: 12px 24px; background: #F8FAFC; border-top: 1px solid #E2E8F0; display: flex; justify-content: flex-end; align-items: center; flex-shrink: 0;">
+        <button type="button" class="btn-pri" onclick="closePlatformDetailModal()" style="font-size: 12px; font-weight: 800; padding: 6px 18px; border-radius: 8px; background: #00A896; border: none; color: #FFF;">
+          Cerrar Ficha Técnica
+        </button>
+      </div>
+
+    </div>
+  </div>
+
   <div class="toast-container" id="toast-container"></div>
 
-  <!-- SCRIPTS (CACHE BUSTER) -->
-  <script src="/js/api.js?v=20260831_12"></script>
-  <script src="/js/app.js?v=20260831_12"></script>
+  <!-- SCRIPTS (LOCAL CHART.JS BUNDLE & APP CODE) -->
+  <script src="/js/chart.umd.min.js"></script>
+  <script src="/js/api.js?v=3.3.0_invgate_senior_ux"></script>
+  <script src="/js/app.js?v=3.3.0_invgate_senior_ux"></script>
 </body>
 </html>

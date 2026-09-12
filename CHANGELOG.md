@@ -4,6 +4,26 @@ Todos los cambios notables en este proyecto están documentados en este archivo 
 
 ---
 
+## [3.2.0-PROD] - 2026-09-11 (Official Production Cloud Release & Executive Redesign)
+
+### 🚀 Release Oficial para Despliegue en la Nube
+- **Mesa de Ayuda Homologada con Diseño Ejecutivo:**
+  - Alineación completa de la vista `Mesa de Ayuda` (`view-tickets`) con la estructura visual y jerarquía del `Directorio de Usuarios`.
+  - Header unificado con métricas en tiempo real (`143 Solicitudes`), subtítulo asistencial ITIL y botón destacado de alta rápida.
+  - Barra de píldoras de filtrado rápido ITIL (`Todos los Tickets`, `👤 Asignados a Mí`, `⚪ Sin Asignar`, `🚨 Críticos P1`, `🔵 Nivel 1`, `✅ Resueltos / Archivados`) con conteos dinámicos en tiempo real.
+  - Franja secundaria de filtros desplegables de precisión (Institución, Plataforma, Nivel ITIL, Estado y Período de Creación).
+  - Botón de refresco interactivo `🔄` con rotación suave, invalidación de caché, recarga en tiempo real y toasts de confirmación.
+  - Tabla de diseño ejecutivo con encabezado azul marino `#0A1C3E` y texto blanco sticky, bordes gruesos de prioridad en tarjetas y micro-animaciones en hover.
+- **Identidad Corporativa y Branding de Soporte:**
+  - Emblema oficial en degradado teal/azul con ícono de headset de soporte `🎧` y tipografía corporativa `QUANTUX ServiceDesk - Soporte HealthTech`.
+- **Preparación Integral para Cloud Production:**
+  - `Dockerfile` multi-worker optimizado para Cloud Run, AWS ECS, Azure Container Apps y Kubernetes.
+  - `docker-compose.prod.yml` con healthchecks integrados y persistencia de volúmenes.
+  - Soporte de base de datos relacional PostgreSQL / Cloud SQL vía `DATABASE_URL` con fallback automático a SQLite local.
+  - Template `.env.production` y scripts de despliegue automatizados (`deploy_cloud.sh`, `deploy_cloud.ps1`, `cloudbuild.yaml`).
+
+---
+
 ## [3.0.0] - 2026-09-11 (Senior UX & Clean Usability Overhaul Edition)
 
 ### ✨ Rediseño Integral de Experiencia de Usuario (Senior UX / UI)
