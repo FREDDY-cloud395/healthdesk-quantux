@@ -3,818 +3,159 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DOC-ARC-003 — Arquitectura de Software y Diseño Técnico</title>
+  <title>DOC-AR-003 • Arquitectura de Software y Diseño Técnico • Quantux HealthDesk v3.5.0</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700;800&display=swap');
-
-    :root {
-      --q-navy: #0F1E36;
-      --q-navy-blue: #1E3A5F;
-      --q-teal: #00A896;
-      --q-teal-dark: #00665C;
-      --q-teal-bright: #00C4B4;
-      --q-teal-light: #E6F8F6;
-      --q-gray-bg: #F8FAFC;
-      --q-gray-border: #94A3B8;
-      --q-text-main: #0F172A;
-      --q-text-muted: #475569;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    
-    body {
-      font-family: 'Inter', -apple-system, sans-serif;
-      color: var(--q-text-main);
-      background-color: #475569;
-      line-height: 1.35;
-      font-size: 10px;
-      -webkit-print-color-adjust: exact;
-      print-color-adjust: exact;
-    }
-
-    .doc-page {
-      width: 210mm;
-      height: 297mm;
-      max-height: 297mm;
-      margin: 20px auto;
-      background: #FFFFFF;
-      padding: 12mm 14mm 10mm 14mm;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-      position: relative;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    @media print {
-      @page {
-        size: A4 portrait;
-        margin: 0;
-      }
-      body {
-        background: transparent;
-        margin: 0;
-        padding: 0;
-      }
-      .doc-page {
-        width: 210mm !important;
-        height: 297mm !important;
-        max-height: 297mm !important;
-        margin: 0 !important;
-        padding: 12mm 14mm 10mm 14mm !important;
-        box-shadow: none !important;
-        page-break-after: always;
-        break-after: page;
-      }
-      .doc-page:last-child {
-        page-break-after: avoid;
-        break-after: avoid;
-      }
-    }
-
-    /* HEADER & FOOTER */
-    .running-header {
-      display: flex; justify-content: space-between; align-items: center;
-      border-bottom: 2.5px solid var(--q-teal); padding-bottom: 4px; margin-bottom: 8px;
-      font-size: 9px; font-family: 'Montserrat', sans-serif; font-weight: 800; color: var(--q-navy-blue);
-      text-transform: uppercase; letter-spacing: 0.5px;
-    }
-
-    .running-footer {
-      border-top: 1.5px solid #CBD5E1; padding-top: 4px; margin-top: 4px;
-      display: flex; justify-content: space-between; font-size: 8.5px; color: var(--q-text-muted); font-weight: 500;
-    }
-
-    /* SECTION HEADERS */
-    h2.section-header {
-      font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 800; color: var(--q-navy);
-      text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1.5px solid var(--q-teal);
-      padding-bottom: 3px; margin-top: 4px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;
-    }
-    .sec-badge { font-family: 'JetBrains Mono', monospace; font-size: 8px; background: var(--q-teal-light); color: var(--q-teal-dark); padding: 1.5px 7px; border-radius: 3px; font-weight: 800; border: 1px solid #B2EBF2; }
-
-    /* COVER STYLES */
-    .cover-box {
-      height: 100%; display: flex; flex-direction: column; justify-content: space-between;
-      border: 2px solid var(--q-navy-blue); border-radius: 8px; padding: 26px; background: #FFFFFF;
-    }
-    .cover-header-logo { display: flex; align-items: center; gap: 12px; }
-    .cover-brand { font-family: 'Montserrat', sans-serif; font-size: 22px; font-weight: 900; color: var(--q-navy-blue); letter-spacing: -0.5px; line-height: 1; }
-    .cover-brand-sub { font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 800; color: var(--q-teal); letter-spacing: 2.5px; text-align: right; }
-    
-    .cover-title-area { margin: 25px 0; text-align: center; }
-    .cover-pill {
-      display: inline-block; background: var(--q-navy-blue); color: #FFFFFF;
-      font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 800; padding: 5px 16px;
-      border-radius: 20px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px;
-    }
-    .cover-h1 { font-family: 'Montserrat', sans-serif; font-size: 24px; font-weight: 900; color: var(--q-navy); line-height: 1.25; margin-bottom: 10px; }
-    .cover-h2 { font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 700; color: var(--q-navy-blue); max-width: 90%; margin: 0 auto; line-height: 1.4; }
-
-    .cover-meta-card { background: var(--q-gray-bg); border: 1.5px solid #CBD5E1; border-left: 5px solid var(--q-teal); border-radius: 6px; padding: 14px 18px; }
-    .cover-meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 10px; }
-    .cover-meta-grid strong { display: block; color: var(--q-navy-blue); font-family: 'Montserrat', sans-serif; font-size: 8.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
-
-    /* TABLES */
-    table { width: 100%; border-collapse: collapse; margin: 4px 0; font-size: 9px; background: #FFFFFF; }
-    table th { background: var(--q-navy); color: #FFFFFF; font-family: 'Montserrat', sans-serif; font-weight: 800; text-align: left; padding: 5px 7px; font-size: 8.5px; letter-spacing: 0.3px; border: 1px solid var(--q-navy); }
-    table td { padding: 5px 7px; border: 1px solid #CBD5E1; vertical-align: middle; line-height: 1.35; }
-    table tr:nth-child(even) { background-color: #F8FAFC; }
-
-    .method-badge { font-family: 'JetBrains Mono', monospace; font-size: 8px; font-weight: 800; padding: 2px 5px; border-radius: 3px; display: inline-block; text-align: center; min-width: 40px; }
-    .get { background: #E0F2FE; color: #0284C7; border: 1px solid #BAE6FD; }
-    .post { background: #DCFCE7; color: #16A34A; border: 1px solid #BBF7D0; }
-    .patch { background: #FEF3C7; color: #D97706; border: 1px solid #FDE68A; }
-
-    .callout-box {
-      background: var(--q-gray-bg);
-      border: 1.5px solid #CBD5E1;
-      border-left: 4px solid var(--q-navy-blue);
-      border-radius: 5px;
-      padding: 6px 10px;
-      margin-top: 5px;
-    }
-    .callout-title { font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 800; color: var(--q-navy-blue); margin-bottom: 2px; }
-    .callout-desc { font-size: 8.5px; color: var(--q-text-main); line-height: 1.35; }
+    body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background-color: #f8f9fa; color: #212529; }
+    .doc-container { max-width: 1200px; margin: 30px auto; background: #fff; padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+    .badge-uat { background: #0d6efd; color: #fff; font-weight: 600; }
+    .badge-tqm { background: #198754; color: #fff; font-weight: 600; }
+    h1, h2, h3, h4 { color: #0f172a; font-weight: 700; margin-top: 1.5rem; margin-bottom: 1rem; }
+    h1 { border-bottom: 3px solid #0d6efd; padding-bottom: 10px; }
+    h2 { border-bottom: 1px solid #dee2e6; padding-bottom: 8px; margin-top: 2rem; }
+    table { width: 100%; margin: 20px 0; border-collapse: collapse; }
+    th { background: #0f172a; color: #fff; padding: 12px; font-weight: 600; }
+    td { padding: 10px 12px; border-bottom: 1px solid #e2e8f0; vertical-align: middle; }
+    tr:nth-child(even) { background-color: #f8fafc; }
+    .callout { border-left: 5px solid #0d6efd; padding: 15px 20px; background: #f0f7ff; border-radius: 4px; margin: 20px 0; }
+    .callout-success { border-left-color: #198754; background: #f0fdf4; }
+    .callout-warning { border-left-color: #f59e0b; background: #fffbeb; }
+    .doc-header-card { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #fff; padding: 25px; border-radius: 8px; margin-bottom: 30px; }
+    .mermaid { background: #fff; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px; margin: 20px 0; }
   </style>
 </head>
 <body>
 
-<!-- Global Nav for Quantux HealthDesk v3.5.0 -->
-<div class="global-nav" style="position: sticky; top: 0; left: 0; right: 0; z-index: 99999; background: #0D2137; padding: 10px 24px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 10px rgba(0,0,0,0.3); font-family: 'Inter', -apple-system, sans-serif;">
-  <div style="display: flex; align-items: center; gap: 14px;">
-    <a href="/cockpit" style="text-decoration: none; color: #00C4B4; font-weight: 800; font-size: 15px; display: flex; align-items: center; gap: 8px;">
-      <span style="font-size: 18px;">🩺</span> Quantux HealthDesk
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow-sm">
+  <div class="container-fluid px-4">
+    <a class="navbar-brand fw-bold text-info" href="/cockpit" style="display: flex; align-items: center; gap: 8px;">
+      <i class="fas fa-heartbeat"></i> Quantux HealthDesk <span class="badge bg-primary ms-1" style="font-size: 0.75rem;">v3.5.0</span>
     </a>
-    <span style="background: #00C4B4; color: #0D2137; font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 4px;">v3.5.0</span>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0 gap-1">
+        <li class="nav-item"><a class="nav-link text-light" href="/cockpit"><i class="fas fa-desktop me-1"></i> Cockpit</a></li>
+        <li class="nav-item"><a class="nav-link text-light" href="/scrumban"><i class="fas fa-columns me-1"></i> Tablero Scrumban</a></li>
+        <li class="nav-item"><a class="nav-link text-light" href="/plan"><i class="fas fa-project-diagram me-1"></i> Plan (DOC-01)</a></li>
+        <li class="nav-item"><a class="nav-link text-light" href="/especificacion"><i class="fas fa-list-check me-1"></i> Especificación (DOC-02)</a></li>
+        <li class="nav-item"><a class="nav-link text-light" href="/arquitectura"><i class="fas fa-sitemap me-1"></i> Arquitectura (DOC-03)</a></li>
+        <li class="nav-item"><a class="nav-link text-light" href="/pruebas"><i class="fas fa-vial me-1"></i> Pruebas (DOC-04)</a></li>
+        <li class="nav-item"><a class="nav-link text-light" href="/manual"><i class="fas fa-book-medical me-1"></i> Manual (DOC-05)</a></li>
+        <li class="nav-item"><a class="nav-link text-light" href="/presentacion"><i class="fas fa-chalkboard-user me-1"></i> Presentación (DOC-06)</a></li>
+      </ul>
+      <span class="badge bg-success ms-lg-3 py-2 px-3"><i class="fas fa-check-circle me-1"></i> Zero Defects TQM (14/14)</span>
+    </div>
   </div>
-  <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-    <a href="/cockpit" style="text-decoration: none; color: #E2E8F0; font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 6px; background: rgba(255,255,255,0.08); transition: background 0.2s;">🖥️ Cockpit</a>
-    <a href="/scrumban" style="text-decoration: none; color: #E2E8F0; font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 6px; background: rgba(255,255,255,0.08); transition: background 0.2s;">📊 Scrumban</a>
-    <a href="/plan" style="text-decoration: none; color: #E2E8F0; font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 6px; background: rgba(255,255,255,0.08); transition: background 0.2s;">📋 Plan DOC-01</a>
-    <a href="/especificacion" style="text-decoration: none; color: #E2E8F0; font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 6px; background: rgba(255,255,255,0.08); transition: background 0.2s;">📝 Espec. DOC-02</a>
-    <a href="/arquitectura" style="text-decoration: none; color: #E2E8F0; font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 6px; background: rgba(255,255,255,0.08); transition: background 0.2s;">🏗️ Arq. DOC-03</a>
-    <a href="/pruebas" style="text-decoration: none; color: #E2E8F0; font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 6px; background: rgba(255,255,255,0.08); transition: background 0.2s;">🧪 Pruebas DOC-04</a>
-    <a href="/manual" style="text-decoration: none; color: #E2E8F0; font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 6px; background: rgba(255,255,255,0.08); transition: background 0.2s;">📖 Manual DOC-05</a>
-    <a href="/presentacion" style="text-decoration: none; color: #E2E8F0; font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 6px; background: rgba(255,255,255,0.08); transition: background 0.2s;">🎯 Presentación DOC-06</a>
+</nav>
+
+<div class="container doc-container">
+
+<div class="doc-header-card">
+  <div class="d-flex justify-content-between align-items-center">
+    <div>
+      <span class="badge bg-primary text-uppercase me-2">DOC-AR-003</span>
+      <span class="badge bg-success text-uppercase">v3.5.0 • Arquitectura Homologada</span>
+      <h2 class="text-white mt-2 mb-1">ARQUITECTURA DE SOFTWARE Y DISEÑO TÉCNICO</h2>
+      <p class="text-light mb-0">Sistema de Alta Disponibilidad para Gestión de Incidentes HealthTech • Quantux Salud</p>
+    </div>
+    <div class="text-end">
+      <span class="badge bg-light text-dark p-2 fw-bold">FastAPI + SQLModel + FSM Engine</span>
+    </div>
   </div>
 </div>
-<style>
-@media print {
-  .global-nav { display: none !important; }
-}
-.global-nav a:hover {
-  background: rgba(0, 196, 180, 0.25) !important;
-  color: #00C4B4 !important;
-}
-</style>
 
-
-
-  <!-- PÁGINA 1: PORTADA OFICIAL -->
-  <div class="doc-page">
-    <div class="cover-box">
-      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px solid #CBD5E1; padding-bottom: 10px;">
-        <div class="cover-header-logo">
-          <svg width="38" height="38" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="44" cy="44" r="38" fill="#00C4B4"/>
-            <path d="M34 34L54 54M54 34L34 54" stroke="white" stroke-width="7" stroke-linecap="round"/>
-            <path d="M68 68L86 86" stroke="#0F1E36" stroke-width="12" stroke-linecap="round"/>
-          </svg>
-          <div>
-            <div class="cover-brand">Quantux</div>
-            <div class="cover-brand-sub">SALUD</div>
-          </div>
-        </div>
-        <div style="font-family: 'Montserrat', sans-serif; font-size: 11px; color: var(--q-navy-blue); font-weight: 800; background: var(--q-teal-light); padding: 4px 10px; border-radius: 4px; border: 1px solid #B2EBF2;">
-          DOC-ARC-003
-        </div>
-      </div>
-
-      <div class="cover-title-area">
-        <div class="cover-pill">Ingeniería de Software & Arquitectura de Datos</div>
-        <h1 class="cover-h1">ARQUITECTURA DE SOFTWARE<br>Y DISEÑO TÉCNICO</h1>
-        <h2 class="cover-h2">Blueprint en 5 Capas, Modelo Entidad-Relación Visual,<br>Ciclo de Vida FSM y Catálogo Exhaustivo de APIs REST</h2>
-      </div>
-
-      <div class="cover-meta-card">
-        <div class="cover-meta-grid">
-          <div>
-            <strong>Código Documental</strong>
-            DOC-ARC-003 (Versión 2.0 Definitiva)
-          </div>
-          <div>
-            <strong>Fecha de Emisión</strong>
-            28 de Agosto de 2026
-          </div>
-          <div>
-            <strong>Solution Owner / Líder Funcional</strong>
-            Freddy Cortés (Analista Funcional)
-          </div>
-          <div>
-            <strong>Facilitador Técnico</strong>
-            Diego Martínez
-          </div>
-          <div style="grid-column: span 2; border-top: 1px solid #CBD5E1; padding-top: 10px; margin-top: 2px;">
-            <strong>Comité Evaluador de Aceptación y Gobernanza</strong>
-            • Paula Sbarbati (Funcional) • Diego Martínez (Técnico) • Carolina Brizuela (CH) • Nicolás Sánchez (Gerencia)
-          </div>
-        </div>
-      </div>
-
-      <div style="text-align: center; font-size: 9px; color: var(--q-text-muted); font-family: 'Montserrat', sans-serif; font-weight: 600;">
-        Quantux Salud • Sistema Centralizado de Mesa de Ayuda y Gestión de Tickets
-      </div>
+<h2>1. REGISTRO DE DECISIONES DE ARQUITECTURA (ADR)</h2>
+<div class="row g-3">
+  <div class="col-md-6">
+    <div class="card p-3 shadow-sm">
+      <h6 class="fw-bold text-primary">ADR-01: Framework Backend y Persistencia</h6>
+      <p class="small text-muted mb-1"><strong>Decisión:</strong> FastAPI con SQLite en modo WAL (Write-Ahead Logging) y SQLModel para máxima coherencia en schemas y validación.</p>
+      <span class="badge bg-success">Latencia Media &lt; 4 ms</span>
     </div>
   </div>
-
-  <!-- PÁGINA 2: BLUEPRINT DE CAPAS & MATRIZ DE VALOR -->
-  <div class="doc-page">
-    <div>
-      <div class="running-header">
-        <span>Quantux Salud</span>
-        <span>DOC-ARC-003: Blueprint Arquitectónico en 5 Capas</span>
-      </div>
-
-      <h2 class="section-header">
-        <span>1. Blueprint Gráfico de Arquitectura en 5 Capas</span>
-        <span class="sec-badge">DIAGRAMA OFICIAL DE SISTEMA</span>
-      </h2>
-
-      <!-- SVG BLUEPRINT: LETRAS GRANDES Y ALTO CONTRASTE -->
-      <div style="border: 1.5px solid #CBD5E1; border-radius: 6px; padding: 4px; background: #FFFFFF; margin-bottom: 6px;">
-        <svg viewBox="0 0 700 240" width="100%" height="240" xmlns="http://www.w3.org/2000/svg" style="font-family: 'Inter', sans-serif;">
-          <defs>
-            <marker id="arr1" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-              <path d="M 0 1 L 10 5 L 0 9 z" fill="#00665C"/>
-            </marker>
-          </defs>
-
-          <!-- CAPA 1 -->
-          <g transform="translate(10, 5)">
-            <rect width="680" height="38" rx="5" fill="#F8FAFC" stroke="#94A3B8" stroke-width="1.5"/>
-            <rect width="680" height="17" rx="5" fill="#0F1E36"/>
-            <rect y="12" width="680" height="5" fill="#0F1E36"/>
-            <text x="12" y="12" fill="#FFFFFF" font-size="9" font-weight="800" font-family="Montserrat">1. CAPA DE PRESENTACIÓN (FRONTEND COCKPIT SPA)</text>
-            <text x="668" y="12" fill="#00C4B4" font-size="8.5" font-weight="800" text-anchor="end" font-family="JetBrains Mono">HTML5 / Modern JS / CSS Quantux</text>
-            <text x="15" y="30" font-size="9" font-weight="700" fill="#0F1E36">Col 1: Filtros, Triage & Bandeja</text>
-            <text x="240" y="30" font-size="9" font-weight="700" fill="#0F1E36">Col 2: Detalle, Mensajes & Historial</text>
-            <text x="470" y="30" font-size="9" font-weight="700" fill="#00665C">Col 3: Acciones & Selector Rol (1-Clic)</text>
-          </g>
-
-          <line x1="350" y1="44" x2="350" y2="52" stroke="#00665C" stroke-width="2" stroke-dasharray="3,3" marker-end="url(#arr1)"/>
-
-          <!-- CAPA 2 -->
-          <g transform="translate(10, 53)">
-            <rect width="680" height="38" rx="5" fill="#F8FAFC" stroke="#94A3B8" stroke-width="1.5"/>
-            <rect width="680" height="17" rx="5" fill="#0F1E36"/>
-            <rect y="12" width="680" height="5" fill="#0F1E36"/>
-            <text x="12" y="12" fill="#FFFFFF" font-size="9" font-weight="800" font-family="Montserrat">2. CAPA DE SERVICIOS REST & CONTROLADORES (API GATEWAY)</text>
-            <text x="668" y="12" fill="#00C4B4" font-size="8.5" font-weight="800" text-anchor="end" font-family="JetBrains Mono">FastAPI 0.110+ / ASGI Router</text>
-            <text x="15" y="30" font-size="9" font-weight="800" fill="#1D4ED8">/auth (Login & Switch)</text>
-            <text x="160" y="30" font-size="9" font-weight="800" fill="#15803D">/tickets (Circuito 5 Pasos)</text>
-            <text x="340" y="30" font-size="9" font-weight="800" fill="#B45309">/platforms & /institutions</text>
-            <text x="520" y="30" font-size="9" font-weight="800" fill="#0284C7">/calculate-priority & /users</text>
-          </g>
-
-          <line x1="350" y1="92" x2="350" y2="100" stroke="#00665C" stroke-width="2" stroke-dasharray="3,3" marker-end="url(#arr1)"/>
-
-          <!-- CAPA 3 -->
-          <g transform="translate(10, 101)">
-            <rect width="680" height="38" rx="5" fill="#F8FAFC" stroke="#00A896" stroke-width="1.8"/>
-            <rect width="680" height="17" rx="5" fill="#00A896"/>
-            <rect y="12" width="680" height="5" fill="#00A896"/>
-            <text x="12" y="12" fill="#FFFFFF" font-size="9" font-weight="800" font-family="Montserrat">3. CAPA DE DOMINIO, LÓGICA DE NEGOCIO Y MOTOR FSM</text>
-            <text x="668" y="12" fill="#FFFFFF" font-size="8.5" font-weight="800" text-anchor="end" font-family="JetBrains Mono">Pydantic v2 / FSM State Engine</text>
-            <text x="15" y="30" font-size="9" font-weight="700" fill="#0F1E36">Motor FSM (5 Estados Estrictos)</text>
-            <text x="235" y="30" font-size="9" font-weight="700" fill="#0F1E36">Matriz 2D Prioridad (P = I × U)</text>
-            <text x="450" y="30" font-size="9" font-weight="800" fill="#B45309">Validador de Solución (≥ 8 car.)</text>
-          </g>
-
-          <line x1="350" y1="140" x2="350" y2="148" stroke="#00665C" stroke-width="2" stroke-dasharray="3,3" marker-end="url(#arr1)"/>
-
-          <!-- CAPA 4 -->
-          <g transform="translate(10, 149)">
-            <rect width="680" height="38" rx="5" fill="#F8FAFC" stroke="#94A3B8" stroke-width="1.5"/>
-            <rect width="680" height="17" rx="5" fill="#0F1E36"/>
-            <rect y="12" width="680" height="5" fill="#0F1E36"/>
-            <text x="12" y="12" fill="#FFFFFF" font-size="9" font-weight="800" font-family="Montserrat">4. CAPA DE PERSISTENCIA Y ACCESO A DATOS (DATA ACCESS LAYER)</text>
-            <text x="668" y="12" fill="#00C4B4" font-size="8.5" font-weight="800" text-anchor="end" font-family="JetBrains Mono">SQLite 3 / SQLModel ORM</text>
-            <text x="15" y="30" font-size="9" font-weight="700" fill="#0F1E36">Transacciones ACID</text>
-            <text x="175" y="30" font-size="9" font-weight="700" fill="#0F1E36">Esquema 3FN Normalizado</text>
-            <text x="360" y="30" font-size="9" font-weight="800" fill="#00665C">Desacople Total ➔ Migración Directa a PostgreSQL</text>
-          </g>
-
-          <line x1="350" y1="188" x2="350" y2="196" stroke="#00665C" stroke-width="2" stroke-dasharray="3,3" marker-end="url(#arr1)"/>
-
-          <!-- CAPA 5 -->
-          <g transform="translate(10, 197)">
-            <rect width="680" height="38" rx="5" fill="#0F1E36" stroke="#0F1E36" stroke-width="1.5"/>
-            <text x="14" y="16" fill="#00C4B4" font-size="9" font-weight="800" font-family="Montserrat">5. SUBSISTEMA DE AUDITORÍA Y TRAZABILIDAD (ticket_audit_log)</text>
-            <text x="14" y="30" fill="#F8FAFC" font-size="8.5">Caja Negra Inmutable: Marca temporal UTC + Usuario responsable + Campo modificado + Delta (Old ➔ New) + Motivo</text>
-          </g>
-        </svg>
-      </div>
-
-      <h2 class="section-header">
-        <span>2. Matriz de Valor y Fundamentación de Negocio</span>
-        <span class="sec-badge">IMPACTO Y VALOR OPERATIVO</span>
-      </h2>
-      
-      <table>
-        <thead>
-          <tr>
-            <th style="width: 20%;">Capa y Tecnología</th>
-            <th style="width: 25%;">Rol Funcional en la Operación</th>
-            <th style="width: 55%;">Justificación Técnica y Beneficio para el Negocio</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>Frontend UI</strong><br><span style="font-family: monospace; font-size: 8px; color:#1D4ED8; font-weight:700;">HTML5 / Modern JS</span></td>
-            <td><strong>La Pantalla Web Centralizada</strong> que operan profesionales de la salud y soporte.</td>
-            <td><strong>Cero Instalación:</strong> Abre al instante en cualquier navegador sin requerir permisos de IT ni descargas pesadas. Diseño Cockpit en 3 columnas que evita la dispersión de pestañas.</td>
-          </tr>
-          <tr>
-            <td><strong>Backend API</strong><br><span style="font-family: monospace; font-size: 8px; color:#15803D; font-weight:700;">FastAPI / Python 3.11+</span></td>
-            <td><strong>El Cerebro y Recepcionista</strong> que procesa tickets y calcula prioridades.</td>
-            <td><strong>Velocidad y Auditoría:</strong> Tiempo de respuesta &lt; 10 ms (vital en incidentes críticos asistenciales). Genera automáticamente documentación interactiva (/docs) para auditar cada función.</td>
-          </tr>
-          <tr>
-            <td><strong>Validador de Reglas</strong><br><span style="font-family: monospace; font-size: 8px; color:#00665C; font-weight:700;">Pydantic v2</span></td>
-            <td><strong>El Inspector de Calidad</strong> que audita cada dato antes de ingresar.</td>
-            <td><strong>Cero Datos Corruptos:</strong> Rechaza datos incompletos y bloquea el pase a "Resuelto" si no se redacta una solución técnica fundamentada (≥ 8 caracteres).</td>
-          </tr>
-          <tr>
-            <td><strong>Persistencia Relacional</strong><br><span style="font-family: monospace; font-size: 8px; color:#B45309; font-weight:700;">SQLite 3 + SQLModel</span></td>
-            <td><strong>El Archivador Digital Seguro</strong> donde residen tickets y auditoría.</td>
-            <td><strong>Cero Costo MVP + Escalabilidad:</strong> Cero costo de licencias de servidor en fase piloto. Si el volumen crece a 100.000 tickets, se migra a PostgreSQL sin cambiar lógica de negocio.</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="running-footer">
-      <span>Quantux Salud • Arquitectura Técnica</span>
-      <span>Página 2 de 5 • Blueprint de Capas</span>
+  <div class="col-md-6">
+    <div class="card p-3 shadow-sm">
+      <h6 class="fw-bold text-primary">ADR-02: FSM Determinística de 6 Estados</h6>
+      <p class="small text-muted mb-1"><strong>Decisión:</strong> Motor determinístico con estados <code>NUEVO</code>, <code>ASIGNADO</code>, <code>EN_CURSO</code>, <code>EN_ESPERA</code>, <code>RESUELTO</code> y <code>CERRADO</code>.</p>
+      <span class="badge bg-success">Inmutabilidad en CERRADO</span>
     </div>
   </div>
-
-  <!-- PÁGINA 3: MODELO ENTIDAD-RELACIÓN VISUAL (ERD) -->
-  <div class="doc-page">
-    <div>
-      <div class="running-header">
-        <span>Quantux Salud</span>
-        <span>DOC-ARC-003: Modelo Entidad-Relación Visual (ERD)</span>
-      </div>
-
-      <h2 class="section-header">
-        <span>3. Diagrama Visual Entidad-Relación (ERD 3FN)</span>
-        <span class="sec-badge">ESQUEMA DE BASE DE DATOS</span>
-      </h2>
-
-      <!-- SVG ERD: ALTO CONTRASTE Y FUENTES GRANDES -->
-      <div style="border: 1.5px solid #CBD5E1; border-radius: 6px; padding: 4px; background: #FFFFFF; margin-bottom: 6px;">
-        <svg viewBox="0 0 700 370" width="100%" height="370" xmlns="http://www.w3.org/2000/svg" style="font-family: 'Inter', sans-serif;">
-          <!-- TABLA USERS -->
-          <g transform="translate(15, 10)">
-            <rect width="195" height="105" rx="4" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.5"/>
-            <rect width="195" height="20" rx="4" fill="#0F1E36"/>
-            <rect y="15" width="195" height="5" fill="#0F1E36"/>
-            <text x="8" y="14" fill="#FFFFFF" font-size="9" font-weight="800" font-family="Montserrat">users (Usuarios & Roles)</text>
-            <text x="8" y="33" font-size="8" font-family="JetBrains Mono"><tspan fill="#00A896" font-weight="800">PK id</tspan> : INTEGER (Auto)</text>
-            <text x="8" y="47" font-size="8" font-family="JetBrains Mono"><tspan fill="#1D4ED8" font-weight="800">UK username</tspan> : VARCHAR(50)</text>
-            <text x="8" y="61" font-size="8" font-family="JetBrains Mono">full_name : VARCHAR(150)</text>
-            <text x="8" y="75" font-size="8" font-family="JetBrains Mono">email : VARCHAR(150)</text>
-            <text x="8" y="89" font-size="8" font-family="JetBrains Mono"><tspan fill="#B45309" font-weight="800">role</tspan> : SOL / SOP / ADM</text>
-            <text x="8" y="101" font-size="8" font-family="JetBrains Mono">is_active : BOOLEAN</text>
-          </g>
-
-          <!-- TABLA PLATFORMS -->
-          <g transform="translate(15, 130)">
-            <rect width="195" height="92" rx="4" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.5"/>
-            <rect width="195" height="20" rx="4" fill="#0F1E36"/>
-            <rect y="15" width="195" height="5" fill="#0F1E36"/>
-            <text x="8" y="14" fill="#FFFFFF" font-size="9" font-weight="800" font-family="Montserrat">platforms (9 Catálogos)</text>
-            <text x="8" y="33" font-size="8" font-family="JetBrains Mono"><tspan fill="#00A896" font-weight="800">PK id</tspan> : INTEGER (Auto)</text>
-            <text x="8" y="47" font-size="8" font-family="JetBrains Mono"><tspan fill="#1D4ED8" font-weight="800">UK code</tspan> : VARCHAR(50)</text>
-            <text x="8" y="61" font-size="8" font-family="JetBrains Mono">name : VARCHAR(100)</text>
-            <text x="8" y="75" font-size="8" font-family="JetBrains Mono">category : VARCHAR(50)</text>
-            <text x="8" y="88" font-size="8" font-family="JetBrains Mono">is_active : BOOLEAN</text>
-          </g>
-
-          <!-- TABLA INSTITUTIONS -->
-          <g transform="translate(15, 238)">
-            <rect width="195" height="92" rx="4" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.5"/>
-            <rect width="195" height="20" rx="4" fill="#0F1E36"/>
-            <rect y="15" width="195" height="5" fill="#0F1E36"/>
-            <text x="8" y="14" fill="#FFFFFF" font-size="9" font-weight="800" font-family="Montserrat">institutions (14 Clientes)</text>
-            <text x="8" y="33" font-size="8" font-family="JetBrains Mono"><tspan fill="#00A896" font-weight="800">PK id</tspan> : INTEGER (Auto)</text>
-            <text x="8" y="47" font-size="8" font-family="JetBrains Mono"><tspan fill="#1D4ED8" font-weight="800">UK code</tspan> : VARCHAR(50)</text>
-            <text x="8" y="61" font-size="8" font-family="JetBrains Mono">name : VARCHAR(150)</text>
-            <text x="8" y="75" font-size="8" font-family="JetBrains Mono">type : PREPAGA/HOSPITAL</text>
-            <text x="8" y="88" font-size="8" font-family="JetBrains Mono">is_active : BOOLEAN</text>
-          </g>
-
-          <!-- CONECTORES IZQUIERDA -->
-          <path d="M 210 62 L 245 62 L 245 110 L 265 110" fill="none" stroke="#00A896" stroke-width="2"/>
-          <text x="215" y="56" font-size="8" font-weight="800" fill="#00665C">1:N</text>
-
-          <path d="M 210 176 L 265 176" fill="none" stroke="#00A896" stroke-width="2"/>
-          <text x="225" y="170" font-size="8" font-weight="800" fill="#00665C">1:N</text>
-
-          <path d="M 210 284 L 245 284 L 245 240 L 265 240" fill="none" stroke="#00A896" stroke-width="2"/>
-          <text x="215" y="294" font-size="8" font-weight="800" fill="#00665C">1:N</text>
-
-          <!-- TABLA CENTRAL TICKETS -->
-          <g transform="translate(265, 10)">
-            <rect width="220" height="350" rx="4" fill="#FFFFFF" stroke="#00A896" stroke-width="2"/>
-            <rect width="220" height="22" rx="4" fill="#00A896"/>
-            <rect y="17" width="220" height="5" fill="#00A896"/>
-            <text x="10" y="15" fill="#FFFFFF" font-size="9.5" font-weight="900" font-family="Montserrat">tickets (TABLA CENTRAL)</text>
-            
-            <text x="10" y="36" font-size="8" font-family="JetBrains Mono"><tspan fill="#00665C" font-weight="800">PK id</tspan> : TICK-YYYYMM-XXXX</text>
-            <text x="10" y="50" font-size="8" font-family="JetBrains Mono">title : VARCHAR(200)</text>
-            <text x="10" y="64" font-size="8" font-family="JetBrains Mono">description : TEXT</text>
-            <text x="10" y="78" font-size="8" font-family="JetBrains Mono"><tspan fill="#1D4ED8" font-weight="800">FK platform_code</tspan> ➔ platforms</text>
-            <text x="10" y="92" font-size="8" font-family="JetBrains Mono"><tspan fill="#1D4ED8" font-weight="800">FK institution_code</tspan> ➔ inst</text>
-            <text x="10" y="106" font-size="8" font-family="JetBrains Mono">ticket_type : INC / REQ / CON</text>
-            <text x="10" y="120" font-size="8" font-family="JetBrains Mono">impact : BAJO / MEDIO / ALTO / CRIT</text>
-            <text x="10" y="134" font-size="8" font-family="JetBrains Mono">urgency : BAJO / MEDIO / ALTO / CRIT</text>
-            <text x="10" y="148" font-size="8" font-family="JetBrains Mono"><tspan fill="#B45309" font-weight="800">priority</tspan> : P1 a P5 [P = I × U]</text>
-            <text x="10" y="162" font-size="8" font-family="JetBrains Mono"><tspan fill="#15803D" font-weight="800">status</tspan> : NUEVO ➔ CERRADO</text>
-            <text x="10" y="176" font-size="8" font-family="JetBrains Mono">requester_username : VARCHAR(50)</text>
-            <text x="10" y="190" font-size="8" font-family="JetBrains Mono">assignee_username : VARCHAR(50)</text>
-            <text x="10" y="204" font-size="8" font-family="JetBrains Mono">support_level : N1 / N2 / N3</text>
-            <text x="10" y="218" font-size="8" font-family="JetBrains Mono">resolution_notes : TEXT</text>
-            <text x="10" y="232" font-size="8" font-family="JetBrains Mono">is_workaround : BOOLEAN</text>
-            <text x="10" y="246" font-size="8" font-family="JetBrains Mono">created_at : DATETIME UTC</text>
-            <text x="10" y="260" font-size="8" font-family="JetBrains Mono">resolved_at / closed_at : DATETIME</text>
-            
-            <rect x="8" y="274" width="204" height="66" rx="4" fill="#E6F8F6" stroke="#00C4B4" stroke-width="1.2"/>
-            <text x="14" y="290" font-size="8" font-weight="800" fill="#00665C">Regla de Integridad Estricta:</text>
-            <text x="14" y="304" font-size="7.5" font-weight="600" fill="#0F1E36">Imposible crear tickets huérfanos.</text>
-            <text x="14" y="318" font-size="7.5" font-weight="600" fill="#0F1E36">Requiere validación obligatoria de</text>
-            <text x="14" y="331" font-size="7.5" font-weight="600" fill="#0F1E36">Plataforma y Cliente Institucional.</text>
-          </g>
-
-          <!-- CONECTORES DERECHA -->
-          <path d="M 485 90 L 515 90" fill="none" stroke="#00A896" stroke-width="2"/>
-          <text x="492" y="84" font-size="8" font-weight="800" fill="#00665C">1:N</text>
-
-          <path d="M 485 230 L 515 230" fill="none" stroke="#00A896" stroke-width="2"/>
-          <text x="492" y="224" font-size="8" font-weight="800" fill="#00665C">1:N</text>
-
-          <!-- TABLA COMMENTS -->
-          <g transform="translate(515, 20)">
-            <rect width="170" height="115" rx="4" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.5"/>
-            <rect width="170" height="20" rx="4" fill="#0F1E36"/>
-            <rect y="15" width="170" height="5" fill="#0F1E36"/>
-            <text x="8" y="14" fill="#FFFFFF" font-size="9" font-weight="800" font-family="Montserrat">ticket_comments</text>
-            <text x="8" y="33" font-size="8" font-family="JetBrains Mono"><tspan fill="#00A896" font-weight="800">PK id</tspan> : INTEGER (Auto)</text>
-            <text x="8" y="47" font-size="8" font-family="JetBrains Mono"><tspan fill="#1D4ED8" font-weight="800">FK ticket_id</tspan> ➔ tickets</text>
-            <text x="8" y="61" font-size="8" font-family="JetBrains Mono">author_username : VARCHAR</text>
-            <text x="8" y="75" font-size="8" font-family="JetBrains Mono">message : TEXT</text>
-            <text x="8" y="89" font-size="8" font-family="JetBrains Mono"><tspan fill="#B45309" font-weight="800">is_internal</tspan> : BOOLEAN</text>
-            <text x="8" y="103" font-size="8" font-family="JetBrains Mono">created_at : DATETIME</text>
-          </g>
-
-          <!-- TABLA AUDIT LOG -->
-          <g transform="translate(515, 155)">
-            <rect width="170" height="150" rx="4" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.5"/>
-            <rect width="170" height="20" rx="4" fill="#0F1E36"/>
-            <rect y="15" width="170" height="5" fill="#0F1E36"/>
-            <text x="8" y="14" fill="#00C4B4" font-size="9" font-weight="800" font-family="Montserrat">ticket_audit_log (CAJA NEGRA)</text>
-            <text x="8" y="33" font-size="8" font-family="JetBrains Mono"><tspan fill="#00A896" font-weight="800">PK id</tspan> : INTEGER (Auto)</text>
-            <text x="8" y="47" font-size="8" font-family="JetBrains Mono"><tspan fill="#1D4ED8" font-weight="800">FK ticket_id</tspan> ➔ tickets</text>
-            <text x="8" y="61" font-size="8" font-family="JetBrains Mono">changed_by : VARCHAR(50)</text>
-            <text x="8" y="75" font-size="8" font-family="JetBrains Mono">field_changed : VARCHAR(50)</text>
-            <text x="8" y="89" font-size="8" font-family="JetBrains Mono">old_value : TEXT</text>
-            <text x="8" y="103" font-size="8" font-family="JetBrains Mono">new_value : TEXT</text>
-            <text x="8" y="117" font-size="8" font-family="JetBrains Mono">change_reason : VARCHAR</text>
-            <text x="8" y="131" font-size="8" font-family="JetBrains Mono">created_at : DATETIME UTC</text>
-          </g>
-        </svg>
-      </div>
-
-    </div>
-
-    <div class="running-footer">
-      <span>Quantux Salud • Arquitectura Técnica</span>
-      <span>Página 3 de 5 • Diagrama ERD Visual</span>
+  <div class="col-md-6">
+    <div class="card p-3 shadow-sm">
+      <h6 class="fw-bold text-primary">ADR-03: Base de Conocimiento con Versionado</h6>
+      <p class="small text-muted mb-1"><strong>Decisión:</strong> Tablas relacionales desacopladas <code>kb_articles</code> y <code>kb_article_versions</code> para auditoría histórica.</p>
+      <span class="badge bg-success">14 Protocolos Clínicos</span>
     </div>
   </div>
-
-  <!-- PÁGINA 4: MOTOR FSM Y MATRIZ PRIORIDAD P=I*U -->
-  <div class="doc-page">
-    <div>
-      <div class="running-header">
-        <span>Quantux Salud</span>
-        <span>DOC-ARC-003: Motor FSM y Algoritmo de Prioridad</span>
-      </div>
-
-      <h2 class="section-header">
-        <span>4. Diagrama Gráfico del Ciclo de Vida FSM (5 Pasos)</span>
-        <span class="sec-badge">ESTADOS FINITOS</span>
-      </h2>
-
-      <!-- SVG FSM: PASOS CLAROS Y GRANDES -->
-      <div style="border: 1.5px solid #CBD5E1; border-radius: 6px; padding: 4px; background: #FFFFFF; margin-bottom: 6px;">
-        <svg viewBox="0 0 700 120" width="100%" height="120" xmlns="http://www.w3.org/2000/svg" style="font-family: 'Inter', sans-serif;">
-          <!-- STEP 1 -->
-          <g transform="translate(10, 10)">
-            <rect width="116" height="96" rx="5" fill="#F8FAFC" stroke="#1D4ED8" stroke-width="1.8"/>
-            <rect width="116" height="22" rx="5" fill="#1D4ED8"/>
-            <rect y="17" width="116" height="5" fill="#1D4ED8"/>
-            <text x="58" y="15" fill="#FFFFFF" font-size="9.5" font-weight="900" text-anchor="middle" font-family="Montserrat">1. NUEVO</text>
-            <text x="58" y="38" font-size="8" font-weight="800" fill="#0F1E36" text-anchor="middle">Registro Inicial</text>
-            <text x="58" y="52" font-size="7.5" font-weight="600" fill="#475569" text-anchor="middle">P = I × U (P1 a P5)</text>
-            <text x="58" y="66" font-size="7.5" font-weight="600" fill="#475569" text-anchor="middle">Sin Asignar</text>
-            <text x="58" y="82" font-size="7" font-weight="800" fill="#1D4ED8" text-anchor="middle">TICK-YYYYMM-XXXX</text>
-          </g>
-
-          <path d="M 126 58 L 148 58" fill="none" stroke="#00A896" stroke-width="2" marker-end="url(#arr1)"/>
-          <text x="137" y="51" font-size="7" font-weight="800" fill="#00665C" text-anchor="middle">Asignar</text>
-
-          <!-- STEP 2 -->
-          <g transform="translate(150, 10)">
-            <rect width="116" height="96" rx="5" fill="#F8FAFC" stroke="#B45309" stroke-width="1.8"/>
-            <rect width="116" height="22" rx="5" fill="#B45309"/>
-            <rect y="17" width="116" height="5" fill="#B45309"/>
-            <text x="58" y="15" fill="#FFFFFF" font-size="9.5" font-weight="900" text-anchor="middle" font-family="Montserrat">2. ASIGNADO</text>
-            <text x="58" y="38" font-size="8" font-weight="800" fill="#0F1E36" text-anchor="middle">Responsable Fijado</text>
-            <text x="58" y="52" font-size="7.5" font-weight="600" fill="#475569" text-anchor="middle">Nivel N1 / N2 / N3</text>
-            <text x="58" y="66" font-size="7.5" font-weight="600" fill="#475569" text-anchor="middle">En Cola Operativa</text>
-            <text x="58" y="82" font-size="7" font-weight="800" fill="#B45309" text-anchor="middle">Derivación Activa</text>
-          </g>
-
-          <path d="M 266 58 L 288 58" fill="none" stroke="#00A896" stroke-width="2" marker-end="url(#arr1)"/>
-          <text x="277" y="51" font-size="7" font-weight="800" fill="#00665C" text-anchor="middle">Tomar</text>
-
-          <!-- STEP 3 -->
-          <g transform="translate(290, 10)">
-            <rect width="116" height="96" rx="5" fill="#F8FAFC" stroke="#0284C7" stroke-width="1.8"/>
-            <rect width="116" height="22" rx="5" fill="#0284C7"/>
-            <rect y="17" width="116" height="5" fill="#0284C7"/>
-            <text x="58" y="15" fill="#FFFFFF" font-size="9.5" font-weight="900" text-anchor="middle" font-family="Montserrat">3. EN CURSO</text>
-            <text x="58" y="38" font-size="8" font-weight="800" fill="#0F1E36" text-anchor="middle">Diagnóstico Activo</text>
-            <text x="58" y="52" font-size="7.5" font-weight="600" fill="#475569" text-anchor="middle">Notas Internas</text>
-            <text x="58" y="66" font-size="7.5" font-weight="600" fill="#475569" text-anchor="middle">Pausa Espera Info</text>
-            <text x="58" y="82" font-size="7" font-weight="800" fill="#0284C7" text-anchor="middle">Gestión Técnica</text>
-          </g>
-
-          <path d="M 406 58 L 428 58" fill="none" stroke="#00A896" stroke-width="2" marker-end="url(#arr1)"/>
-          <text x="417" y="51" font-size="7" font-weight="800" fill="#00665C" text-anchor="middle">Resolver</text>
-
-          <!-- STEP 4 -->
-          <g transform="translate(430, 10)">
-            <rect width="116" height="96" rx="5" fill="#F8FAFC" stroke="#15803D" stroke-width="1.8"/>
-            <rect width="116" height="22" rx="5" fill="#15803D"/>
-            <rect y="17" width="116" height="5" fill="#15803D"/>
-            <text x="58" y="15" fill="#FFFFFF" font-size="9.5" font-weight="900" text-anchor="middle" font-family="Montserrat">4. RESUELTO</text>
-            <text x="58" y="38" font-size="8" font-weight="800" fill="#0F1E36" text-anchor="middle">Solución Técnica</text>
-            <text x="58" y="52" font-size="7.5" font-weight="800" fill="#15803D" text-anchor="middle">Notas ≥ 8 Caracteres</text>
-            <text x="58" y="66" font-size="7.5" font-weight="600" fill="#475569" text-anchor="middle">Flag Workaround</text>
-            <text x="58" y="82" font-size="7" font-weight="800" fill="#15803D" text-anchor="middle">Espera Validación</text>
-          </g>
-
-          <path d="M 546 58 L 568 58" fill="none" stroke="#00A896" stroke-width="2" marker-end="url(#arr1)"/>
-          <text x="557" y="51" font-size="7" font-weight="800" fill="#00665C" text-anchor="middle">Cerrar</text>
-
-          <!-- STEP 5 -->
-          <g transform="translate(570, 10)">
-            <rect width="116" height="96" rx="5" fill="#F8FAFC" stroke="#475569" stroke-width="1.8"/>
-            <rect width="116" height="22" rx="5" fill="#475569"/>
-            <rect y="17" width="116" height="5" fill="#475569"/>
-            <text x="58" y="15" fill="#FFFFFF" font-size="9.5" font-weight="900" text-anchor="middle" font-family="Montserrat">5. CERRADO</text>
-            <text x="58" y="38" font-size="8" font-weight="800" fill="#0F1E36" text-anchor="middle">Conformidad Final</text>
-            <text x="58" y="52" font-size="7.5" font-weight="800" fill="#0F1E36" text-anchor="middle">Inmutable</text>
-            <text x="58" y="66" font-size="7.5" font-weight="600" fill="#475569" text-anchor="middle">Auditoría Cerrada</text>
-            <text x="58" y="82" font-size="7" font-weight="800" fill="#475569" text-anchor="middle">Estado Terminal</text>
-          </g>
-        </svg>
-      </div>
-
-      <h2 class="section-header">
-        <span>5. Matriz de Prioridad (P = I × U) y Reglas de Transición</span>
-      </h2>
-
-      <div style="display: grid; grid-template-columns: 1.25fr 1fr; gap: 10px;">
-        <div>
-          <h3 style="font-family: 'Montserrat'; font-size: 9px; color: var(--q-navy); font-weight: 800; margin-bottom: 3px;">Matriz 2D de Prioridad (P = I × U)</h3>
-          <table>
-            <thead>
-              <tr>
-                <th>Urgencia \ Impacto</th>
-                <th style="text-align:center;">CRÍTICO</th>
-                <th style="text-align:center;">ALTO</th>
-                <th style="text-align:center;">MEDIO</th>
-                <th style="text-align:center;">BAJO</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>CRÍTICA</strong></td>
-                <td style="background:#FEE2E2; color:#991B1B; font-weight:800; text-align:center;">P1 (Crítica)</td>
-                <td style="background:#FEE2E2; color:#991B1B; font-weight:800; text-align:center;">P1 (Crítica)</td>
-                <td style="background:#FEF3C7; color:#92400E; font-weight:800; text-align:center;">P2 (Alta)</td>
-                <td style="background:#FEF3C7; color:#92400E; font-weight:800; text-align:center;">P3 (Media)</td>
-              </tr>
-              <tr>
-                <td><strong>ALTA</strong></td>
-                <td style="background:#FEE2E2; color:#991B1B; font-weight:800; text-align:center;">P1 (Crítica)</td>
-                <td style="background:#FEF3C7; color:#92400E; font-weight:800; text-align:center;">P2 (Alta)</td>
-                <td style="background:#EFF6FF; color:#1D4ED8; font-weight:800; text-align:center;">P3 (Media)</td>
-                <td style="background:#EFF6FF; color:#1D4ED8; font-weight:800; text-align:center;">P4 (Baja)</td>
-              </tr>
-              <tr>
-                <td><strong>MEDIA</strong></td>
-                <td style="background:#FEF3C7; color:#92400E; font-weight:800; text-align:center;">P2 (Alta)</td>
-                <td style="background:#EFF6FF; color:#1D4ED8; font-weight:800; text-align:center;">P3 (Media)</td>
-                <td style="background:#EFF6FF; color:#1D4ED8; font-weight:800; text-align:center;">P3 (Media)</td>
-                <td style="background:#F1F5F9; color:#475569; font-weight:800; text-align:center;">P4 (Baja)</td>
-              </tr>
-              <tr>
-                <td><strong>BAJA</strong></td>
-                <td style="background:#EFF6FF; color:#1D4ED8; font-weight:800; text-align:center;">P3 (Media)</td>
-                <td style="background:#F1F5F9; color:#475569; font-weight:800; text-align:center;">P4 (Baja)</td>
-                <td style="background:#F1F5F9; color:#475569; font-weight:800; text-align:center;">P4 (Baja)</td>
-                <td style="background:#F1F5F9; color:#475569; font-weight:800; text-align:center;">P5 (Planif.)</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div>
-          <h3 style="font-family: 'Montserrat'; font-size: 9px; color: var(--q-navy); font-weight: 800; margin-bottom: 3px;">Reglas Clave de Gobernanza FSM</h3>
-          <div class="callout-box" style="margin-top: 0; margin-bottom: 4px; padding: 5px 8px;">
-            <div class="callout-title">NUEVO ➔ ASIGNADO / EN_CURSO</div>
-            <div class="callout-desc">Requiere fijar operador responsable y nivel (N1/N2/N3) o autoasignación directa.</div>
-          </div>
-          <div class="callout-box" style="margin-top: 0; margin-bottom: 4px; padding: 5px 8px;">
-            <div class="callout-title">EN_CURSO ➔ RESUELTO</div>
-            <div class="callout-desc">Exige notas técnicas ≥ 8 caracteres y tipificación de si es solución provisoria (Workaround).</div>
-          </div>
-          <div class="callout-box" style="margin-top: 0; padding: 5px 8px;">
-            <div class="callout-title">RESUELTO ➔ CERRADO</div>
-            <div class="callout-desc">Conformidad final. El ticket se vuelve inmutable y se cierra la auditoría.</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="running-footer">
-      <span>Quantux Salud • Arquitectura Técnica</span>
-      <span>Página 4 de 5 • Ciclo FSM y Prioridades</span>
+  <div class="col-md-6">
+    <div class="card p-3 shadow-sm">
+      <h6 class="fw-bold text-primary">ADR-04: Gobernanza de IA y Guardrails</h6>
+      <p class="small text-muted mb-1"><strong>Decisión:</strong> La IA actúa como copiloto y sugeridor; todas las decisiones y transiciones requieren autenticación y firma humana.</p>
+      <span class="badge bg-success">Supervisión Humana Obligatoria</span>
     </div>
   </div>
+</div>
 
-  <!-- PÁGINA 5: CATÁLOGO DE APIS REST Y GUÍA DE DEFENSA -->
-  <div class="doc-page">
-    <div>
-      <div class="running-header">
-        <span>Quantux Salud</span>
-        <span>DOC-ARC-003: Catálogo Exhaustivo de Endpoints REST</span>
-      </div>
+<h2>2. DIAGRAMA DE ARQUITECTURA</h2>
+<div class="mermaid">
+graph TD
+    subgraph Frontend [Capa de Presentación Web Responsive]
+        UI[Cockpit Unificado HTML5 / Bootstrap 5 / JS ES6]
+        DOCS[Suite Documental Interactiva & Tablero Scrumban]
+    end
 
-      <h2 class="section-header">
-        <span>6. Catálogo Completo de Endpoints REST (14 Interfaces)</span>
-        <span class="sec-badge">OPENAPI 3.0</span>
-      </h2>
+    subgraph Gateway [Túnel Seguro & Aceleración]
+        TUNNEL[Tunnelmole HTTPS / TLS 1.3]
+        GZIP[Middleware GZip - 90% Payload Reduction]
+    end
 
-      <table>
-        <thead>
-          <tr>
-            <th style="width: 8%;">Verbo</th>
-            <th style="width: 28%;">Ruta del Endpoint</th>
-            <th style="width: 26%;">Request Payload / Params</th>
-            <th style="width: 13%;">HTTP Status</th>
-            <th style="width: 25%;">Regla de Negocio y Efecto</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><span class="method-badge post">POST</span></td>
-            <td><span style="font-family: monospace; font-weight:700;">/api/v1/auth/login</span></td>
-            <td><span style="font-family: monospace;">{ username, selected_role }</span></td>
-            <td><span style="font-family: monospace; font-weight:700;">200 / 401 / 403</span></td>
-            <td>Valida credenciales y rol. Devuelve perfil y vista de aterrizaje autorizada.</td>
-          </tr>
-          <tr>
-            <td><span class="method-badge get">GET</span></td>
-            <td><span style="font-family: monospace; font-weight:700;">/api/v1/auth/switch-role/{role}</span></td>
-            <td>Path: <span style="font-family: monospace;">role</span> (SOL/SOP/ADM)</td>
-            <td><span style="font-family: monospace; font-weight:700;">200 / 404</span></td>
-            <td>Alterna en 1 clic el rol activo del usuario para pruebas rápidas en el Cockpit.</td>
-          </tr>
-          <tr>
-            <td><span class="method-badge get">GET</span></td>
-            <td><span style="font-family: monospace; font-weight:700;">/api/v1/platforms</span></td>
-            <td>Ninguno</td>
-            <td><span style="font-family: monospace; font-weight:700;">200 OK</span></td>
-            <td>Retorna el catálogo de las <strong>9 plataformas de salud</strong> oficiales.</td>
-          </tr>
-          <tr>
-            <td><span class="method-badge get">GET</span></td>
-            <td><span style="font-family: monospace; font-weight:700;">/api/v1/institutions</span></td>
-            <td>Ninguno</td>
-            <td><span style="font-family: monospace; font-weight:700;">200 OK</span></td>
-            <td>Retorna el listado de los <strong>14 clientes institucionales</strong> activos.</td>
-          </tr>
-          <tr>
-            <td><span class="method-badge get">GET</span></td>
-            <td><span style="font-family: monospace; font-weight:700;">/api/v1/calculate-priority</span></td>
-            <td>Query: <span style="font-family: monospace;">impact, urgency</span></td>
-            <td><span style="font-family: monospace; font-weight:700;">200 OK</span></td>
-            <td>Calcula dinámicamente la prioridad P1..P5 mediante la matriz P = I × U.</td>
-          </tr>
-          <tr>
-            <td><span class="method-badge get">GET</span></td>
-            <td><span style="font-family: monospace; font-weight:700;">/api/v1/tickets</span></td>
-            <td>Query: <span style="font-family: monospace;">status, platform, inst, q</span></td>
-            <td><span style="font-family: monospace; font-weight:700;">200 OK</span></td>
-            <td>Bandeja de tickets filtrada y ordenada por criticidad (P1 ➔ P5).</td>
-          </tr>
-          <tr>
-            <td><span class="method-badge get">GET</span></td>
-            <td><span style="font-family: monospace; font-weight:700;">/api/v1/tickets/{id}</span></td>
-            <td>Path: <span style="font-family: monospace;">id</span> (TICK-YYYYMM-XXXX)</td>
-            <td><span style="font-family: monospace; font-weight:700;">200 / 404</span></td>
-            <td>Detalle completo del ticket, hilo de comentarios y log de auditoría.</td>
-          </tr>
-          <tr>
-            <td><span class="method-badge post">POST</span></td>
-            <td><span style="font-family: monospace; font-weight:700;">/api/v1/tickets</span></td>
-            <td><strong>Paso 1:</strong> <span style="font-family: monospace;">{ title, desc, plat, inst, I, U }</span></td>
-            <td><span style="font-family: monospace; font-weight:700;">200 / 400</span></td>
-            <td>Crea ticket en `NUEVO`, genera ID correlativo y traza inicial de auditoría.</td>
-          </tr>
-          <tr>
-            <td><span class="method-badge patch">PATCH</span></td>
-            <td><span style="font-family: monospace; font-weight:700;">/api/v1/tickets/{id}/assign</span></td>
-            <td><strong>Paso 2:</strong> <span style="font-family: monospace;">{ assignee, support_level }</span></td>
-            <td><span style="font-family: monospace; font-weight:700;">200 / 400</span></td>
-            <td>Asigna operador. Si estaba en `NUEVO`, pasa automáticamente a `ASIGNADO`.</td>
-          </tr>
-          <tr>
-            <td><span class="method-badge patch">PATCH</span></td>
-            <td><span style="font-family: monospace; font-weight:700;">/api/v1/tickets/{id}/status</span></td>
-            <td><strong>Paso 3:</strong> <span style="font-family: monospace;">{ new_status, reason }</span></td>
-            <td><span style="font-family: monospace; font-weight:700;">200 / 400</span></td>
-            <td>Avanza estado operacional (ej. a `EN_CURSO` o pausa por espera de datos).</td>
-          </tr>
-          <tr>
-            <td><span class="method-badge post">POST</span></td>
-            <td><span style="font-family: monospace; font-weight:700;">/api/v1/tickets/{id}/resolve</span></td>
-            <td><strong>Paso 4:</strong> <span style="font-family: monospace;">{ notes, is_workaround }</span></td>
-            <td><span style="font-family: monospace; font-weight:700;">200 / 400</span></td>
-            <td>Pasa a `RESUELTO`. Exige notas ≥ 8 caracteres y tipificación de solución temporal.</td>
-          </tr>
-          <tr>
-            <td><span class="method-badge post">POST</span></td>
-            <td><span style="font-family: monospace; font-weight:700;">/api/v1/tickets/{id}/close</span></td>
-            <td><strong>Paso 5:</strong> <span style="font-family: monospace;">{ closed_by, feedback }</span></td>
-            <td><span style="font-family: monospace; font-weight:700;">200 / 400</span></td>
-            <td>Cierre definitivo. Valida estado `RESUELTO`. El ticket pasa a ser inmutable.</td>
-          </tr>
-          <tr>
-            <td><span class="method-badge post">POST</span></td>
-            <td><span style="font-family: monospace; font-weight:700;">/api/v1/tickets/{id}/comments</span></td>
-            <td><span style="font-family: monospace;">{ author, message, is_internal }</span></td>
-            <td><span style="font-family: monospace; font-weight:700;">200 / 404</span></td>
-            <td>Registra mensaje en el hilo o nota interna privada para soporte.</td>
-          </tr>
-          <tr>
-            <td><span class="method-badge get">GET</span></td>
-            <td><span style="font-family: monospace; font-weight:700;">/api/v1/users/operators</span></td>
-            <td>Ninguno</td>
-            <td><span style="font-family: monospace; font-weight:700;">200 OK</span></td>
-            <td>Lista operadores de soporte disponibles para asignación en el Cockpit.</td>
-          </tr>
-        </tbody>
-      </table>
+    subgraph Backend [Servidor de Aplicación FastAPI v3.5.0]
+        AUTH[Módulo Auth & RBAC]
+        TICKETS[Módulo Tickets & Motor FSM]
+        KB[Módulo Base de Conocimiento]
+        METRICS[Módulo Métricas & Exportador CSV]
+    end
 
-      <h2 class="section-header">
-        <span>7. Decisiones de Arquitectura y Criterios de Gobernanza</span>
-      </h2>
+    subgraph Persistence [Capa de Datos Relacional]
+        DB[(SQLite WAL High Performance)]
+        AUDIT[(Caja Negra ticket_audit_log)]
+    end
 
-      <div class="callout-box" style="margin-top: 2px; margin-bottom: 4px;">
-        <div class="callout-title">1. ¿Por qué este diseño garantiza el éxito del MVP de 5 semanas?</div>
-        <div class="callout-desc">"Porque desacopla la lógica de negocio de la infraestructura: permite operar al 100% de inmediato sin costos de servidores ni demoras de IT, con soporte nativo para migrar a PostgreSQL y nubes corporativas en cualquier momento."</div>
-      </div>
+    UI --> TUNNEL --> GZIP --> Backend
+    DOCS --> Backend
+    AUTH --> DB
+    TICKETS --> DB
+    TICKETS --> AUDIT
+    KB --> DB
+    METRICS --> DB
+</div>
 
-      <div class="callout-box" style="margin-top: 0;">
-        <div class="callout-title">2. ¿Cómo se audita la calidad del soporte clínico?</div>
-        <div class="callout-desc">"Mediante el bloqueo automático de cierres sin resolución fundamentada y el registro permanente en la Caja Negra inmutable de auditoría (ticket_audit_log)."</div>
-      </div>
-    </div>
+<h2>3. MODELO RELACIONAL DE 9 TABLAS</h2>
+<div class="mermaid">
+erDiagram
+    USERS ||--o{ TICKETS : "crea / atiende"
+    USERS ||--o{ TICKET_COMMENTS : "escribe"
+    USERS ||--o{ TICKET_AUDIT_LOG : "audita"
+    PLATFORMS ||--o{ TICKETS : "clasifica"
+    INSTITUTIONS ||--o{ TICKETS : "origina"
+    TICKETS ||--o{ TICKET_COMMENTS : "contiene"
+    TICKETS ||--o{ TICKET_AUDIT_LOG : "registra historial"
+    KB_ARTICLES ||--o{ KB_ARTICLE_VERSIONS : "historial versiones"
+    HELPDESK_TEAMS ||--o{ USERS : "asigna dotación"
+</div>
 
-    <div class="running-footer">
-      <span>Quantux Salud • Arquitectura Técnica</span>
-      <span>Página 5 de 5 • Catálogo REST & Dictamen</span>
-    </div>
+  <hr class="my-5">
+  <div class="text-center text-muted small pb-4">
+    <strong>Quantux HealthDesk v3.5.0</strong> • Solución de Triage e Incidentes Asistenciales ITIL 4<br>
+    Solution Owner: <em>Freddy Cortés</em> • Facilitador Técnico: <em>Diego Martínez</em> • Comité Evaluador: <em>Paula Sbarbati, Diego Martínez, Carolina Brizuela, Nicolás Sánchez</em><br>
+    Certificación de Calidad: <strong>14 Ciclos Consecutivos TQM (Zero Defects 100%)</strong> • Septiembre 2026
   </div>
-
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

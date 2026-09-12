@@ -3,604 +3,187 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DOC-REQ-002 — Especificación Funcional y Backlog HealthDesk Quantux</title>
+  <title>DOC-FS-002 • Especificación Funcional & Backlog • Quantux HealthDesk v3.5.0</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
-
-    :root {
-      --q-navy: #1E3A5F;
-      --q-navy-dark: #142842;
-      --q-navy-soft: #2D4B73;
-      --q-teal: #00C4B4;
-      --q-teal-light: #E0F7F5;
-      --q-gray-bg: #F8FAFC;
-      --q-gray-border: #E2E8F0;
-      --q-text-body: #334155;
-      --q-text-muted: #64748B;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Inter', -apple-system, sans-serif;
-      color: var(--q-text-body);
-      background-color: #CBD5E1;
-      line-height: 1.5;
-      font-size: 11.5px;
-      -webkit-print-color-adjust: exact;
-      print-color-adjust: exact;
-    }
-
-    .doc-page {
-      width: 210mm;
-      min-height: 297mm;
-      margin: 20px auto;
-      background: #FFFFFF;
-      padding: 18mm 16mm;
-      box-shadow: 0 10px 25px rgba(30, 58, 95, 0.12);
-      position: relative;
-    }
-
-    @media print {
-      body { background: transparent; }
-      .doc-page { width: 100%; margin: 0; padding: 0; box-shadow: none; }
-      .page-break { page-break-before: always; }
-      @page { size: A4; margin: 12mm 14mm 12mm 14mm; }
-    }
-
-    .quantux-logo-header { display: flex; align-items: center; gap: 12px; }
-    .quantux-isotype { width: 44px; height: 44px; flex-shrink: 0; }
-    .quantux-text-group { display: flex; flex-direction: column; line-height: 1; }
-    .quantux-brand-name { font-family: 'Montserrat', sans-serif; font-size: 26px; font-weight: 800; color: var(--q-navy); letter-spacing: -0.5px; }
-    .quantux-brand-sub { font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 800; color: var(--q-teal); letter-spacing: 2px; text-align: right; margin-top: 2px; }
-
-    .running-header {
-      display: flex; justify-content: space-between; align-items: center;
-      border-bottom: 2px solid var(--q-teal); padding-bottom: 6px; margin-bottom: 16px;
-      font-size: 9.5px; font-family: 'Montserrat', sans-serif; font-weight: 700; color: var(--q-navy);
-      text-transform: uppercase; letter-spacing: 0.5px;
-    }
-
-    .running-footer {
-      border-top: 1px solid var(--q-gray-border); padding-top: 6px; margin-top: 20px;
-      display: flex; justify-content: space-between; font-size: 8.5px; color: var(--q-text-muted);
-    }
-
-    .cover-container {
-      min-height: 258mm; display: flex; flex-direction: column; justify-content: space-between;
-      border: 2px solid var(--q-navy); border-radius: 8px; padding: 36px; background: #FFFFFF;
-    }
-
-    .cover-top-bar { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--q-gray-border); padding-bottom: 16px; }
-    .cover-main { margin: 25px 0; text-align: center; }
-    .cover-tag {
-      display: inline-block; background: var(--q-teal-light); color: var(--q-navy);
-      font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 700; padding: 6px 18px;
-      border-radius: 30px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; border: 1px solid var(--q-teal);
-    }
-    .cover-main h1 { font-family: 'Montserrat', sans-serif; font-size: 25px; font-weight: 800; color: var(--q-navy); line-height: 1.2; margin-bottom: 10px; }
-    .cover-main h2 { font-family: 'Montserrat', sans-serif; font-size: 13.5px; font-weight: 600; color: var(--q-navy-soft); max-width: 90%; margin: 0 auto; }
-    .cover-card { background: var(--q-gray-bg); border: 1px solid var(--q-gray-border); border-left: 4px solid var(--q-teal); border-radius: 6px; padding: 18px; }
-    .cover-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 11px; }
-    .cover-grid-item strong { display: block; color: var(--q-navy); font-family: 'Montserrat', sans-serif; font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
-
-    h2.section-header {
-      font-family: 'Montserrat', sans-serif; font-size: 12.5px; font-weight: 800; color: var(--q-navy);
-      text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid var(--q-teal);
-      padding-bottom: 4px; margin-top: 18px; margin-bottom: 8px;
-    }
-    h3.sub-header { font-family: 'Montserrat', sans-serif; font-size: 11.5px; font-weight: 700; color: var(--q-navy-soft); margin-top: 10px; margin-bottom: 5px; }
-
-    table { width: 100%; border-collapse: collapse; margin: 8px 0 12px 0; font-size: 10.5px; background: #FFFFFF; }
-    table th { background: var(--q-navy); color: #FFFFFF; font-family: 'Montserrat', sans-serif; font-weight: 700; text-align: left; padding: 6px 8px; font-size: 9.5px; letter-spacing: 0.3px; border: 1px solid var(--q-navy); }
-    table td { padding: 5px 8px; border: 1px solid var(--q-gray-border); vertical-align: top; }
-    table tr:nth-child(even) { background-color: var(--q-gray-bg); }
-
-    .epic-badge { display: inline-block; background: var(--q-navy); color: #FFFFFF; font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 4px; margin-bottom: 6px; }
-    .story-card { background: #FFFFFF; border: 1px solid var(--q-gray-border); border-left: 3px solid var(--q-teal); border-radius: 4px; padding: 8px 10px; margin-bottom: 8px; }
-    .story-title { display: flex; justify-content: space-between; align-items: center; font-family: 'Montserrat', sans-serif; font-weight: 700; color: var(--q-navy); font-size: 11px; margin-bottom: 4px; }
-    .story-sp { background: var(--q-teal-light); color: var(--q-navy); font-size: 9.5px; padding: 1px 6px; border-radius: 10px; border: 1px solid var(--q-teal); font-weight: 800; }
-    .story-body { font-size: 10.5px; line-height: 1.4; color: var(--q-text-body); margin-bottom: 4px; }
-    .gherkin-box { background: var(--q-gray-bg); border-radius: 4px; padding: 5px 8px; font-size: 10px; border-left: 2px solid var(--q-navy-soft); }
-    .gherkin-box strong { color: var(--q-navy); }
-    .code-tag { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; background: #EEF2F6; padding: 1px 4px; border-radius: 3px; color: var(--q-navy); }
+    body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background-color: #f8f9fa; color: #212529; }
+    .doc-container { max-width: 1200px; margin: 30px auto; background: #fff; padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+    .badge-uat { background: #0d6efd; color: #fff; font-weight: 600; }
+    .badge-tqm { background: #198754; color: #fff; font-weight: 600; }
+    h1, h2, h3, h4 { color: #0f172a; font-weight: 700; margin-top: 1.5rem; margin-bottom: 1rem; }
+    h1 { border-bottom: 3px solid #0d6efd; padding-bottom: 10px; }
+    h2 { border-bottom: 1px solid #dee2e6; padding-bottom: 8px; margin-top: 2rem; }
+    table { width: 100%; margin: 20px 0; border-collapse: collapse; }
+    th { background: #0f172a; color: #fff; padding: 12px; font-weight: 600; }
+    td { padding: 10px 12px; border-bottom: 1px solid #e2e8f0; vertical-align: middle; }
+    tr:nth-child(even) { background-color: #f8fafc; }
+    .callout { border-left: 5px solid #0d6efd; padding: 15px 20px; background: #f0f7ff; border-radius: 4px; margin: 20px 0; }
+    .callout-success { border-left-color: #198754; background: #f0fdf4; }
+    .callout-warning { border-left-color: #f59e0b; background: #fffbeb; }
+    .doc-header-card { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #fff; padding: 25px; border-radius: 8px; margin-bottom: 30px; }
+    .mermaid { background: #fff; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px; margin: 20px 0; }
   </style>
 </head>
 <body>
 
-<!-- Global Nav for Quantux HealthDesk v3.5.0 -->
-<div class="global-nav" style="position: sticky; top: 0; left: 0; right: 0; z-index: 99999; background: #0D2137; padding: 10px 24px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 10px rgba(0,0,0,0.3); font-family: 'Inter', -apple-system, sans-serif;">
-  <div style="display: flex; align-items: center; gap: 14px;">
-    <a href="/cockpit" style="text-decoration: none; color: #00C4B4; font-weight: 800; font-size: 15px; display: flex; align-items: center; gap: 8px;">
-      <span style="font-size: 18px;">🩺</span> Quantux HealthDesk
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow-sm">
+  <div class="container-fluid px-4">
+    <a class="navbar-brand fw-bold text-info" href="/cockpit" style="display: flex; align-items: center; gap: 8px;">
+      <i class="fas fa-heartbeat"></i> Quantux HealthDesk <span class="badge bg-primary ms-1" style="font-size: 0.75rem;">v3.5.0</span>
     </a>
-    <span style="background: #00C4B4; color: #0D2137; font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 4px;">v3.5.0</span>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0 gap-1">
+        <li class="nav-item"><a class="nav-link text-light" href="/cockpit"><i class="fas fa-desktop me-1"></i> Cockpit</a></li>
+        <li class="nav-item"><a class="nav-link text-light" href="/scrumban"><i class="fas fa-columns me-1"></i> Tablero Scrumban</a></li>
+        <li class="nav-item"><a class="nav-link text-light" href="/plan"><i class="fas fa-project-diagram me-1"></i> Plan (DOC-01)</a></li>
+        <li class="nav-item"><a class="nav-link text-light" href="/especificacion"><i class="fas fa-list-check me-1"></i> Especificación (DOC-02)</a></li>
+        <li class="nav-item"><a class="nav-link text-light" href="/arquitectura"><i class="fas fa-sitemap me-1"></i> Arquitectura (DOC-03)</a></li>
+        <li class="nav-item"><a class="nav-link text-light" href="/pruebas"><i class="fas fa-vial me-1"></i> Pruebas (DOC-04)</a></li>
+        <li class="nav-item"><a class="nav-link text-light" href="/manual"><i class="fas fa-book-medical me-1"></i> Manual (DOC-05)</a></li>
+        <li class="nav-item"><a class="nav-link text-light" href="/presentacion"><i class="fas fa-chalkboard-user me-1"></i> Presentación (DOC-06)</a></li>
+      </ul>
+      <span class="badge bg-success ms-lg-3 py-2 px-3"><i class="fas fa-check-circle me-1"></i> Zero Defects TQM (14/14)</span>
+    </div>
   </div>
-  <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-    <a href="/cockpit" style="text-decoration: none; color: #E2E8F0; font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 6px; background: rgba(255,255,255,0.08); transition: background 0.2s;">🖥️ Cockpit</a>
-    <a href="/scrumban" style="text-decoration: none; color: #E2E8F0; font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 6px; background: rgba(255,255,255,0.08); transition: background 0.2s;">📊 Scrumban</a>
-    <a href="/plan" style="text-decoration: none; color: #E2E8F0; font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 6px; background: rgba(255,255,255,0.08); transition: background 0.2s;">📋 Plan DOC-01</a>
-    <a href="/especificacion" style="text-decoration: none; color: #E2E8F0; font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 6px; background: rgba(255,255,255,0.08); transition: background 0.2s;">📝 Espec. DOC-02</a>
-    <a href="/arquitectura" style="text-decoration: none; color: #E2E8F0; font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 6px; background: rgba(255,255,255,0.08); transition: background 0.2s;">🏗️ Arq. DOC-03</a>
-    <a href="/pruebas" style="text-decoration: none; color: #E2E8F0; font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 6px; background: rgba(255,255,255,0.08); transition: background 0.2s;">🧪 Pruebas DOC-04</a>
-    <a href="/manual" style="text-decoration: none; color: #E2E8F0; font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 6px; background: rgba(255,255,255,0.08); transition: background 0.2s;">📖 Manual DOC-05</a>
-    <a href="/presentacion" style="text-decoration: none; color: #E2E8F0; font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 6px; background: rgba(255,255,255,0.08); transition: background 0.2s;">🎯 Presentación DOC-06</a>
+</nav>
+
+<div class="container doc-container">
+
+<div class="doc-header-card">
+  <div class="d-flex justify-content-between align-items-center">
+    <div>
+      <span class="badge bg-primary text-uppercase me-2">DOC-FS-002</span>
+      <span class="badge bg-success text-uppercase">v3.5.0 • 38 UHs Homologadas</span>
+      <h2 class="text-white mt-2 mb-1">ESPECIFICACIÓN FUNCIONAL DE REQUISITOS Y BACKLOG EXTENDIDO</h2>
+      <p class="text-light mb-0">Modelado Formal de 38 Historias de Usuario con Criterios Gherkin y Gobernanza de IA</p>
+    </div>
+    <div class="text-end">
+      <span class="badge bg-info text-dark p-2 fw-bold">91 Story Points Totales</span>
+    </div>
   </div>
 </div>
-<style>
-@media print {
-  .global-nav { display: none !important; }
-}
-.global-nav a:hover {
-  background: rgba(0, 196, 180, 0.25) !important;
-  color: #00C4B4 !important;
-}
-</style>
 
-
-
-  <div class="doc-page">
-
-    <!-- PORTADA -->
-    <div class="cover-container">
-      <div class="cover-top-bar">
-        <div class="quantux-logo-header">
-          <svg class="quantux-isotype" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="44" cy="44" r="38" fill="#00C4B4"/>
-            <path d="M34 34L54 54M54 34L34 54" stroke="white" stroke-width="6.5" stroke-linecap="round"/>
-            <path d="M68 68L86 86" stroke="#1E3A5F" stroke-width="11" stroke-linecap="round"/>
-          </svg>
-          <div class="quantux-text-group">
-            <span class="quantux-brand-name">Quantux</span>
-            <span class="quantux-brand-sub">SALUD</span>
-          </div>
-        </div>
-        <div style="font-family: 'Montserrat', sans-serif; font-size: 11px; color: var(--q-navy); font-weight: 700;">
-          DOC-REQ-002
-        </div>
-      </div>
-
-      <div class="cover-main">
-        <div class="cover-tag">Especificación Funcional y Backlog</div>
-        <h1>ESPECIFICACIÓN FUNCIONAL Y BACKLOG</h1>
-        <h2>HEALTHDESK QUANTUX — SISTEMA CENTRALIZADO DE GESTIÓN DE TICKETS DE SOPORTE</h2>
-      </div>
-
-      <div class="cover-card">
-        <div class="cover-grid">
-          <div class="cover-grid-item">
-            <strong>Código Documental</strong>
-            DOC-REQ-002 (Versión 1.0 Oficial)
-          </div>
-          <div class="cover-grid-item">
-            <strong>Fecha de Emisión</strong>
-            28 de Agosto de 2026
-          </div>
-          <div class="cover-grid-item">
-            <strong>Solution Owner</strong>
-            Freddy Cortés (Analista Funcional)
-          </div>
-          <div class="cover-grid-item">
-            <strong>Dimensión de Alcance</strong>
-            6 Épicas | 32 Historias de Usuario | 75 Story Points
-          </div>
-          <div class="cover-grid-item" style="grid-column: span 2; border-top: 1px solid var(--q-gray-border); padding-top: 8px; margin-top: 2px;">
-            <strong>Alcance Funcional</strong>
-            Flujo end-to-end de 5 pasos: Registrar → Asignar → Gestionar → Resolver → Cerrar
-          </div>
-        </div>
-      </div>
-
-      <div style="text-align: center; font-size: 10px; color: var(--q-text-muted); font-family: 'Montserrat', sans-serif;">
-        Quantux Salud • www.quantuxsalud.com
-      </div>
+<h2>1. RESUMEN DE ÉPICAS FUNCIONALES</h2>
+<div class="row g-3">
+  <div class="col-md-6">
+    <div class="card p-3 shadow-sm border-start border-primary border-4">
+      <h5 class="fw-bold text-primary">EP-01: Acceso, Perfiles y Seguridad RBAC (8 SP)</h5>
+      <p class="small text-muted mb-0">Autenticación multi-rol (Solicitante, Soporte N1/N2/N3, Admin), encriptación y auditoría de login.</p>
     </div>
-
-    <!-- PÁGINA 2: ECOSISTEMA, CLIENTES Y PRIORIDAD -->
-    <div class="page-break"></div>
-
-    <div class="running-header">
-      <span>Quantux Salud</span>
-      <span>DOC-REQ-002: Especificación Funcional y Backlog</span>
-    </div>
-
-    <h2 class="section-header">1. Catálogo del Ecosistema Quantux</h2>
-    
-    <h3 class="sub-header">1.1. Las 9 Plataformas Digitales de Salud</h3>
-    <table>
-      <thead>
-        <tr>
-          <th style="width: 25%;">Código</th>
-          <th style="width: 30%;">Plataforma</th>
-          <th>Descripción Operativa</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><span class="code-tag">CAT_RECETA</span></td>
-          <td><strong>Receta Electrónica</strong></td>
-          <td>Emisión, firma digital y dispensa farmacéutica (+400k recetas/mes).</td>
-        </tr>
-        <tr>
-          <td><span class="code-tag">CAT_TELEMEDICINA</span></td>
-          <td><strong>Telemedicina</strong></td>
-          <td>Videoconsultas sincrónicas, sala de espera virtual y triage profesional de la salud.</td>
-        </tr>
-        <tr>
-          <td><span class="code-tag">CAT_COPAGOS_PAGOS</span></td>
-          <td><strong>Copagos y Pasarela</strong></td>
-          <td>Cobro de coseguros, liquidaciones y pasarela de pagos online.</td>
-        </tr>
-        <tr>
-          <td><span class="code-tag">CAT_RPM_MONITOREO</span></td>
-          <td><strong>Monitoreo Remoto (RPM)</strong></td>
-          <td>Seguimiento de pacientes crónicos y telemetría de dispositivos profesionales de la salud.</td>
-        </tr>
-        <tr>
-          <td><span class="code-tag">CAT_INTERNACION_DOM</span></td>
-          <td><strong>Internación Domiciliaria</strong></td>
-          <td>Logística de visitas, insumos y evolución clínica asistencial en domicilio.</td>
-        </tr>
-        <tr>
-          <td><span class="code-tag">CAT_AFILIADOS_PORTAL</span></td>
-          <td><strong>Portal de Afiliados</strong></td>
-          <td>Autogestión de credenciales, historial y autorizaciones del paciente.</td>
-        </tr>
-        <tr>
-          <td><span class="code-tag">CAT_CARTILLA_TURNOS</span></td>
-          <td><strong>Cartilla y Turnos</strong></td>
-          <td>Geolocalización de prestadores y reserva online de citas asistenciales.</td>
-        </tr>
-        <tr>
-          <td><span class="code-tag">CAT_REGISTRO_INTEROP</span></td>
-          <td><strong>Interoperabilidad HL7/FHIR</strong></td>
-          <td>Integración bajo estándares de salud con obras sociales y prepagas.</td>
-        </tr>
-        <tr>
-          <td><span class="code-tag">CAT_CONSULTORIO_DIGITAL</span></td>
-          <td><strong>Consultorio Digital</strong></td>
-          <td>Historia clínica ambulatoria para más de 12.000 profesionales de la salud activos.</td>
-        </tr>
-      </tbody>
-    </table>
-
-    <h3 class="sub-header">1.2. Los 14 Clientes Institucionales Mapeados</h3>
-    <table>
-      <thead>
-        <tr>
-          <th style="width: 30%;">Segmento Institucional</th>
-          <th>Entidades de Salud Homologadas</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><strong>Financiadores y Prepagas</strong></td>
-          <td>OSDE • Swiss Medical • Galeno • Medifé • Omint • Prevención Salud</td>
-        </tr>
-        <tr>
-          <td><strong>Sanatorios y Hospitales</strong></td>
-          <td>Sanatorio Finochietto • Hospital Británico • Hospital Alemán • Sanatorio de la Trinidad</td>
-        </tr>
-        <tr>
-          <td><strong>Internación Domiciliaria y Redes</strong></td>
-          <td>IDOM • Mevaterapia • ORIEN • Red Asistencial Integral</td>
-        </tr>
-      </tbody>
-    </table>
-
-    <h2 class="section-header">2. Marco Operativo de Soporte y Priorización</h2>
-    
-    <h3 class="sub-header">2.1. Matriz de Prioridad (P = Impacto × Urgencia)</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>Impacto \ Urgencia</th>
-          <th style="text-align: center;">Alta</th>
-          <th style="text-align: center;">Media</th>
-          <th style="text-align: center;">Baja</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><strong>Alto (Crítico)</strong></td>
-          <td style="text-align: center; font-weight: 700; color: #991B1B; background: #FEE2E2;">P1 — Crítica (2h)</td>
-          <td style="text-align: center; font-weight: 700; color: #92400E; background: #FEF3C7;">P2 — Alta (8h)</td>
-          <td style="text-align: center;">P3 — Media (24h)</td>
-        </tr>
-        <tr>
-          <td><strong>Medio</strong></td>
-          <td style="text-align: center; font-weight: 700; color: #92400E; background: #FEF3C7;">P2 — Alta (8h)</td>
-          <td style="text-align: center;">P3 — Media (24h)</td>
-          <td style="text-align: center;">P4 — Baja (48h)</td>
-        </tr>
-        <tr>
-          <td><strong>Bajo</strong></td>
-          <td style="text-align: center;">P3 — Media (24h)</td>
-          <td style="text-align: center;">P4 — Baja (48h)</td>
-          <td style="text-align: center;">P5 — Muy Baja (72h)</td>
-        </tr>
-      </tbody>
-    </table>
-
-    <h2 class="section-header">3. User Story Mapping (Mapeo del Flujo de 5 Pasos del MVP)</h2>
-    <table>
-      <thead>
-        <tr>
-          <th style="width: 25%;">Paso del Flujo</th>
-          <th style="width: 25%;">Acción Principal</th>
-          <th>Historias de Usuario Asociadas</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><strong>1. REGISTRAR</strong></td>
-          <td>Crear ticket y clasificación</td>
-          <td>UH-01 (Login), UH-05 (Alta), UH-06 (Plataforma), UH-07 (Cliente), UH-08 (Tipo), UH-09 (Prioridad), UH-10 (Adjuntos)</td>
-        </tr>
-        <tr>
-          <td><strong>2. ASIGNAR</strong></td>
-          <td>Recepción y derivación</td>
-          <td>UH-12 (Bandeja Entrada), UH-13 (Asignación Responsable), UH-14 (Autoasignación), UH-15 (N2/N3), UH-16 (Reasignación), UH-28 (Cockpit)</td>
-        </tr>
-        <tr>
-          <td><strong>3. GESTIONAR</strong></td>
-          <td>Seguimiento y estados</td>
-          <td>UH-17 (En Curso), UH-18 (Pausa/Espera), UH-23 (Comentarios), UH-24 (Notas privadas), UH-25 (Avisos), UH-29 (Selector Rol)</td>
-        </tr>
-        <tr>
-          <td><strong>4. RESOLVER</strong></td>
-          <td>Registro de solución</td>
-          <td>UH-19 (Solución definitiva), UH-20 (Workaround N2), UH-21 (Pase a Resuelto), UH-26 (Aviso solución)</td>
-        </tr>
-        <tr>
-          <td><strong>5. CERRAR</strong></td>
-          <td>Conformidad y auditoría</td>
-          <td>UH-22 (Cierre), UH-27 (Historial), UH-02 (Permisos RBAC), UH-03 (Auditoría), UH-04 (Logout), UH-11 (Edición), UH-30 (Filtros), UH-31 (Usuarios), UH-32 (Tablas)</td>
-        </tr>
-      </tbody>
-    </table>
-
-    <!-- PÁGINA 3: HISTORIAS DE USUARIO EP-01 Y EP-02 -->
-    <div class="page-break"></div>
-
-    <div class="running-header">
-      <span>Quantux Salud</span>
-      <span>DOC-REQ-002: Especificación Funcional y Backlog</span>
-    </div>
-
-    <h2 class="section-header">4. Especificación Detallada de las 32 Historias de Usuario</h2>
-
-    <!-- EP-01 -->
-    <div class="epic-badge">ÉPICA 1 (EP-01): Acceso, Roles y Permisos Básicos (7 SP)</div>
-    
-    <div class="story-card">
-      <div class="story-title"><span>UH-01: Autenticación de Usuarios por Rol</span><span class="story-sp">2 SP</span></div>
-      <div class="story-body"><strong>Como</strong> usuario de Quantux Salud, <strong>quiero</strong> ingresar con mis credenciales seleccionando mi rol (Solicitante, Soporte, Admin), <strong>para</strong> acceder a las funciones de mi perfil.</div>
-      <div class="gherkin-box"><strong>Dado</strong> un usuario registrado, <strong>cuando</strong> ingresa credenciales válidas, <strong>entonces</strong> accede a su bandeja principal.</div>
-    </div>
-
-    <div class="story-card">
-      <div class="story-title"><span>UH-02: Control de Permisos por Perfil (RBAC)</span><span class="story-sp">2 SP</span></div>
-      <div class="story-body"><strong>Como</strong> Administrador, <strong>quiero</strong> restringir las acciones del sistema según el rol, <strong>para</strong> evitar modificaciones no autorizadas en tickets o tablas maestras.</div>
-      <div class="gherkin-box"><strong>Dado</strong> un Solicitante, <strong>cuando</strong> consulta el sistema, <strong>entonces</strong> solo ve y crea sus propios tickets.</div>
-    </div>
-
-    <div class="story-card">
-      <div class="story-title"><span>UH-03: Auditoría Básica de Acceso</span><span class="story-sp">2 SP</span></div>
-      <div class="story-body"><strong>Como</strong> Administrador, <strong>quiero</strong> registrar los inicios de sesión, <strong>para</strong> mantener la trazabilidad de seguridad.</div>
-      <div class="gherkin-box"><strong>Dado</strong> un login exitoso, <strong>cuando</strong> el usuario entra, <strong>entonces</strong> se guarda usuario, fecha, hora y rol en la bitácora.</div>
-    </div>
-
-    <div class="story-card">
-      <div class="story-title"><span>UH-04: Cierre de Sesión Seguro</span><span class="story-sp">1 SP</span></div>
-      <div class="story-body"><strong>Como</strong> usuario autenticado, <strong>quiero</strong> cerrar mi sesión en 1 clic, <strong>para</strong> proteger mi cuenta al desocupar la estación de trabajo.</div>
-      <div class="gherkin-box"><strong>Dado</strong> un usuario con sesión abierta, <strong>cuando</strong> presiona "Cerrar Sesión", <strong>entonces</strong> se limpia la sesión activa y regresa al login.</div>
-    </div>
-
-    <!-- EP-02 -->
-    <div class="epic-badge" style="margin-top: 10px;">ÉPICA 2 (EP-02): Tickets y Datos de Solicitud (15 SP)</div>
-
-    <div class="story-card">
-      <div class="story-title"><span>UH-05: Formulario Unificado de Alta de Ticket</span><span class="story-sp">3 SP</span></div>
-      <div class="story-body"><strong>Como</strong> Solicitante u Operador de Soporte, <strong>quiero</strong> cargar un ticket con título, descripción y datos de contacto, <strong>para</strong> reportar una solicitud formalmente.</div>
-      <div class="gherkin-box"><strong>Dado</strong> el formulario de alta, <strong>cuando</strong> se completan los campos obligatorios, <strong>entonces</strong> se genera el ticket en estado <span class="code-tag">Nuevo</span> con ID único.</div>
-    </div>
-
-    <div class="story-card">
-      <div class="story-title"><span>UH-06: Selección de Plataforma / Categoría</span><span class="story-sp">2 SP</span></div>
-      <div class="story-body"><strong>Como</strong> Solicitante, <strong>quiero</strong> elegir la plataforma afectada de entre las 9 oficiales, <strong>para</strong> canalizar el ticket al equipo especialista correcto.</div>
-      <div class="gherkin-box"><strong>Dado</strong> el selector de plataformas, <strong>cuando</strong> el usuario elige una opción, <strong>entonces</strong> queda asociado al código oficial (ej. <span class="code-tag">CAT_RECETA</span>).</div>
-    </div>
-
-    <div class="story-card">
-      <div class="story-title"><span>UH-07: Vinculación con Cliente Institucional</span><span class="story-sp">2 SP</span></div>
-      <div class="story-body"><strong>Como</strong> Operador de Soporte, <strong>quiero</strong> asociar el ticket a uno de los 14 clientes institucionales, <strong>para</strong> identificar el impacto en la entidad de salud.</div>
-      <div class="gherkin-box"><strong>Dado</strong> el campo cliente, <strong>cuando</strong> se guarda el ticket, <strong>entonces</strong> queda registrada la institución (ej. OSDE, Swiss Medical, Finochietto).</div>
-    </div>
-
-    <div class="story-card">
-      <div class="story-title"><span>UH-08: Tipificación de la Solicitud</span><span class="story-sp">2 SP</span></div>
-      <div class="story-body"><strong>Como</strong> Operador de Soporte N1, <strong>quiero</strong> clasificar el ticket como Incidente, Requerimiento o Consulta, <strong>para</strong> aplicar las pautas de atención correspondientes.</div>
-      <div class="gherkin-box"><strong>Dado</strong> un ticket en triage, <strong>cuando</strong> se asigna el tipo, <strong>entonces</strong> queda visible en el detalle y listado.</div>
-    </div>
-
-    <div class="story-card">
-      <div class="story-title"><span>UH-09: Asignación de Prioridad (P = I × U)</span><span class="story-sp">3 SP</span></div>
-      <div class="story-body"><strong>Como</strong> Operador de Soporte, <strong>quiero</strong> definir el Impacto y la Urgencia, <strong>para</strong> que el sistema determine la Prioridad (P1 a P5).</div>
-      <div class="gherkin-box"><strong>Dado</strong> Impacto Alto y Urgencia Alta, <strong>cuando</strong> se registran los valores, <strong>entonces</strong> el sistema establece Prioridad P1 (Crítica).</div>
-    </div>
-
-    <div class="story-card">
-      <div class="story-title"><span>UH-10: Adjunto de Evidencias</span><span class="story-sp">2 SP</span></div>
-      <div class="story-body"><strong>Como</strong> Solicitante, <strong>quiero</strong> adjuntar capturas o enlaces del error, <strong>para</strong> que soporte pueda reproducir la falla rápidamente.</div>
-      <div class="gherkin-box"><strong>Dado</strong> un archivo o URL, <strong>cuando</strong> se adjunta al ticket, <strong>entonces</strong> queda accesible en la vista de detalle.</div>
-    </div>
-
-    <div class="story-card">
-      <div class="story-title"><span>UH-11: Consulta y Edición Básica de Ticket</span><span class="story-sp">1 SP</span></div>
-      <div class="story-body"><strong>Como</strong> Solicitante, <strong>quiero</strong> consultar el estado y editar los datos mientras el ticket esté en <span class="code-tag">Nuevo</span>, <strong>para</strong> corregir omisiones antes del inicio de la atención.</div>
-      <div class="gherkin-box"><strong>Dado</strong> un ticket en estado <span class="code-tag">Nuevo</span>, <strong>cuando</strong> el creador edita el texto, <strong>entonces</strong> los cambios se guardan y se registra la edición en el historial.</div>
-    </div>
-
-    <!-- PÁGINA 4: HISTORIAS DE USUARIO EP-03 Y EP-04 -->
-    <div class="page-break"></div>
-
-    <div class="running-header">
-      <span>Quantux Salud</span>
-      <span>DOC-REQ-002: Especificación Funcional y Backlog</span>
-    </div>
-
-    <!-- EP-03 -->
-    <div class="epic-badge">ÉPICA 3 (EP-03): Bandeja de Atención y Asignación de Responsable (10 SP)</div>
-
-    <div class="story-card">
-      <div class="story-title"><span>UH-12: Bandeja de Entrada de Solicitudes</span><span class="story-sp">3 SP</span></div>
-      <div class="story-body"><strong>Como</strong> Operador de Soporte N1, <strong>quiero</strong> ver todos los tickets sin asignar en tiempo real, <strong>para</strong> revisarlos y distribuirlos al equipo correspondiente.</div>
-      <div class="gherkin-box"><strong>Dado</strong> un ticket en estado <span class="code-tag">Nuevo</span>, <strong>cuando</strong> el operador abre la bandeja, <strong>entonces</strong> aparece ordenado y destacado por su prioridad.</div>
-    </div>
-
-    <div class="story-card">
-      <div class="story-title"><span>UH-13: Asignación de Responsable de Soporte</span><span class="story-sp">2 SP</span></div>
-      <div class="story-body"><strong>Como</strong> Supervisor u Operador N1, <strong>quiero</strong> asignar un ticket a un responsable de soporte, <strong>para</strong> pasar el ticket a <span class="code-tag">Asignado</span>.</div>
-      <div class="gherkin-box"><strong>Dado</strong> un ticket <span class="code-tag">Nuevo</span>, <strong>cuando</strong> se selecciona un responsable de soporte, <strong>entonces</strong> el estado cambia a <span class="code-tag">Asignado</span>.</div>
-    </div>
-
-    <div class="story-card">
-      <div class="story-title"><span>UH-14: Autoasignación Directa ("Tomar Ticket")</span><span class="story-sp">1 SP</span></div>
-      <div class="story-body"><strong>Como</strong> Operador de Soporte, <strong>quiero</strong> autoasignarme un ticket con un solo clic, <strong>para</strong> comenzar la atención de inmediato.</div>
-      <div class="gherkin-box"><strong>Dado</strong> un ticket sin asignar, <strong>cuando</strong> el operador presiona "Tomar Ticket", <strong>entonces</strong> queda asignado a su usuario y pasa a <span class="code-tag">Asignado</span>.</div>
-    </div>
-
-    <div class="story-card">
-      <div class="story-title"><span>UH-15: Derivación a Nivel de Soporte Especializado</span><span class="story-sp">2 SP</span></div>
-      <div class="story-body"><strong>Como</strong> Operador de Soporte, <strong>quiero</strong> escalar el ticket a N2 o N3, <strong>para</strong> que intervenga un especialista técnico o de infraestructura.</div>
-      <div class="gherkin-box"><strong>Dado</strong> un ticket en atención, <strong>cuando</strong> se cambia el nivel de soporte, <strong>entonces</strong> se registra el escalamiento y queda disponible para el nuevo grupo.</div>
-    </div>
-
-    <div class="story-card">
-      <div class="story-title"><span>UH-16: Reasignación de Responsable</span><span class="story-sp">2 SP</span></div>
-      <div class="story-body"><strong>Como</strong> Supervisor, <strong>quiero</strong> reasignar un ticket indicando una justificación, <strong>para</strong> balancear la carga operativa o cubrir ausencias.</div>
-      <div class="gherkin-box"><strong>Dado</strong> un cambio de responsable, <strong>cuando</strong> se guarda con motivo, <strong>entonces</strong> el historial refleja el usuario anterior, el nuevo y la razón.</div>
-    </div>
-
-    <!-- EP-04 -->
-    <div class="epic-badge" style="margin-top: 10px;">ÉPICA 4 (EP-04): Ciclo de Estados y Registro de Solución (14 SP)</div>
-
-    <div class="story-card">
-      <div class="story-title"><span>UH-17: Transición de Estado a "En Curso"</span><span class="story-sp">2 SP</span></div>
-      <div class="story-body"><strong>Como</strong> Operador asignado, <strong>quiero</strong> cambiar el estado a <span class="code-tag">En Curso</span>, <strong>para</strong> indicar que el análisis técnico ha comenzado activamente.</div>
-      <div class="gherkin-box"><strong>Dado</strong> un ticket en <span class="code-tag">Asignado</span>, <strong>cuando</strong> el operador inicia el trabajo, <strong>entonces</strong> el estado pasa a <span class="code-tag">En Curso</span> y se registra la fecha/hora.</div>
-    </div>
-
-    <div class="story-card">
-      <div class="story-title"><span>UH-18: Pausa de Gestión por Información Pendiente</span><span class="story-sp">2 SP</span></div>
-      <div class="story-body"><strong>Como</strong> Operador de Soporte, <strong>quiero</strong> marcar el ticket en espera de información adicional, <strong>para</strong> documentar que está detenido por causas externas.</div>
-      <div class="gherkin-box"><strong>Dado</strong> un ticket <span class="code-tag">En Curso</span>, <strong>cuando</strong> se solicita más información al usuario, <strong>entonces</strong> el ticket refleja la espera y se registra el comentario correspondiente.</div>
-    </div>
-
-    <div class="story-card">
-      <div class="story-title"><span>UH-19: Registro Obligatorio de Solución</span><span class="story-sp">3 SP</span></div>
-      <div class="story-body"><strong>Como</strong> Operador de Soporte, <strong>quiero</strong> documentar la resolución técnica aplicada, <strong>para</strong> que el usuario conozca la respuesta y quede archivada.</div>
-      <div class="gherkin-box"><strong>Dado</strong> un ticket <span class="code-tag">En Curso</span>, <strong>cuando</strong> se carga la solución, <strong>entonces</strong> el texto de resolución es obligatorio para habilitar el paso a <span class="code-tag">Resuelto</span>.</div>
-    </div>
-
-    <div class="story-card">
-      <div class="story-title"><span>UH-20: Registro de Solución Provisoria / Alternativa</span><span class="story-sp">3 SP</span></div>
-      <div class="story-body"><strong>Como</strong> Operador de Soporte N2, <strong>quiero</strong> registrar si la solución fue provisoria (workaround), <strong>para</strong> restablecer el servicio asistencial mientras N3 resuelve la causa de fondo.</div>
-      <div class="gherkin-box"><strong>Dado</strong> un incidente operativo, <strong>cuando</strong> se aplica una solución temporal, <strong>entonces</strong> se guarda la descripción del procedimiento y la marca de solución provisoria.</div>
-    </div>
-
-    <div class="story-card">
-      <div class="story-title"><span>UH-21: Transición a Estado "Resuelto"</span><span class="story-sp">2 SP</span></div>
-      <div class="story-body"><strong>Como</strong> Operador de Soporte, <strong>quiero</strong> marcar el ticket como <span class="code-tag">Resuelto</span>, <strong>para</strong> informar que la atención técnica ha finalizado exitosamente.</div>
-      <div class="gherkin-box"><strong>Dado</strong> un ticket con solución registrada, <strong>cuando</strong> se confirma la acción, <strong>entonces</strong> el estado cambia a <span class="code-tag">Resuelto</span> y se notifica al solicitante.</div>
-    </div>
-
-    <div class="story-card">
-      <div class="story-title"><span>UH-22: Transición a Estado "Cerrado"</span><span class="story-sp">2 SP</span></div>
-      <div class="story-body"><strong>Como</strong> Solicitante o Administrador, <strong>quiero</strong> validar la conformidad y pasar el ticket a <span class="code-tag">Cerrado</span>, <strong>para</strong> archivar el ciclo de atención de forma inmutable.</div>
-      <div class="gherkin-box"><strong>Dado</strong> un ticket <span class="code-tag">Resuelto</span>, <strong>cuando</strong> se confirma el cierre, <strong>entonces</strong> pasa a <span class="code-tag">Cerrado</span> y se bloquea cualquier edición posterior.</div>
-    </div>
-
-    <!-- PÁGINA 5: HISTORIAS DE USUARIO EP-05 Y EP-06 -->
-    <div class="page-break"></div>
-
-    <div class="running-header">
-      <span>Quantux Salud</span>
-      <span>DOC-REQ-002: Especificación Funcional y Backlog</span>
-    </div>
-
-    <!-- EP-05 -->
-    <div class="epic-badge">ÉPICA 5 (EP-05): Seguimiento, Notificaciones e Historial (9 SP)</div>
-
-    <div class="story-card">
-      <div class="story-title"><span>UH-23: Comentarios Públicos de Seguimiento</span><span class="story-sp">2 SP</span></div>
-      <div class="story-body"><strong>Como</strong> Solicitante u Operador, <strong>quiero</strong> intercambiar mensajes públicos en el hilo del ticket, <strong>para</strong> mantener una comunicación fluida sobre el avance del caso.</div>
-      <div class="gherkin-box"><strong>Dado</strong> un nuevo mensaje público, <strong>cuando</strong> se envía, <strong>entonces</strong> queda visible en el hilo del ticket para todos los involucrados.</div>
-    </div>
-
-    <div class="story-card">
-      <div class="story-title"><span>UH-24: Notas Internas para el Equipo de Soporte</span><span class="story-sp">2 SP</span></div>
-      <div class="story-body"><strong>Como</strong> Operador de Soporte, <strong>quiero</strong> escribir notas técnicas internas invisibles para el solicitante, <strong>para</strong> coordinar diagnósticos entre técnicos.</div>
-      <div class="gherkin-box"><strong>Dado</strong> una nota marcada como privada, <strong>cuando</strong> un Solicitante consulta el ticket, <strong>entonces</strong> la nota no es visible en su pantalla.</div>
-    </div>
-
-    <div class="story-card">
-      <div class="story-title"><span>UH-25: Avisos Básicos por Asignación y Cambio de Estado</span><span class="story-sp">2 SP</span></div>
-      <div class="story-body"><strong>Como</strong> usuario del sistema, <strong>quiero</strong> recibir avisos visuales ante cambios de estado o asignaciones, <strong>para</strong> enterarme en tiempo real.</div>
-      <div class="gherkin-box"><strong>Dado</strong> un cambio en un ticket propio, <strong>cuando</strong> ocurre la acción, <strong>entonces</strong> aparece una alerta en pantalla con el detalle de la actualización.</div>
-    </div>
-
-    <div class="story-card">
-      <div class="story-title"><span>UH-26: Aviso Destacado de Ticket Resuelto</span><span class="story-sp">1 SP</span></div>
-      <div class="story-body"><strong>Como</strong> Solicitante, <strong>quiero</strong> ver claramente cuando mi ticket es marcado como <span class="code-tag">Resuelto</span>, <strong>para</strong> verificar la solución antes de cerrar.</div>
-      <div class="gherkin-box"><strong>Dado</strong> el pase a <span class="code-tag">Resuelto</span>, <strong>cuando</strong> el solicitante entra al sistema, <strong>entonces</strong> ve un aviso destacado de confirmación de solución.</div>
-    </div>
-
-    <div class="story-card">
-      <div class="story-title"><span>UH-27: Historial y Trazabilidad de Cambios Relevantes</span><span class="story-sp">2 SP</span></div>
-      <div class="story-body"><strong>Como</strong> Administrador o Auditor, <strong>quiero</strong> ver la cronología completa de cambios con fecha, hora y responsable, <strong>para</strong> garantizar la total transparencia del ciclo.</div>
-      <div class="gherkin-box"><strong>Dado</strong> cualquier cambio en un ticket, <strong>cuando</strong> se consulta el historial, <strong>entonces</strong> se listan todas las mutaciones sin posibilidad de ser borradas.</div>
-    </div>
-
-    <!-- EP-06 -->
-    <div class="epic-badge" style="margin-top: 10px;">ÉPICA 6 (EP-06): Administración y Operación Centralizada (20 SP)</div>
-
-    <div class="story-card">
-      <div class="story-title"><span>UH-28: Interfaz Centralizada de Operación en Pantalla Única</span><span class="story-sp">6 SP</span></div>
-      <div class="story-body"><strong>Como</strong> Operador de Soporte, <strong>quiero</strong> operar en una sola pantalla con Filtros (Col 1), Bandeja (Col 2) y Detalle/Gestión (Col 3), <strong>para</strong> resolver tickets rápidamente sin recargar la página.</div>
-      <div class="gherkin-box"><strong>Dado</strong> el ingreso al sistema, <strong>cuando</strong> el operador hace clic en un ticket de la lista, <strong>entonces</strong> el detalle y las acciones se abren inmediatamente en la tercera columna.</div>
-    </div>
-
-    <div class="story-card">
-      <div class="story-title"><span>UH-29: Selector Rápido de Rol de Usuario</span><span class="story-sp">3 SP</span></div>
-      <div class="story-body"><strong>Como</strong> evaluador o usuario de pruebas, <strong>quiero</strong> alternar entre los roles de Solicitante, Soporte y Admin con un botón en la barra superior, <strong>para</strong> validar la experiencia de cada perfil en segundos durante la demo.</div>
-      <div class="gherkin-box"><strong>Dado</strong> el selector en el encabezado, <strong>cuando</strong> se elige otro rol, <strong>entonces</strong> la interfaz adapta los permisos y vistas instantáneamente.</div>
-    </div>
-
-    <div class="story-card">
-      <div class="story-title"><span>UH-30: Listado, Búsqueda y Filtros Básicos</span><span class="story-sp">4 SP</span></div>
-      <div class="story-body"><strong>Como</strong> Operador de Soporte, <strong>quiero</strong> filtrar la bandeja por estado, plataforma, cliente o buscar por palabra clave, <strong>para</strong> localizar cualquier ticket en menos de 2 segundos.</div>
-      <div class="gherkin-box"><strong>Dado</strong> un criterio de búsqueda, <strong>cuando</strong> el usuario escribe o selecciona un filtro, <strong>entonces</strong> la lista se actualiza al instante.</div>
-    </div>
-
-    <div class="story-card">
-      <div class="story-title"><span>UH-31: Administración de Usuarios y Asignación de Roles</span><span class="story-sp">4 SP</span></div>
-      <div class="story-body"><strong>Como</strong> Administrador, <strong>quiero</strong> listar, crear y asignar roles a los usuarios, <strong>para</strong> gestionar el personal operativo de Quantux Salud.</div>
-      <div class="gherkin-box"><strong>Dado</strong> el módulo de administración, <strong>cuando</strong> se crea un usuario, <strong>entonces</strong> queda habilitado para operar según su perfil asignado.</div>
-    </div>
-
-    <div class="story-card">
-      <div class="story-title"><span>UH-32: Administración de Categorías y Prioridades</span><span class="story-sp">3 SP</span></div>
-      <div class="story-body"><strong>Como</strong> Administrador, <strong>quiero</strong> administrar las plataformas, tipos de ticket y niveles de prioridad, <strong>para</strong> mantener el sistema alineado a la evolución del catálogo corporativo.</div>
-      <div class="gherkin-box"><strong>Dado</strong> el panel de configuración, <strong>cuando</strong> se edita una categoría, <strong>entonces</strong> los formularios de alta y filtros reflejan los cambios de forma consistente.</div>
-    </div>
-
-    <div class="running-footer">
-      <span>Quantux Salud • HealthDesk</span>
-      <span>Confidencial • Uso Interno</span>
-    </div>
-
   </div>
+  <div class="col-md-6">
+    <div class="card p-3 shadow-sm border-start border-success border-4">
+      <h5 class="fw-bold text-success">EP-02: Creación y Priorización ITIL (18 SP)</h5>
+      <p class="small text-muted mb-0">Alta ágil, código correlativo TICK-YYYYMM-XXXX, catálogos (9 plataformas, 14 clientes) y matriz P=IxU.</p>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card p-3 shadow-sm border-start border-info border-4">
+      <h5 class="fw-bold text-info">EP-03: Bandeja Cockpit y Asignación Multi-Nivel (14 SP)</h5>
+      <p class="small text-muted mb-0">Filtros reactivos, semáforo SLA, autoasignación ('Tomar Ticket') y escalamiento formal a N3.</p>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card p-3 shadow-sm border-start border-warning border-4">
+      <h5 class="fw-bold text-warning">EP-04: Motor de Gestión FSM y Guardrails (17 SP)</h5>
+      <p class="small text-muted mb-0">Ciclo FSM (Nuevo, Asignado, En Curso, En Espera, Resuelto, Cerrado), solución >= 8 car y Workaround.</p>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card p-3 shadow-sm border-start border-danger border-4">
+      <h5 class="fw-bold text-danger">EP-05: Colaboración, Trazabilidad y Auditoría (10 SP)</h5>
+      <p class="small text-muted mb-0">Comentarios públicos, notas internas RBAC y Caja Negra inmutable (ticket_audit_log).</p>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card p-3 shadow-sm border-start border-secondary border-4">
+      <h5 class="fw-bold text-secondary">EP-06: Catálogos Sanitarios y Administración (8 SP)</h5>
+      <p class="small text-muted mb-0">Gestión de usuarios, notificaciones por email, configuración global y KPIs en vivo.</p>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card p-3 shadow-sm border-start border-primary border-4">
+      <h5 class="fw-bold text-primary">EP-07: Base de Conocimiento Clínico (10 SP)</h5>
+      <p class="small text-muted mb-0">14 protocolos precargados, versionado inmutable v1.0/v1.1, tags y auto-publicación desde tickets.</p>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card p-3 shadow-sm border-start border-dark border-4">
+      <h5 class="fw-bold text-dark">EP-08: Mesas Especializadas y Reportes (6 SP)</h5>
+      <p class="small text-muted mb-0">Tablero de dotación N1/N2/N3 y exportación forense en formato CSV UTF-8.</p>
+    </div>
+  </div>
+</div>
 
+<h2 class="mt-4">2. MATRIZ DE 38 HISTORIAS DE USUARIO HOMOLOGADAS</h2>
+<div class="table-responsive">
+  <table class="table table-hover table-bordered small">
+    <thead>
+      <tr>
+        <th>Código</th>
+        <th>Épica</th>
+        <th>Título de la Historia de Usuario</th>
+        <th>SP</th>
+        <th>Criterio de Aceptación Gherkin</th>
+        <th>Estado</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>UH-01</strong></td><td>EP-01</td><td>Login multi-rol y entrega de JWT</td><td>3</td><td>Dado usuario registrado, cuando ingresa credenciales, entonces recibe token y rol.</td><td><span class="badge bg-success">Aprobado</span></td></tr>
+      <tr><td><strong>UH-02</strong></td><td>EP-01</td><td>Listado de usuarios para Admin</td><td>2</td><td>Dado admin autenticado, cuando consulta usuarios, entonces ve operadores y niveles.</td><td><span class="badge bg-success">Aprobado</span></td></tr>
+      <tr><td><strong>UH-03</strong></td><td>EP-01</td><td>Auditoría de inicios de sesión</td><td>2</td><td>Dado intento de login, cuando ocurre, entonces se estampa log con timestamp.</td><td><span class="badge bg-success">Aprobado</span></td></tr>
+      <tr><td><strong>UH-04</strong></td><td>EP-01</td><td>Encriptación segura de credenciales</td><td>1</td><td>Dado guardado de usuario, cuando se persiste clave, entonces se aplica hash no reversible.</td><td><span class="badge bg-success">Aprobado</span></td></tr>
+      <tr><td><strong>UH-05</strong></td><td>EP-02</td><td>Alta de ticket con código correlativo</td><td>3</td><td>Dado formulario nuevo, cuando se crea ticket, entonces recibe ID TICK-YYYYMM-XXXX.</td><td><span class="badge bg-success">Aprobado</span></td></tr>
+      <tr><td><strong>UH-06</strong></td><td>EP-02</td><td>Catálogo de 9 Plataformas Clínicas</td><td>3</td><td>Dado alta de ticket, cuando selecciona plataforma, entonces elige entre las 9 oficiales.</td><td><span class="badge bg-success">Aprobado</span></td></tr>
+      <tr><td><strong>UH-07</strong></td><td>EP-02</td><td>Catálogo de 14 Clientes Sanitarios</td><td>3</td><td>Dado alta de ticket, cuando selecciona sanatorio, entonces elige entre los 14 oficiales.</td><td><span class="badge bg-success">Aprobado</span></td></tr>
+      <tr><td><strong>UH-08</strong></td><td>EP-02</td><td>Tipificación de requerimiento</td><td>2</td><td>Dado ticket en alta, cuando elige tipo, entonces se almacena Incidente/Requerimiento/Consulta.</td><td><span class="badge bg-success">Aprobado</span></td></tr>
+      <tr><td><strong>UH-09</strong></td><td>EP-02</td><td>Matriz determinística ITIL P=IxU</td><td>3</td><td>Dado Impacto y Urgencia, cuando se combinan, entonces se calcula reactivamente P1 a P5.</td><td><span class="badge bg-success">Aprobado</span></td></tr>
+      <tr><td><strong>UH-10</strong></td><td>EP-02</td><td>Carga de adjuntos y evidencias</td><td>2</td><td>Dado incidente con evidencia, cuando se adjunta URL, entonces se vincula al ticket.</td><td><span class="badge bg-success">Aprobado</span></td></tr>
+      <tr><td><strong>UH-11</strong></td><td>EP-02</td><td>Edición permitida en estado NUEVO</td><td>2</td><td>Dado ticket en NUEVO, cuando solicitante edita datos, entonces se guardan cambios.</td><td><span class="badge bg-success">Aprobado</span></td></tr>
+      <tr><td><strong>UH-12</strong></td><td>EP-03</td><td>Bandeja Cockpit con filtros dinámicos</td><td>3</td><td>Dado panel de soporte, cuando se carga, entonces se listan tickets con filtros reactivos.</td><td><span class="badge bg-success">Aprobado</span></td></tr>
+      <tr><td><strong>UH-13</strong></td><td>EP-03</td><td>Semáforo visual de prioridad SLA</td><td>2</td><td>Dado listado de tickets, cuando se renderiza, entonces muestra badge de color P1-P5.</td><td><span class="badge bg-success">Aprobado</span></td></tr>
+      <tr><td><strong>UH-14</strong></td><td>EP-03</td><td>Autoasignación ('Tomar Ticket')</td><td>3</td><td>Dado ticket en NUEVO, cuando operador presiona 'Tomar', entonces pasa a ASIGNADO a su nombre.</td><td><span class="badge bg-success">Aprobado</span></td></tr>
+      <tr><td><strong>UH-15</strong></td><td>EP-03</td><td>Escalamiento jerárquico N1->N2->N3</td><td>3</td><td>Dado ticket asignado, cuando se escala a N3, entonces se deriva con motivo obligatorio.</td><td><span class="badge bg-success">Aprobado</span></td></tr>
+      <tr><td><strong>UH-16</strong></td><td>EP-03</td><td>Reasignación entre operadores</td><td>2</td><td>Dado ticket en curso, cuando se transfiere, entonces se actualiza el operador responsable.</td><td><span class="badge bg-success">Aprobado</span></td></tr>
+      <tr><td><strong>UH-17</strong></td><td>EP-04</td><td>Transición a EN_CURSO y diagnóstico</td><td>3</td><td>Dado ticket asignado, cuando operador inicia trabajo, entonces pasa a EN_CURSO.</td><td><span class="badge bg-success">Aprobado</span></td></tr>
+      <tr><td><strong>UH-18</strong></td><td>EP-04</td><td>Pausa operativa (Estado EN_ESPERA)</td><td>3</td><td>Dado ticket en curso, cuando aguarda datos externos, entonces pasa a EN_ESPERA con motivo.</td><td><span class="badge bg-success">Aprobado</span></td></tr>
+      <tr><td><strong>UH-19</strong></td><td>EP-04</td><td>Guardrail de solución >= 8 caracteres</td><td>3</td><td>Dado intento de resolución, cuando texto tiene < 8 car, entonces API rechaza con HTTP 400.</td><td><span class="badge bg-success">Aprobado</span></td></tr>
+      <tr><td><strong>UH-20</strong></td><td>EP-04</td><td>Marcación de Workaround / Provisoria</td><td>3</td><td>Dado formulario de resolución, cuando marca Workaround, entonces se guarda flag is_workaround.</td><td><span class="badge bg-success">Aprobado</span></td></tr>
+      <tr><td><strong>UH-21</strong></td><td>EP-04</td><td>Transición efectiva a RESUELTO</td><td>2</td><td>Dado ticket con solución válida, cuando se resuelve, entonces pasa a RESUELTO.</td><td><span class="badge bg-success">Aprobado</span></td></tr>
+      <tr><td><strong>UH-22</strong></td><td>EP-04</td><td>Cierre con conformidad e inmutabilidad</td><td>3</td><td>Dado ticket en RESUELTO, cuando solicitante da conformidad, entonces pasa a CERRADO e inmutable.</td><td><span class="badge bg-success">Aprobado</span></td></tr>
+      <tr><td><strong>UH-23</strong></td><td>EP-05</td><td>Comentarios públicos bidireccionales</td><td>3</td><td>Dado ticket en curso, cuando usuario comenta, entonces es visible en el hilo público.</td><td><span class="badge bg-success">Aprobado</span></td></tr>
+      <tr><td><strong>UH-24</strong></td><td>EP-05</td><td>Notas internas confidenciales (RBAC)</td><td>3</td><td>Dado operador registrando nota privada, cuando marca interna, entonces solo es visible para soporte.</td><td><span class="badge bg-success">Aprobado</span></td></tr>
+      <tr><td><strong>UH-25</strong></td><td>EP-05</td><td>Adjuntos en hilos de comentarios</td><td>2</td><td>Dado comentario técnico, cuando se adjunta archivo, entonces se asocia al mensaje.</td><td><span class="badge bg-success">Aprobado</span></td></tr>
+      <tr><td><strong>UH-26</strong></td><td>EP-06</td><td>Notificaciones por cambio de estado</td><td>2</td><td>Dado cambio de estado en FSM, cuando se aplica, entonces se genera evento de notificación.</td><td><span class="badge bg-success">Aprobado</span></td></tr>
+      <tr><td><strong>UH-27</strong></td><td>EP-05</td><td>Caja Negra de auditoría forense</td><td>2</td><td>Dado cualquier cambio en ticket, cuando ocurre, entonces se estampa log inmutable en auditoría.</td><td><span class="badge bg-success">Aprobado</span></td></tr>
+      <tr><td><strong>UH-28</strong></td><td>EP-03</td><td>Ordenamiento de columnas en Cockpit</td><td>1</td><td>Dado tabla de tickets, cuando usuario clica encabezado, entonces se reordena en memoria.</td><td><span class="badge bg-success">Aprobado</span></td></tr>
+      <tr><td><strong>UH-29</strong></td><td>EP-06</td><td>Panel de métricas rápidas de bandeja</td><td>1</td><td>Dado Cockpit principal, cuando carga, entonces muestra contadores de tickets en cada estado.</td><td><span class="badge bg-success">Aprobado</span></td></tr>
+      <tr><td><strong>UH-30</strong></td><td>EP-06</td><td>Búsqueda por texto libre en bandeja</td><td>2</td><td>Dado input de búsqueda, cuando escribe término, entonces filtra la tabla instantáneamente.</td><td><span class="badge bg-success">Aprobado</span></td></tr>
+      <tr><td><strong>UH-31</strong></td><td>EP-06</td><td>Alta de nuevos usuarios y operadores</td><td>2</td><td>Dado admin en panel de usuarios, cuando crea operador, entonces asigna rol y nivel ITIL.</td><td><span class="badge bg-success">Aprobado</span></td></tr>
+      <tr><td><strong>UH-32</strong></td><td>EP-06</td><td>Configuración global del ServiceDesk</td><td>1</td><td>Dado admin, cuando accede a config, entonces consulta y ajusta parámetros del sistema.</td><td><span class="badge bg-success">Aprobado</span></td></tr>
+      <tr><td><strong>UH-33</strong></td><td>EP-07</td><td>Visor y filtrado de Base de Conocimiento</td><td>3</td><td>Dado operador o médico, cuando consulta KB, entonces accede a >=14 artículos categorizados.</td><td><span class="badge bg-success">Aprobado</span></td></tr>
+      <tr><td><strong>UH-34</strong></td><td>EP-07</td><td>Publicación de artículos clínicos</td><td>3</td><td>Dado nuevo procedimiento técnico, cuando se redacta, entonces se publica con versión v1.0.</td><td><span class="badge bg-success">Aprobado</span></td></tr>
+      <tr><td><strong>UH-35</strong></td><td>EP-07</td><td>Versionado inmutable v1.1 y changelog</td><td>2</td><td>Dado artículo editado, cuando se actualiza a v1.1, entonces la v1.0 se resguarda en historial.</td><td><span class="badge bg-success">Aprobado</span></td></tr>
+      <tr><td><strong>UH-36</strong></td><td>EP-07</td><td>Auto-publicación de KB desde ticket</td><td>2</td><td>Dado ticket resuelto con solución novedosa, cuando presiona publicar, entonces crea borrador KB.</td><td><span class="badge bg-success">Aprobado</span></td></tr>
+      <tr><td><strong>UH-37</strong></td><td>EP-08</td><td>Tablero de dotación mesas N1/N2/N3</td><td>3</td><td>Dado panel de mesas, cuando consulta, entonces ve dotación y tickets asignados por nivel.</td><td><span class="badge bg-success">Aprobado</span></td></tr>
+      <tr><td><strong>UH-38</strong></td><td>EP-08</td><td>Exportación forense de tickets en CSV</td><td>3</td><td>Dado admin, cuando presiona Exportar CSV, entonces descarga dataset completo en UTF-8.</td><td><span class="badge bg-success">Aprobado</span></td></tr>
+    </tbody>
+  </table>
+</div>
+
+  <hr class="my-5">
+  <div class="text-center text-muted small pb-4">
+    <strong>Quantux HealthDesk v3.5.0</strong> • Solución de Triage e Incidentes Asistenciales ITIL 4<br>
+    Solution Owner: <em>Freddy Cortés</em> • Facilitador Técnico: <em>Diego Martínez</em> • Comité Evaluador: <em>Paula Sbarbati, Diego Martínez, Carolina Brizuela, Nicolás Sánchez</em><br>
+    Certificación de Calidad: <strong>14 Ciclos Consecutivos TQM (Zero Defects 100%)</strong> • Septiembre 2026
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
