@@ -34,6 +34,11 @@ def init_db():
                 session.commit()
             except Exception:
                 pass
+        try:
+            session.exec(text("UPDATE users SET email = 'fcortes@quantuxsalud.com' WHERE username = 'admin' OR full_name LIKE '%Freddy%'"))
+            session.commit()
+        except Exception:
+            pass
 
 def get_session():
     with Session(engine) as session:

@@ -6366,16 +6366,58 @@ function reassignFromWorkspace() {
   openReassignModal(AppState.selectedTicket.id);
 }
 
-function openReassignModal(ticketId) {
+async function openReassignModal(ticketId) {
   const ticket = AppState.selectedTicket || (AppState.tickets && AppState.tickets.find(t => String(t.id) === String(ticketId)));
   if (!ticket) return;
 
   const existingModal = document.getElementById('modal-dynamic-reassign');
   if (existingModal) existingModal.remove();
 
+  // Cargar lista completa y actualizada de operadores ITIL disponibles desde API o estado
+  let operators = [];
+  try {
+    operators = await API.getOperators();
+  } catch (err) {
+    console.warn('No se pudo obtener operadores desde API, usando usuarios en memoria:', err);
+  }
+
+  if (!operators || operators.length === 0) {
+    if (AppState.users && AppState.users.length > 0) {
+      operators = AppState.users.filter(u => u.role === 'SOPORTE' || u.role === 'ADMIN');
+    }
+  }
+
+  // Lista base institucional garantizada si está vacío
+  if (!operators || operators.length === 0) {
+    operators = [
+      { username: 'admin', full_name: 'Freddy Cortés', role: 'ADMIN', support_level: 'N3', email: 'fcortes@quantuxsalud.com' },
+      { username: 'soporte', full_name: 'Laura Benítez', role: 'SOPORTE', support_level: 'N2', email: 'soporte@quantuxsalud.com' },
+      { username: 'cpaez', full_name: 'Carlos Páez', role: 'SOPORTE', support_level: 'N2', email: 'cpaez@quantuxsalud.com' },
+      { username: 'svaldez', full_name: 'Sofía Valdez', role: 'SOPORTE', support_level: 'N1', email: 'svaldez@quantuxsalud.com' },
+      { username: 'dnavarro', full_name: 'Diego Navarro', role: 'ADMIN', support_level: 'N3', email: 'dnavarro@quantuxsalud.com' },
+      { username: 'mrodriguez', full_name: 'Mariana Rodríguez', role: 'ADMIN', support_level: 'N3', email: 'mrodriguez@quantuxsalud.com' },
+      { username: 'mflores', full_name: 'Marcos Flores', role: 'SOPORTE', support_level: 'N1', email: 'mflores@quantuxsalud.com' },
+      { username: 'ealvarez', full_name: 'Elena Álvarez', role: 'SOPORTE', support_level: 'N2', email: 'ealvarez@quantuxsalud.com' },
+      { username: 'vromero', full_name: 'Valeria Romero', role: 'SOPORTE', support_level: 'N2', email: 'vromero@quantuxsalud.com' },
+      { username: 'gfernandez', full_name: 'Gustavo Fernández', role: 'SOPORTE', support_level: 'N1', email: 'gfernandez@quantuxsalud.com' }
+    ];
+  }
+
+  const currentAssignee = ticket.assignee_username || '';
+  const currentLevel = (ticket.support_level || 'N1').toUpperCase();
+
+  const optionsHtml = operators.map(op => {
+    const isSelected = (op.username === currentAssignee) ? 'selected' : '';
+    const lvl = (op.support_level || (op.role === 'ADMIN' ? 'N3' : 'N1')).toUpperCase();
+    const email = op.email || (op.username === 'admin' ? 'fcortes@quantuxsalud.com' : `${op.username}@quantuxsalud.com`);
+    return `<option value="${escapeHtml(op.username)}" data-level="${lvl}" data-fullname="${escapeHtml(op.full_name)}" data-email="${escapeHtml(email)}" ${isSelected}>
+      ${escapeHtml(op.full_name)} (${op.username}) — Nivel ${lvl} [${escapeHtml(email)}]
+    </option>`;
+  }).join('');
+
   const modalHtml = `
     <div id="modal-dynamic-reassign" style="z-index: 10000; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.65); display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
-      <div style="background: #FFFFFF; border-radius: 12px; max-width: 480px; width: 92%; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2); overflow: hidden;">
+      <div style="background: #FFFFFF; border-radius: 12px; max-width: 540px; width: 92%; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2); overflow: hidden; animation: fadeIn 0.15s ease-out;">
         <div style="background: linear-gradient(135deg, #0F172A, #1E293B); color: #FFF; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between;">
           <h5 style="margin: 0; font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px;">
             <span>👤</span> Asignar / Reasignar Operador ITIL
@@ -6385,32 +6427,32 @@ function openReassignModal(ticketId) {
         <div style="padding: 20px;">
           <div style="margin-bottom: 14px;">
             <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 4px;">Ticket:</label>
-            <div style="font-size: 13px; font-weight: 600; color: #0F172A; background: #F1F5F9; padding: 8px 12px; border-radius: 6px;">
+            <div style="font-size: 13px; font-weight: 600; color: #0F172A; background: #F1F5F9; padding: 9px 12px; border-radius: 6px; border: 1px solid #E2E8F0;">
               #${ticket.id} — ${escapeHtml(ticket.title || '')}
             </div>
           </div>
           
           <div style="margin-bottom: 14px;">
-            <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 4px;">Seleccionar Operador Responsable:</label>
-            <select id="reassign-operator-select" style="width: 100%; padding: 9px 12px; border: 1px solid #CBD5E1; border-radius: 6px; font-size: 13px; background: #FFF; font-weight: 500;">
-              <option value="cpaez" ${ticket.assignee_username === 'cpaez' ? 'selected' : ''}>Carlos Páez (Soporte N2 • Especialista HCE / Telemedicina)</option>
-              <option value="soporte" ${ticket.assignee_username === 'soporte' ? 'selected' : ''}>Carlos Páez (Mesa de Soporte N1)</option>
-              <option value="admin" ${ticket.assignee_username === 'admin' ? 'selected' : ''}>Administrador TI (Ingeniería N3 • Infraestructura)</option>
+            <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 4px;">
+              Seleccionar Operador Responsable (${operators.length} disponibles):
+            </label>
+            <select id="reassign-operator-select" onchange="onReassignOperatorChange()" style="width: 100%; padding: 9px 12px; border: 1px solid #CBD5E1; border-radius: 6px; font-size: 13px; background: #FFF; font-weight: 600; color: #0F172A;">
+              ${optionsHtml}
             </select>
           </div>
 
           <div style="margin-bottom: 14px;">
             <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 4px;">Nivel ITIL Asignado:</label>
-            <select id="reassign-level-select" style="width: 100%; padding: 9px 12px; border: 1px solid #CBD5E1; border-radius: 6px; font-size: 13px; background: #FFF; font-weight: 500;">
-              <option value="N1" ${(ticket.itil_level || 'N1') === 'N1' ? 'selected' : ''}>Nivel N1 — Mesa de Ayuda y Triage</option>
-              <option value="N2" ${(ticket.itil_level || 'N1') === 'N2' ? 'selected' : ''}>Nivel N2 — Analista Funcional y Plataformas</option>
-              <option value="N3" ${(ticket.itil_level || 'N1') === 'N3' ? 'selected' : ''}>Nivel N3 — Ingeniería, DBAs y Arquitectura</option>
+            <select id="reassign-level-select" style="width: 100%; padding: 9px 12px; border: 1px solid #CBD5E1; border-radius: 6px; font-size: 13px; background: #FFF; font-weight: 600; color: #0F172A;">
+              <option value="N1" ${currentLevel === 'N1' ? 'selected' : ''}>Nivel N1 — Mesa de Ayuda y Triage</option>
+              <option value="N2" ${currentLevel === 'N2' ? 'selected' : ''}>Nivel N2 — Analista Funcional y Soporte Especializado</option>
+              <option value="N3" ${currentLevel === 'N3' ? 'selected' : ''}>Nivel N3 — Ingeniería, DBAs y Arquitectura</option>
             </select>
           </div>
 
           <div style="margin-bottom: 18px;">
             <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 4px;">Motivo / Nota de Derivación (Opcional):</label>
-            <textarea id="reassign-reason-textarea" rows="2" placeholder="Indique motivo técnico o instrucciones para el operador..." style="width: 100%; padding: 8px 12px; border: 1px solid #CBD5E1; border-radius: 6px; font-size: 12px; resize: none; font-family: inherit;"></textarea>
+            <textarea id="reassign-reason-textarea" rows="2" placeholder="Indique motivo técnico o instrucciones para el operador asignado..." style="width: 100%; padding: 8px 12px; border: 1px solid #CBD5E1; border-radius: 6px; font-size: 12px; resize: none; font-family: inherit;"></textarea>
           </div>
 
           <div style="display: flex; gap: 8px; justify-content: flex-end;">
@@ -6423,6 +6465,17 @@ function openReassignModal(ticketId) {
   `;
 
   document.body.insertAdjacentHTML('beforeend', modalHtml);
+  onReassignOperatorChange();
+}
+
+function onReassignOperatorChange() {
+  const opSelect = document.getElementById('reassign-operator-select');
+  const lvlSelect = document.getElementById('reassign-level-select');
+  if (!opSelect || !lvlSelect) return;
+  const opt = opSelect.options[opSelect.selectedIndex];
+  if (opt && opt.dataset.level) {
+    lvlSelect.value = opt.dataset.level;
+  }
 }
 
 function closeReassignModal() {
@@ -6439,26 +6492,25 @@ async function confirmReassign(ticketId) {
   const username = opSelect.value;
   const itilLevel = lvlSelect ? lvlSelect.value : 'N2';
   const reason = reasonText ? reasonText.value.trim() : '';
+  const currentActor = AppState.currentUser ? AppState.currentUser.username : 'soporte';
 
-  let fullName = 'Carlos Páez';
-  if (username === 'admin') fullName = 'Administrador TI';
+  const selectedOpt = opSelect.options[opSelect.selectedIndex];
+  const fullName = (selectedOpt && selectedOpt.dataset.fullname) ? selectedOpt.dataset.fullname : username;
 
   try {
-    const payload = {
+    await API.assignTicket(ticketId, {
       assignee_username: username,
-      assignee_name: fullName,
-      itil_level: itilLevel,
-      status: 'ASIGNADO'
-    };
-
-    await API.updateTicket(ticketId, payload);
+      support_level: itilLevel,
+      reason: reason || `Derivación técnica a ${fullName} (${itilLevel})`,
+      changed_by_username: currentActor
+    });
 
     if (reason) {
       await API.addComment(ticketId, {
-        message: `🔄 Asignación / Derivación a ${fullName} (${itilLevel}). Motivo: ${reason}`,
-        content: `🔄 Asignación / Derivación a ${fullName} (${itilLevel}). Motivo: ${reason}`,
+        message: `🔄 Derivación a ${fullName} (${itilLevel}). Motivo: ${reason}`,
+        content: `🔄 Derivación a ${fullName} (${itilLevel}). Motivo: ${reason}`,
         is_internal: true,
-        author_username: AppState.currentUser ? AppState.currentUser.username : 'soporte',
+        author_username: currentActor,
         author_name: AppState.currentUser ? AppState.currentUser.full_name : 'Operador',
         author_role: 'SOPORTE'
       });
@@ -6480,14 +6532,15 @@ async function confirmReassign(ticketId) {
 
 async function quickSelfAssign(ticketId) {
   try {
-    const username = AppState.currentUser ? AppState.currentUser.username : 'soporte';
-    const fullName = AppState.currentUser ? AppState.currentUser.full_name : 'Carlos Páez';
-    await API.updateTicket(ticketId, {
-      status: 'ASIGNADO',
-      assignee_username: username,
-      assignee_name: fullName
+    const user = AppState.currentUser || { username: 'admin', full_name: 'Freddy Cortés', role: 'ADMIN', support_level: 'N3' };
+    const level = user.support_level || (user.role === 'ADMIN' ? 'N3' : 'N1');
+    await API.assignTicket(ticketId, {
+      assignee_username: user.username,
+      support_level: level,
+      reason: `Auto-asignación directa por ${user.full_name}`,
+      changed_by_username: user.username
     });
-    showToast(`Ticket #${ticketId} asignado a ${fullName}`, 'success');
+    showToast(`Ticket #${ticketId} auto-asignado a ${user.full_name}`, 'success');
     await openAgentWorkspace(ticketId);
     await loadTickets();
   } catch (err) {
@@ -6498,7 +6551,12 @@ async function quickSelfAssign(ticketId) {
 
 async function quickStartProgress(ticketId) {
   try {
-    await API.updateTicket(ticketId, { status: 'EN_CURSO' });
+    const currentActor = AppState.currentUser ? AppState.currentUser.username : 'soporte';
+    await API.updateStatus(ticketId, {
+      new_status: 'EN_CURSO',
+      reason: 'Inicio de diagnóstico y atención operativa',
+      changed_by_username: currentActor
+    });
     showToast(`Ticket #${ticketId} puesto EN CURSO`, 'info');
     await openAgentWorkspace(ticketId);
     await loadTickets();
@@ -6510,9 +6568,11 @@ async function quickStartProgress(ticketId) {
 
 async function quickResolveTicket(ticketId) {
   try {
-    await API.updateTicket(ticketId, {
-      status: 'RESUELTO',
-      resolution_summary: 'Incidente asistencial diagnosticado y resuelto exitosamente conforme a protocolo operativo.'
+    const currentActor = AppState.currentUser ? AppState.currentUser.username : 'soporte';
+    await API.resolveTicket(ticketId, {
+      resolution_notes: 'Incidente asistencial diagnosticado y resuelto exitosamente conforme a protocolo operativo.',
+      is_workaround: false,
+      resolved_by_username: currentActor
     });
     showToast(`Ticket #${ticketId} marcado como RESUELTO`, 'success');
     await openAgentWorkspace(ticketId);
@@ -6525,7 +6585,11 @@ async function quickResolveTicket(ticketId) {
 
 async function quickCloseTicket(ticketId) {
   try {
-    await API.updateTicket(ticketId, { status: 'CERRADO' });
+    const currentActor = AppState.currentUser ? AppState.currentUser.username : 'soporte';
+    await API.closeTicket(ticketId, {
+      closed_by_username: currentActor,
+      feedback: 'Conformidad técnica y asistencial otorgada por el usuario.'
+    });
     showToast(`Ticket #${ticketId} cerrado y archivado`, 'success');
     await openAgentWorkspace(ticketId);
     await loadTickets();
@@ -6537,7 +6601,12 @@ async function quickCloseTicket(ticketId) {
 
 async function quickReopenTicket(ticketId) {
   try {
-    await API.updateTicket(ticketId, { status: 'EN_CURSO' });
+    const currentActor = AppState.currentUser ? AppState.currentUser.username : 'soporte';
+    await API.updateStatus(ticketId, {
+      new_status: 'EN_CURSO',
+      reason: 'Reapertura de solicitud para ajuste técnico adicional',
+      changed_by_username: currentActor
+    });
     showToast(`Ticket #${ticketId} reabierto en curso`, 'info');
     await openAgentWorkspace(ticketId);
     await loadTickets();

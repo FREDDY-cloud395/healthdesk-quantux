@@ -329,7 +329,7 @@ def run_seed():
 
         # 2. USUARIOS BASE (3 ROLES CON NIVELES ITIL)
         users = [
-            User(username="admin", full_name="Freddy Cortés", email="admin@quantux.com", role=UserRole.ADMIN, support_level=SupportLevel.N3),
+            User(username="admin", full_name="Freddy Cortés", email="fcortes@quantuxsalud.com", role=UserRole.ADMIN, support_level=SupportLevel.N3),
             User(username="mrodriguez", full_name="Mariana Rodríguez", email="mrodriguez@quantux.com", role=UserRole.ADMIN, support_level=SupportLevel.N3),
             User(username="cpaez", full_name="Carlos Páez", email="cpaez@quantux.com", role=UserRole.SOPORTE, support_level=SupportLevel.N1),
             User(username="svaldez", full_name="Sofía Valdez", email="svaldez@quantux.com", role=UserRole.SOPORTE, support_level=SupportLevel.N1),

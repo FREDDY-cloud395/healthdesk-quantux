@@ -16,7 +16,8 @@ from app.models.entities import (
 from app.core.fsm import calculate_priority, validate_status_transition
 from app.services.email_service import (
     notify_ticket_created, notify_ticket_assigned,
-    notify_ticket_status_change, notify_ticket_resolved, notify_ticket_closed
+    notify_ticket_status_change, notify_ticket_comment,
+    notify_ticket_resolved, notify_ticket_closed
 )
 
 router = APIRouter()
@@ -46,7 +47,14 @@ class TicketUpdateRequest(BaseModel):
     institution_code: Optional[str] = None
     impact: Optional[ImpactLevel] = None
     urgency: Optional[UrgencyLevel] = None
-    changed_by_username: str = "solicitante"
+    status: Optional[TicketStatus] = None
+    assignee_username: Optional[str] = None
+    assignee_name: Optional[str] = None
+    support_level: Optional[SupportLevel] = None
+    itil_level: Optional[str] = None
+    resolution_summary: Optional[str] = None
+    resolution_notes: Optional[str] = None
+    changed_by_username: Optional[str] = "solicitante"
 
 class TicketAssignRequest(BaseModel):
     assignee_username: str
@@ -477,16 +485,71 @@ def create_ticket(req: TicketCreateRequest, background_tasks: BackgroundTasks, s
     
     return new_ticket
 
-# 3.1 PASO 1.1 • EDITAR TICKET EN ESTADO NUEVO (UH-11)
+# 3.1 PASO 1.1 • EDITAR O ACTUALIZAR TICKET (UH-11 Y OPERATIVIDAD INTEGRADA)
 @router.put("/{ticket_id}", response_model=Ticket)
 @router.patch("/{ticket_id}", response_model=Ticket)
-def update_ticket(ticket_id: str, req: TicketUpdateRequest, session: Session = Depends(get_session)):
+def update_ticket(ticket_id: str, req: TicketUpdateRequest, background_tasks: BackgroundTasks, session: Session = Depends(get_session)):
     ticket = session.get(Ticket, ticket_id)
     if not ticket:
         raise HTTPException(status_code=404, detail="Ticket no encontrado.")
-    if ticket.status != TicketStatus.NUEVO:
-        raise HTTPException(status_code=400, detail="Solo se pueden editar tickets en estado NUEVO antes del inicio de la atención.")
     
+    actor = req.changed_by_username or "solicitante"
+    
+    # Si viene asignación de operador
+    if req.assignee_username:
+        old_assignee = ticket.assignee_username
+        ticket.assignee_username = req.assignee_username
+        if req.support_level:
+            ticket.support_level = req.support_level
+        elif req.itil_level:
+            try:
+                ticket.support_level = SupportLevel(req.itil_level.upper())
+            except Exception:
+                pass
+        
+        if ticket.status == TicketStatus.NUEVO:
+            ticket.status = TicketStatus.ASIGNADO
+        
+        session.add(TicketAuditLog(
+            ticket_id=ticket_id,
+            changed_by_username=actor,
+            field_changed="assignee",
+            old_value=old_assignee,
+            new_value=req.assignee_username,
+            change_reason="Asignación de operador mediante actualización"
+        ))
+        lvl_val = ticket.support_level.value if hasattr(ticket.support_level, 'value') else str(ticket.support_level or "N1")
+        background_tasks.add_task(notify_ticket_assigned, ticket, req.assignee_username, lvl_val)
+
+    # Si viene cambio de estado
+    if req.status and req.status != ticket.status:
+        old_st = ticket.status.value if hasattr(ticket.status, 'value') else str(ticket.status)
+        new_st = req.status.value if hasattr(req.status, 'value') else str(req.status)
+        ticket.status = req.status
+        if req.status == TicketStatus.RESUELTO:
+            ticket.resolved_at = datetime.utcnow()
+            if req.resolution_notes or req.resolution_summary:
+                ticket.resolution_notes = req.resolution_notes or req.resolution_summary
+            background_tasks.add_task(notify_ticket_resolved, ticket, ticket.resolution_notes or "Solución documentada", False, actor)
+        elif req.status == TicketStatus.CERRADO:
+            ticket.closed_at = datetime.utcnow()
+            background_tasks.add_task(notify_ticket_closed, ticket, "Cierre formal de caso", actor)
+        else:
+            background_tasks.add_task(notify_ticket_status_change, ticket, old_st, new_st, "Actualización de flujo operativo", actor)
+        
+        session.add(TicketAuditLog(
+            ticket_id=ticket_id,
+            changed_by_username=actor,
+            field_changed="status",
+            old_value=old_st,
+            new_value=new_st,
+            change_reason="Actualización de estado en ticket"
+        ))
+
+    if req.resolution_notes or req.resolution_summary:
+        ticket.resolution_notes = (req.resolution_notes or req.resolution_summary).strip()
+
+    # Edición de campos descriptivos (si el ticket está en estado NUEVO o editable)
     if req.title:
         ticket.title = req.title.strip()
     if req.description:
@@ -499,21 +562,11 @@ def update_ticket(ticket_id: str, req: TicketUpdateRequest, session: Session = D
         ticket.impact = req.impact
     if req.urgency:
         ticket.urgency = req.urgency
-        
     if req.impact or req.urgency:
         ticket.priority = calculate_priority(ticket.impact, ticket.urgency)
         
     ticket.updated_at = datetime.utcnow()
     session.add(ticket)
-    
-    session.add(TicketAuditLog(
-        ticket_id=ticket_id,
-        changed_by_username=req.changed_by_username,
-        field_changed="ticket_data",
-        old_value="Edición previa",
-        new_value="Datos actualizados",
-        change_reason="Edición básica de ticket en estado NUEVO (UH-11)"
-    ))
     session.commit()
     session.refresh(ticket)
     return ticket
