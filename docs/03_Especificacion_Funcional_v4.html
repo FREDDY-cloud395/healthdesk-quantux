@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DOC-REQ-003 — Especificación Funcional v4.0.0 | Quantux ServiceDesk Enterprise</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card-bg: #111827;
+      --card-border: #1f2937;
+      --text: #f3f4f6;
+      --text-muted: #9ca3af;
+      --primary: #06b6d4;
+      --primary-hover: #0891b2;
+      --accent: #3b82f6;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --purple: #8b5cf6;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 30px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    .header-card {
+      background: linear-gradient(135deg, #111827 0%, #1e1b4b 100%);
+      border: 1px solid #312e81;
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 28px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .badge-code {
+      display: inline-block;
+      padding: 4px 12px;
+      background: rgba(6, 182, 212, 0.15);
+      border: 1px solid #06b6d4;
+      color: #22d3ee;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+    .badge-freeze {
+      display: inline-block;
+      padding: 4px 12px;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid #10b981;
+      color: #34d399;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-left: 8px;
+    }
+    h1 { font-size: 28px; font-weight: 800; margin-bottom: 8px; }
+    .subtitle { color: var(--text-muted); font-size: 15px; margin-bottom: 20px; }
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      padding-top: 16px;
+      border-top: 1px solid #1f2937;
+    }
+    .meta-item span { display: block; font-size: 12px; color: var(--text-muted); text-transform: uppercase; }
+    .meta-item strong { font-size: 14px; color: #fff; font-weight: 600; }
+
+    /* Summary Bar */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+    }
+    .stat-card .num { font-size: 32px; font-weight: 800; color: #38bdf8; }
+    .stat-card .label { font-size: 13px; color: var(--text-muted); font-weight: 500; }
+
+    /* Sections */
+    .module-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .module-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid #1f2937;
+      padding-bottom: 12px;
+    }
+    .module-title { font-size: 20px; font-weight: 700; color: #fff; }
+    .module-sp {
+      margin-left: auto;
+      background: #1e293b;
+      color: #94a3b8;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    /* Comparison Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 14px;
+    }
+    th, td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid #1f2937;
+    }
+    th {
+      background: #0f172a;
+      color: #94a3b8;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 12px;
+      letter-spacing: 0.5px;
+    }
+    tr:hover { background: rgba(255,255,255,0.02); }
+
+    .tag-old {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #f87171;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+      display: inline-block;
+    }
+    .tag-new {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #34d399;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+      display: inline-block;
+      font-weight: 600;
+    }
+
+    /* User Stories Cards */
+    .story-box {
+      background: #0d1321;
+      border-left: 4px solid var(--primary);
+      border-radius: 0 8px 8px 0;
+      padding: 16px 20px;
+      margin: 14px 0;
+    }
+    .story-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #38bdf8;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .narrative {
+      font-style: italic;
+      color: #cbd5e1;
+      font-size: 13.5px;
+      margin-bottom: 10px;
+    }
+    .gherkin {
+      background: #080c14;
+      border-radius: 6px;
+      padding: 12px 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12.5px;
+      color: #94a3b8;
+      line-height: 1.5;
+    }
+    .gherkin strong { color: #38bdf8; }
+
+    /* ASCII / Wireframe Mockups */
+    .wireframe-box {
+      background: #050811;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      padding: 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: #38bdf8;
+      overflow-x: auto;
+      white-space: pre;
+      line-height: 1.4;
+      margin: 14px 0;
+    }
+
+    .alert-box {
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      border-radius: 8px;
+      padding: 14px 18px;
+      margin: 16px 0;
+      font-size: 13.5px;
+      color: #93c5fd;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- Header Card -->
+    <div class="header-card">
+      <div>
+        <span class="badge-code">DOC-REQ-003</span>
+        <span class="badge-freeze">🔒 VERSIÓN ANTERIOR v3.2.0-UAT CONGELADA</span>
+      </div>
+      <h1>Documento de Especificación Funcional — Versión Evolutiva v4.0.0</h1>
+      <p class="subtitle">Quantux ServiceDesk Enterprise • Sistema Integral de Mesa de Ayuda, Servicios e Integraciones</p>
+      
+      <div class="meta-grid">
+        <div class="meta-item">
+          <span>Analista Funcional</span>
+          <strong>Freddy Cortés (Solution Owner)</strong>
+        </div>
+        <div class="meta-item">
+          <span>Fuente de Requerimientos</span>
+          <strong>Feedback de Jess + Directivas Ergonomía</strong>
+        </div>
+        <div class="meta-item">
+          <span>Alcance de Versión</span>
+          <strong>10 Módulos • 34 Historias de Usuario</strong>
+        </div>
+        <div class="meta-item">
+          <span>Estimación de Esfuerzo</span>
+          <strong>102 Story Points (Sprint 4.0)</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary KPI Cards -->
+    <div class="summary-grid">
+      <div class="stat-card">
+        <div class="num">10</div>
+        <div class="label">Módulos Funcionales</div>
+      </div>
+      <div class="stat-card">
+        <div class="num">34</div>
+        <div class="label">Historias de Usuario (UH)</div>
+      </div>
+      <div class="stat-card">
+        <div class="num">102</div>
+        <div class="label">Story Points Estimados</div>
+      </div>
+      <div class="stat-card">
+        <div class="num">100%</div>
+        <div class="label">Aislamiento vs v3.2.0</div>
+      </div>
+    </div>
+
+    <!-- Módulo 1 -->
+    <div class="module-card">
+      <div class="module-header">
+        <span style="font-size: 24px;">🧩</span>
+        <div class="module-title">Módulo 1: Incidentes Masivos y Jerarquía Padre/Hijos</div>
+        <div class="module-sp">12 Story Points</div>
+      </div>
+      <p style="color: #94a3b8; font-size: 14px; margin-bottom: 16px;">
+        Resuelve la saturación de operadores cuando ocurre una falla general de infraestructura o de una API de integración, evitando responder y cerrar tickets repetidos uno por uno.
+      </p>
+
+      <div class="story-box">
+        <div class="story-title">
+          <span>UH-33: Vinculación a Ticket Padre (Incidente Masivo)</span>
+          <span style="color:#94a3b8; font-size:12px;">5 SP • Prioridad Alta</span>
+        </div>
+        <p class="narrative"><strong>Como</strong> operador de soporte, <strong>quiero</strong> vincular tickets derivados a un Ticket Padre marcado como Incidente Masivo, <strong>para</strong> centralizar la atención técnica en un único caso.</p>
+        <div class="gherkin">
+          <strong>Dado</strong> un ticket de impacto general (ej. caída de webhook de pagos),<br>
+          <strong>Cuando</strong> el operador activa "Declarar Incidente Masivo (Ticket Padre)",<br>
+          <strong>Entonces</strong> el ticket muestra la insignia [PADRE / INCIDENTE MASIVO] y habilita la asociación de tickets subordinados.
+        </div>
+      </div>
+
+      <div class="story-box">
+        <div class="story-title">
+          <span>UH-34: Resolución y Cierre Automatizado en Cascada</span>
+          <span style="color:#94a3b8; font-size:12px;">5 SP • Prioridad Alta</span>
+        </div>
+        <p class="narrative"><strong>Como</strong> operador N3, <strong>quiero</strong> que al resolver y cerrar el Ticket Padre se resuelvan y cierren todos los tickets hijos asociados, <strong>para</strong> notificar a todos los solicitantes afectados en un solo clic.</p>
+      </div>
+
+      <div class="story-box">
+        <div class="story-title">
+          <span>UH-35: Desvinculación por Excepción</span>
+          <span style="color:#94a3b8; font-size:12px;">2 SP • Prioridad Media</span>
+        </div>
+        <p class="narrative"><strong>Como</strong> operador de soporte, <strong>quiero</strong> desvincular un ticket de un Ticket Padre si su causa raíz era independiente, <strong>para</strong> continuar su gestión individual.</p>
+      </div>
+    </div>
+
+    <!-- Módulo 2 -->
+    <div class="module-card">
+      <div class="module-header">
+        <span style="font-size: 24px;">🚀</span>
+        <div class="module-title">Módulo 2: Ciclo de Vida de Software y Cierre por Releases</div>
+        <div class="module-sp">8 Story Points</div>
+      </div>
+      <div class="story-box">
+        <div class="story-title">
+          <span>UH-36: Catálogo y Asociación de Versiones Target (Release Tag)</span>
+          <span style="color:#94a3b8; font-size:12px;">3 SP • Prioridad Media</span>
+        </div>
+        <p class="narrative"><strong>Como</strong> líder de soporte, <strong>quiero</strong> asociar tickets técnicos a una versión de entrega (ej. v3.12.2), <strong>para</strong> vincular el backlog de soporte con los despliegues de ingeniería.</p>
+      </div>
+
+      <div class="story-box">
+        <div class="story-title">
+          <span>UH-37: Cierre Automático por Despliegue en Producción</span>
+          <span style="color:#94a3b8; font-size:12px;">5 SP • Prioridad Alta</span>
+        </div>
+        <p class="narrative"><strong>Como</strong> equipo de operaciones, <strong>quiero</strong> que al marcar una versión como "Desplegada en Producción" se cierren automáticamente todos sus tickets vinculados, <strong>para</strong> eliminar la carga administrativa de actualización manual.</p>
+      </div>
+    </div>
+
+    <!-- Módulo 3 -->
+    <div class="module-card">
+      <div class="module-header">
+        <span style="font-size: 24px;">🖥️</span>
+        <div class="module-title">Módulo 3: Bandeja de Entrada General y Paginación</div>
+        <div class="module-sp">7 Story Points</div>
+      </div>
+      <div class="story-box">
+        <div class="story-title">
+          <span>UH-38: Grilla Despejada y Ocultamiento de Cerrados por Defecto</span>
+          <span style="color:#94a3b8; font-size:12px;">2 SP • Prioridad Alta</span>
+        </div>
+        <p class="narrative"><strong>Como</strong> operador, <strong>quiero</strong> que la bandeja oculte los tickets cerrados por defecto (filtro `Estado != Cerrado`), <strong>para</strong> ver únicamente los casos vivos que requieren acción.</p>
+      </div>
+      <div class="story-box">
+        <div class="story-title">
+          <span>UH-39: Paginación Dinámica (10 / 25 / 50 por página)</span>
+          <span style="color:#94a3b8; font-size:12px;">3 SP • Prioridad Alta</span>
+        </div>
+        <p class="narrative"><strong>Como</strong> usuario, <strong>quiero</strong> navegar la lista paginada de a 10 registros, <strong>para</strong> evitar saturación en pantalla y optimizar la velocidad de carga.</p>
+      </div>
+      <div class="story-box">
+        <div class="story-title">
+          <span>UH-40: Filtro Prominente "⚡ Sin Asignar"</span>
+          <span style="color:#94a3b8; font-size:12px;">2 SP • Prioridad Alta</span>
+        </div>
+        <p class="narrative"><strong>Como</strong> operador N1, <strong>quiero</strong> una pestaña directa destacada con contador `⚡ Sin Asignar (12)`, <strong>para</strong> realizar triage y tomar tickets nuevos en 1 clic.</p>
+      </div>
+    </div>
+
+    <!-- Módulo 4 -->
+    <div class="module-card">
+      <div class="module-header">
+        <span style="font-size: 24px;">🧘</span>
+        <div class="module-title">Módulo 4: Workspace Zen y Ergonomía Visual en el Área de Trabajo</div>
+        <div class="module-sp">16 Story Points</div>
+      </div>
+      
+      <div class="alert-box">
+        <strong>Directiva Ergonómica:</strong> Eliminar la saturación cognitiva del modal de atención del ticket. El operador debe pasar su jornada de 8 horas con descanso visual, viendo únicamente la información indispensable para avanzar el caso.
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Elemento del Ticket</th>
+            <th>Enfoque Actual (v3.2.0)</th>
+            <th>Nuevo Enfoque Zen (v4.0.0)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Cabecera</strong></td>
+            <td><span class="tag-old">Ocupa múltiples líneas y breadcrumbs</span></td>
+            <td><span class="tag-new">Header compacto en 1 sola fila de 48px</span></td>
+          </tr>
+          <tr>
+            <td><strong>Historial de Notas</strong></td>
+            <td><span class="tag-old">Resumen recortado o una línea truncada</span></td>
+            <td><span class="tag-new">Colapsadas por defecto; clic abre texto 100% íntegro (UH-47)</span></td>
+          </tr>
+          <tr>
+            <td><strong>Indicador de SLA</strong></td>
+            <td><span class="tag-old">Barra roja gigante ('Vencido hace 695h')</span></td>
+            <td><span class="tag-new">Píldora sutil ⏱️ SLA: 2h con tooltip bajo demanda</span></td>
+          </tr>
+          <tr>
+            <td><strong>Ficha Técnica / APIs</strong></td>
+            <td><span class="tag-old">Pestañas fijas ocupando ancho completo</span></td>
+            <td><span class="tag-new">Acordeón colapsado bajo demanda</span></td>
+          </tr>
+          <tr>
+            <td><strong>Acciones de Avance</strong></td>
+            <td><span class="tag-old">Botones apilados al final del lateral</span></td>
+            <td><span class="tag-new">Barra fija contextual inferior (1 clic para avanzar)</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="story-box">
+        <div class="story-title">
+          <span>UH-47: Hilo de Notas y Respuestas Colapsadas con Expansión Completa</span>
+          <span style="color:#94a3b8; font-size:12px;">3 SP • Prioridad Alta</span>
+        </div>
+        <p class="narrative"><strong>Como</strong> operador, <strong>quiero</strong> que las notas anteriores aparezcan colapsadas en tarjetas compactas y que al hacer clic se despliegue su <strong>contenido 100% íntegro (sin resúmenes ni textos cortados)</strong>, además de contar con botones de "Expandir/Colapsar Todo".</p>
+      </div>
+    </div>
+
+    <!-- Módulo 5 -->
+    <div class="module-card">
+      <div class="module-header">
+        <span style="font-size: 24px;">⚡</span>
+        <div class="module-title">Módulo 5: Reorganización del Flujo de Alta y Supresión de Ruido Visual</div>
+        <div class="module-sp">10 Story Points</div>
+      </div>
+
+      <p style="color: #94a3b8; font-size: 14px; margin-bottom: 16px;">
+        <strong>No se eliminan las etapas de clasificación:</strong> Las 4 dimensiones clave (Organización, Servicio, Criticidad/SLA y Descripción) se preservan y reorganizan con controles compactos y fluidos, suprimiendo las 8 macro-tarjetas de párrafos densos para lograr una carga ágil y sin fatiga.
+      </p>
+
+      <div class="story-box">
+        <div class="story-title">
+          <span>UH-48: Reorganización Estructurada del Flujo de Alta y Supresión de Ruido Visual</span>
+          <span style="color:#94a3b8; font-size:12px;">4 SP • Prioridad Alta</span>
+        </div>
+        <p class="narrative"><strong>Como</strong> usuario u operador de soporte, <strong>quiero</strong> completar las 4 dimensiones de la solicitud en un flujo reorganizado, compacto y visualmente despejado, <strong>para</strong> registrar incidencias con precisión técnica en pocos segundos sin sobrecarga cognitiva ni fatiga visual.</p>
+      </div>
+
+      <div class="wireframe-box">
+┌────────────────────────────────────────────────────────────────────────┐
+│ ➕ Nuevo Ticket de Servicio / Soporte                               [✕] │
+├────────────────────────────────────────────────────────────────────────┤
+│ 🏢 Organización / Cliente: [ OSDE (Servicios Centrales)            ▼ ] │
+│ 📁 Categoría: [ 🔌 Integraciones & APIs ▼ ]   Tipo: [ ⚠️ Incidente ▼ ] │
+├────────────────────────────────────────────────────────────────────────┤
+│ ⚡ Nivel de Urgencia / Prioridad:                                      │
+│ ┌───────────────┬──────────────────────┬───────────────┬─────────────┐ │
+│ │  🟢 Baja      │  🟡 Media (Normal)   │   🟠 Alta     │  🔴 Crítica │ │
+│ └───────────────┴──────────────────────┴───────────────┴─────────────┘ │
+├────────────────────────────────────────────────────────────────────────┤
+│ 📝 Título: [ Error de timeout en webhook de integración de pagos     ] │
+│ 📄 Descripción: [ Describa la falla técnica o requerimiento...       ] │
+│ 📎 [ Adjuntar captura o payload ]                                      │
+│ ▶ [+ Opciones Técnicas Avanzadas / Parámetros ] (clic para desplegar)  │
+├────────────────────────────────────────────────────────────────────────┤
+│                       [ Cancelar ]     [ 🚀 Crear Ticket ]             │
+└────────────────────────────────────────────────────────────────────────┘
+      </div>
+    </div>
+
+    <!-- Módulo 6 -->
+    <div class="module-card">
+      <div class="module-header">
+        <span style="font-size: 24px;">🌐</span>
+        <div class="module-title">Módulo 6: Desacoplamiento Médico y Taxonomía Enterprise Universal</div>
+        <div class="module-sp">6 Story Points</div>
+      </div>
+      <p style="color: #94a3b8; font-size: 14px; margin-bottom: 16px;">
+        Erradicación de la palabra "asistencial" y apertura transversal para tickets de infraestructura, software, servidores, redes y webhooks.
+      </p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Término Anterior (v3.2.0 Restrictivo)</th>
+            <th>Término Universal v4.0.0</th>
+            <th>Justificación</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="tag-old">Solicitud Asistencial</span></td>
+            <td><span class="tag-new">Ticket de Servicio / Soporte</span></td>
+            <td>Aplica a cualquier sector o problema de TI.</td>
+          </tr>
+          <tr>
+            <td><span class="tag-old">Institución Asistencial / Sanitaria</span></td>
+            <td><span class="tag-new">Organización / Cliente / Empresa</span></td>
+            <td>Admite prepagas, fintechs, proveedores y partners.</td>
+          </tr>
+          <tr>
+            <td><span class="tag-old">Médico / Profesional Asistencial</span></td>
+            <td><span class="tag-new">Solicitante / Usuario Corporativo</span></td>
+            <td>Engloba desarrolladores, operadores y clientes.</td>
+          </tr>
+          <tr>
+            <td><span class="tag-old">Historial Asistencial</span></td>
+            <td><span class="tag-new">Actividad y Conversación del Ticket</span></td>
+            <td>Estándar ITIL / ITSM.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Módulo 7 -->
+    <div class="module-card">
+      <div class="module-header">
+        <span style="font-size: 24px;">📊</span>
+        <div class="module-title">Módulo 7: Tablero de Control Zen (Analytics Limpio)</div>
+        <div class="module-sp">9 Story Points</div>
+      </div>
+      <p style="color: #94a3b8; font-size: 14px; margin-bottom: 16px;">
+        Eliminación del mar de barras horizontales masivas (14 clientes + 9 plataformas) y consolidación en las <strong>4 Métricas de Oro</strong> y ranking <strong>Top 5</strong> focalizado.
+      </p>
+
+      <div class="wireframe-box">
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│ 📊 Tablero de Control Operativo                               [ Filtro Cliente ▼ ] [ Exportar ]│
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│ ┌──────────────────┬──────────────────┬──────────────────┬───────────────────────────┐ │
+│ │ 🔥 12 CRÍTICOS   │ ⏳ 84 EN GESTIÓN │ 🎯 98.4% SLA     │ ⏱️ 3.2h TIEMPO RESOLUCIÓN │ │
+│ └──────────────────┴──────────────────┴──────────────────┴───────────────────────────┘ │
+├───────────────────────────────────────┬────────────────────────────────────────────────┤
+│ 🍩 ESTADOS OPERATIVOS (1 Dona Limpia) │ 🏆 TOP 5 CLIENTES CON MAYOR DEMANDA            │
+│                 ╭───╮                 │ 1. OSDE ────────────── 32% (48 tickets)        │
+│                │ 84  │                │ 2. Swiss Medical ───── 21% (31 tickets)        │
+│                 ╰───╯                 │ 3. Galeno ──────────── 16% (24 tickets)        │
+│   ■ Nuevos (12)      ■ En Curso (58)  │ [ 🔍 Ver listado completo de clientes ]        │
+└───────────────────────────────────────┴────────────────────────────────────────────────┘
+      </div>
+    </div>
+
+    <!-- Módulo 8 -->
+    <div class="module-card">
+      <div class="module-header">
+        <span style="font-size: 24px;">👥</span>
+        <div class="module-title">Módulo 8: Directorio de Usuarios Zen & Perfil 100% Operativo</div>
+        <div class="module-sp">10 Story Points</div>
+      </div>
+
+      <div class="story-box">
+        <div class="story-title">
+          <span>UH-58: Paginación de 10 Registros y Buscador Predictivo</span>
+          <span style="color:#94a3b8; font-size:12px;">3 SP • Prioridad Alta</span>
+        </div>
+        <p class="narrative"><strong>Como</strong> supervisor, <strong>quiero</strong> navegar los 65 usuarios paginados de a 10 y filtrar por búsqueda en vivo, <strong>para</strong> no tener un scroll infinito inmanejable.</p>
+      </div>
+
+      <div class="story-box">
+        <div class="story-title">
+          <span>UH-59: Limpieza de Redundancias y Fusión de Rol / Nivel</span>
+          <span style="color:#94a3b8; font-size:12px;">3 SP • Prioridad Alta</span>
+        </div>
+        <p class="narrative"><strong>Como</strong> usuario, <strong>quiero</strong> suprimir el texto repetido "Servicio Asistencial" y fusionar las dos columnas separadas de Rol y Nivel en una sola etiqueta limpia (`[🔴 Admin N3]`, `[🔵 Soporte N1]`), <strong>para</strong> una lectura instantánea.</p>
+      </div>
+
+      <div class="story-box">
+        <div class="story-title">
+          <span>UH-60: Modal / Drawer Operativo de Perfil (Fin del botón inerte)</span>
+          <span style="color:#94a3b8; font-size:12px;">4 SP • Prioridad Alta</span>
+        </div>
+        <p class="narrative"><strong>Como</strong> administrador, <strong>quiero</strong> que al pulsar "Perfil" se abra una ventana emergente interactiva con la actividad real del usuario y botones para <strong>Editar Datos, Resetear Clave o Desactivar Cuenta</strong>, <strong>para</strong> transformar el botón muerto en una herramienta real de gestión.</p>
+      </div>
+    </div>
+
+    <!-- Isolation Notice -->
+    <div class="header-card" style="border-color: #065f46; background: linear-gradient(135deg, #064e3b 0%, #022c22 100%); margin-top: 32px;">
+      <h3 style="color: #6ee7b7; margin-bottom: 8px;">🛡️ Compromiso de Integridad y Aislamiento Técnico</h3>
+      <p style="color: #a7f3d0; font-size: 14px;">
+        Este documento especifica exclusivamente la arquitectura de la <strong>nueva versión v4.0.0</strong>. La versión actual (v3.2.0-UAT) alojada en el repositorio y en Render se mantiene <strong>100% congelada e inalterada</strong>, asegurando la continuidad de las evaluaciones en curso sin interferencias.
+      </p>
+    </div>
+
+  </div>
+</body>
+</html>
