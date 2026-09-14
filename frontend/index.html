@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Quantux ServiceDesk — Ambiente de Pruebas & Certificación (UAT)</title>
-  <link rel="stylesheet" href="/css/styles.css?v=3.0.0_tqm_senior_ux">
+  <title>Quantux ServiceDesk Enterprise — v4.0.0-DEV</title>
+  <link rel="stylesheet" href="/css/styles.css?v=4.0.0_dev">
   <style>
     /* Inlined Critical Grid & Senior UX UI Styles */
     .cockpit-container {
@@ -317,8 +317,8 @@
               </svg>
             </div>
             <div class="brand-info">
-              <div class="brand-name" style="font-size: 15px; font-weight: 800; color: #FFFFFF; letter-spacing: 0.5px; line-height: 1.2;">QUANTUX <span style="color: #00E5C9; font-weight: 700;">ServiceDesk</span></div>
-              <div class="brand-sub" style="font-size: 9.5px; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 700; margin-top: 2px;">Soporte HealthTech</div>
+              <div class="brand-name" style="font-size: 15px; font-weight: 800; color: #FFFFFF; letter-spacing: 0.5px; line-height: 1.2; display: flex; align-items: center; gap: 6px;">QUANTUX <span style="color: #00E5C9; font-weight: 700;">ServiceDesk</span> <span class="badge-v4-brand" style="background: rgba(0, 229, 201, 0.15); color: #00E5C9; border: 1px solid rgba(0, 229, 201, 0.4); font-size: 9.5px; font-weight: 800; padding: 1px 5px; border-radius: 4px; letter-spacing: 0.5px;">v4.0.0-DEV</span></div>
+              <div class="brand-sub" style="font-size: 9.5px; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 700; margin-top: 2px;">Enterprise Multi-Servicio &amp; Salud</div>
             </div>
           </div>
           <button class="sidebar-close-btn" id="btn-sidebar-close" aria-label="Cerrar Menú">&times;</button>
@@ -396,7 +396,7 @@
         <div class="sidebar-sys-status">
           <div class="status-indicator">
             <span class="dot-green"></span>
-            <span id="api-status-text">UAT Certificación</span>
+            <span id="api-status-text">v4.0.0-DEV • Online</span>
           </div>
           <span>SLA: <strong style="color: #10B981;">98.4%</strong></span>
         </div>
@@ -432,14 +432,26 @@
           </div>
         </div>
 
-        <div class="navbar-right" id="top-navbar-right" style="display: flex; align-items: center; gap: 12px;">
+        <div class="navbar-right" id="top-navbar-right" style="display: flex; align-items: center; gap: 10px;">
           
-          <!-- Indicador Oficial de Estado de Entorno (No botón) -->
-          <div class="env-status-indicator" style="display: inline-flex; align-items: center; gap: 9px; background: #FFFBEB; border: 1px dashed #D97706; padding: 4px 14px; border-radius: 6px; cursor: default; user-select: none; pointer-events: none;" title="Servidor de Validación y Certificación UAT">
-            <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #D97706; box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.2);"></span>
+          <!-- SUITE ASISTENCIAL EXCLUSIVA PARA MÉDICOS / PERSONAL DE SALUD (100% Inaccesible para Mesa de Ayuda) -->
+          <div id="doctor-emergency-suite" style="display: none; align-items: center; gap: 8px;">
+            <button type="button" class="btn-doctor-emergency" id="btn-doctor-emergency" onclick="openDoctorEmergencyModal()" title="Emergencia Asistencial Inmediata: Paciente en Box / Consulta Bloqueada">
+              <span class="pulsing-beacon"></span>
+              <span style="font-weight: 800; font-size: 11.5px; letter-spacing: 0.3px;">🚨 Paciente en Box</span>
+            </button>
+            <button type="button" class="btn-doctor-contingency" id="btn-doctor-contingency" onclick="openDoctorContingencyModal()" title="Protocolos y Recetarios de Contingencia Offline">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 13px; height: 13px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+              <span>Plan B Contingencia</span>
+            </button>
+          </div>
+
+          <!-- Indicador Oficial de Entorno & Versión v4.0.0-DEV -->
+          <div class="env-status-indicator" style="display: inline-flex; align-items: center; gap: 8px; background: #F0FDF4; border: 1px solid #86EFAC; padding: 4px 12px; border-radius: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.03);" title="Quantux ServiceDesk Enterprise v4.0.0-DEV (Ambiente Cloud Dev)">
+            <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #10B981; box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);"></span>
             <div style="display: flex; flex-direction: column; text-align: left; line-height: 1.15;">
-              <span style="font-size: 11px; font-weight: 800; color: #92400E; letter-spacing: 0.4px;">AMBIENTE DE PRUEBAS</span>
-              <span style="font-size: 9.5px; font-weight: 600; color: #B45309;">Certificación &amp; Homologación (UAT)</span>
+              <span style="font-size: 11px; font-weight: 800; color: #166534; letter-spacing: 0.3px;">CLOUD DEV <span style="background: #DCFCE7; color: #15803D; padding: 1px 5px; border-radius: 4px; font-size: 9.5px; font-weight: 800; margin-left: 2px;">v4.0.0-DEV</span></span>
+              <span style="font-size: 9px; font-weight: 600; color: #15803D;">Quantux Enterprise</span>
             </div>
           </div>
 
@@ -3147,6 +3159,212 @@
         <button type="button" class="btn-pri" onclick="closePlatformDetailModal()" style="font-size: 12px; font-weight: 800; padding: 6px 18px; border-radius: 8px; background: #00A896; border: none; color: #FFF;">
           Cerrar Ficha Técnica
         </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =======================================================================
+       MODAL 14A: ALERTA ASISTENCIAL (PACIENTE EN BOX - EXCLUSIVO MÉDICOS)
+       ======================================================================= -->
+  <div class="modal-overlay" id="modal-doctor-emergency" style="display: none; align-items: center; justify-content: center; z-index: 10000; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(4px);">
+    <div class="modal-card" style="max-width: 540px; width: 92%; background: #FFFFFF; border-radius: 14px; box-shadow: 0 25px 50px -12px rgba(220, 38, 38, 0.35); border: 2px solid #EF4444; overflow: hidden; animation: modalPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);">
+      
+      <!-- Encabezado de Emergencia -->
+      <div style="background: linear-gradient(135deg, #DC2626 0%, #991B1B 100%); color: #FFFFFF; padding: 18px 24px; display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="background: rgba(255, 255, 255, 0.2); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px;">
+            🚨
+          </div>
+          <div>
+            <h3 style="margin: 0; font-size: 16px; font-weight: 800; letter-spacing: 0.3px;">Alerta Asistencial: Paciente en Espera</h3>
+            <p style="margin: 2px 0 0 0; font-size: 11px; opacity: 0.9; font-weight: 600;">Exclusivo Profesionales de la Salud • SLA Respuesta Inmediata &lt; 3 min</p>
+          </div>
+        </div>
+        <button onclick="closeDoctorEmergencyModal()" style="background: none; border: none; color: #FFFFFF; font-size: 24px; cursor: pointer; line-height: 1;">&times;</button>
+      </div>
+
+      <!-- Cuerpo del Formulario Ultrarrápido (1 solo paso) -->
+      <div id="doctor-emergency-form-body" style="padding: 22px 24px;">
+        <div style="background: #FEF2F2; border-left: 4px solid #DC2626; padding: 10px 14px; border-radius: 6px; margin-bottom: 18px; font-size: 12px; color: #991B1B;">
+          <strong>Profesional:</strong> <span id="doc-modal-prof-name">Dr. Médico</span> • Esta alerta ingresa a la Mesa de Ayuda con <strong>Prioridad Crítica P1</strong> y alarma sonora.
+        </div>
+
+        <!-- 1. Ubicación Asistencial -->
+        <div style="margin-bottom: 16px;">
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #0F172A; margin-bottom: 6px;">
+            📍 Consultorio / Box / Quirófano:
+          </label>
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+            <button type="button" class="btn-box-chip active" onclick="selectEmergencyBox(this, 'Consultorio 1')">Consultorio 1</button>
+            <button type="button" class="btn-box-chip" onclick="selectEmergencyBox(this, 'Consultorio 2')">Consultorio 2</button>
+            <button type="button" class="btn-box-chip" onclick="selectEmergencyBox(this, 'Consultorio 3')">Consultorio 3</button>
+            <button type="button" class="btn-box-chip" onclick="selectEmergencyBox(this, 'Consultorio 4')">Consultorio 4</button>
+            <button type="button" class="btn-box-chip" onclick="selectEmergencyBox(this, 'Guardia - Box 1')">Guardia Box 1</button>
+            <button type="button" class="btn-box-chip" onclick="selectEmergencyBox(this, 'Quirófano / Shock')">Quirófano</button>
+          </div>
+          <input type="hidden" id="doc-emergency-selected-box" value="Consultorio 1">
+        </div>
+
+        <!-- 2. Motivo Clínico Rápido -->
+        <div style="margin-bottom: 16px;">
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #0F172A; margin-bottom: 6px;">
+            ⚡ Falla que bloquea la atención médica:
+          </label>
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <button type="button" class="btn-issue-chip active" onclick="selectEmergencyIssue(this, 'Receta Digital Bloqueada / Error de Firma PKI', 'PLAT_RECETA_E')">
+              💊 Receta Digital Bloqueada / Error de Firma PKI
+            </button>
+            <button type="button" class="btn-issue-chip" onclick="selectEmergencyIssue(this, 'Historia Clínica no abre / Bloqueada por concurrencia', 'PLAT_CORE_HIS')">
+              📋 Historia Clínica no abre / Bloqueada
+            </button>
+            <button type="button" class="btn-issue-chip" onclick="selectEmergencyIssue(this, 'Falla Visor DICOM / Rayos e Imágenes PACS', 'PLAT_IMAG_PACS')">
+              🩻 Falla Visor DICOM / Rayos e Imágenes PACS
+            </button>
+            <button type="button" class="btn-issue-chip" onclick="selectEmergencyIssue(this, 'Caída total de conectividad en Consultorio', 'PLAT_TELEMED')">
+              🌐 Caída total de conectividad en Box
+            </button>
+          </div>
+          <input type="hidden" id="doc-emergency-selected-issue" value="Receta Digital Bloqueada / Error de Firma PKI">
+          <input type="hidden" id="doc-emergency-selected-platform" value="PLAT_RECETA_E">
+        </div>
+
+        <!-- 3. Interno Telefónico y Audio Dictado -->
+        <div style="display: grid; grid-template-columns: 140px 1fr; gap: 12px; margin-bottom: 20px;">
+          <div>
+            <label style="display: block; font-size: 12px; font-weight: 700; color: #0F172A; margin-bottom: 6px;">
+              📞 Interno / Anexo:
+            </label>
+            <input type="text" id="doc-emergency-phone" class="form-control" value="204" style="height: 38px; font-size: 13px; font-weight: 800; text-align: center; border-radius: 8px;">
+          </div>
+          <div>
+            <label style="display: block; font-size: 12px; font-weight: 700; color: #0F172A; margin-bottom: 6px;">
+              🎙️ Audio-Ticket con IA (Opcional):
+            </label>
+            <button type="button" id="btn-audio-ticket-rec" onclick="toggleDoctorAudioRecord()" style="height: 38px; width: 100%; border: 1px dashed #CBD5E1; background: #F8FAFC; border-radius: 8px; font-size: 12px; font-weight: 700; color: #475569; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; transition: all 0.2s;">
+              <span id="audio-rec-dot" style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #94A3B8;"></span>
+              <span id="audio-rec-text">Dictar por Voz (10s)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Botón de Disparo Inmediato -->
+        <button type="button" onclick="submitDoctorEmergency()" style="width: 100%; height: 46px; background: #DC2626; color: #FFFFFF; border: none; border-radius: 10px; font-size: 14px; font-weight: 800; letter-spacing: 0.3px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 14px rgba(220, 38, 38, 0.4); transition: all 0.15s ease;">
+          <span>⚡ DESPACHAR ALERTA A SOPORTE N1</span>
+        </button>
+      </div>
+
+      <!-- Pantalla de Éxito Inmediato + Plan B de Contingencia -->
+      <div id="doctor-emergency-success-body" style="display: none; padding: 24px; text-align: center;">
+        <div style="width: 56px; height: 56px; border-radius: 50%; background: #DCFCE7; color: #16A34A; display: inline-flex; align-items: center; justify-content: center; font-size: 28px; margin-bottom: 12px;">
+          ✓
+        </div>
+        <h3 style="font-size: 18px; font-weight: 800; color: #0F172A; margin: 0 0 6px 0;">¡Alerta Asistencial Despachada!</h3>
+        <p style="font-size: 13px; color: #475569; margin: 0 0 16px 0;">
+          El ticket <strong id="doc-success-ticket-id" style="color: #DC2626;">TICK-...</strong> está sonando en la guardia técnica. El operador N1 se contactará de inmediato a tu interno.
+        </p>
+
+        <!-- Banner de Contingencia para que el médico no frene la consulta -->
+        <div style="background: #F0FDF4; border: 1.5px solid #86EFAC; border-radius: 10px; padding: 14px 16px; text-align: left; margin-bottom: 18px;">
+          <div style="font-size: 12px; font-weight: 800; color: #166534; display: flex; align-items: center; gap: 6px; margin-bottom: 8px;">
+            <span>🛡️ PLAN B DE CONTINGENCIA (CONTINUÁ TU CONSULTA):</span>
+          </div>
+          <p style="font-size: 12px; color: #15803D; margin: 0 0 10px 0; line-height: 1.4;">
+            No hagas esperar a tu paciente. Podés emitir en el recetario de contingencia homologado por la Dirección Médica mientras resolvemos la plataforma:
+          </p>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <a href="javascript:void(0)" onclick="downloadEmergencyPrescriptionPDF()" style="display: inline-flex; align-items: center; gap: 5px; background: #16A34A; color: #FFFFFF; font-size: 11.5px; font-weight: 700; padding: 6px 12px; border-radius: 6px; text-decoration: none;">
+              📄 Descargar Recetario Contingencia (PDF)
+            </a>
+            <a href="javascript:void(0)" onclick="openDoctorContingencyModal()" style="display: inline-flex; align-items: center; gap: 5px; background: #FFFFFF; border: 1px solid #86EFAC; color: #166534; font-size: 11.5px; font-weight: 700; padding: 6px 12px; border-radius: 6px; text-decoration: none;">
+              Ver Todos los Protocolos
+            </a>
+          </div>
+        </div>
+
+        <button type="button" onclick="closeDoctorEmergencyModal()" style="background: #F1F5F9; border: 1px solid #CBD5E1; color: #334155; font-size: 12.5px; font-weight: 700; padding: 8px 18px; border-radius: 8px; cursor: pointer;">
+          Entendido, Volver a la Consulta
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =======================================================================
+       MODAL 14B: PROTOCOLOS Y PLAN B DE CONTINGENCIA OFFLINE (EXCLUSIVO MÉDICOS)
+       ======================================================================= -->
+  <div class="modal-overlay" id="modal-doctor-contingency" style="display: none; align-items: center; justify-content: center; z-index: 10000; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(4px);">
+    <div class="modal-card" style="max-width: 620px; width: 92%; background: #FFFFFF; border-radius: 14px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); border: 1px solid #CBD5E1; overflow: hidden; animation: modalPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);">
+      
+      <div style="background: linear-gradient(135deg, #0F766E 0%, #115E59 100%); color: #FFFFFF; padding: 18px 24px; display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="background: rgba(255, 255, 255, 0.2); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px;">
+            🛡️
+          </div>
+          <div>
+            <h3 style="margin: 0; font-size: 16px; font-weight: 800; letter-spacing: 0.3px;">Suite de Contingencia Asistencial Inmediata</h3>
+            <p style="margin: 2px 0 0 0; font-size: 11px; opacity: 0.9; font-weight: 600;">Plan B Oficial Homologado por Dirección Médica • Disponibilidad 100% Offline</p>
+          </div>
+        </div>
+        <button onclick="closeDoctorContingencyModal()" style="background: none; border: none; color: #FFFFFF; font-size: 24px; cursor: pointer; line-height: 1;">&times;</button>
+      </div>
+
+      <div style="padding: 22px 24px;">
+        <p style="font-size: 12.5px; color: #475569; margin: 0 0 16px 0;">
+          Si los sistemas centrales de prescripción o historia clínica presentan demoras o caídas, utilizá los siguientes recursos de respaldo para garantizar la continuidad asistencial:
+        </p>
+
+        <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;">
+          <!-- Item 1: Recetario -->
+          <div style="border: 1px solid #E2E8F0; border-radius: 10px; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; background: #F8FAFC;">
+            <div>
+              <div style="font-size: 13px; font-weight: 800; color: #0F172A; margin-bottom: 2px;">
+                📄 Talonario Digital de Recetas de Contingencia
+              </div>
+              <div style="font-size: 11.5px; color: #64748B;">
+                Formato PDF oficial con campos rellenables y código QR de validación diferida.
+              </div>
+            </div>
+            <button type="button" onclick="downloadEmergencyPrescriptionPDF()" style="background: #00A896; color: #FFFFFF; border: none; font-size: 11.5px; font-weight: 700; padding: 8px 14px; border-radius: 6px; cursor: pointer; white-space: nowrap;">
+              Descargar PDF
+            </button>
+          </div>
+
+          <!-- Item 2: Validador Web Alternativo -->
+          <div style="border: 1px solid #E2E8F0; border-radius: 10px; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; background: #F8FAFC;">
+            <div>
+              <div style="font-size: 13px; font-weight: 800; color: #0F172A; margin-bottom: 2px;">
+                🌐 Validador Web Directo de Obras Sociales (Financiadores)
+              </div>
+              <div style="font-size: 11.5px; color: #64748B;">
+                Portal ligero para consultar padrón de OSDE, Swiss Medical, Galeno y PAMI sin pasar por el Core.
+              </div>
+            </div>
+            <button type="button" onclick="openFinanciadoresFallback()" style="background: #0284C7; color: #FFFFFF; border: none; font-size: 11.5px; font-weight: 700; padding: 8px 14px; border-radius: 6px; cursor: pointer; white-space: nowrap;">
+              Abrir Validador
+            </button>
+          </div>
+
+          <!-- Item 3: Ficha de Evolución Offline -->
+          <div style="border: 1px solid #E2E8F0; border-radius: 10px; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; background: #F8FAFC;">
+            <div>
+              <div style="font-size: 13px; font-weight: 800; color: #0F172A; margin-bottom: 2px;">
+                📋 Plantilla de Evolución Clínica de Resguardo
+              </div>
+              <div style="font-size: 11.5px; color: #64748B;">
+                Plantilla para registrar diagnóstico, signos vitales y tratamiento para posterior volcado a HCE.
+              </div>
+            </div>
+            <button type="button" onclick="downloadEvolutionTemplate()" style="background: #475569; color: #FFFFFF; border: none; font-size: 11.5px; font-weight: 700; padding: 8px 14px; border-radius: 6px; cursor: pointer; white-space: nowrap;">
+              Descargar Ficha
+            </button>
+          </div>
+        </div>
+
+        <div style="background: #FFFBEB; border: 1px solid #FCD34D; border-radius: 8px; padding: 10px 14px; font-size: 11.5px; color: #92400E; display: flex; align-items: center; justify-content: space-between;">
+          <span>📞 <strong>Línea Roja de Rescate Asistencial:</strong> Interno <strong>100</strong> (Guardia IT Activa 24/7)</span>
+          <span style="font-weight: 800; color: #B45309;">Prioridad Médica</span>
+        </div>
       </div>
 
     </div>

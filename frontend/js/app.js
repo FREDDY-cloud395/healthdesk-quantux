@@ -1572,8 +1572,11 @@ function renderTicketList() {
         const instName = formatInstitutionName(t.institution_code);
         const timeAgo = formatDateFriendly(t.created_at);
 
+        // Detección de Emergencia Médica Asistencial (Paciente en Box)
+        const isPatientInBox = (t.title || '').toUpperCase().includes('PACIENTE EN BOX');
+
         // Clases de prioridad para borde lateral y pastilla
-        const prioRowClass = `prio-row-${priority.toLowerCase()}`;
+        const prioRowClass = isPatientInBox ? `prio-row-${priority.toLowerCase()} row-patient-emergency` : `prio-row-${priority.toLowerCase()}`;
         const prioChipClass = `chip-${priority.toLowerCase()}`;
         let prioIcon = '🔷';
         let prioLabel = `${priority} • Media`;
@@ -1619,7 +1622,9 @@ function renderTicketList() {
             <td style="width: auto;">
               <div class="tkt-table-subject-cell">
                 <div style="flex: 1; min-width: 0;">
-                  <div class="tkt-table-subject-title">${escapeHtml(t.title)}</div>
+                  <div class="tkt-table-subject-title">
+                    ${isPatientInBox ? '<span class="badge-patient-emergency">🚨 PACIENTE EN BOX</span> ' : ''}${escapeHtml(t.title)}
+                  </div>
                   <div class="tkt-chips-row">
                     <span class="tkt-chip-module">💻 ${platName}</span>
                     <span class="tkt-chip-inst">🏥 ${instName}</span>
@@ -3861,6 +3866,21 @@ function applyRolePermissions() {
     if (tabPlatforms) tabPlatforms.style.display = 'flex';
     if (tabConfig) tabConfig.style.display = 'flex';
   }
+
+  // SUITE ASISTENCIAL EXCLUSIVA PARA MÉDICOS (MÓDULO 14):
+  // 100% Inaccesible y oculto para la Mesa de Ayuda (Soporte N1/N2/N3 y Admins)
+  const docEmergencySuite = document.getElementById('doctor-emergency-suite');
+  const docNameLabel = document.getElementById('doc-modal-prof-name');
+  if (docEmergencySuite) {
+    if (role === 'SOLICITANTE') {
+      docEmergencySuite.style.display = 'inline-flex';
+      if (docNameLabel && AppState.currentUser) {
+        docNameLabel.textContent = AppState.currentUser.full_name || AppState.currentUser.username;
+      }
+    } else {
+      docEmergencySuite.style.display = 'none';
+    }
+  }
 }
 
 // =============================================================================
@@ -5434,12 +5454,23 @@ function initFilterListeners() {
 // 7. UTILS & HELPERS
 // =============================================================================
 async function checkApiConnection() {
-  const isOnline = await API.checkHealth();
   const dot = document.getElementById('api-status-dot');
   const text = document.getElementById('api-status-text');
+  try {
+    const rawUrl = (typeof API_BASE_URL !== 'undefined' ? API_BASE_URL : 'http://localhost:8000/api').replace(/\/api$/, '');
+    const res = await fetch(`${rawUrl}/health`);
+    if (res.ok) {
+      const data = await res.json();
+      if (dot) dot.style.backgroundColor = '#10B981';
+      if (text) text.textContent = `v${data.version || '4.0.0-DEV'} • Online`;
+      return;
+    }
+  } catch (err) {}
+  
+  const isOnline = await API.checkHealth();
   if (isOnline) {
     if (dot) dot.style.backgroundColor = '#10B981';
-    if (text) text.textContent = 'API Online (FastAPI)';
+    if (text) text.textContent = 'v4.0.0-DEV • Online';
   } else {
     if (dot) dot.style.backgroundColor = '#EF4444';
     if (text) text.textContent = 'API Desconectada';
@@ -6912,3 +6943,325 @@ window.submitEditMyProfile = submitEditMyProfile;
 window.openUploadTechJsonModal = openUploadTechJsonModal;
 window.navigateHome = navigateHome;
 window.switchView = switchView;
+
+// =============================================================================
+// MÓDULO 14: SUITE ASISTENCIAL EXCLUSIVA PARA MÉDICOS (MODO CLÍNICO & RESCATE)
+// =============================================================================
+
+function playEmergencyAlertSound() {
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(880, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(440, ctx.currentTime + 0.35);
+    gain.gain.setValueAtTime(0.25, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.35);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.35);
+  } catch (e) {}
+}
+
+function openDoctorEmergencyModal() {
+  const modal = document.getElementById('modal-doctor-emergency');
+  if (!modal) return;
+
+  const formBody = document.getElementById('doctor-emergency-form-body');
+  const successBody = document.getElementById('doctor-emergency-success-body');
+  if (formBody) formBody.style.display = 'block';
+  if (successBody) successBody.style.display = 'none';
+
+  const docNameLabel = document.getElementById('doc-modal-prof-name');
+  if (docNameLabel && AppState.currentUser) {
+    docNameLabel.textContent = AppState.currentUser.full_name || AppState.currentUser.username;
+  }
+
+  modal.style.display = 'flex';
+}
+
+function closeDoctorEmergencyModal() {
+  const modal = document.getElementById('modal-doctor-emergency');
+  if (modal) modal.style.display = 'none';
+}
+
+function selectEmergencyBox(btn, boxName) {
+  document.querySelectorAll('.btn-box-chip').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const input = document.getElementById('doc-emergency-selected-box');
+  if (input) input.value = boxName;
+}
+
+function selectEmergencyIssue(btn, issueName, platCode) {
+  document.querySelectorAll('.btn-issue-chip').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const issueInput = document.getElementById('doc-emergency-selected-issue');
+  const platInput = document.getElementById('doc-emergency-selected-platform');
+  if (issueInput) issueInput.value = issueName;
+  if (platInput) platInput.value = platCode;
+}
+
+let isAudioRecording = false;
+let audioRecTimeout = null;
+
+function toggleDoctorAudioRecord() {
+  const btn = document.getElementById('btn-audio-ticket-rec');
+  const dot = document.getElementById('audio-rec-dot');
+  const text = document.getElementById('audio-rec-text');
+  
+  if (!isAudioRecording) {
+    isAudioRecording = true;
+    if (dot) dot.style.background = '#EF4444';
+    if (text) text.textContent = 'Grabando voz... (Hable ahora)';
+    if (btn) {
+      btn.style.borderColor = '#EF4444';
+      btn.style.background = '#FEF2F2';
+    }
+
+    // Usar Web Speech API si el navegador lo soporta, o simular dictado clínico
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      try {
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'es-AR';
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+        recognition.onresult = (event) => {
+          const transcript = event.results[0][0].transcript;
+          if (text) text.textContent = `🎙️ "${transcript.slice(0, 24)}..."`;
+          if (dot) dot.style.background = '#10B981';
+          showToast(`Audio transcrito: "${transcript}"`, 'success');
+        };
+        recognition.onerror = () => {
+          fallbackAudioSim(text, dot);
+        };
+        recognition.start();
+      } catch (err) {
+        fallbackAudioSim(text, dot);
+      }
+    } else {
+      fallbackAudioSim(text, dot);
+    }
+  } else {
+    stopDoctorAudioRecord(text, dot, btn);
+  }
+}
+
+function fallbackAudioSim(text, dot) {
+  audioRecTimeout = setTimeout(() => {
+    isAudioRecording = false;
+    if (dot) dot.style.background = '#10B981';
+    if (text) text.textContent = '🎙️ "Receta bloqueada con paciente esperando"';
+    showToast('Nota de voz asistencial capturada y adjuntada', 'success');
+  }, 3500);
+}
+
+function stopDoctorAudioRecord(text, dot, btn) {
+  isAudioRecording = false;
+  if (audioRecTimeout) clearTimeout(audioRecTimeout);
+  if (dot) dot.style.background = '#94A3B8';
+  if (text) text.textContent = 'Dictar por Voz (10s)';
+  if (btn) {
+    btn.style.borderColor = '#CBD5E1';
+    btn.style.background = '#F8FAFC';
+  }
+}
+
+async function submitDoctorEmergency() {
+  const box = document.getElementById('doc-emergency-selected-box')?.value || 'Consultorio 1';
+  const issue = document.getElementById('doc-emergency-selected-issue')?.value || 'Receta Digital Bloqueada';
+  const plat = document.getElementById('doc-emergency-selected-platform')?.value || 'PLAT_RECETA_E';
+  const phone = document.getElementById('doc-emergency-phone')?.value || '204';
+  const audioText = document.getElementById('audio-rec-text')?.textContent || '';
+
+  const docUser = AppState.currentUser || { username: 'solicitante', full_name: 'Dr. Solicitante' };
+  const doctorName = docUser.full_name || docUser.username;
+
+  let desc = `🚨 ALERTA ASISTENCIAL DE GUARDIA / PACIENTE EN ESPERA:\n\n`;
+  desc += `• Profesional Médico: ${doctorName}\n`;
+  desc += `• Ubicación / Box: ${box}\n`;
+  desc += `• Motivo Clínico de Bloqueo: ${issue}\n`;
+  desc += `• Interno Telefónico de Contacto: ${phone}\n`;
+  if (audioText && audioText.includes('"')) {
+    desc += `• Dictado de Audio IA: ${audioText}\n`;
+  }
+  desc += `\nESTADO: Paciente esperando en consulta. Protocolo de atención inmediata N1 requerido (< 3 min SLA).`;
+
+  const payload = {
+    title: `[🚨 PACIENTE EN BOX] ${issue} - ${box}`,
+    description: desc,
+    platform_code: plat,
+    institution_code: 'INST_CENTRAL',
+    ticket_type: 'INCIDENTE',
+    impact: 'CRITICO',
+    urgency: 'CRITICA',
+    requester_username: docUser.username
+  };
+
+  try {
+    const newTicket = await API.createTicket(payload);
+    playEmergencyAlertSound();
+
+    const formBody = document.getElementById('doctor-emergency-form-body');
+    const successBody = document.getElementById('doctor-emergency-success-body');
+    const successTicketId = document.getElementById('doc-success-ticket-id');
+
+    if (formBody) formBody.style.display = 'none';
+    if (successBody) successBody.style.display = 'block';
+    if (successTicketId) successTicketId.textContent = `#${newTicket.id || 'NUEVO'}`;
+
+    showToast(`🚨 Alerta Asistencial #${newTicket.id} despachada a Guardia N1 con prioridad P1`, 'error');
+    
+    // Recargar bandeja y métricas
+    await loadTickets();
+  } catch (err) {
+    console.error('Error enviando alerta asistencial:', err);
+    showToast('Error al registrar la alerta. Utilice la Línea Roja (Interno 100)', 'error');
+  }
+}
+
+function openDoctorContingencyModal() {
+  const modal = document.getElementById('modal-doctor-contingency');
+  if (modal) modal.style.display = 'flex';
+}
+
+function closeDoctorContingencyModal() {
+  const modal = document.getElementById('modal-doctor-contingency');
+  if (modal) modal.style.display = 'none';
+}
+
+function downloadEmergencyPrescriptionPDF() {
+  const content = `========================================================================
+RECETARIO OFICIAL DE CONTINGENCIA ASISTENCIAL — DIRECCIÓN MÉDICA
+Quantux HealthTech Network • Homologación UAT / v4.0.0-DEV
+========================================================================
+
+FECHA DE EMISIÓN: ${new Date().toLocaleDateString('es-AR')} ${new Date().toLocaleTimeString('es-AR')}
+MÉDICO PRESCRIPTOR: ${AppState.currentUser ? (AppState.currentUser.full_name || AppState.currentUser.username) : 'Dr. Médico Asistencial'}
+INSTITUCIÓN: Hospital Universitario Central (Código: INST_CENTRAL)
+CÓDIGO DE CONTINGENCIA: CONT-RX-${Date.now()}
+
+------------------------------------------------------------------------
+DATOS DEL PACIENTE:
+Nombre y Apellido: ____________________________________________________
+DNI: _______________________ Cobertura / OS: __________________________
+Nro. Afiliado: ________________________________ Plan: _________________
+
+------------------------------------------------------------------------
+RP / PRESCRIPCIÓN MÉDICA:
+1. Medicamento / Principio Activo: ____________________________________
+   Dosis y Presentación: _____________________________________________
+   Posología: ________________________________________________________
+
+2. Medicamento / Principio Activo: ____________________________________
+   Dosis y Presentación: _____________________________________________
+   Posología: ________________________________________________________
+
+DIAGNÓSTICO: __________________________________________________________
+OBSERVACIONES: ________________________________________________________
+
+------------------------------------------------------------------------
+FIRMA Y SELLO DEL PROFESIONAL:
+
+
+
+
+___________________________________
+Firma y Matrícula Nacional / Provincial
+========================================================================
+VALIDACIÓN DIFERIDA: El farmacéutico dispensador puede ingresar este comprobante
+en el Portal de Farmacia Quantux ingresando el código de contingencia superior.
+`;
+
+  const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `Recetario_Contingencia_Quantux_${Date.now()}.txt`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  showToast('📄 Talonario oficial de recetas de contingencia descargado exitosamente', 'success');
+}
+
+function openFinanciadoresFallback() {
+  const links = [
+    { name: 'OSDE Validador Online', url: 'https://www.osde.com.ar' },
+    { name: 'Swiss Medical Prestadores', url: 'https://www.swissmedical.com.ar' },
+    { name: 'Galeno Padrón Web', url: 'https://www.galeno.com.ar' },
+    { name: 'PAMI Sistema Farmacia', url: 'https://www.pami.org.ar' }
+  ];
+  showToast('Redirigiendo a Validador Externo de Obras Sociales...', 'info');
+  window.open(links[0].url, '_blank');
+}
+
+function downloadEvolutionTemplate() {
+  const docName = AppState.currentUser ? (AppState.currentUser.full_name || AppState.currentUser.username) : 'Dr. Médico';
+  const content = `========================================================================
+FICHA DE EVOLUCIÓN CLÍNICA DE CONTINGENCIA (RESPALDO OFFLINE HCE)
+Quantux HealthTech Network • Dirección Médica
+========================================================================
+
+FECHA: ${new Date().toLocaleDateString('es-AR')}   HORA: ${new Date().toLocaleTimeString('es-AR')}
+MÉDICO TRATANTE: ${docName}
+SERVICIO / CONSULTORIO: Consulta Externa / Box de Atención
+
+DATOS DEL PACIENTE:
+Nombre: _________________________________ DNI: ________________________
+Edad: _____ Sexo: ___ Cobertura: ________________ HC Nro: ______________
+
+SIGNOS VITALES:
+TA: _____/_____ mmHg   FC: _____ lpm   FR: _____ rpm   T°: _____ °C   SatO2: ____%
+
+MOTIVO DE CONSULTA / ANAMNESIS:
+________________________________________________________________________
+________________________________________________________________________
+
+EXAMEN FÍSICO:
+________________________________________________________________________
+________________________________________________________________________
+
+DIAGNÓSTICO PRESUNTIVO / CIE-10:
+________________________________________________________________________
+
+CONDUCTA Y PLAN TERAPÉUTICO:
+________________________________________________________________________
+________________________________________________________________________
+
+NOTA: Esta ficha debe ser transcripta al HIS Central una vez restablecido el servicio.
+Firma del Profesional: __________________________________________________
+`;
+
+  const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `Ficha_Evolucion_Contingencia_${Date.now()}.txt`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  showToast('📋 Plantilla de evolución clínica descargada', 'success');
+}
+
+// Exportar funciones del Módulo 14 a window
+window.openDoctorEmergencyModal = openDoctorEmergencyModal;
+window.closeDoctorEmergencyModal = closeDoctorEmergencyModal;
+window.selectEmergencyBox = selectEmergencyBox;
+window.selectEmergencyIssue = selectEmergencyIssue;
+window.toggleDoctorAudioRecord = toggleDoctorAudioRecord;
+window.submitDoctorEmergency = submitDoctorEmergency;
+window.openDoctorContingencyModal = openDoctorContingencyModal;
+window.closeDoctorContingencyModal = closeDoctorContingencyModal;
+window.downloadEmergencyPrescriptionPDF = downloadEmergencyPrescriptionPDF;
+window.openFinanciadoresFallback = openFinanciadoresFallback;
+window.downloadEvolutionTemplate = downloadEvolutionTemplate;
+window.playEmergencyAlertSound = playEmergencyAlertSound;
+

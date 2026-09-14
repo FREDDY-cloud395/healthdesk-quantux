@@ -6,8 +6,8 @@ client = TestClient(app)
 def run_tests():
     print("=== VERIFICACIÓN DEL BACKEND CORE (HEALTHDESK QUANTUX) ===")
     
-    # 1. Root
-    r = client.get("/")
+    # 1. HealthCheck
+    r = client.get("/health")
     assert r.status_code == 200
     print("[OK] HealthCheck API:", r.json())
 

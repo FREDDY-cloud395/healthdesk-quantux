@@ -546,6 +546,75 @@ Para asegurar el éxito comercial y posicionar a Quantux por encima de gigantes 
 
 ---
 
+## 🩺 MÓDULO 14: Suite Asistencial de Alta Prioridad — Exclusiva para Médicos y Profesionales de la Salud (Modo Clínico)
+
+### 14.1. Principio Rector de Segregación de Roles (RBAC Clínico vs. Mesa de Ayuda)
+* **Exclusividad para Médicos y Personal Asistencial:** Las capacidades de este módulo están concebidas y reservadas **únicamente para profesionales de la salud** en ejercicio asistencial directo (médicos de consultorio, cirujanos en quirófano, enfermeros de shock-room y médicos de guardia).
+* **Invisibilidad Total para la Mesa de Ayuda (Soporte N1/N2/N3 y Admins):** Los operadores de soporte técnico y administradores **NO** tienen acceso a estos botones de emisión ni a los protocolos de contingencia médica en su interfaz. Agregar botones de "Paciente en Box" o "Talonario de Recetas" a un analista de soporte introduciría ruido visual y confusión que violaría los principios Zen de la v4.
+* **Modelo Emisor/Receptor:**
+  * **El Médico es el Emisor:** Emite una alerta de 1 solo toque o activa la contingencia médica en segundos desde su consultorio.
+  * **La Mesa de Ayuda es el Receptor de Rescate:** En el Cockpit de soporte entra un ticket de emergencia con alarma sonora y badge pulsante `🚨 PACIENTE EN BOX • INTERNO 204`, obligando a una respuesta en menos de 3 minutos.
+
+---
+
+### 14.2. Historias de Usuario Asistenciales (v4.0.0)
+
+#### 🔹 UH-74: Botón de Emergencia Asistencial "Paciente en Espera / Box Bloqueado" (1-Tap Emergency)
+* **Narrativa:**
+  > **Como** Médico o Profesional de Salud con un paciente presente en la consulta o guardia,  
+  > **Quiero** presionar un único botón de emergencia asistencial (`[ 🚨 Paciente en Espera ]`),  
+  > **Para** levantar un ticket P1 Crítico en menos de 5 segundos sin tener que completar formularios extensos con jerga de sistemas.
+* **Criterios de Aceptación (Gherkin):**
+  * **Dado** un usuario autenticado con rol de profesional asistencial (`Dr.` / `Dra.` / `Médico`),
+  * **Cuando** se encuentra en el portal y presiona `[ 🚨 Paciente en Box ]`,
+  * **Entonces**:
+    1. Se abre un diálogo instantáneo de 1 solo paso con selector rápido del Consultorio/Box actual y motivo asistencial preconfigurado:
+       * `[ Receta Digital no valida / Bloqueada ]`
+       * `[ Historia Clínica no abre / Bloqueada por concurrencia ]`
+       * `[ Falla Visor de Placas DICOM / Rayos ]`
+       * `[ Paciente en Box / Caída General de Consulta ]`
+    2. Al confirmar (o tras 5 segundos de inactividad con confirmación automática), se genera un ticket P1 inmediato con bandera de impacto clínico.
+    3. El sistema captura la estación de trabajo, IP local e interno telefónico del consultorio sin preguntarle al médico.
+
+#### 🔹 UH-75: Protocolo de Contingencia Asistencial Inmediato (Plan B Offline)
+* **Narrativa:**
+  > **Como** Médico con el sistema de prescripción o HCE caído,  
+  > **Quiero** recibir en pantalla de inmediato la herramienta de contingencia autorizada por la dirección médica,  
+  > **Para** continuar atendiendo al paciente y emitir la receta o indicación en soporte alternativo sin paralizar la consulta.
+* **Criterios de Aceptación (Gherkin):**
+  * **Dado** que un médico reporta una falla crítica en receta digital o HCE,
+  * **Cuando** se confirma el incidente,
+  * **Entonces** la plataforma le presenta una barra de herramientas de contingencia con acceso directo a:
+    * `[ 📄 Descargar Talonario de Recetas Digital de Contingencia (PDF Oficial) ]`
+    * `[ 🌐 Acceso al Validador de Emergencia Web ]`
+    * `[ 📋 Ficha de Evolución Médica de Respaldo ]`
+  * **Resultado:** La atención del paciente nunca se detiene mientras el equipo técnico soluciona la falla de fondo.
+
+#### 🔹 UH-76: Audio-Ticket Clínico Asistencial (Dictado por Voz con IA)
+* **Narrativa:**
+  > **Como** Profesional de Salud habituado al dictado clínico,  
+  > **Quiero** presionar un botón de micrófono y relatar la falla en un audio de 8 a 15 segundos,  
+  > **Para** no perder tiempo tipeando frente a la computadora mientras examino o asisto a un paciente.
+* **Criterios de Aceptación (Gherkin):**
+  * **Dado** el modal de reporte para médicos,
+  * **Cuando** el profesional pulsa `[ 🎙️ Dictar Incidencia ]` y habla (ej: *"Se cayó la firma digital de Osde en el consultorio 3 con el paciente esperando"*),
+  * **Entonces** el modelo de IA transcribe el audio, identifica la plataforma (`Receta Digital / Firma`), extrae la ubicación (`Consultorio 3`), detecta el financiador (`OSDE`) y auto-completa el ticket sin requerir escritura manual.
+
+#### 🔹 UH-77: Receptor Crítico en Consola de Soporte (Alerta Visual y Sonora de Rescate Asistencial)
+* **Narrativa:**
+  > **Como** Operador de Soporte de Guardia o Nivel 1 en el Cockpit,  
+  > **Quiero** recibir una alerta visual prominente y sonido de prioridad cuando un médico activa la emergencia de "Paciente en Box",  
+  > **Para** comunicarme de inmediato por interno o tomar control remoto de la terminal en menos de 2 minutos.
+* **Criterios de Aceptación (Gherkin):**
+  * **Dado** el Cockpit de soporte operado por un técnico,
+  * **Cuando** ingresa un ticket originado por la Suite Asistencial Médica (UH-74),
+  * **Entonces**:
+    1. La fila en la grilla se destaca con un borde rojo pulsante y badge `🚨 PACIENTE EN BOX • URGENCIA CLÍNICA`.
+    2. Se reproduce un tono sutil pero inconfundible de alerta asistencial.
+    3. En el panel lateral se despliega el botón `[ 📞 Llamar a Consultorio ]` y `[ 🖥️ Conectar Asistencia Remota ]`.
+
+---
+
 ## 📊 Matriz de Estimación del Backlog Completo (v4.0.0)
 
 | Módulo | Historias de Usuario | Estimación |
@@ -562,7 +631,8 @@ Para asegurar el éxito comercial y posicionar a Quantux por encima de gigantes 
 | **10. Cierre por Solicitante & CSAT Buena Onda** | `UH-65`, `UH-66`, `UH-67` | 12 SP |
 | **11. Catálogo Zen de Organizaciones & Plataformas** | `UH-68`, `UH-69`, `UH-70`, `UH-71` | 11 SP |
 | **12. Rol Team Leader & Torre de Control** | `UH-72`, `UH-73` | 10 SP |
-| **TOTAL BACKLOG v4.0.0** | **41 Historias de Usuario** | **125 Story Points** |
+| **14. Suite Asistencial Exclusiva Médicos (Modo Clínico)** | `UH-74`, `UH-75`, `UH-76`, `UH-77` | 25 SP |
+| **TOTAL BACKLOG v4.0.0** | **45 Historias de Usuario** | **150 Story Points** |
 
 ---
 
