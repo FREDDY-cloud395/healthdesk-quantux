@@ -492,6 +492,60 @@ La pantalla actual de *"Plataformas & Instituciones"* presenta una severa sobrec
 
 ---
 
+---
+
+## 🎖️ MÓDULO 12: Gobernanza y Supervisión — Rol Nativo Team Leader & Torre de Control
+
+### 12.1. Diagnóstico del Vacío de Gestión
+En las mesas de ayuda convencionales existe un salto perjudicial entre el Administrador (perfil técnico con permisos destructivos) y el Operador (abocado a resolver su cola individual de tickets). Se carece de una figura intermedia de **Gestión Operativa y Humana** capaz de intervenir en tiempo real, balancear cargas y rescatar la experiencia de clientes disconformes.
+
+### 12.2. Historias de Usuario para el Team Leader (v4.0.0)
+
+#### 🔹 UH-72: Matriz RBAC con Rol Nativo Team Leader / Supervisor
+* **Narrativa:**
+  > **Como** Director de Operaciones,  
+  > **Quiero** un rol de `Team Leader` con permisos transversales de supervisión, reasignación y auditoría,  
+  > **Para** delegar la conducción de la mesa sin otorgar permisos destructivos de infraestructura al supervisor.
+* **Criterios de Aceptación (Gherkin):**
+  * **Dado** un usuario asignado al rol `Team Leader`,
+  * **Cuando** ingresa a la plataforma,
+  * **Entonces** tiene acceso de solo lectura/escritura a tickets de todas las instituciones y operadores, potestad de reasignación y bypass de escalamientos, pero **no tiene acceso a borrar tablas maestras ni variables de entorno del servidor**.
+
+#### 🔹 UH-73: Torre de Control del Team Leader & Protocolo de Rescate de Quejas
+* **Narrativa:**
+  > **Como** Team Leader,  
+  > **Quiero** un panel de supervisión en tiempo real con la carga de cada operador y una cola prioritaria de tickets con CSAT bajo (1 o 2 estrellas),  
+  > **Para** intervenir de inmediato antes de que la queja escale a niveles directivos.
+* **Criterios de Aceptación (Gherkin):**
+  * **Escenario 1: Bandeja de Rescate Activo (Service Recovery)**
+    * **Dado** que un solicitante califica un ticket con 1 o 2 estrellas o ingresa una queja,
+    * **Cuando** se dispara el evento,
+    * **Entonces** el ticket se destaca con badge `🚨 RESCATE REQUERIDO` en la Torre de Control del Team Leader con alerta push.
+  * **Escenario 2: Balanceador de Carga (Live Dispatcher)**
+    * **Dado** un operador sobrecargado o ausente,
+    * **Cuando** el Team Leader selecciona sus tickets,
+    * **Entonces** puede reasignarlos en lote a otros miembros de la guardia en 2 clics.
+
+---
+
+## 🚀 MÓDULO 13: Las 5 Armas Secretas del Podio (Diferenciadores 10x para el Pitch Ejecutivo)
+
+Para asegurar el éxito comercial y posicionar a Quantux por encima de gigantes como Zendesk, Jira Service Management y ServiceNow, se definen los **5 factores de diferenciación radical**:
+
+1. **🤖 IA Resolutiva Autónoma & Copilot N1 (Zero-Touch):** 
+   * Ingesta inteligente que detecta fallas comunes en logs/APIs y ofrece botones de auto-reparación en 1 clic (`[ ⚡ Reintentar Webhook ]`, `[ 🔑 Regenerar Token ]`).
+   * Resumen ejecutivo flash de hilos largos para operadores.
+2. **🛡️ Mesa Proactiva "Self-Healing" (Detección y Cura Pre-Impacto):** 
+   * Detección automática de micro-cortes y generación preventiva de tickets antes de que el cliente note la falla, notificándole con cortesía que el incidente ya fue resuelto.
+3. **📸 Telemetría Oculta "Zero-Question" (Fin del "¿Me pasa una captura?"):** 
+   * Captura automática y transparente de entorno: versión de app, navegador, resolución, y los últimos errores HTTP de consola en un JSON adjunto.
+4. **💖 CSAT Gamificado "Buena Onda" & Muro de la Fama:** 
+   * Calificación empática con emojis vivos y píldoras de elogios (*Kudos*), transformando el feedback en reconocimiento medible y motivación para los operadores.
+5. **⚡ Cockpit Zen con Shortcuts de Teclado (<50ms):** 
+   * Interfaz ultraliviana navegable al 100% por teclado (`j`/`k`, `r`, `e`, `c`), eliminando el síndrome de burnout y la fatiga visual.
+
+---
+
 ## 📊 Matriz de Estimación del Backlog Completo (v4.0.0)
 
 | Módulo | Historias de Usuario | Estimación |
@@ -507,12 +561,22 @@ La pantalla actual de *"Plataformas & Instituciones"* presenta una severa sobrec
 | **9. Ingesta Automática por Correo (Email-to-Ticket)** | `UH-62`, `UH-63`, `UH-64` | 12 SP |
 | **10. Cierre por Solicitante & CSAT Buena Onda** | `UH-65`, `UH-66`, `UH-67` | 12 SP |
 | **11. Catálogo Zen de Organizaciones & Plataformas** | `UH-68`, `UH-69`, `UH-70`, `UH-71` | 11 SP |
-| **TOTAL BACKLOG v4.0.0** | **39 Historias de Usuario** | **115 Story Points** |
+| **12. Rol Team Leader & Torre de Control** | `UH-72`, `UH-73` | 10 SP |
+| **TOTAL BACKLOG v4.0.0** | **41 Historias de Usuario** | **125 Story Points** |
 
 ---
 
-## 🔒 Garantía de Aislamiento y Entorno Cloud
-* **Versión v3.2.0-UAT:** Permanece 100% congelada e inalterada en su servidor.
-* **Versión v4.0.0:** Gestionada en su propia rama `v4-dev` y carpeta aislada, con especificación completa para desarrollo en la nube.
+## 🌐 Suite de Enlaces y Entorno de Desarrollo Cloud Activo (v4.0.0-DEV)
+
+| Recurso | URL Cloud / Acceso | Estado |
+| :--- | :--- | :---: |
+| 🌍 **URL Pública Cloud (HTTPS)** | `https://excerpt-honor-attempts-sen.trycloudflare.com` | **🟢 ONLINE (Activo)** |
+| 🎛️ **Cockpit Mesa de Ayuda v4** | `https://excerpt-honor-attempts-sen.trycloudflare.com/cockpit` | **🟢 ONLINE (Activo)** |
+| 📊 **Tablero Scrumban v4** | `https://excerpt-honor-attempts-sen.trycloudflare.com/scrumban` | **🟢 ONLINE (Activo)** |
+| 📑 **Especificación Funcional v4** | `https://excerpt-honor-attempts-sen.trycloudflare.com/especificacion` | **🟢 ONLINE (Activo)** |
+| 📚 **Swagger API Docs v4** | `https://excerpt-honor-attempts-sen.trycloudflare.com/docs` | **🟢 ONLINE (Activo)** |
+| 🐙 **Repositorio GitHub (Rama v4-dev)** | `https://github.com/FREDDY-cloud395/healthdesk-quantux/tree/v4-dev` | **🟢 SINCRONIZADO** |
+| 🔒 **Versión Anterior (v3.2.0-UAT)** | `https://healthdesk-quantux.onrender.com` | **🔒 CONGELADA / INTACTA** |
+
 
 
