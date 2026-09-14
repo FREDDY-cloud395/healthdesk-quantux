@@ -5,9 +5,9 @@ from app.db.seed import run_seed
 from app.api.endpoints import auth, tickets, masters, users
 
 app = FastAPI(
-    title="Quantux ServiceDesk API",
-    description="Backend centralizado de Quantux ServiceDesk para Plataformas HealthTech (Ambiente de Pruebas & Certificación UAT)",
-    version="3.2.0-UAT"
+    title="Quantux ServiceDesk Enterprise API",
+    description="Backend centralizado de Quantux ServiceDesk Enterprise (Ambiente de Desarrollo en la Nube v4.0.0-DEV)",
+    version="4.0.0-DEV"
 )
 
 # GZIP para aceleración de transferencia en redes móviles y tablets (90% reducción de payload)
@@ -119,12 +119,12 @@ def serve_presentacion():
 @app.get("/health")
 def api_status():
     return {
-        "system": "Quantux ServiceDesk",
-        "organization": "Quantux Salud & HealthTech",
+        "system": "Quantux ServiceDesk Enterprise",
+        "organization": "Quantux Global Enterprise",
         "status": "ONLINE",
-        "environment": "UAT / Certificación y Pruebas",
-        "version": "3.2.0-UAT",
-        "release": "Ambiente de Pruebas & Certificación (UAT)",
+        "environment": "Cloud Development (v4.0.0-DEV)",
+        "version": "4.0.0-DEV",
+        "release": "Ambiente de Desarrollo en la Nube (v4.0.0-DEV)",
         "cockpit_url": "/cockpit",
         "scrumban_url": "/scrumban",
         "manual_url": "/manual",

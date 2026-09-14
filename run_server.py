@@ -57,9 +57,9 @@ def main():
         print(f"  [ERROR] Error en inicializacion de base de datos: {e}")
         sys.exit(1)
 
-    # 2. Comprobar puerto 8000
+    # 2. Comprobar puerto (8005 para ambiente de desarrollo v4)
     host = "0.0.0.0"
-    port = 8000
+    port = int(os.environ.get("PORT", 8005))
     print(f"\n[2/3] Verificando disponibilidad de puerto {port}...")
     if not check_port_free(host, port):
         print(f"  [WARN] El puerto {port} esta ocupado por otra instancia.")
