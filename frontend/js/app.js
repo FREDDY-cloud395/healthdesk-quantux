@@ -251,6 +251,25 @@ function initResponsiveDrawer() {
 
   window.toggleSidebarCollapse = toggleCollapse;
 
+  // Acordeón dinámico de submenú de Mesa de Ayuda (UH-79)
+  const chevron = document.getElementById('subnav-tickets-chevron');
+  const subnav = document.getElementById('subnav-tickets');
+  const toggleSubnavTickets = (e) => {
+    if (!subnav) return;
+    if (e) e.stopPropagation();
+    const isHidden = subnav.style.display === 'none';
+    subnav.style.display = isHidden ? 'flex' : 'none';
+    if (chevron) {
+      chevron.textContent = isHidden ? '▼' : '▶';
+    }
+    localStorage.setItem('quantux_subnav_collapsed', isHidden ? '0' : '1');
+  };
+  if (chevron) chevron.addEventListener('click', toggleSubnavTickets);
+  if (localStorage.getItem('quantux_subnav_collapsed') === '1' && subnav) {
+    subnav.style.display = 'none';
+    if (chevron) chevron.textContent = '▶';
+  }
+
   // Cerrar drawer al hacer clic en un enlace de navegación en pantallas móviles
   document.querySelectorAll('.nav-hub-tab').forEach(tab => {
     tab.addEventListener('click', () => {
@@ -1587,20 +1606,19 @@ function calculateTicketSLA(ticket) {
       timeRemainingText = `Cumplido en ${Math.max(1, Math.round(elapsed / (1000 * 60)))} min`;
     } else {
       status = 'BREACHED';
-      statusText = 'Incumplido';
-      badgeColor = '#DC2626';
-      badgeBg = '#FEE2E2';
-      timeRemainingText = `Fuera de tiempo (+${Math.round((elapsed - totalDuration) / (1000 * 60 * 60))}h)`;
+      statusText = 'Fuera de SLA';
+      badgeColor = '#64748B';
+      badgeBg = '#F1F5F9';
+      timeRemainingText = `Fuera de plazo (+${Math.round((elapsed - totalDuration) / (1000 * 60 * 60))}h)`;
     }
   } else {
     const remainingMs = deadline.getTime() - now.getTime();
     if (remainingMs <= 0) {
       status = 'BREACHED';
-      statusText = 'Vencido';
-      badgeColor = '#DC2626';
-      badgeBg = '#FEE2E2';
-      const overHours = Math.max(1, Math.abs(Math.round(remainingMs / (1000 * 60 * 60))));
-      timeRemainingText = `Vencido hace ${overHours}h`;
+      statusText = 'Fuera de SLA';
+      badgeColor = '#64748B';
+      badgeBg = '#F1F5F9';
+      timeRemainingText = `SLA Vencido`;
       percent = 100;
     } else {
       const remHours = Math.floor(remainingMs / (1000 * 60 * 60));
@@ -1685,11 +1703,11 @@ function renderTicketList() {
         // Clases de prioridad para borde lateral y pastilla
         const prioRowClass = isPatientInBox ? `prio-row-${priority.toLowerCase()} row-patient-emergency` : `prio-row-${priority.toLowerCase()}`;
         const prioChipClass = `chip-${priority.toLowerCase()}`;
-        let prioIcon = '🔷';
+        let prioIcon = '🔵';
         let prioLabel = `${priority} • Media`;
-        if (priority === 'P1') { prioIcon = '🚨'; prioLabel = 'P1 • Crítica'; }
-        else if (priority === 'P2') { prioIcon = '⚠️'; prioLabel = 'P2 • Alta'; }
-        else if (priority === 'P3') { prioIcon = '🔷'; prioLabel = 'P3 • Media'; }
+        if (priority === 'P1') { prioIcon = '🔴'; prioLabel = 'P1 • Crítica'; }
+        else if (priority === 'P2') { prioIcon = '🟡'; prioLabel = 'P2 • Alta'; }
+        else if (priority === 'P3') { prioIcon = '🔵'; prioLabel = 'P3 • Media'; }
         else if (priority === 'P4') { prioIcon = '⚪'; prioLabel = 'P4 • Baja'; }
 
         // Pastilla de Estado
@@ -1718,7 +1736,7 @@ function renderTicketList() {
         return `
           <tr class="${prioRowClass}" onclick="openAgentWorkspace('${t.id}')" title="Haga clic para abrir el espacio de trabajo de la solicitud #${t.id}">
             <!-- 1. ID & PRIORIDAD (Misma Fila / Horizontal) -->
-            <td style="white-space: nowrap; width: 250px; min-width: 240px;">
+            <td style="white-space: nowrap; width: 230px; min-width: 220px;">
               <div style="display: flex; align-items: center; gap: 8px;">
                 <span class="tkt-id-badge" style="margin-bottom: 0;">#${t.id}</span>
                 <span class="tkt-prio-chip ${prioChipClass}">${prioIcon} ${prioLabel}</span>
@@ -1730,12 +1748,14 @@ function renderTicketList() {
               <div class="tkt-table-subject-cell">
                 <div style="flex: 1; min-width: 0;">
                   <div class="tkt-table-subject-title">
-                    ${isPatientInBox ? '<span class="badge-patient-emergency">🚨 PACIENTE EN BOX</span> ' : ''}${escapeHtml(t.title)}
+                    ${isPatientInBox ? '<span class="badge-patient-emergency">PACIENTE EN BOX</span> ' : ''}${escapeHtml(t.title)}
                   </div>
-                  <div class="tkt-chips-row">
-                    <span class="tkt-chip-module">💻 ${platName}</span>
-                    <span class="tkt-chip-inst">🏥 ${instName}</span>
-                    <span class="tkt-chip-time">🕒 ${timeAgo}</span>
+                  <div class="tkt-chips-row" style="margin-top: 4px; display: flex; align-items: center; gap: 8px; font-size: 11.5px; color: #64748B;">
+                    <span style="font-weight: 600; color: #0284C7;">${platName}</span>
+                    <span>&bull;</span>
+                    <span>${instName}</span>
+                    <span>&bull;</span>
+                    <span style="color: #94A3B8;">${timeAgo}</span>
                   </div>
                 </div>
               </div>
@@ -3786,7 +3806,7 @@ function openInstitutionDetailModal(instCode) {
             const pBadge = formatPriorityBadge(t.priority);
             const platIcon = PLATFORM_ICONS[t.platform_code] || '💻';
             return `
-              <div style="padding: 12px 14px; background: #FFFFFF; border: 1.5px solid #FEE2E2; border-left: 4px solid #EF4444; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+              <div style="padding: 12px 14px; background: #FFFFFF; border: 1px solid #E2E8F0; border-left: 4px solid #38BDF8; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; gap: 12px;">
                 <div>
                   <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
                     <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 800; color: #0284C7;">#${t.id.slice(0, 8)}</span>

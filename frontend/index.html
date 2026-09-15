@@ -309,21 +309,21 @@
         
         <!-- Logo / Marca Oficial: Quantux ServiceDesk -->
         <div class="brand-box">
-          <div class="brand-left-group" id="brand-home-link" onclick="navigateHome()" title="Ir a la Página Principal - Quantux ServiceDesk" style="cursor: pointer; display: flex; align-items: center; gap: 10px; text-decoration: none;">
-            <div class="brand-logo-icon" style="background: linear-gradient(135deg, #00A896 0%, #0284C7 100%); width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0, 168, 150, 0.35); flex-shrink: 0;">
-              <svg viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px;">
+          <div class="brand-left-group" id="brand-home-link" onclick="navigateHome()" title="Ir a la Página Principal - Quantux ServiceDesk" style="cursor: pointer; display: flex; align-items: center; gap: 8px; text-decoration: none; flex: 1; min-width: 0; overflow: hidden;">
+            <div class="brand-logo-icon" style="background: linear-gradient(135deg, #00A896 0%, #0284C7 100%); width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0, 168, 150, 0.35); flex-shrink: 0;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px;">
                 <path d="M3 18v-6a9 9 0 0 1 18 0v6"></path>
                 <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path>
               </svg>
             </div>
-            <div class="brand-info">
-              <div class="brand-name" style="font-size: 15px; font-weight: 800; color: #FFFFFF; letter-spacing: 0.5px; line-height: 1.2; display: flex; align-items: center; gap: 6px;">QUANTUX <span style="color: #00E5C9; font-weight: 700;">ServiceDesk</span> <span class="badge-v4-brand" style="background: rgba(0, 229, 201, 0.15); color: #00E5C9; border: 1px solid rgba(0, 229, 201, 0.4); font-size: 9.5px; font-weight: 800; padding: 1px 5px; border-radius: 4px; letter-spacing: 0.5px;">v4.0.0-DEV</span></div>
-              <div class="brand-sub" style="font-size: 9.5px; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 700; margin-top: 2px;">Enterprise Multi-Servicio &amp; Salud</div>
+            <div class="brand-info" style="min-width: 0; overflow: hidden;">
+              <div class="brand-name" style="font-size: 13.5px; font-weight: 800; color: #FFFFFF; letter-spacing: 0.3px; line-height: 1.2; display: flex; align-items: center; gap: 4px; white-space: nowrap;">QUANTUX <span style="color: #00E5C9;">SD</span> <span class="badge-v4-brand" style="background: rgba(0, 229, 201, 0.15); color: #00E5C9; border: 1px solid rgba(0, 229, 201, 0.4); font-size: 8.5px; font-weight: 800; padding: 1px 4px; border-radius: 3px;">v4</span></div>
+              <div class="brand-sub" style="font-size: 9px; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Enterprise Desk</div>
             </div>
           </div>
-          <div style="display: flex; align-items: center; gap: 4px;">
+          <div style="display: flex; align-items: center; gap: 4px; flex-shrink: 0;">
             <button class="sidebar-collapse-toggle" id="btn-sidebar-collapse" title="Plegar / Expandir Menú (Modo Zen 64px) [Tecla '[']" aria-label="Plegar Menú">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 15px; height: 15px;"><polyline points="15 18 9 12 15 6"></polyline></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;"><polyline points="15 18 9 12 15 6"></polyline></svg>
             </button>
             <button class="sidebar-close-btn" id="btn-sidebar-close" aria-label="Cerrar Menú">&times;</button>
           </div>
@@ -341,12 +341,15 @@
         <nav class="sidebar-nav">
           <div class="sidebar-nav-label">Módulos de Gestión</div>
 
-          <div class="nav-link-item active nav-hub-tab" data-view="tickets" id="tab-tickets" data-tooltip="Mesa de Ayuda (143)">
+          <div class="nav-link-item active nav-hub-tab" data-view="tickets" id="tab-tickets" data-tooltip="Mesa de Ayuda (143)" style="justify-content: space-between;">
             <div class="nav-link-left">
               <svg class="nav-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 17px; height: 17px;"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></svg>
               <span>Mesa de Ayuda</span>
             </div>
-            <span class="sidebar-badge" id="sidebar-ticket-count">143</span>
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span class="sidebar-badge" id="sidebar-ticket-count">143</span>
+              <span id="subnav-tickets-chevron" style="font-size: 10px; color: #94A3B8; cursor: pointer; padding: 2px 4px; transition: transform 0.2s;" title="Plegar / desplegar vistas">▼</span>
+            </div>
           </div>
 
           <!-- Sub-Árbol Dinámico de Vistas Rápidas con Contadores Vivos (UH-79) -->
@@ -1718,7 +1721,7 @@
       <div class="modal-header modal-header-senior">
         <span class="modal-title" style="display: flex; align-items: center; gap: 8px;">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 18px; height: 18px; color: #00E5CC;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-          <span style="font-weight: 800; font-size: 15px;">Asistente de Nueva Solicitud Asistencial</span>
+          <span style="font-weight: 800; font-size: 15px;">Nueva Solicitud Enterprise</span>
         </span>
         <button class="modal-close-btn" id="modal-close" style="color: #94A3B8;">&times;</button>
       </div>
@@ -1726,7 +1729,7 @@
       <div class="wizard-stepper-bar">
         <div class="wizard-step-node active" id="step-node-1" onclick="goToWizardStep(1)">
           <div class="wizard-step-circle">1</div>
-          <span>1. Institución & Tipo</span>
+          <span>1. Organización & Tipo</span>
         </div>
         <div class="wizard-step-arrow">➔</div>
         <div class="wizard-step-node" id="step-node-2" onclick="goToWizardStep(2)">
@@ -1754,14 +1757,14 @@
         <!-- PASO 1: SEDE E INSTITUCIÓN Y TIPO DE REQUERIMIENTO -->
         <div class="wizard-panel active" id="wizard-panel-1">
           <div style="margin-bottom: 12px;">
-            <h4 style="font-size: 14px; font-weight: 800; color: #0F172A; margin: 0;">¿En qué Institución ocurre y qué tipo de solicitud es?</h4>
-            <p style="font-size: 12px; color: #64748B; margin-top: 4px;">Seleccione la institución sanitaria y el tipo de requerimiento asistencial.</p>
+            <h4 style="font-size: 14px; font-weight: 800; color: #0F172A; margin: 0;">¿En qué Organización o Sede ocurre y qué tipo de solicitud es?</h4>
+            <p style="font-size: 12px; color: #64748B; margin-top: 4px;">Seleccione la organización o cliente y el tipo de requerimiento técnico u operativo.</p>
           </div>
 
           <div class="form-group" style="margin-bottom: 16px;">
-            <label class="form-label" for="modal-institution" style="font-weight: 800;">Institución Asistencial *</label>
+            <label class="form-label" for="modal-institution" style="font-weight: 800;">Organización / Cliente *</label>
             <select id="modal-institution" class="form-control" required style="font-size: 13px; height: 42px; border-radius: 8px;">
-              <option value="">Seleccione Institución...</option>
+              <option value="">Seleccione Organización...</option>
             </select>
           </div>
 
@@ -1801,7 +1804,7 @@
         <div class="wizard-panel" id="wizard-panel-2">
           <div style="margin-bottom: 12px;">
             <h4 style="font-size: 14px; font-weight: 800; color: #0F172A; margin: 0;">¿En qué sistema o plataforma se presenta la incidencia?</h4>
-            <p style="font-size: 12px; color: #64748B; margin-top: 4px;">Haga clic en el módulo asistencial afectado.</p>
+            <p style="font-size: 12px; color: #64748B; margin-top: 4px;">Haga clic en el módulo o servicio afectado.</p>
           </div>
 
           <div class="platform-grid-selector" id="platform-grid-container">
@@ -1847,13 +1850,13 @@
             </div>
             <div class="platform-card-choice" data-platform="CAT_CARTILLA_TURNOS" onclick="selectPlatformCard('CAT_CARTILLA_TURNOS', this)">
               <div class="platform-icon-big">🌐</div>
-              <div class="platform-name-bold">Cartilla Asistencial & Turnos</div>
+              <div class="platform-name-bold">Servicios & Turnos</div>
               <div class="platform-desc-small">Reserva de citas y geolocalización</div>
             </div>
           </div>
 
           <div style="display: flex; justify-content: space-between; margin-top: 20px;">
-            <button type="button" class="btn-sec" onclick="goToWizardStep(1)">⬅️ Volver a Institución</button>
+            <button type="button" class="btn-sec" onclick="goToWizardStep(1)">⬅️ Volver a Organización</button>
             <button type="button" class="btn-pri" onclick="goToWizardStep(3)">Continuar a Afectación ➔</button>
           </div>
         </div>
