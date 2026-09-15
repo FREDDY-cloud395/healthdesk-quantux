@@ -81,7 +81,11 @@ def serve_plan():
     return {"message": "Plan de Gestión no encontrado"}
 
 @app.get("/especificacion")
+@app.get("/especificacion-v4")
 def serve_especificacion():
+    f_v4 = os.path.join(docs_dir, "03_Especificacion_Funcional_v4.html")
+    if os.path.exists(f_v4):
+        return FileResponse(f_v4, headers={"Cache-Control": "no-cache, no-store, must-revalidate"})
     f = os.path.join(docs_dir, "02_Especificacion_Funcional_Quantux.html")
     if os.path.exists(f):
         return FileResponse(f, headers={"Cache-Control": "no-cache, no-store, must-revalidate"})

@@ -615,6 +615,68 @@ Para asegurar el éxito comercial y posicionar a Quantux por encima de gigantes 
 
 ---
 
+## 🧭 MÓDULO 15: Dinámica Ergonómica del Menú Lateral Izquierdo (Sidebar Zen & Quick-Filters)
+
+### 15.1. Diagnóstico del Menú Izquierdo Estático
+En la versión actual, el panel lateral izquierdo (*Sidebar*) es estático y monolítico:
+1. **Pérdida de Espacio de Trabajo:** Ocupa permanentemente 240px de ancho fijo, quitándole espacio a las tablas y a la lectura de incidentes complejos, sin posibilidad de plegarse cuando el técnico necesita concentración total.
+2. **Ausencia de Ramificación Dinámica:** La opción *"Mesa de Ayuda"* es una sola entrada rígida; el técnico debe entrar a la grilla y luego aplicar filtros manualmente para saber cuántos tickets tiene asignados o cuántos casos críticos están sin resolver.
+3. **Falta de Adaptación por Rol:** Muestra opciones que no corresponden a todos los perfiles, requiriendo validaciones dispersas en lugar de una reorganización limpia del menú lateral.
+
+---
+
+### 15.2. Historias de Usuario para el Menú Dinámico (v4.0.0)
+
+#### 🔹 UH-78: Colapso y Expansión Dinámica del Sidebar (Modo Mini-Barra 64px con Tooltips Flotantes)
+* **Narrativa:**
+  > **Como** Operador o Administrador trabajando en monitores estándar o portátiles,  
+  > **Quiero** poder plegar el menú lateral izquierdo mediante un botón conmutador `[ ◀ / ▶ ]` a un modo compacto de 64px,  
+  > **Para** ganar un 25% más de espacio de pantalla en la grilla de tickets y fichas técnicas, manteniendo el acceso a los módulos mediante íconos y tooltips flotantes.
+* **Criterios de Aceptación (Gherkin):**
+  * **Dado** el menú lateral desplegado en su ancho habitual (240px),
+  * **Cuando** el usuario hace clic en el conmutador de colapso (o presiona la tecla de acceso directo `[`),
+  * **Entonces**:
+    1. El sidebar se contrae suavemente (transición de 200ms) a **64px** de ancho.
+    2. Los textos de las opciones se ocultan armónicamente, permaneciendo centrados los íconos svg oficiales.
+    3. El área principal de trabajo (`main-content`) se expande automáticamente ocupando todo el ancho liberado.
+    4. Al posar el ratón (hover) sobre cualquier ícono en modo contraído, se despliega un **Tooltip Flotante elegante** con el nombre del módulo y atajo de teclado.
+    5. El estado colapsado/expandido se guarda en `localStorage` del navegador para mantenerse tras recargas.
+
+#### 🔹 UH-79: Árbol Dinámico de Vistas Rápidas con Contadores Vivos (Sub-Filtros de Mesa de Ayuda)
+* **Narrativa:**
+  > **Como** Operador de Soporte o Guardia,  
+  > **Quiero** que bajo el menú *"Mesa de Ayuda"* se ramifiquen sub-vistas operativas directas con contadores en vivo,  
+  > **Para** evaluar de un solo vistazo el volumen de casos y acceder a mi cola personal o a los incidentes urgentes en 1 clic.
+* **Criterios de Aceptación (Gherkin):**
+  * **Dado** el ítem de navegación *"Mesa de Ayuda"*,
+  * **Cuando** se encuentra activo o expandido,
+  * **Entonces** despliega un sub-árbol indentado con los siguientes accesos inteligentes:
+    * `⚡ Sin Asignar (X)`: Con badge ámbar en vivo que indica cuántos tickets esperan triage.
+    * `👤 Mis Asignados (X)`: Con badge azul que contabiliza los casos abiertos asignados al usuario logueado.
+    * `🔥 Críticos P1 (X)`: Con badge rojo pulsante que alerta sobre emergencias sin resolver.
+    * `⏳ En Espera (X)`: Casos pausados a la espera de terceros o clientes.
+    * `📥 Todos los Activos`: Grilla general estándar.
+  * Al hacer clic en cualquiera de estos sub-ítems, la bandeja filtra automáticamente la vista sin requerir manipulación de filtros superiores.
+
+#### 🔹 UH-80: Reconfiguración Contextual Dinámica por Rol (RBAC Zen del Menú Lateral)
+* **Narrativa:**
+  > **Como** Usuario autenticado en el sistema,  
+  > **Quiero** que el menú izquierdo adapte automáticamente su estructura, enlaces y accesos según mi rol de negocio,  
+  > **Para** interactuar únicamente con los módulos pertinentes a mi función, eliminando el ruido visual de accesos prohibidos o irrelevantes.
+* **Criterios de Aceptación (Gherkin):**
+  * **Dado** que inicia sesión un **Médico o Profesional de Salud (`SOLICITANTE`)**,
+  * **Entonces** el menú izquierdo se limpia radicalmente y presenta únicamente:
+    * `📋 Mis Solicitudes (X activas)`
+    * `📚 Base de Conocimiento & Guías`
+    *(Se ocultan Tablero, Usuarios, Plataformas y Configuración técnica)*.
+  * **Dado** que inicia sesión un **Team Leader (`SUPERVISOR`)**,
+  * **Entonces** se inyecta en el menú lateral la pestaña destacada:
+    * `🎖️ Torre de Control & Despacho en Vivo` (Módulo 12).
+  * **Dado** que inicia sesión un **Operador N1/N2/N3 (`SOPORTE`)**,
+  * **Entonces** el menú prioriza la bandeja de triage, sub-filtros operativos y artículos de resolución.
+
+---
+
 ## 📊 Matriz de Estimación del Backlog Completo (v4.0.0)
 
 | Módulo | Historias de Usuario | Estimación |
@@ -632,7 +694,8 @@ Para asegurar el éxito comercial y posicionar a Quantux por encima de gigantes 
 | **11. Catálogo Zen de Organizaciones & Plataformas** | `UH-68`, `UH-69`, `UH-70`, `UH-71` | 11 SP |
 | **12. Rol Team Leader & Torre de Control** | `UH-72`, `UH-73` | 10 SP |
 | **14. Suite Asistencial Exclusiva Médicos (Modo Clínico)** | `UH-74`, `UH-75`, `UH-76`, `UH-77` | 25 SP |
-| **TOTAL BACKLOG v4.0.0** | **45 Historias de Usuario** | **150 Story Points** |
+| **15. Dinámica Ergonómica del Menú Lateral (Sidebar Zen)** | `UH-78`, `UH-79`, `UH-80` | 15 SP |
+| **TOTAL BACKLOG v4.0.0** | **48 Historias de Usuario** | **165 Story Points** |
 
 ---
 
