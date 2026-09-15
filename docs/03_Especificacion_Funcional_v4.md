@@ -20,6 +20,31 @@ Este documento formaliza y desglosa en Historias de Usuario (UH), Criterios de A
 6. **Generalización de Taxonomía y Desacoplamiento Médico (Enterprise Multi-Servicio):** Eliminación definitiva de la palabra *"asistencial"* y ampliación a tickets técnicos, integraciones de APIs, infraestructura y servicios generales.
 7. **Simplificación del Tablero de Control (Analytics Zen):** Eliminación de barras horizontales masivas, reducción a 4 métricas de oro y ranking Top 5.
 8. **Optimización y Paginación del Directorio de Usuarios (User Management Zen):** Paginación dinámica (10 usuarios/página), eliminación de textos redundantes (*"Servicio Asistencial"*), fusión de Rol con Nivel ITIL, y conversión del botón *"Perfil"* en un **Modal operativo con edición y auditoría**.
+9. **Dinámica Ergonómica del Menú Lateral (Sidebar Zen):** Modo mini-barra de 64px para ganar 25% más de espacio de lectura y sub-filtros con contadores en vivo.
+
+---
+
+## 🧘 Principio Rector No Negociable: Ergonomía Visual, Bienestar y Anti-Fatiga Operativa (Jornada Completa)
+
+> **Regla de Oro de Diseño para la v4.0.0:**  
+> *"Los analistas de soporte técnico trabajan su jornada completa de 8 horas ininterrumpidas frente a esta interfaz. La pantalla no puede ser un panel de control saturado ni generar fatiga visual. Debe ser un entorno limpio, sereno, profundamente amigable y libre de información innecesaria."*
+
+Para asegurar el bienestar operativo del equipo, cada pantalla implementada debe cumplir estrictamente con los siguientes **4 Mandamientos Ergonómicos Zen**:
+
+1. **🌿 Cero Saturación y Revelación Progresiva (Progressive Disclosure):**  
+   * La vista principal muestra **únicamente la información indispensable para accionar el caso actual**.
+   * Todo dato técnico denso (payloads JSON/XML, IPs, tokens, bitácoras extensas) debe estar resguardado en acordeones colapsables o paneles laterales bajo demanda, accesible en 1 clic pero invisible por defecto.
+
+2. **👁️ Paleta Anti-Fatiga y Supresión de Alarmismos Cromáticos:**  
+   * Se prohíbe el uso de fondos rojos estridentes o parpadeos agresivos que transmitan falso peligro durante la jornada.
+   * La navegación y el hover responden con micro-animaciones suaves en tonos descansados (*Soft Ice Blue* `#F0F7FF`, acentos menta y pizarras neutros con certificación de contraste WCAG AAA).
+
+3. **🧹 Fin del "Embrollo a la Vista" (Adiós a las Macro-Tarjetas y Enjambres de Etiquetas):**  
+   * Sustitución total de cajas sobredimensionadas con párrafos teóricos por **Segmented Controls compactos de 1 sola línea**.
+   * Sustitución de enjambres de 8 o 9 etiquetas apiñadas por barras de cobertura estilizadas y tooltips discretos.
+
+4. **⚡ Espacio de Trabajo Respirable y Productividad sin Tensión:**  
+   * Cabeceras compactas (máximo 48px), grillas paginadas ordenadamente (10/25/50 registros) y capacidad de plegar el menú lateral a 64px para disponer del 80% al 90% del ancho del monitor libre para leer y resolver con comodidad mental.
 
 ---
 
