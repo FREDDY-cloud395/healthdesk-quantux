@@ -48,6 +48,22 @@ Para asegurar el bienestar operativo del equipo, cada pantalla implementada debe
 
 ---
 
+## 👥 MATRIZ DE ROLES Y RESPONSABILIDADES OPERATIVAS (RBAC ZEN)
+
+Para garantizar **cero ruido cognitivo** y claridad operativa inmediata a lo largo de una jornada de 8 horas, Quantux ServiceDesk Enterprise v4.0.0 desacopla estrictamente el gobierno de la plataforma de la gestión viva del servicio:
+
+| Dimensión | 👑 Administrador (Admin) | 🎯 Líder de Equipo (Team Leader) | 🎧 Analista de Soporte (N1/N2/N3) | 👤 Solicitante (Usuario Final) |
+| :--- | :--- | :--- | :--- | :--- |
+| **Misión Principal** | Configuración, seguridad y gobierno global de la plataforma. | Supervisión del turno en vivo, balanceo de carga y rescate de clientes disconformes. | Diagnóstico, resolución técnica y comunicación clara con el solicitante. | Reporte de incidentes o necesidades, seguimiento y aprobación definitiva de cierre. |
+| **Foco de su Jornada** | Sistema, catálogo, accesos e integraciones. | Analistas de soporte, colas de trabajo, emergencias P1 y satisfacción (CSAT). | Casos asignados en su cola, resolución técnica y notas de diagnóstico. | Su operación diaria sin trabas tecnológicas; confirmación de servicio resuelto. |
+| **Pantalla Clave** | Configuración Global, Usuarios, Catálogos y Releases. | **Torre de Control** (Monitor de Cargas y Mesa de Rescate). | Bandeja General Zen con Filtros Rápidos y Workspace de Caso. | Portal de Autogestión / Mis Solicitudes y Modal CSAT "Buena Onda". |
+| **Acciones Exclusivas** | • Alta/Baja de usuarios y roles.<br>• Creación de Clientes y Plataformas.<br>• Despliegue de Releases a Producción.<br>• Exportación de auditoría forense. | • Balanceador de cargas con 1 clic.<br>• Reasignación inmediata de tickets.<br>• Gestión y registro de Rescate CSAT.<br>• Desbloqueo de escalamientos N1-N3. | • Diagnóstico y notas internas (🔒).<br>• Escalamiento justificado N1/N2/N3.<br>• Aplicación de solución técnica.<br>• **Marcar ticket como RESUELTO.** | • Registro rápido en 30 segundos.<br>• Adjuntar evidencias/capturas.<br>• **Cierre definitivo del caso.**<br>• **Calificación CSAT (1 a 5 estrellas + Kudos).** |
+
+> 🧠 **Principio de Ergonomía Cognitiva por Rol:**  
+> Ningún usuario debe ver botones, métricas o campos que no pertenecen a su esfera operativa. El analista no debe ver controles de infraestructura del admin; el líder no debe lidiar con código o base de datos; y el solicitante nunca debe verse expuesto a jerga técnica o notas internas.
+
+---
+
 ## 🧩 MÓDULO 1: Gestión de Incidentes Masivos (Tickets Padre / Hijos)
 
 ### 🔹 UH-33: Vinculación Jerárquica a Ticket Padre (Incidente Masivo)

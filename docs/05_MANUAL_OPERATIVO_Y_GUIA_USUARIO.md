@@ -26,13 +26,16 @@ Esta plataforma es utilizada por profesionales y personal de múltiples áreas: 
 
 ---
 
-### 👥 ¿Quiénes usan el sistema y qué puede hacer cada uno?
+### 👥 ¿Quiénes usan el sistema y qué puede hacer cada rol?
+
+Para asegurar una operación libre de saturación y fatiga, cada rol tiene una interfaz adaptada a su función directa:
 
 | Perfil de Usuario | ¿Quiénes son? | ¿Qué pueden hacer en el sistema? |
 | :--- | :--- | :--- |
-| **👤 Usuario Solicitante** | Personal asistencial, administrativo, técnico, secretaría o jefaturas de las instituciones de salud. | • Crear nuevas solicitudes de ayuda.<br>• Ver y dar seguimiento a sus solicitudes.<br>• Chatear con el equipo de soporte.<br>• **Confirmar la solución y cerrar el ticket.** |
-| **🎧 Equipo de Soporte** | Operadores y especialistas técnicos de la mesa de ayuda (Nivel 1, 2 y 3). | • Ver la bandeja general de solicitudes.<br>• Tomar casos y derivar a especialistas.<br>• Registrar notas de diagnóstico interno (🔒).<br>• Aplicar y documentar la solución técnica. |
-| **🛡️ Administrador** | Responsables de sistemas y líderes de gestión sanitaria. | • Gestionar altas y permisos de usuarios.<br>• Supervisar métricas de servicio en producción y tiempos de atención.<br>• Exportar reportes a Excel / CSV. |
+| **👤 Usuario Solicitante** | Personal operativo, administrativo, profesionales o jefaturas de las instituciones cliente. | • Crear nuevas solicitudes en menos de 30 segundos.<br>• Ver y dar seguimiento a sus solicitudes abiertas.<br>• Responder mensajes del equipo de soporte.<br>• **Confirmar la solución y cerrar el ticket con calificación CSAT (1-5★ y Kudos).** |
+| **🎧 Analista de Soporte (N1/N2/N3)** | Operadores y especialistas técnicos de la mesa de ayuda. | • Atender la bandeja general con filtros rápidos y vista Zen.<br>• Diagnosticar con notas privadas (🔒) y escalar a especialistas.<br>• Aplicar y documentar la solución técnica.<br>• **Marcar el ticket como RESUELTO.** |
+| **🎯 Líder de Equipo (Team Leader)** | Supervisores de turno y coordinadores operativos de soporte. | • **Torre de Control en vivo:** monitorear colas y balance de carga de analistas.<br>• **Rebalanceo de tickets:** reasignar casos entre operadores con 1 clic.<br>• **Mesa de Rescate al Cliente:** intervenir de inmediato ante notas bajas (1 o 2 estrellas).<br>• Monitorear incidentes críticos P1 y tiempos de SLA. |
+| **👑 Administrador (Admin)** | Responsables de sistemas, gobierno y plataforma. | • Gestión de altas, bajas y permisos de usuarios y roles.<br>• Configuración del catálogo de Instituciones y Plataformas.<br>• Despliegue de Releases de Software a Producción (resolución en cascada).<br>• Pistas de auditoría forense inmutables y exportación de reportes. |
 
 ---
 

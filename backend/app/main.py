@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from app.db.seed import run_seed
-from app.api.endpoints import auth, tickets, masters, users
+from app.api.endpoints import auth, tickets, masters, users, releases, team_leader
 
 app = FastAPI(
     title="Quantux ServiceDesk Enterprise API",
@@ -36,6 +36,8 @@ app.include_router(auth.router, prefix="/api/v1/auth", tags=["Autenticación y R
 app.include_router(tickets.router, prefix="/api/v1/tickets", tags=["Tickets"])
 app.include_router(masters.router, prefix="/api/v1", tags=["Tablas Maestras"])
 app.include_router(users.router, prefix="/api/v1/users", tags=["Usuarios"])
+app.include_router(releases.router, prefix="/api/v1/releases", tags=["Software Releases"])
+app.include_router(team_leader.router, prefix="/api/v1/team-leader", tags=["Torre de Control Team Leader"])
 
 # Configuración de Rutas de Archivos Estáticos
 docs_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "docs"))

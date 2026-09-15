@@ -214,6 +214,43 @@ function initResponsiveDrawer() {
   if (closeBtn) closeBtn.addEventListener('click', closeDrawer);
   if (backdrop) backdrop.addEventListener('click', closeDrawer);
 
+  // Control de colapso a 64px (Modo Zen Anti-Fatiga - UH-79)
+  const collapseBtn = document.getElementById('btn-sidebar-collapse');
+  
+  const updateCollapseIcon = (isCollapsed) => {
+    if (!collapseBtn) return;
+    collapseBtn.innerHTML = isCollapsed
+      ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 15px; height: 15px;"><polyline points="9 18 15 12 9 6"></polyline></svg>`
+      : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 15px; height: 15px;"><polyline points="15 18 9 12 15 6"></polyline></svg>`;
+    collapseBtn.setAttribute('title', isCollapsed ? 'Expandir Menú (Tecla [)' : 'Plegar Menú (Modo Zen 64px) (Tecla [)');
+  };
+
+  const toggleCollapse = () => {
+    if (!sidebar) return;
+    const isCollapsed = sidebar.classList.toggle('collapsed');
+    localStorage.setItem('quantux_sidebar_collapsed', isCollapsed ? '1' : '0');
+    updateCollapseIcon(isCollapsed);
+  };
+
+  // Restaurar estado guardado de colapso
+  const savedCollapsed = localStorage.getItem('quantux_sidebar_collapsed') === '1';
+  if (savedCollapsed && sidebar) {
+    sidebar.classList.add('collapsed');
+    updateCollapseIcon(true);
+  }
+
+  if (collapseBtn) collapseBtn.addEventListener('click', toggleCollapse);
+
+  // Atajo de teclado tecla '[' para plegar/expandir menú lateral (Arma Secreta Módulo 13)
+  document.addEventListener('keydown', (e) => {
+    if (e.key === '[' && !['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) {
+      e.preventDefault();
+      toggleCollapse();
+    }
+  });
+
+  window.toggleSidebarCollapse = toggleCollapse;
+
   // Cerrar drawer al hacer clic en un enlace de navegación en pantallas móviles
   document.querySelectorAll('.nav-hub-tab').forEach(tab => {
     tab.addEventListener('click', () => {
@@ -223,6 +260,39 @@ function initResponsiveDrawer() {
     });
   });
 }
+
+// Filtros Rápidos desde el Sub-Árbol del Sidebar (Módulo 15 - UH-79)
+function filterBySidebarQuick(filterType) {
+  // Marcar ítem activo en el sub-árbol
+  document.querySelectorAll('.sidebar-subnav-item').forEach(el => el.classList.remove('active-subnav', 'active'));
+  const subMap = {
+    'unassigned': 'subnav-unassigned',
+    'my_assigned': 'subnav-my-tickets',
+    'p1_critical': 'subnav-p1',
+    'waiting': 'subnav-waiting',
+    'all_active': 'subnav-all'
+  };
+  const activeItem = document.getElementById(subMap[filterType]);
+  if (activeItem) activeItem.classList.add('active-subnav');
+
+  if (AppState.currentView !== 'tickets') {
+    switchView('tickets');
+  }
+
+  if (filterType === 'unassigned') {
+    selectQuickView('UNASSIGNED');
+  } else if (filterType === 'my_assigned') {
+    selectQuickView('MINE');
+  } else if (filterType === 'p1_critical') {
+    selectQuickView('P1');
+  } else if (filterType === 'waiting') {
+    AppState.activeQuickView = 'WAITING';
+    loadTickets({ status: 'EN_ESPERA' });
+  } else {
+    selectQuickView('ALL');
+  }
+}
+window.filterBySidebarQuick = filterBySidebarQuick;
 
 // CONTROL DE COLUMNAS COCKPIT EN PANTALLAS MÓVILES
 function initCockpitMobileNav() {
@@ -290,6 +360,11 @@ function switchView(viewName) {
       icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px;"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>',
       title: 'Configuración',
       sub: 'Matriz de priorización ITIL, políticas de SLA y bitácora de trazabilidad inmutable'
+    },
+    'team-leader': {
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px;"><circle cx="12" cy="12" r="10"></circle><polygon points="12 8 8 12 12 16 16 12 12 8"></polygon></svg>',
+      title: 'Torre de Control • Supervisión Operativa',
+      sub: 'Monitor de cargas en vivo, balanceo de guardia en 1 clic y mesa de rescate CSAT'
     }
   };
 
@@ -381,6 +456,8 @@ function switchView(viewName) {
   } else if (viewName === 'config') {
     loadSystemConfig();
     loadHelpdeskLevelsConfig();
+  } else if (viewName === 'team-leader') {
+    loadTeamLeaderData();
   }
 }
 
@@ -512,7 +589,9 @@ function setCurrentUser(userData) {
   updateUserProfileUI();
   applyRolePermissions();
   loadTickets();
-  if (AppState.currentView === 'dashboard') {
+  if (userData.role === 'TEAM_LEADER') {
+    switchView('team-leader');
+  } else if (AppState.currentView === 'dashboard') {
     loadDashboardMetrics(AppState.currentDashInst);
   }
 }
@@ -692,13 +771,19 @@ function populateAuthModalAccounts() {
 
   const users = (AppState.users && AppState.users.length > 0) ? AppState.users : [
     { username: 'admin', full_name: 'Freddy Cortés (Admin General)', role: 'ADMIN', institution_code: 'OSDE' },
+    { username: 'teamleader', full_name: 'Carla Daneri (Líder de Equipo)', role: 'TEAM_LEADER', institution_code: 'OSDE' },
     { username: 'soporte', full_name: 'Laura Benítez (Soporte N2)', role: 'SOPORTE', institution_code: 'OSDE' },
-    { username: 'solicitante', full_name: 'Martín Gómez (Solicitante)', role: 'SOLICITANTE', institution_code: 'SWISS_MEDICAL' }
+    { username: 'solicitante', full_name: 'Dr. Martín Gómez (Solicitante)', role: 'SOLICITANTE', institution_code: 'SWISS_MEDICAL' }
   ];
 
   container.innerHTML = users.map(u => {
     const isCurrent = AppState.currentUser && AppState.currentUser.username === u.username;
-    const roleBadgeClass = u.role === 'ADMIN' ? 'badge-role-admin' : (u.role.includes('SOPORTE') || u.role === 'SOPORTE' ? 'badge-role-soporte' : 'badge-role-solicitante');
+    let roleBadgeClass = 'badge-role-solicitante';
+    if (u.role === 'ADMIN') roleBadgeClass = 'badge-role-admin';
+    else if (u.role === 'TEAM_LEADER') roleBadgeClass = 'badge-role-teamleader';
+    else if (u.role.includes('SOPORTE') || u.role === 'SOPORTE') roleBadgeClass = 'badge-role-soporte';
+
+    const roleBadgeStyle = u.role === 'TEAM_LEADER' ? 'background: #FEF3C7; color: #B45309; border: 1px solid #FDE68A;' : '';
 
     return `
       <div class="quick-login-item ${isCurrent ? 'active-user' : ''}" onclick="selectQuickUser('${u.username}')">
@@ -710,7 +795,7 @@ function populateAuthModalAccounts() {
           </div>
         </div>
         <div style="display:flex; align-items:center; gap:6px;">
-          <span class="quick-login-badge ${roleBadgeClass}">${u.role}</span>
+          <span class="quick-login-badge ${roleBadgeClass}" style="${roleBadgeStyle}">${u.role}</span>
           <button type="button" class="btn-sec btn-sm" onclick="event.stopPropagation(); loginAsUser('${u.username}', 'quantux123')" style="font-size:10px; padding:3px 8px; font-weight:700;">Ingresar</button>
         </div>
       </div>
@@ -793,12 +878,19 @@ function updateUserProfileUI() {
   if (topUser) topUser.textContent = uName;
   if (topRole) {
     topRole.textContent = uRole;
-    topRole.style.background = uRole === 'ADMIN' ? '#0F172A' : (uRole.includes('SOPORTE') ? '#0284C7' : '#00A896');
+    topRole.style.background = uRole === 'ADMIN' ? '#0F172A' : (uRole === 'TEAM_LEADER' ? '#D97706' : (uRole.includes('SOPORTE') ? '#0284C7' : '#00A896'));
   }
   if (topAvatar) topAvatar.innerHTML = getUserAvatarHtml(uUsername, uName, 32);
   
+  const roleDisplayNames = {
+    'ADMIN': '👑 Administrador General',
+    'TEAM_LEADER': '🎯 Líder de Equipo',
+    'SOPORTE': '🎧 Analista de Soporte N2',
+    'SOLICITANTE': '👤 Médico Solicitante'
+  };
+
   if (profName) profName.textContent = uName;
-  if (profRole) profRole.textContent = `ROL: ${uRole} (UAT)`;
+  if (profRole) profRole.textContent = roleDisplayNames[uRole] || `ROL: ${uRole} (UAT)`;
   if (profAvatar) profAvatar.innerHTML = getUserAvatarHtml(uUsername, uName, 38);
   
   if (currUserName) currUserName.textContent = uName;
@@ -1378,6 +1470,8 @@ function updatePresetCounts(tickets) {
 
   const cP1 = tickets.filter(t => (t.priority || '').toUpperCase() === 'P1' && t.status !== 'RESUELTO' && t.status !== 'CERRADO').length;
 
+  const cWaiting = tickets.filter(t => ['EN_ESPERA', 'ESPERA_TERCERO', 'PENDIENTE'].includes(t.status)).length;
+
   const elMine = document.getElementById('qv-count-mine');
   const elUnassigned = document.getElementById('qv-count-unassigned');
   const elP1 = document.getElementById('qv-count-p1');
@@ -1387,6 +1481,19 @@ function updatePresetCounts(tickets) {
   if (elUnassigned) elUnassigned.textContent = cUnassigned;
   if (elP1) elP1.textContent = cP1;
   if (elTotalBadge) elTotalBadge.textContent = `${cAll} Solicitudes`;
+
+  // Actualizar badges en vivo del Sub-Árbol del Menú Lateral (UH-79)
+  const elSideUnassigned = document.getElementById('side-unassigned-count');
+  const elSideMine = document.getElementById('side-my-tickets-count');
+  const elSideP1 = document.getElementById('side-p1-count');
+  const elSideWaiting = document.getElementById('side-waiting-count');
+  const elSideTotal = document.getElementById('sidebar-ticket-count');
+
+  if (elSideUnassigned) elSideUnassigned.textContent = cUnassigned;
+  if (elSideMine) elSideMine.textContent = cMine;
+  if (elSideP1) elSideP1.textContent = cP1;
+  if (elSideWaiting) elSideWaiting.textContent = cWaiting;
+  if (elSideTotal) elSideTotal.textContent = cAll;
 }
 
 function selectQuickView(viewKey) {
@@ -1870,9 +1977,51 @@ function renderTicketDetail(rawTicket) {
           </span>
         </div>
 
+        ${ticket.is_major_incident ? `
+          <div style="background: #FEF2F2; border: 1px solid #FCA5A5; border-radius: 8px; padding: 10px 14px; margin-top: 10px; display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span style="font-size: 20px;">🚨</span>
+              <div>
+                <strong style="color: #991B1B; font-size: 12.5px; display: block;">INCIDENTE MASIVO MAESTRO</strong>
+                <span style="color: #7F1D1D; font-size: 11px;">Al resolver este ticket se resolverán automáticamente todos los casos vinculados en cascada.</span>
+              </div>
+            </div>
+            <div style="display: flex; gap: 6px;">
+              <button class="btn-sec btn-sm" onclick="openLinkChildrenModal('${ticket.id}')" style="font-size: 11px; font-weight: 700; background: #FFF; border-color: #DC2626; color: #DC2626;">
+                ➕ Vincular Hijos
+              </button>
+              ${AppState.currentUser && (AppState.currentUser.role === 'ADMIN' || AppState.currentUser.role === 'TEAM_LEADER') ? `
+                <button class="btn-sec btn-sm" onclick="actionToggleMajorIncident('${ticket.id}', false)" style="font-size: 11px; font-weight: 600; background: #FFF; border-color: #CBD5E1; color: #64748B;">
+                  Desmarcar
+                </button>
+              ` : ''}
+            </div>
+          </div>
+        ` : (ticket.parent_ticket_id ? `
+          <div style="background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 8px; padding: 8px 12px; margin-top: 10px; display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #1E40AF; font-weight: 700;">
+              <span>🔗 Caso Hijo vinculado al Incidente Maestro <strong>#${ticket.parent_ticket_id}</strong></span>
+            </div>
+            <button class="btn-sec btn-sm" onclick="selectTicket('${ticket.parent_ticket_id}', true)" style="font-size: 11px; font-weight: 700; background: #FFF;">
+              Ver Maestro ➔
+            </button>
+          </div>
+        ` : '')}
+
+        ${ticket.release_tag ? `
+          <div style="margin-top: 8px; display: inline-flex; align-items: center; gap: 6px; background: #F0FDF4; border: 1px solid #BBF7D0; color: #166534; padding: 4px 10px; border-radius: 6px; font-size: 11.5px; font-weight: 700;">
+            <span>🏷️ Release de Software: <strong>${ticket.release_tag}</strong></span>
+          </div>
+        ` : ''}
+
         <!-- Barra de Acciones FSM y Popups Especializados -->
         <div class="detail-actions-toolbar">
           ${actionsToolbarHtml}
+          ${(!ticket.is_major_incident && !ticket.parent_ticket_id && AppState.currentUser && AppState.currentUser.role !== 'SOLICITANTE') ? `
+            <button class="btn-action-secondary" onclick="actionToggleMajorIncident('${ticket.id}', true)" title="Declarar como Incidente Masivo Maestro">
+              🚨 Declarar Maestro
+            </button>
+          ` : ''}
           <div style="margin-left: auto; display: flex; gap: 6px; flex-wrap: wrap;">
             <button class="btn-action-popup" onclick="openTechDetailsModal('${ticket.id}')" title="Ver diagnóstico integral, servidores y SLA en ventana modal">
               🔍 Ficha Técnica
@@ -2054,6 +2203,56 @@ function renderDetailTabContent(ticket) {
               </a>
             </div>
           ` : ''}
+        </div>
+
+        <!-- Tarjeta 3.5: Telemetría Oculta Zero-Question (Módulo 13) -->
+        <div class="info-card-clean" style="grid-column: 1 / -1; border-color: #93C5FD; background: #F8FAFC;">
+          <div class="info-card-clean-title" style="color: #1E40AF; border-bottom-color: #BFDBFE; display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span>🛰️</span>
+              <span>Telemetría del Entorno (Zero-Question)</span>
+            </div>
+            <span style="background: #DBEAFE; color: #1D4ED8; font-size: 9.5px; font-weight: 800; padding: 2px 7px; border-radius: 4px;">CAPTURA TRANSPARENTE</span>
+          </div>
+          ${(() => {
+            let tel = null;
+            try { if (ticket.telemetry_data) tel = JSON.parse(ticket.telemetry_data); } catch(e){}
+            if (!tel) {
+              return `
+                <div style="font-size: 11.5px; color: #64748B; padding: 6px 0;">
+                  Dispositivo registrado por canal omnicanal estándar. Navegador y entorno optimizados sin requerir preguntas técnicas al usuario.
+                </div>
+              `;
+            }
+            return `
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px; margin-top: 6px;">
+                <div class="info-field-row" style="margin: 0;">
+                  <span class="info-field-label">Navegador:</span>
+                  <span class="info-field-val">🌐 <strong>${tel.browser || 'Web Browser'}</strong></span>
+                </div>
+                <div class="info-field-row" style="margin: 0;">
+                  <span class="info-field-label">Sistema Operativo:</span>
+                  <span class="info-field-val">💻 <strong>${tel.os || 'Windows/Desktop'}</strong></span>
+                </div>
+                <div class="info-field-row" style="margin: 0;">
+                  <span class="info-field-label">Resolución Monitor:</span>
+                  <span class="info-field-val">🖥️ <strong>${tel.screen || '1920x1080'}</strong></span>
+                </div>
+                <div class="info-field-row" style="margin: 0;">
+                  <span class="info-field-label">Conectividad & Red:</span>
+                  <span class="info-field-val">📶 <span style="color: #059669; font-weight: 700;">${tel.connection || 'En línea'}</span></span>
+                </div>
+                <div class="info-field-row" style="margin: 0;">
+                  <span class="info-field-label">Zona Horaria:</span>
+                  <span class="info-field-val">🕒 ${tel.timezone || 'America/Argentina/Buenos_Aires'}</span>
+                </div>
+                <div class="info-field-row" style="margin: 0;">
+                  <span class="info-field-label">Hardware CPU:</span>
+                  <span class="info-field-val">⚡ ${tel.cpu_cores || '4 núcleos CPU'}</span>
+                </div>
+              </div>
+            `;
+          })()}
         </div>
 
         <!-- Tarjeta 4: Solución Técnica (si existe) -->
@@ -3145,25 +3344,20 @@ function renderInstitutionsCatalog() {
                 </div>
               </div>
 
-              <!-- Módulos de Software Habilitados -->
+              <!-- Cobertura de Sistemas Zen (Cero Ruido Cognitivo) -->
               <div style="margin-bottom: 12px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                  <span style="font-size: 11px; font-weight: 700; color: #475569;">Sistemas Habilitados:</span>
-                  <span style="font-size: 10.5px; font-weight: 800; color: #00A896;">${activePlatKeys.length} de ${platforms.length} activos</span>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                  <span style="font-size: 11px; font-weight: 700; color: #475569;">Cobertura de Software:</span>
+                  <span style="font-size: 10.5px; font-weight: 800; color: #0F766E;">
+                    ${activePlatKeys.length}/${platforms.length} (${platforms.length > 0 ? Math.round((activePlatKeys.length / platforms.length) * 100) : 0}%)
+                  </span>
                 </div>
-                <div style="display: flex; flex-wrap: wrap; gap: 4px;">
-                  ${activePlatKeys.map(pk => {
-                    const icon = PLATFORM_ICONS[pk] || '💻';
-                    const pObj = platforms.find(p => p.code === pk);
-                    const pName = pObj ? pObj.name : pk;
-                    return `
-                      <span style="font-size: 10px; font-weight: 700; background: #F0FDFA; color: #0F766E; border: 1px solid #CCFBF1; padding: 2px 6px; border-radius: 4px; display: inline-flex; align-items: center; gap: 3px;" title="${pName}">
-                        <span>${icon}</span>
-                        <span>${pName}</span>
-                      </span>
-                    `;
-                  }).join('')}
-                  ${activePlatKeys.length === 0 ? '<span style="font-size:10.5px; color:#94A3B8; font-style:italic;">Ningún módulo asignado</span>' : ''}
+                <div style="height: 6px; width: 100%; background: #E2E8F0; border-radius: 999px; overflow: hidden; margin-bottom: 6px;">
+                  <div style="height: 100%; width: ${platforms.length > 0 ? Math.round((activePlatKeys.length / platforms.length) * 100) : 0}%; background: linear-gradient(90deg, #00A896, #0284C7); border-radius: 999px;"></div>
+                </div>
+                <div style="display: flex; align-items: center; justify-content: space-between; font-size: 10px; color: #64748B;">
+                  <span>${activePlatKeys.length > 0 ? `${activePlatKeys.slice(0, 3).map(pk => PLATFORM_ICONS[pk] || '💻').join(' ')} ${activePlatKeys.length > 3 ? `+${activePlatKeys.length - 3} módulos` : ''}` : 'Sin sistemas'}</span>
+                  <span style="color: #00A896; font-weight: 600;">Ver detalle en Ficha 360° &rarr;</span>
                 </div>
               </div>
             </div>
@@ -3831,6 +4025,7 @@ function applyRolePermissions() {
   const tabArticles = document.getElementById('tab-articles');
   const tabPlatforms = document.getElementById('tab-platforms');
   const tabConfig = document.getElementById('tab-config');
+  const tabTeamLeader = document.getElementById('tab-team-leader');
 
   if (role === 'SOLICITANTE') {
     // El Solicitante (Médico / Paciente) solo puede ver Mesa de Ayuda y Base de Conocimiento
@@ -3838,15 +4033,30 @@ function applyRolePermissions() {
     if (tabUsers) tabUsers.style.display = 'none';
     if (tabPlatforms) tabPlatforms.style.display = 'none';
     if (tabConfig) tabConfig.style.display = 'none';
+    if (tabTeamLeader) tabTeamLeader.style.display = 'none';
     if (tabTickets) tabTickets.style.display = 'flex';
     if (tabArticles) tabArticles.style.display = 'flex';
 
     // Si está parado en una vista restringida, redirigir a tickets
-    if (['dashboard', 'users', 'platforms', 'config'].includes(AppState.currentView)) {
+    if (['dashboard', 'users', 'platforms', 'config', 'team-leader'].includes(AppState.currentView)) {
       switchView('tickets');
+    }
+  } else if (role === 'TEAM_LEADER') {
+    // Líder de Equipo: Torre de Control, Tablero de Control, Mesa de Ayuda y Base de Conocimiento
+    if (tabTeamLeader) tabTeamLeader.style.display = 'flex';
+    if (tabDash) tabDash.style.display = 'flex';
+    if (tabTickets) tabTickets.style.display = 'flex';
+    if (tabArticles) tabArticles.style.display = 'flex';
+    if (tabUsers) tabUsers.style.display = 'none'; // No administra usuarios IAM de sistema
+    if (tabPlatforms) tabPlatforms.style.display = 'none'; // No administra plataformas de sistema
+    if (tabConfig) tabConfig.style.display = 'none'; // No administra configuración ITIL global
+
+    if (['platforms', 'config', 'users'].includes(AppState.currentView)) {
+      switchView('team-leader');
     }
   } else if (role.includes('SOPORTE') || role === 'SOPORTE') {
     // Soporte N1/N2/N3 ve Dashboard, Mesa de Ayuda, Usuarios (lectura) y Base de Conocimiento
+    if (tabTeamLeader) tabTeamLeader.style.display = 'none';
     if (tabDash) tabDash.style.display = 'flex';
     if (tabTickets) tabTickets.style.display = 'flex';
     if (tabUsers) tabUsers.style.display = 'flex';
@@ -3854,17 +4064,28 @@ function applyRolePermissions() {
     if (tabPlatforms) tabPlatforms.style.display = 'none'; // Solo Admin
     if (tabConfig) tabConfig.style.display = 'none'; // Solo Admin
 
-    if (['platforms', 'config'].includes(AppState.currentView)) {
+    if (['platforms', 'config', 'team-leader'].includes(AppState.currentView)) {
       switchView('tickets');
     }
   } else if (role === 'ADMIN') {
     // Administrador General ve todos los módulos y tiene control total
+    if (tabTeamLeader) tabTeamLeader.style.display = 'flex';
     if (tabDash) tabDash.style.display = 'flex';
     if (tabTickets) tabTickets.style.display = 'flex';
     if (tabUsers) tabUsers.style.display = 'flex';
     if (tabArticles) tabArticles.style.display = 'flex';
     if (tabPlatforms) tabPlatforms.style.display = 'flex';
     if (tabConfig) tabConfig.style.display = 'flex';
+  }
+
+  // Control fino en el Workspace para Solicitantes (Ocultar herramientas técnicas internas)
+  const internalCheckLabel = document.querySelector('.ws-checkbox-internal');
+  const cannedBtn = document.getElementById('ws-btn-canned-template');
+  if (internalCheckLabel) {
+    internalCheckLabel.style.display = role === 'SOLICITANTE' ? 'none' : 'inline-flex';
+  }
+  if (cannedBtn) {
+    cannedBtn.style.display = role === 'SOLICITANTE' ? 'none' : 'inline-flex';
   }
 
   // SUITE ASISTENCIAL EXCLUSIVA PARA MÉDICOS (MÓDULO 14):
@@ -4842,6 +5063,10 @@ function initModalListeners() {
         submitBtn.innerHTML = '⏳ Registrando Solicitud...';
       }
 
+      const isMajorEl = document.getElementById('modal-is-major');
+      const parentIdEl = document.getElementById('modal-parent-id');
+      const releaseTagEl = document.getElementById('modal-release-tag');
+
       const payload = {
         title: titleVal,
         description: descVal,
@@ -4851,7 +5076,11 @@ function initModalListeners() {
         urgency: urgencyVal,
         ticket_type: typeVal,
         attachment_url: attachVal || null,
-        requester_username: AppState.currentUser ? AppState.currentUser.username : 'solicitante'
+        requester_username: AppState.currentUser ? AppState.currentUser.username : 'solicitante',
+        is_major_incident: isMajorEl ? isMajorEl.checked : false,
+        parent_ticket_id: (parentIdEl && parentIdEl.value) ? parentIdEl.value : null,
+        release_tag: (releaseTagEl && releaseTagEl.value) ? releaseTagEl.value : null,
+        telemetry_data: collectClientTelemetry()
       };
 
       try {
@@ -5708,6 +5937,9 @@ function resetTicketModalForm() {
     calculatedBadge.textContent = 'P3 - Media';
     calculatedBadge.className = 'badge-priority badge-p3';
   }
+  const isMajorEl = document.getElementById('modal-is-major');
+  if (isMajorEl) isMajorEl.checked = false;
+  populateAdvancedTicketModalOptions();
 }
 
 function debounce(fn, delay) {
@@ -6143,7 +6375,7 @@ function renderWsTimeline(ticket) {
     return;
   }
 
-  container.innerHTML = items.map(it => {
+  container.innerHTML = items.map((it, idx) => {
     const timeStr = formatDateFriendly(it.date);
     
     if (it.type === 'system' || it.type === 'audit') {
@@ -6159,24 +6391,63 @@ function renderWsTimeline(ticket) {
       `;
     }
 
+    const cleanText = escapeHtml(it.text || '');
+    const previewSnippet = cleanText.length > 55 ? cleanText.substring(0, 55) + '...' : cleanText;
+
     return `
-      <div class="ws-timeline-msg ${it.isInternal ? 'is-internal' : 'is-public'}">
+      <div class="ws-timeline-msg ${it.isInternal ? 'is-internal' : 'is-public'}" id="ws-note-wrap-${idx}">
         ${getUserAvatarHtml(it.authorUsername, it.author, 36, 'ws-msg-avatar')}
-        <div class="ws-msg-card ${it.isInternal ? 'card-internal' : 'card-public'}">
-          <div class="ws-msg-header">
-            <div style="display:flex; align-items:center; gap:6px;">
+        <div class="ws-msg-card ${it.isInternal ? 'card-internal' : 'card-public'}" style="cursor: pointer; border-radius: 8px;">
+          <!-- Cabecera de Nota Colapsable -->
+          <div class="ws-msg-header" onclick="toggleWsNote('${idx}')" style="display: flex; align-items: center; justify-content: space-between; user-select: none;">
+            <div style="display: flex; align-items: center; gap: 6px; flex: 1; min-width: 0;">
+              <span id="ws-note-arrow-${idx}" style="font-size: 10px; color: #64748B; font-weight: 800; width: 14px;">▶</span>
               <strong class="ws-msg-author">${it.author}</strong>
               <span class="ws-msg-role">(${it.authorRole})</span>
-              ${it.isInternal ? '<span class="badge-internal-pill">🔒 NOTA INTERNA TÉCNICA</span>' : ''}
+              ${it.isInternal ? '<span class="badge-internal-pill" style="font-size: 10px; padding: 1px 6px;">🔒 NOTA INTERNA</span>' : ''}
+              <span id="ws-note-preview-${idx}" style="font-size: 11.5px; color: #64748B; font-weight: normal; margin-left: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 260px;">${previewSnippet}</span>
             </div>
-            <span class="ws-msg-time">${timeStr}</span>
+            <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
+              <span class="ws-msg-time" style="font-size: 11px;">${timeStr}</span>
+              <span style="font-size: 10.5px; color: #3B82F6; font-weight: 600;">[Ver]</span>
+            </div>
           </div>
-          <div class="ws-msg-body">${it.text.replace(/\n/g, '<br>')}</div>
+          <!-- Cuerpo de la Nota Completo (100% visible al abrir, sin texto cortado) -->
+          <div id="ws-note-body-${idx}" class="ws-msg-body" style="display: none; padding-top: 12px; margin-top: 8px; border-top: 1px solid rgba(0,0,0,0.06); font-size: 13px; line-height: 1.6; word-break: break-word; color: #1E293B;">
+            ${cleanText.replace(/\n/g, '<br>')}
+          </div>
         </div>
       </div>
     `;
   }).join('');
 }
+
+function toggleWsNote(idx) {
+  const body = document.getElementById(`ws-note-body-${idx}`);
+  const arrow = document.getElementById(`ws-note-arrow-${idx}`);
+  const preview = document.getElementById(`ws-note-preview-${idx}`);
+  if (!body) return;
+  const isHidden = body.style.display === 'none';
+  body.style.display = isHidden ? 'block' : 'none';
+  if (arrow) arrow.textContent = isHidden ? '▼' : '▶';
+  if (preview) preview.style.display = isHidden ? 'none' : 'inline-block';
+}
+
+function expandAllWsNotes() {
+  document.querySelectorAll('[id^="ws-note-body-"]').forEach(el => el.style.display = 'block');
+  document.querySelectorAll('[id^="ws-note-arrow-"]').forEach(el => el.textContent = '▼');
+  document.querySelectorAll('[id^="ws-note-preview-"]').forEach(el => el.style.display = 'none');
+}
+
+function collapseAllWsNotes() {
+  document.querySelectorAll('[id^="ws-note-body-"]').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('[id^="ws-note-arrow-"]').forEach(el => el.textContent = '▶');
+  document.querySelectorAll('[id^="ws-note-preview-"]').forEach(el => el.style.display = 'inline-block');
+}
+
+window.toggleWsNote = toggleWsNote;
+window.expandAllWsNotes = expandAllWsNotes;
+window.collapseAllWsNotes = collapseAllWsNotes;
 
 function renderWsParticipants(ticket) {
   const container = document.getElementById('ws-participants-list');
@@ -6277,40 +6548,156 @@ function renderWsWorkflowActions(ticket) {
 
   const status = (ticket.status || 'NUEVO').toUpperCase();
   const ticketId = ticket.id;
+  const role = AppState.currentUser ? (AppState.currentUser.role || 'SOLICITANTE') : 'SOLICITANTE';
 
   let primaryBtn = '';
   if (status === 'NUEVO') {
-    primaryBtn = `
-      <button type="button" class="ws-btn-flow flow-primary" onclick="quickSelfAssign('${ticketId}')">
-        <span>🙋‍♂️ Tomar Ticket y Empezar Atención</span>
-        <span>&rarr;</span>
-      </button>
-    `;
+    if (role === 'SOLICITANTE') {
+      primaryBtn = `
+        <div style="background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 8px; padding: 10px 12px; font-size: 11.5px; color: #1E40AF; text-align: center;">
+          <span style="font-weight: 700; display: block; margin-bottom: 2px;">📥 Solicitud Recibida</span>
+          Tu solicitud está en cola de atención. Un analista tomará el caso en breve.
+        </div>
+      `;
+    } else {
+      primaryBtn = `
+        <button type="button" class="ws-btn-flow flow-primary" onclick="quickSelfAssign('${ticketId}')">
+          <span>🙋‍♂️ Tomar Ticket y Empezar Atención</span>
+          <span>&rarr;</span>
+        </button>
+      `;
+    }
   } else if (status === 'ASIGNADO') {
-    primaryBtn = `
-      <button type="button" class="ws-btn-flow flow-primary" onclick="quickStartProgress('${ticketId}')">
-        <span>▶ Iniciar Diagnóstico y Atención</span>
+    if (role === 'SOLICITANTE') {
+      primaryBtn = `
+        <div style="background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 8px; padding: 10px 12px; font-size: 11.5px; color: #1E40AF; text-align: center;">
+          <span style="font-weight: 700; display: block; margin-bottom: 2px;">🎧 Caso Asignado</span>
+          Asignado a @${ticket.assigned_to_username || 'analista'}. Comenzando el diagnóstico.
+        </div>
+      `;
+    } else {
+      primaryBtn = `
+        <button type="button" class="ws-btn-flow flow-primary" onclick="quickStartProgress('${ticketId}')">
+          <span>▶ Iniciar Diagnóstico y Atención</span>
+          <span>&rarr;</span>
+        </button>
+      `;
+    }
+  } else if (status === 'EN_CURSO') {
+    if (role === 'SOLICITANTE') {
+      primaryBtn = `
+        <div style="background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 8px; padding: 10px 12px; font-size: 11.5px; color: #166534; text-align: center;">
+          <span style="font-weight: 700; display: block; margin-bottom: 2px;">⚡ En Proceso de Resolución</span>
+          El equipo técnico está trabajando en la solución. Puedes enviar mensajes abajo.
+        </div>
+      `;
+    } else {
+      primaryBtn = `
+        <button type="button" class="ws-btn-flow flow-resolve" onclick="quickResolveTicket('${ticketId}')">
+          <span>✅ Registrar Solución & Resolver</span>
+          <span>✓</span>
+        </button>
+      `;
+    }
+  } else if (status === 'RESUELTO') {
+    if (role === 'SOLICITANTE' || role === 'ADMIN') {
+      primaryBtn = `
+        <button type="button" class="ws-btn-flow flow-close" onclick="openCsatModal('${ticketId}')" style="background: #00A896; border-color: #00A896; color: #FFF; font-weight: 800; padding: 10px 12px;">
+          <span>⭐ Validar Conformidad y Calificar</span>
+          <span>✓</span>
+        </button>
+      `;
+    } else {
+      primaryBtn = `
+        <div style="background: #F8FAFC; border: 1.5px dashed #CBD5E1; border-radius: 8px; padding: 10px 12px; font-size: 11.5px; color: #64748B; text-align: center;">
+          <span style="font-weight: 700; color: #0F172A; display: block; margin-bottom: 2px;">⌛ En Espera de Conformidad</span>
+          Caso resuelto. El cierre definitivo y la calificación CSAT son otorgados por el Solicitante o Administrador.
+        </div>
+      `;
+    }
+  } else if (status === 'CERRADO') {
+    if (role === 'ADMIN' || role === 'TEAM_LEADER' || role === 'SOLICITANTE') {
+      primaryBtn = `
+        <button type="button" class="ws-btn-flow" onclick="quickReopenTicket('${ticketId}')">
+          <span>🔄 Reabrir Solicitud</span>
+          <span>&rarr;</span>
+        </button>
+      `;
+    } else {
+      primaryBtn = `
+        <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 10px 12px; font-size: 11.5px; color: #64748B; text-align: center;">
+          <span>🔒 Caso Cerrado y Archivado</span>
+        </div>
+      `;
+    }
+  }
+
+  // Herramientas técnicas adicionales (Ocultas para el Solicitante para cero ruido cognitivo)
+  let extraTools = '';
+  if (role !== 'SOLICITANTE') {
+    extraTools = `
+      ${ticket.is_major_incident ? `
+        <div style="background: #FEF2F2; border: 1px solid #FECACA; border-radius: 6px; padding: 8px 10px; margin-top: 6px;">
+          <div style="font-size: 11px; font-weight: 800; color: #DC2626; display: flex; align-items: center; justify-content: space-between;">
+            <span>🚨 Incidente Maestro Activo</span>
+            <button type="button" class="btn-sec btn-sm" onclick="openLinkChildrenModal('${ticketId}')" style="font-size: 10px; padding: 2px 6px; background: #FFF; border-color: #DC2626; color: #DC2626; font-weight: 700;">
+              ➕ Vincular Hijos
+            </button>
+          </div>
+          <div style="font-size: 10px; color: #991B1B; margin-top: 2px;">Al resolver este caso se resolverán todos los vinculados en cascada.</div>
+        </div>
+      ` : (!ticket.parent_ticket_id ? `
+        <button type="button" class="ws-btn-flow" onclick="actionToggleMajorIncident('${ticketId}', true)" style="color: #DC2626; border-color: #FCA5A5; margin-top: 4px;">
+          <span>🚨 Declarar como Incidente Maestro</span>
+          <span>⚡</span>
+        </button>
+      ` : `
+        <div style="background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 6px; padding: 6px 10px; margin-top: 6px; font-size: 11px; color: #1E40AF; display: flex; align-items: center; justify-content: space-between;">
+          <span>🔗 Hijo del Incidente Maestro #${ticket.parent_ticket_id}</span>
+          <button type="button" class="btn-sec btn-sm" onclick="openAgentWorkspace('${ticket.parent_ticket_id}')" style="font-size: 10px; padding: 2px 6px; font-weight: 700;">
+            Ver Maestro &rarr;
+          </button>
+        </div>
+      `)}
+
+      <button type="button" class="ws-btn-flow" onclick="openEscalateModal('${ticketId}')" style="margin-top: 4px;">
+        <span>⚡ Escalar Nivel ITIL (N1 &rarr; N2 &rarr; N3)</span>
+        <span>&uarr;</span>
+      </button>
+
+      <!-- COPILOT N1 RESOLUTIVO (MÓDULO 13) -->
+      <div style="background: linear-gradient(135deg, #F0FDF4 0%, #ECFDF5 100%); border: 1px solid #A7F3D0; border-radius: 8px; padding: 10px; margin-top: 8px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+          <span style="font-size: 11px; font-weight: 800; color: #065F46; display: flex; align-items: center; gap: 4px;">
+            <span>🤖</span> Copilot Resolutivo N1
+          </span>
+          <span style="background: #D1FAE5; color: #047857; font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 4px;">AUTO-FIX</span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <button type="button" class="btn-sec btn-sm" onclick="actionCopilotAutoFix('${ticketId}', 'RETRY_WEBHOOK')" style="font-size: 10.5px; text-align: left; padding: 5px 8px; background: #FFF; border-color: #6EE7B7; color: #065F46; font-weight: 700; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
+            <span>⚡ Reintentar Webhook / Sync</span>
+            <span style="color: #059669; font-size: 12px;">&rarr;</span>
+          </button>
+          <button type="button" class="btn-sec btn-sm" onclick="actionCopilotAutoFix('${ticketId}', 'RESET_TOKEN')" style="font-size: 10.5px; text-align: left; padding: 5px 8px; background: #FFF; border-color: #6EE7B7; color: #065F46; font-weight: 700; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
+            <span>🔑 Reset Token Sesión / API</span>
+            <span style="color: #059669; font-size: 12px;">&rarr;</span>
+          </button>
+          <button type="button" class="btn-sec btn-sm" onclick="actionCopilotAutoFix('${ticketId}', 'SYNTHESIZE_SUMMARY')" style="font-size: 10.5px; text-align: left; padding: 5px 8px; background: #FFF; border-color: #6EE7B7; color: #065F46; font-weight: 700; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
+            <span>📝 Resumen Flash Diagnóstico</span>
+            <span style="color: #059669; font-size: 12px;">&rarr;</span>
+          </button>
+        </div>
+      </div>
+      
+      <div style="height: 1px; background: #E2E8F0; margin: 6px 0;"></div>
+
+      <button type="button" class="ws-btn-flow" onclick="openTechDetailsModal('${ticketId}')">
+        <span>🔍 Ver Ficha Técnica Completa FHIR</span>
         <span>&rarr;</span>
       </button>
-    `;
-  } else if (status === 'EN_CURSO') {
-    primaryBtn = `
-      <button type="button" class="ws-btn-flow flow-resolve" onclick="quickResolveTicket('${ticketId}')">
-        <span>✅ Registrar Solución & Resolver</span>
-        <span>✓</span>
-      </button>
-    `;
-  } else if (status === 'RESUELTO') {
-    primaryBtn = `
-      <button type="button" class="ws-btn-flow flow-close" onclick="quickCloseTicket('${ticketId}')">
-        <span>🔒 Validar Conformidad & Cerrar</span>
-        <span>✓</span>
-      </button>
-    `;
-  } else if (status === 'CERRADO') {
-    primaryBtn = `
-      <button type="button" class="ws-btn-flow" onclick="quickReopenTicket('${ticketId}')">
-        <span>🔄 Reabrir Solicitud</span>
+
+      <button type="button" class="ws-btn-flow" onclick="openAuditTrailModal('${ticketId}')">
+        <span>📜 Bitácora Forense de Auditoría</span>
         <span>&rarr;</span>
       </button>
     `;
@@ -6318,23 +6705,7 @@ function renderWsWorkflowActions(ticket) {
 
   container.innerHTML = `
     ${primaryBtn}
-    
-    <button type="button" class="ws-btn-flow" onclick="openEscalateModal('${ticketId}')" style="margin-top: 4px;">
-      <span>⚡ Escalar Nivel ITIL (N1 &rarr; N2 &rarr; N3)</span>
-      <span>&uarr;</span>
-    </button>
-    
-    <div style="height: 1px; background: #E2E8F0; margin: 6px 0;"></div>
-
-    <button type="button" class="ws-btn-flow" onclick="openTechDetailsModal('${ticketId}')">
-      <span>🔍 Ver Ficha Técnica Completa FHIR</span>
-      <span>&rarr;</span>
-    </button>
-
-    <button type="button" class="ws-btn-flow" onclick="openAuditTrailModal('${ticketId}')">
-      <span>📜 Bitácora Forense de Auditoría</span>
-      <span>&rarr;</span>
-    </button>
+    ${extraTools}
   `;
 }
 
@@ -6615,19 +6986,7 @@ async function quickResolveTicket(ticketId) {
 }
 
 async function quickCloseTicket(ticketId) {
-  try {
-    const currentActor = AppState.currentUser ? AppState.currentUser.username : 'soporte';
-    await API.closeTicket(ticketId, {
-      closed_by_username: currentActor,
-      feedback: 'Conformidad técnica y asistencial otorgada por el usuario.'
-    });
-    showToast(`Ticket #${ticketId} cerrado y archivado`, 'success');
-    await openAgentWorkspace(ticketId);
-    await loadTickets();
-  } catch (err) {
-    console.error('Error cerrando ticket:', err);
-    showToast('Error al cerrar el caso', 'error');
-  }
+  openCsatModal(ticketId);
 }
 
 async function quickReopenTicket(ticketId) {
@@ -7099,7 +7458,8 @@ async function submitDoctorEmergency() {
     ticket_type: 'INCIDENTE',
     impact: 'CRITICO',
     urgency: 'CRITICA',
-    requester_username: docUser.username
+    requester_username: docUser.username,
+    telemetry_data: collectClientTelemetry()
   };
 
   try {
@@ -7264,4 +7624,941 @@ window.downloadEmergencyPrescriptionPDF = downloadEmergencyPrescriptionPDF;
 window.openFinanciadoresFallback = openFinanciadoresFallback;
 window.downloadEvolutionTemplate = downloadEvolutionTemplate;
 window.playEmergencyAlertSound = playEmergencyAlertSound;
+
+// =============================================================================
+// MÓDULO 12: TORRE DE CONTROL & LÍDER DE EQUIPO (SUPERVISIÓN EN VIVO)
+// =============================================================================
+let _tlOverviewData = null;
+
+async function loadTeamLeaderData() {
+  try {
+    const data = await API.getTeamLeaderOverview();
+    _tlOverviewData = data;
+    
+    const metrics = data.metrics || {};
+    const totalActive = metrics.total_active ?? data.active_tickets_count ?? 0;
+    const p1Count = metrics.p1_active_count ?? data.p1_critical_count ?? 0;
+    const unassignedCount = metrics.unassigned_count ?? data.unassigned_count ?? 0;
+    const rescueCount = metrics.rescue_alerts_count ?? data.requires_recovery_count ?? (data.rescue_alerts ? data.rescue_alerts.length : 0);
+
+    // 1. Actualizar KPIs superiores
+    const elActive = document.getElementById('tl-kpi-active');
+    const elP1 = document.getElementById('tl-kpi-p1');
+    const elUnassigned = document.getElementById('tl-kpi-unassigned');
+    const elRescue = document.getElementById('tl-kpi-rescue');
+    const elPulse = document.getElementById('tl-rescue-pulse');
+    const elAlertBadge = document.getElementById('tl-rescue-alert-badge');
+    const elSyncTime = document.getElementById('tl-last-sync-time');
+    const elRescueCountTag = document.getElementById('tl-rescue-count-tag');
+
+    if (elActive) elActive.textContent = totalActive;
+    if (elP1) elP1.textContent = p1Count;
+    if (elUnassigned) elUnassigned.textContent = unassignedCount;
+    if (elRescue) elRescue.textContent = rescueCount;
+    if (elRescueCountTag) elRescueCountTag.textContent = `${rescueCount} pendientes`;
+    if (elAlertBadge) {
+      elAlertBadge.textContent = rescueCount;
+      elAlertBadge.style.display = rescueCount > 0 ? 'inline-block' : 'none';
+    }
+    if (elPulse) {
+      elPulse.style.display = rescueCount > 0 ? 'inline-block' : 'none';
+    }
+    if (elSyncTime) {
+      const now = new Date();
+      elSyncTime.textContent = `Sincronizado: ${now.toLocaleTimeString()}`;
+    }
+
+    // 2. Renderizar Tabla de Cargas de Analistas
+    const workload = data.agent_workload || data.analyst_workload || [];
+    renderTeamLeaderAnalysts(workload);
+
+    // 3. Renderizar Casos en Alerta de Rescate
+    const rescueCases = data.rescue_alerts || data.recovery_cases || [];
+    renderTeamLeaderRescueDesk(rescueCases);
+  } catch (err) {
+    console.error('Error cargando datos de Team Leader:', err);
+    showToast('Error al conectar con la Torre de Control', 'error');
+  }
+}
+
+function renderTeamLeaderAnalysts(analysts) {
+  const tbody = document.getElementById('tl-analysts-table-body');
+  if (!tbody) return;
+
+  if (!analysts || analysts.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="6" style="padding: 24px; text-align: center; color: #94A3B8;">No hay analistas registrados en la guardia activa.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = analysts.map(a => {
+    const activeCount = a.active_tickets_count ?? a.active_count ?? 0;
+    const resolvedCount = a.resolved_today_count ?? a.resolved_count ?? 0;
+    const level = a.support_level || a.level || 'N2';
+
+    let loadBadge = `<span style="background: #DCFCE7; color: #166534; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 6px;">Óptima (${activeCount} casos)</span>`;
+    if (activeCount >= 6) {
+      loadBadge = `<span style="background: #FEE2E2; color: #991B1B; font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 6px;">🔥 Sobrecarga (${activeCount} casos)</span>`;
+    } else if (activeCount >= 3) {
+      loadBadge = `<span style="background: #FEF3C7; color: #92400E; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 6px;">Moderada (${activeCount} casos)</span>`;
+    }
+
+    return `
+      <tr style="border-bottom: 1px solid #F1F5F9; transition: background 0.15s ease;" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background='transparent'">
+        <td style="padding: 10px 14px; font-weight: 700; color: #0F172A; display: flex; align-items: center; gap: 8px;">
+          ${getUserAvatarHtml(a.username, a.full_name, 26)}
+          <div>
+            <div>${a.full_name}</div>
+            <div style="font-size: 10.5px; color: #64748B; font-weight: 500;">@${a.username}</div>
+          </div>
+        </td>
+        <td style="padding: 10px 14px;">
+          <span style="font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 4px; background: #E0E7FF; color: #3730A3;">${level}</span>
+        </td>
+        <td style="padding: 10px 14px; text-align: center; font-weight: 800; font-size: 13px; color: #0F172A;">
+          ${activeCount}
+        </td>
+        <td style="padding: 10px 14px; text-align: center; font-weight: 700; color: #00A896;">
+          ${resolvedCount}
+        </td>
+        <td style="padding: 10px 14px;">
+          ${loadBadge}
+        </td>
+        <td style="padding: 10px 14px; text-align: right;">
+          <button type="button" class="btn-sec btn-sm" onclick="openQuickReassignModal(null, '${a.username}')" style="font-size: 10.5px; padding: 3px 8px; border-radius: 5px; font-weight: 600;">
+            Reasignar
+          </button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function renderTeamLeaderRescueDesk(cases) {
+  const container = document.getElementById('tl-rescue-container');
+  if (!container) return;
+
+  if (!cases || cases.length === 0) {
+    container.innerHTML = `
+      <div style="text-align: center; padding: 36px 16px; color: #059669;">
+        <div style="font-size: 32px; margin-bottom: 6px;">🎉</div>
+        <div style="font-weight: 800; font-size: 13px;">¡Todo el turno opera con alta satisfacción!</div>
+        <div style="font-size: 11.5px; color: #64748B; margin-top: 2px;">No hay alertas de rescate activas ni clientes insatisfechos.</div>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = cases.map(c => {
+    const starsEmoji = c.rating_stars === 1 ? '😡 1★ (Pésimo)' : '🙁 2★ (Disconforme)';
+    return `
+      <div style="background: #FFFFFF; border: 1.5px solid #FCD34D; border-radius: 10px; padding: 12px 14px; box-shadow: 0 1px 3px rgba(245, 158, 11, 0.08); margin-bottom: 10px;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
+          <div>
+            <div style="font-size: 12.5px; font-weight: 800; color: #92400E;">
+              Ticket #${c.id}: ${c.title || 'Solicitud sin título'}
+            </div>
+            <div style="font-size: 11px; color: #64748B;">
+              👤 <strong>${c.requester_name || c.requester_username}</strong> • 🏥 ${c.institution_code} • Plataforma: ${c.platform_code}
+            </div>
+          </div>
+          <span style="background: #FEF2F2; border: 1px solid #FECACA; color: #DC2626; font-size: 11px; font-weight: 800; padding: 2px 7px; border-radius: 6px; white-space: nowrap;">
+            ${starsEmoji}
+          </span>
+        </div>
+
+        ${c.rating_feedback ? `
+          <div style="background: #FFFBEB; border-left: 3px solid #F59E0B; padding: 6px 10px; border-radius: 4px; font-size: 11.5px; color: #78350F; margin: 6px 0;">
+            "${c.rating_feedback}"
+          </div>
+        ` : ''}
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px; border-top: 1px solid #F1F5F9; padding-top: 8px;">
+          <button type="button" class="btn-clean-action" onclick="openAgentWorkspace('${c.id}')" style="font-size: 11px; font-weight: 700; color: #2563EB;">
+            👁️ Ver Ticket Completo
+          </button>
+          <button type="button" class="btn-pri" onclick="openRescueModal('${c.id}', '${c.title ? c.title.replace(/'/g, "\\'") : ''}', '${c.requester_name ? c.requester_name.replace(/'/g, "\\'") : ''}', ${c.rating_stars || 1})" style="background: #00A896; border-color: #00A896; font-size: 11px; padding: 4px 10px; border-radius: 6px; font-weight: 800; color: #FFF;">
+            📞 Registrar Rescate
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function openQuickReassignModal(ticketId = null, defaultAssignee = null) {
+  const modal = document.getElementById('modal-tl-reassign');
+  const ticketSelect = document.getElementById('tl-reassign-ticket-select');
+  const userSelect = document.getElementById('tl-reassign-user-select');
+  if (!modal || !ticketSelect || !userSelect) return;
+
+  const activeTickets = (AppState.tickets || []).filter(t => ['NUEVO', 'ASIGNADO', 'EN_CURSO'].includes((t.status || '').toUpperCase()));
+  ticketSelect.innerHTML = activeTickets.map(t => `
+    <option value="${t.id}" ${ticketId && t.id == ticketId ? 'selected' : ''}>
+      #${t.id} - ${t.title || 'Sin título'} (${t.platform_code || 'General'}) [Asignado: @${t.assigned_to_username || 'Sin asignar'}]
+    </option>
+  `).join('') || '<option value="">No hay tickets activos</option>';
+
+  const analysts = (_tlOverviewData && _tlOverviewData.analyst_workload) || (AppState.users || []).filter(u => (u.role || '').includes('SOPORTE') || u.role === 'SOPORTE');
+  userSelect.innerHTML = analysts.map(u => `
+    <option value="${u.username}" ${defaultAssignee && u.username === defaultAssignee ? 'selected' : ''}>
+      ${u.full_name || u.username} (@${u.username})
+    </option>
+  `).join('');
+
+  modal.style.display = 'flex';
+}
+
+function closeQuickReassignModal() {
+  const modal = document.getElementById('modal-tl-reassign');
+  if (modal) modal.style.display = 'none';
+}
+
+async function submitQuickReassign() {
+  const ticketSelect = document.getElementById('tl-reassign-ticket-select');
+  const userSelect = document.getElementById('tl-reassign-user-select');
+  const reasonInput = document.getElementById('tl-reassign-reason');
+
+  if (!ticketSelect || !userSelect) return;
+  const ticketId = ticketSelect.value;
+  const username = userSelect.value;
+  const reason = (reasonInput ? reasonInput.value.trim() : '') || 'Rebalanceo de guardia';
+
+  if (!ticketId || !username) {
+    showToast('Seleccione un ticket y un analista destino', 'warning');
+    return;
+  }
+
+  try {
+    await API.reassignTicket(ticketId, username, reason);
+    showToast(`✅ Ticket #${ticketId} reasignado exitosamente a @${username}`, 'success');
+    closeQuickReassignModal();
+    await loadTeamLeaderData();
+    await loadTickets();
+  } catch (err) {
+    console.error('Error reasignando ticket:', err);
+    showToast('Error al reasignar el ticket', 'error');
+  }
+}
+
+function openRescueModal(ticketId, ticketTitle, requester, rating) {
+  const modal = document.getElementById('modal-tl-rescue');
+  const labelTkt = document.getElementById('tl-rescue-modal-target-ticket');
+  const labelDetails = document.getElementById('tl-rescue-modal-target-details');
+  const inputHidden = document.getElementById('tl-rescue-target-ticket-id');
+  const notesText = document.getElementById('tl-rescue-resolution-notes');
+
+  if (!modal) return;
+  if (labelTkt) labelTkt.textContent = `Ticket #${ticketId} - ${ticketTitle || ''}`;
+  if (labelDetails) labelDetails.textContent = `Solicitante: ${requester} • Calificación: ${rating}★`;
+  if (inputHidden) inputHidden.value = ticketId;
+  if (notesText) notesText.value = '';
+
+  modal.style.display = 'flex';
+}
+
+function closeRescueModal() {
+  const modal = document.getElementById('modal-tl-rescue');
+  if (modal) modal.style.display = 'none';
+}
+
+async function submitRescueResolution() {
+  const inputHidden = document.getElementById('tl-rescue-target-ticket-id');
+  const notesText = document.getElementById('tl-rescue-resolution-notes');
+  const actionSelect = document.getElementById('tl-rescue-action-type');
+
+  if (!inputHidden || !notesText) return;
+  const ticketId = inputHidden.value;
+  const notes = notesText.value.trim();
+  const actionType = actionSelect ? actionSelect.value : 'call_resolved';
+
+  if (!notes) {
+    showToast('Por favor ingrese las notas del acuerdo con el cliente', 'warning');
+    return;
+  }
+
+  try {
+    const actor = AppState.currentUser ? AppState.currentUser.username : 'teamleader';
+    await API.rescueClient(ticketId, {
+      rescued_by_username: actor,
+      resolution_notes: `[Acción: ${actionType}] ${notes}`
+    });
+    showToast(`✅ Rescate registrado y caso recuperado con éxito`, 'success');
+    closeRescueModal();
+    await loadTeamLeaderData();
+    await loadTickets();
+  } catch (err) {
+    console.error('Error completando rescate:', err);
+    showToast('Error al registrar el rescate', 'error');
+  }
+}
+
+// =============================================================================
+// MÓDULO 10: CALIFICACIÓN Y CIERRE CSAT "BUENA ONDA"
+// =============================================================================
+let _csatTargetTicketId = null;
+
+function openCsatModal(ticketId) {
+  _csatTargetTicketId = ticketId;
+  const modal = document.getElementById('modal-csat-rate');
+  const tktLabel = document.getElementById('csat-ticket-id-label');
+  const feedbackInput = document.getElementById('csat-feedback-text');
+  const kudosInput = document.getElementById('csat-selected-kudos');
+
+  if (!modal) return;
+  if (tktLabel) tktLabel.textContent = `#${ticketId}`;
+  if (feedbackInput) feedbackInput.value = '';
+  if (kudosInput) kudosInput.value = '';
+
+  document.querySelectorAll('.btn-kudo-chip').forEach(btn => {
+    btn.style.background = '#FFFFFF';
+    btn.style.borderColor = '#CBD5E1';
+    btn.style.color = '#334155';
+    btn.classList.remove('active');
+  });
+
+  selectCsatRating(5);
+  modal.style.display = 'flex';
+}
+
+function closeCsatModal() {
+  const modal = document.getElementById('modal-csat-rate');
+  if (modal) modal.style.display = 'none';
+  _csatTargetTicketId = null;
+}
+
+function selectCsatRating(stars) {
+  const hiddenInput = document.getElementById('csat-selected-stars');
+  if (hiddenInput) hiddenInput.value = stars;
+
+  const alertBox = document.getElementById('csat-low-score-alert');
+  const kudosSection = document.getElementById('csat-kudos-section');
+
+  if (stars <= 2) {
+    if (alertBox) alertBox.style.display = 'block';
+    if (kudosSection) kudosSection.style.display = 'none';
+  } else {
+    if (alertBox) alertBox.style.display = 'none';
+    if (kudosSection) kudosSection.style.display = 'block';
+  }
+
+  const buttons = document.querySelectorAll('.csat-star-btn');
+  buttons.forEach(btn => {
+    const s = parseInt(btn.dataset.stars, 10);
+    if (s === stars) {
+      btn.style.borderColor = s <= 2 ? '#EF4444' : (s === 3 ? '#F59E0B' : '#22C55E');
+      btn.style.background = s <= 2 ? '#FEF2F2' : (s === 3 ? '#FFFBEB' : '#F0FDF4');
+    } else {
+      btn.style.borderColor = '#E2E8F0';
+      btn.style.background = '#F8FAFC';
+    }
+  });
+}
+
+function toggleCsatKudo(btn, kudoText) {
+  const hiddenInput = document.getElementById('csat-selected-kudos');
+  let currentKudos = hiddenInput && hiddenInput.value ? hiddenInput.value.split(', ').filter(Boolean) : [];
+
+  if (btn.classList.contains('active')) {
+    btn.classList.remove('active');
+    btn.style.background = '#FFFFFF';
+    btn.style.borderColor = '#CBD5E1';
+    btn.style.color = '#334155';
+    currentKudos = currentKudos.filter(k => k !== kudoText);
+  } else {
+    btn.classList.add('active');
+    btn.style.background = '#ECFDF5';
+    btn.style.borderColor = '#10B981';
+    btn.style.color = '#065F46';
+    if (!currentKudos.includes(kudoText)) currentKudos.push(kudoText);
+  }
+
+  if (hiddenInput) hiddenInput.value = currentKudos.join(', ');
+}
+
+async function submitCsatClosure() {
+  if (!_csatTargetTicketId) return;
+
+  const starsInput = document.getElementById('csat-selected-stars');
+  const kudosInput = document.getElementById('csat-selected-kudos');
+  const feedbackInput = document.getElementById('csat-feedback-text');
+
+  const stars = starsInput ? parseInt(starsInput.value, 10) : 5;
+  const kudos = kudosInput ? kudosInput.value.trim() : '';
+  const feedback = feedbackInput ? feedbackInput.value.trim() : '';
+
+  const currentActor = AppState.currentUser ? AppState.currentUser.username : 'solicitante';
+
+  try {
+    const payload = {
+      closed_by_username: currentActor,
+      rating_stars: stars,
+      rating_kudos: kudos,
+      rating_feedback: feedback || (stars >= 4 ? 'Excelente atención y resolución rápida.' : 'Se requiere contacto de seguimiento.')
+    };
+
+    await API.closeTicket(_csatTargetTicketId, payload);
+
+    if (stars <= 2) {
+      showToast('⚠️ Calificación registrada. Se ha generado una alerta de rescate para el Líder de Equipo.', 'warning');
+    } else {
+      showToast('🎉 ¡Muchas gracias por tu calificación! Solicitud cerrada con éxito.', 'success');
+    }
+
+    closeCsatModal();
+    if (AppState.selectedTicket && AppState.selectedTicket.id == _csatTargetTicketId) {
+      await openAgentWorkspace(_csatTargetTicketId);
+    }
+    await loadTickets();
+  } catch (err) {
+    console.error('Error cerrando ticket con CSAT:', err);
+    showToast('Error al cerrar la solicitud', 'error');
+  }
+}
+
+// =============================================================================
+// 14. GESTIÓN DE INCIDENTES MASIVOS Y TICKETS HIJOS (MÓDULO 1)
+// =============================================================================
+let _linkChildrenParentId = null;
+let _linkChildrenCache = [];
+let _selectedChildIds = new Set();
+
+async function populateAdvancedTicketModalOptions() {
+  const parentSelect = document.getElementById('modal-parent-id');
+  const releaseSelect = document.getElementById('modal-release-tag');
+
+  if (parentSelect) {
+    const activeTkts = (AppState.tickets || []).filter(t => t.status !== 'CERRADO');
+    parentSelect.innerHTML = '<option value="">Ninguno (Caso independiente)</option>' +
+      activeTkts.map(t => `<option value="${t.id}">#${t.id} - ${escapeHtml(t.title.substring(0, 45))}${t.is_major_incident ? ' [🚨 MAESTRO]' : ''}</option>`).join('');
+  }
+
+  if (releaseSelect) {
+    try {
+      const releases = await API.getReleases();
+      if (releases && releases.length > 0) {
+        releaseSelect.innerHTML = '<option value="">Sin versión vinculada</option>' +
+          releases.map(r => `<option value="${r.tag}">${r.tag} (${r.name}) - [${r.status}]</option>`).join('');
+      }
+    } catch (e) {
+      console.warn('No se pudieron cargar releases para el selector:', e);
+    }
+  }
+}
+
+async function actionToggleMajorIncident(ticketId, isMajor) {
+  const actionText = isMajor ? 'declarar este ticket como Incidente Masivo Maestro' : 'desmarcar este ticket como Incidente Maestro';
+  if (!confirm(`¿Está seguro de que desea ${actionText}?`)) return;
+
+  try {
+    await API.setMajorIncident(ticketId, isMajor);
+    showToast(isMajor ? '🚨 Declarado como Incidente Masivo Maestro' : 'Incidente Maestro desmarcado', 'success');
+    await loadTickets();
+    if (AppState.selectedTicket && AppState.selectedTicket.id == ticketId) {
+      selectTicket(ticketId, true);
+    }
+    const wsModal = document.getElementById('modal-agent-workspace');
+    if (wsModal && wsModal.classList.contains('active')) {
+      await openAgentWorkspace(ticketId);
+    }
+  } catch (err) {
+    console.error('Error cambiando estado de Incidente Masivo:', err);
+    showToast('Error al actualizar Incidente Masivo', 'error');
+  }
+}
+
+function openLinkChildrenModal(parentId) {
+  _linkChildrenParentId = parentId;
+  _selectedChildIds.clear();
+
+  const modal = document.getElementById('modal-link-children');
+  const parentTag = document.getElementById('link-children-parent-tag');
+  const parentVal = document.getElementById('link-children-parent-id-val');
+  const searchInput = document.getElementById('link-children-search');
+
+  if (parentTag) parentTag.textContent = `#${parentId}`;
+  if (parentVal) parentVal.value = parentId;
+  if (searchInput) searchInput.value = '';
+
+  _linkChildrenCache = (AppState.tickets || []).filter(t => 
+    t.id !== parentId && 
+    t.status !== 'CERRADO' && 
+    t.status !== 'RESUELTO' &&
+    t.parent_ticket_id !== parentId
+  );
+
+  renderLinkChildrenList(_linkChildrenCache);
+  updateLinkChildrenCount();
+
+  if (modal) modal.classList.add('active');
+}
+
+function closeLinkChildrenModal() {
+  const modal = document.getElementById('modal-link-children');
+  if (modal) modal.classList.remove('active');
+  _linkChildrenParentId = null;
+  _selectedChildIds.clear();
+}
+
+function renderLinkChildrenList(tickets) {
+  const container = document.getElementById('link-children-list-container');
+  if (!container) return;
+
+  if (tickets.length === 0) {
+    container.innerHTML = `
+      <div style="padding: 24px; text-align: center; color: #94A3B8; font-size: 12px;">
+        No hay solicitudes activas disponibles para vincular.
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = tickets.map(t => {
+    const isChecked = _selectedChildIds.has(t.id);
+    const prio = (t.priority || 'P3').toUpperCase();
+    return `
+      <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; border-bottom: 1px solid #F1F5F9; background: ${isChecked ? '#FEF2F2' : '#FFF'};">
+        <label style="display: flex; align-items: center; gap: 10px; flex: 1; cursor: pointer; margin: 0;">
+          <input type="checkbox" value="${t.id}" ${isChecked ? 'checked' : ''} onchange="toggleChildTicketSelection('${t.id}', this.checked)">
+          <div>
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span class="prio-chip prio-chip-${prio.toLowerCase()}" style="font-size: 9.5px; padding: 1px 5px;">${prio}</span>
+              <strong style="font-size: 12px; color: #1E293B;">#${t.id}</strong>
+              <span style="font-size: 11px; color: #64748B;">${formatPlatformName(t.platform_code)}</span>
+            </div>
+            <div style="font-size: 11.5px; color: #334155; margin-top: 2px;">${escapeHtml(t.title)}</div>
+          </div>
+        </label>
+        <span style="font-size: 10.5px; color: #94A3B8; white-space: nowrap;">${t.requester_name || t.requester_username || 'Solicitante'}</span>
+      </div>
+    `;
+  }).join('');
+}
+
+function toggleChildTicketSelection(ticketId, isChecked) {
+  if (isChecked) {
+    _selectedChildIds.add(ticketId);
+  } else {
+    _selectedChildIds.delete(ticketId);
+  }
+  updateLinkChildrenCount();
+}
+
+function updateLinkChildrenCount() {
+  const countEl = document.getElementById('link-children-selected-count');
+  if (countEl) {
+    countEl.textContent = `${_selectedChildIds.size} caso${_selectedChildIds.size === 1 ? '' : 's'} seleccionado${_selectedChildIds.size === 1 ? '' : 's'}`;
+  }
+}
+
+function filterLinkChildrenList() {
+  const search = (document.getElementById('link-children-search')?.value || '').toLowerCase().trim();
+  const filtered = _linkChildrenCache.filter(t => 
+    t.id.toLowerCase().includes(search) ||
+    (t.title || '').toLowerCase().includes(search) ||
+    (t.platform_code || '').toLowerCase().includes(search) ||
+    (t.requester_username || '').toLowerCase().includes(search)
+  );
+  renderLinkChildrenList(filtered);
+}
+
+async function submitLinkChildren() {
+  if (!_linkChildrenParentId) return;
+  if (_selectedChildIds.size === 0) {
+    showToast('Seleccione al menos una solicitud para vincular', 'warning');
+    return;
+  }
+
+  const childIds = Array.from(_selectedChildIds);
+  const currentActor = AppState.currentUser ? AppState.currentUser.username : 'soporte';
+
+  try {
+    await API.linkChildrenTickets(_linkChildrenParentId, childIds, currentActor);
+    showToast(`✅ Se vincularon ${childIds.length} solicitudes al Incidente Maestro #${_linkChildrenParentId}`, 'success');
+    closeLinkChildrenModal();
+    await loadTickets();
+    if (AppState.selectedTicket && AppState.selectedTicket.id == _linkChildrenParentId) {
+      selectTicket(_linkChildrenParentId, true);
+    }
+  } catch (err) {
+    console.error('Error vinculando tickets hijos:', err);
+    showToast('Error al vincular solicitudes hijas', 'error');
+  }
+}
+
+// =============================================================================
+// 15. GESTIÓN DE RELEASES Y VERSIONES DE SOFTWARE (MÓDULO 2)
+// =============================================================================
+async function openReleasesModal() {
+  const modal = document.getElementById('modal-software-releases');
+  if (modal) modal.classList.add('active');
+  await loadReleasesTable();
+}
+
+function closeReleasesModal() {
+  const modal = document.getElementById('modal-software-releases');
+  if (modal) modal.classList.remove('active');
+  const formBox = document.getElementById('release-create-form-box');
+  if (formBox) formBox.style.display = 'none';
+}
+
+function toggleNewReleaseForm() {
+  const formBox = document.getElementById('release-create-form-box');
+  if (!formBox) return;
+  formBox.style.display = formBox.style.display === 'none' ? 'block' : 'none';
+  if (formBox.style.display === 'block') {
+    document.getElementById('new-rel-tag')?.focus();
+  }
+}
+
+async function loadReleasesTable() {
+  const container = document.getElementById('releases-table-container');
+  if (!container) return;
+
+  container.innerHTML = '<div style="padding: 20px; text-align: center; color: #64748B;">Cargando releases...</div>';
+
+  try {
+    const releases = await API.getReleases();
+    if (!releases || releases.length === 0) {
+      container.innerHTML = '<div style="padding: 30px; text-align: center; color: #94A3B8;">No hay releases registradas aún.</div>';
+      return;
+    }
+
+    container.innerHTML = `
+      <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+        <thead>
+          <tr style="background: #F8FAFC; border-bottom: 2px solid #E2E8F0; text-align: left; color: #475569;">
+            <th style="padding: 10px 12px;">Tag / Versión</th>
+            <th style="padding: 10px 12px;">Nombre / Descripción</th>
+            <th style="padding: 10px 12px;">Estado</th>
+            <th style="padding: 10px 12px; text-align: center;">Tickets</th>
+            <th style="padding: 10px 12px; text-align: right;">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${releases.map(rel => {
+            let statusColor = '#3B82F6';
+            let statusBg = '#EFF6FF';
+            if (rel.status === 'DESPLEGADA') {
+              statusColor = '#10B981';
+              statusBg = '#ECFDF5';
+            } else if (rel.status === 'PLANIFICADA') {
+              statusColor = '#8B5CF6';
+              statusBg = '#F5F3FF';
+            }
+
+            const isDeployed = rel.status === 'DESPLEGADA';
+
+            return `
+              <tr style="border-bottom: 1px solid #F1F5F9;">
+                <td style="padding: 10px 12px; font-weight: 800; font-family: 'JetBrains Mono'; color: #0F172A;">
+                  ${rel.tag}
+                </td>
+                <td style="padding: 10px 12px;">
+                  <strong style="color: #1E293B; display: block;">${escapeHtml(rel.name)}</strong>
+                  <span style="font-size: 11px; color: #64748B;">${escapeHtml(rel.notes || 'Sin changelog registrado')}</span>
+                </td>
+                <td style="padding: 10px 12px;">
+                  <span style="background: ${statusBg}; color: ${statusColor}; border: 1px solid ${statusColor}33; padding: 2px 8px; border-radius: 6px; font-weight: 800; font-size: 10.5px;">
+                    ${rel.status}
+                  </span>
+                </td>
+                <td style="padding: 10px 12px; text-align: center; font-weight: 700; color: #334155;">
+                  ${rel.linked_tickets_count || 0}
+                </td>
+                <td style="padding: 10px 12px; text-align: right;">
+                  ${isDeployed ? `
+                    <span style="font-size: 11px; font-weight: 700; color: #059669;">
+                      ✅ Desplegado
+                    </span>
+                  ` : `
+                    <button type="button" class="btn-pri btn-sm" onclick="actionDeployRelease('${rel.tag}')" style="background: #10B981; border: none; color: #FFF; font-size: 10.5px; padding: 4px 8px; font-weight: 800;" title="Desplegar a producción y resolver todos los tickets vinculados en cascada">
+                      🚀 Desplegar
+                    </button>
+                  `}
+                </td>
+              </tr>
+            `;
+          }).join('')}
+        </tbody>
+      </table>
+    `;
+  } catch (err) {
+    console.error('Error cargando releases:', err);
+    container.innerHTML = '<div style="padding: 20px; text-align: center; color: #DC2626;">Error al cargar lista de releases.</div>';
+  }
+}
+
+async function submitCreateRelease() {
+  const tagInput = document.getElementById('new-rel-tag');
+  const nameInput = document.getElementById('new-rel-name');
+  const notesInput = document.getElementById('new-rel-notes');
+
+  const tag = tagInput ? tagInput.value.trim() : '';
+  const name = nameInput ? nameInput.value.trim() : '';
+  const notes = notesInput ? notesInput.value.trim() : '';
+
+  if (!tag || !name) {
+    showToast('Ingrese tag y título para la nueva versión', 'warning');
+    return;
+  }
+
+  try {
+    const currentActor = AppState.currentUser ? AppState.currentUser.username : 'admin';
+    await API.createRelease({
+      tag,
+      name,
+      notes: notes || null,
+      created_by: currentActor
+    });
+    showToast(`✅ Versión ${tag} creada exitosamente`, 'success');
+    if (tagInput) tagInput.value = '';
+    if (nameInput) nameInput.value = '';
+    if (notesInput) notesInput.value = '';
+    toggleNewReleaseForm();
+    await loadReleasesTable();
+    await populateAdvancedTicketModalOptions();
+  } catch (err) {
+    console.error('Error creando release:', err);
+    const detail = (err && (err.detail || err.message)) || 'Verifique los datos ingresados';
+    showToast(`Error al crear versión: ${detail}`, 'error');
+  }
+}
+
+async function actionDeployRelease(tag) {
+  const resNotes = prompt(`¿Desea desplegar la versión ${tag} a Producción?\n\nTodos los tickets vinculados se resolverán en cascada automáticamente.\nIngrese notas de despliegue:`, `Despliegue a Producción exitoso versión ${tag}`);
+  if (resNotes === null) return;
+
+  try {
+    const currentActor = AppState.currentUser ? AppState.currentUser.username : 'admin';
+    await API.deployRelease(tag, {
+      deployed_by: currentActor,
+      resolution_notes: resNotes
+    });
+    showToast(`🚀 ¡Versión ${tag} desplegada! Tickets resueltos en cascada.`, 'success');
+    await loadReleasesTable();
+    await loadTickets();
+  } catch (err) {
+    console.error('Error desplegando release:', err);
+    showToast('Error al desplegar versión', 'error');
+  }
+}
+
+// Exportar funciones de Módulos 1 y 2 a window
+window.populateAdvancedTicketModalOptions = populateAdvancedTicketModalOptions;
+window.actionToggleMajorIncident = actionToggleMajorIncident;
+window.openLinkChildrenModal = openLinkChildrenModal;
+window.closeLinkChildrenModal = closeLinkChildrenModal;
+window.renderLinkChildrenList = renderLinkChildrenList;
+window.toggleChildTicketSelection = toggleChildTicketSelection;
+window.updateLinkChildrenCount = updateLinkChildrenCount;
+window.filterLinkChildrenList = filterLinkChildrenList;
+window.submitLinkChildren = submitLinkChildren;
+window.openReleasesModal = openReleasesModal;
+window.closeReleasesModal = closeReleasesModal;
+window.toggleNewReleaseForm = toggleNewReleaseForm;
+window.loadReleasesTable = loadReleasesTable;
+window.submitCreateRelease = submitCreateRelease;
+window.actionDeployRelease = actionDeployRelease;
+
+// ============================================================================
+// V4.0.0 MÓDULO 13: TELEMETRÍA OCULTA "ZERO-QUESTION"
+// ============================================================================
+function collectClientTelemetry() {
+  try {
+    const screenRes = `${window.screen ? window.screen.width : 0}x${window.screen ? window.screen.height : 0} (${(window.screen && window.screen.orientation && window.screen.orientation.type) || 'landscape'})`;
+    const ua = navigator.userAgent || 'Unknown';
+    let browserName = 'Navegador Web';
+    if (ua.includes('Edg/')) browserName = 'Microsoft Edge';
+    else if (ua.includes('Chrome/')) browserName = 'Google Chrome';
+    else if (ua.includes('Firefox/')) browserName = 'Mozilla Firefox';
+    else if (ua.includes('Safari/') && !ua.includes('Chrome/')) browserName = 'Apple Safari';
+
+    let osName = 'Sistema Operativo';
+    if (ua.includes('Windows NT 10.0')) osName = 'Windows 10/11';
+    else if (ua.includes('Windows')) osName = 'Windows OS';
+    else if (ua.includes('Macintosh')) osName = 'macOS';
+    else if (ua.includes('Linux')) osName = 'Linux';
+    else if (ua.includes('Android')) osName = 'Android';
+    else if (ua.includes('iPhone') || ua.includes('iPad')) osName = 'iOS';
+
+    const isOnline = navigator.onLine ? 'En línea (Conectado)' : 'Desconectado (Offline)';
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Argentina/Buenos_Aires';
+    const lang = navigator.language || 'es-419';
+    const hardwareConcurrency = navigator.hardwareConcurrency ? `${navigator.hardwareConcurrency} núcleos CPU` : '4 núcleos CPU';
+
+    return JSON.stringify({
+      browser: browserName,
+      os: osName,
+      screen: screenRes,
+      connection: isOnline,
+      timezone: timeZone,
+      language: lang,
+      cpu_cores: hardwareConcurrency,
+      captured_at: new Date().toISOString()
+    });
+  } catch (err) {
+    return null;
+  }
+}
+
+// ============================================================================
+// V4.0.0 MÓDULO 13: COPILOT N1 RESOLUTIVO (AUTO-FIX)
+// ============================================================================
+async function actionCopilotAutoFix(ticketId, actionType) {
+  if (!ticketId) return;
+  const currentActor = AppState.currentUser ? AppState.currentUser.username : 'soporte';
+
+  let confirmMsg = '¿Ejecutar mitigación automática Zero-Touch con Copilot N1?';
+  if (actionType === 'RETRY_WEBHOOK') {
+    confirmMsg = 'Copilot N1: ¿Reintentar retransmisión de Webhooks y sincronización FHIR en cola?';
+  } else if (actionType === 'RESET_TOKEN') {
+    confirmMsg = 'Copilot N1: ¿Resetear token de sesión y forzar regeneración de credencial segura?';
+  } else if (actionType === 'SYNTHESIZE_SUMMARY') {
+    confirmMsg = 'Copilot N1: ¿Generar resumen flash diagnóstico con IA asistencial en las notas técnicas?';
+  }
+
+  if (!confirm(confirmMsg)) return;
+
+  try {
+    showToast('🤖 Ejecutando Copilot N1 Auto-Fix...', 'info');
+    const res = await API.runCopilotAction(ticketId, actionType, currentActor);
+    showToast(`✅ Copilot N1: ${res.message}`, 'success');
+
+    // Recargar datos del ticket y refrescar vista
+    if (AppState.selectedTicket && AppState.selectedTicket.id === ticketId) {
+      const fresh = await API.getTicket(ticketId);
+      AppState.selectedTicket = fresh;
+      if (document.getElementById('modal-agent-workspace')?.classList.contains('active')) {
+        renderAgentWorkspace(fresh);
+      } else {
+        renderTicketDetail(fresh);
+      }
+    }
+    await loadTickets();
+  } catch (err) {
+    console.error('Error ejecutando Copilot N1:', err);
+    const detail = (err && (err.detail || err.message)) || 'Falla al ejecutar auto-fix';
+    showToast(`❌ Error de Copilot N1: ${detail}`, 'error');
+  }
+}
+
+// ============================================================================
+// V4.0.0 MÓDULO 9: SIMULADOR DE INGESTA POR EMAIL & THREADING (UH-62 a UH-64)
+// ============================================================================
+function openEmailSimulatorModal() {
+  const modal = document.getElementById('modal-email-simulator');
+  if (!modal) return;
+  modal.style.display = 'block';
+
+  // Si hay un ticket seleccionado, sugerir respuesta rápida
+  const subjInput = document.getElementById('email-sim-subject');
+  if (subjInput && AppState.selectedTicket) {
+    subjInput.value = `Re: [${AppState.selectedTicket.id}] ${AppState.selectedTicket.title.replace(/^\[.*?\]\s*/, '')}`;
+  }
+}
+
+function closeEmailSimulatorModal() {
+  const modal = document.getElementById('modal-email-simulator');
+  if (modal) modal.style.display = 'none';
+  const statusDiv = document.getElementById('email-sim-status');
+  if (statusDiv) statusDiv.style.display = 'none';
+}
+
+function insertActiveTicketInEmailSubject() {
+  const subjInput = document.getElementById('email-sim-subject');
+  if (!subjInput) return;
+
+  if (AppState.selectedTicket) {
+    const cleanTitle = AppState.selectedTicket.title.replace(/^\[.*?\]\s*/, '');
+    subjInput.value = `Re: [${AppState.selectedTicket.id}] ${cleanTitle}`;
+    showToast(`Asunto actualizado con ticket #${AppState.selectedTicket.id}`, 'info');
+  } else if (AppState.tickets && AppState.tickets.length > 0) {
+    const first = AppState.tickets[0];
+    const cleanTitle = first.title.replace(/^\[.*?\]\s*/, '');
+    subjInput.value = `Re: [${first.id}] ${cleanTitle}`;
+    showToast(`Asunto actualizado con ticket reciente #${first.id}`, 'info');
+  } else {
+    subjInput.value = `Re: [TICK-${new Date().getFullYear()}${String(new Date().getMonth() + 1).padStart(2, '0')}-0001] Actualización del caso`;
+    showToast('Asunto configurado con formato de respuesta [ID]', 'info');
+  }
+}
+
+async function submitSimulateEmail(e) {
+  if (e) e.preventDefault();
+
+  const senderEmail = document.getElementById('email-sim-sender')?.value.trim();
+  const senderName = document.getElementById('email-sim-name')?.value.trim();
+  const subject = document.getElementById('email-sim-subject')?.value.trim();
+  const institution = document.getElementById('email-sim-institution')?.value;
+  const platform = document.getElementById('email-sim-platform')?.value;
+  const bodyText = document.getElementById('email-sim-body')?.value.trim();
+  const submitBtn = document.getElementById('btn-submit-email-sim');
+  const statusDiv = document.getElementById('email-sim-status');
+
+  if (!senderEmail || !subject || !bodyText) {
+    showToast('Complete los campos obligatorios del correo', 'warning');
+    return;
+  }
+
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '⏳ Ingestando y Procesando...';
+  }
+
+  try {
+    const payload = {
+      sender_email: senderEmail,
+      sender_name: senderName || 'Usuario Externo',
+      subject: subject,
+      body_text: bodyText,
+      institution_code: institution || 'OSDE',
+      platform_code: platform || 'CAT_RECETA'
+    };
+
+    const res = await API.ingestEmail(payload);
+
+    if (statusDiv) {
+      statusDiv.style.display = 'block';
+      statusDiv.style.background = '#ECFDF5';
+      statusDiv.style.border = '1px solid #A7F3D0';
+      statusDiv.style.color = '#065F46';
+      statusDiv.innerHTML = `<strong>✅ Correo procesado con éxito:</strong> Solicitud <code>#${res.id}</code> - "${res.title}".`;
+    }
+
+    showToast(`📨 Ingesta exitosa: Ticket #${res.id}`, 'success');
+    await loadTickets();
+    selectTicket(res.id, true);
+
+    setTimeout(() => {
+      closeEmailSimulatorModal();
+    }, 1200);
+
+  } catch (err) {
+    console.error('Error simulando correo:', err);
+    const detail = (err && (err.detail || err.message)) || 'Falla al ingestar correo';
+    if (statusDiv) {
+      statusDiv.style.display = 'block';
+      statusDiv.style.background = '#FEF2F2';
+      statusDiv.style.border = '1px solid #FCA5A5';
+      statusDiv.style.color = '#991B1B';
+      statusDiv.innerHTML = `<strong>❌ Error en ingesta:</strong> ${detail}`;
+    }
+    showToast(`❌ Error: ${detail}`, 'error');
+  } finally {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '📨 Enviar Correo a Mesa de Ayuda';
+    }
+  }
+}
+
+// Exportar funciones del Módulo 9 y 13 a window
+window.collectClientTelemetry = collectClientTelemetry;
+window.actionCopilotAutoFix = actionCopilotAutoFix;
+window.openEmailSimulatorModal = openEmailSimulatorModal;
+window.closeEmailSimulatorModal = closeEmailSimulatorModal;
+window.insertActiveTicketInEmailSubject = insertActiveTicketInEmailSubject;
+window.submitSimulateEmail = submitSimulateEmail;
+
+
 

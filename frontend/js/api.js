@@ -372,6 +372,110 @@ const API = {
     return res.json();
   },
 
+  // 7. V4.0.0 TEAM LEADER & TORRE DE CONTROL
+  async getTeamLeaderOverview() {
+    const res = await fetch(`${API_BASE}/api/v1/team-leader/overview`);
+    if (!res.ok) throw await res.json();
+    return res.json();
+  },
+
+  async reassignTicket(ticketId, assignedToUsername, reason = "Rebalanceo operativo") {
+    const res = await fetch(`${API_BASE}/api/v1/team-leader/reassign`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ticket_id: ticketId,
+        assigned_to_username: assignedToUsername,
+        reason: reason
+      })
+    });
+    if (!res.ok) throw await res.json();
+    return res.json();
+  },
+
+  async rescueClient(ticketId, payload) {
+    const res = await fetch(`${API_BASE}/api/v1/team-leader/rescue/${ticketId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw await res.json();
+    return res.json();
+  },
+
+  // 8. V4.0.0 RELEASES DE SOFTWARE & DESPLIEGUE EN CASCADA
+  async getReleases() {
+    const res = await fetch(`${API_BASE}/api/v1/releases`);
+    if (!res.ok) throw await res.json();
+    return res.json();
+  },
+
+  async createRelease(payload) {
+    const res = await fetch(`${API_BASE}/api/v1/releases`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw await res.json();
+    return res.json();
+  },
+
+  async deployRelease(tag, payload = {}) {
+    const res = await fetch(`${API_BASE}/api/v1/releases/${encodeURIComponent(tag)}/deploy`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw await res.json();
+    return res.json();
+  },
+
+  // 9. V4.0.0 INCIDENTES MAYORES (MAJOR INCIDENT)
+  async declareMajorIncident(ticketId, isMajor = true) {
+    const res = await fetch(`${API_BASE}/api/v1/tickets/${ticketId}/major-incident?is_major=${Boolean(isMajor)}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    if (!res.ok) throw await res.json();
+    return res.json();
+  },
+
+  async setMajorIncident(ticketId, isMajor = true) {
+    return this.declareMajorIncident(ticketId, isMajor);
+  },
+
+  async linkChildrenTickets(ticketId, childIds, linkedBy = 'soporte') {
+    const res = await fetch(`${API_BASE}/api/v1/tickets/${ticketId}/link-children`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ child_ids: childIds, linked_by: linkedBy })
+    });
+    if (!res.ok) throw await res.json();
+    return res.json();
+  },
+
+  // 10. V4.0.0 INGESTA AUTOMÁTICA POR EMAIL & EMAIL THREADING (MÓDULO 9)
+  async ingestEmail(payload) {
+    const res = await fetch(`${API_BASE}/api/v1/tickets/email-ingest`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw await res.json();
+    return res.json();
+  },
+
+  // 11. V4.0.0 COPILOT N1 RESOLUTIVO (MÓDULO 13)
+  async runCopilotAction(ticketId, actionType, executedBy = 'soporte', parameters = null) {
+    const res = await fetch(`${API_BASE}/api/v1/tickets/${ticketId}/copilot/auto-fix`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: actionType, executed_by: executedBy, parameters: parameters })
+    });
+    if (!res.ok) throw await res.json();
+    return res.json();
+  },
+
   async checkHealth() {
     try {
       const res = await fetch(`${API_BASE}/`);

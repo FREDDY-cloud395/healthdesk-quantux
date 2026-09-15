@@ -7,6 +7,7 @@ from sqlmodel import SQLModel, Field, Relationship
 class UserRole(str, Enum):
     SOLICITANTE = "SOLICITANTE"
     SOPORTE = "SOPORTE"
+    TEAM_LEADER = "TEAM_LEADER"
     ADMIN = "ADMIN"
 
 class TicketStatus(str, Enum):
@@ -53,6 +54,13 @@ class SupportLevel(str, Enum):
     N2 = "N2"
     N3 = "N3"
 
+class ReleaseStatus(str, Enum):
+    PLANIFICADA = "PLANIFICADA"
+    EN_DESARROLLO = "EN_DESARROLLO"
+    STAGING = "STAGING"
+    DESPLEGADA = "DESPLEGADA"
+    CANCELADA = "CANCELADA"
+
 # MODELOS DE TABLAS
 class User(SQLModel, table=True):
     __tablename__ = "users"
@@ -98,10 +106,33 @@ class Ticket(SQLModel, table=True):
     attachment_url: Optional[str] = Field(default=None, nullable=True)
     resolution_notes: Optional[str] = Field(default=None, nullable=True)
     is_workaround: bool = Field(default=False)
+    # v4.0.0 Mejoras: Incidentes Masivos & Releases
+    parent_ticket_id: Optional[str] = Field(default=None, nullable=True, index=True)
+    is_major_incident: bool = Field(default=False)
+    release_tag: Optional[str] = Field(default=None, nullable=True, index=True)
+    # v4.0.0 Mejoras: Cierre Exclusivo, CSAT y Service Recovery
+    resolved_by: Optional[str] = Field(default=None, nullable=True)
+    closed_by: Optional[str] = Field(default=None, nullable=True)
+    rating_stars: Optional[int] = Field(default=None, nullable=True)
+    rating_kudos: Optional[str] = Field(default=None, nullable=True)
+    rating_feedback: Optional[str] = Field(default=None, nullable=True)
+    requires_service_recovery: bool = Field(default=False)
+    telemetry_data: Optional[str] = Field(default=None, nullable=True)  # JSON Zero-Question
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
     resolved_at: Optional[datetime] = Field(default=None, nullable=True)
     closed_at: Optional[datetime] = Field(default=None, nullable=True)
+
+class SoftwareRelease(SQLModel, table=True):
+    __tablename__ = "software_releases"
+    id: Optional[int] = Field(default=None, primary_key=True)
+    tag: str = Field(unique=True, index=True)  # e.g. "v4.0.0", "v4.1.0"
+    name: str  # e.g. "Actualización de Seguridad y Pasarelas"
+    status: ReleaseStatus = Field(default=ReleaseStatus.PLANIFICADA)
+    notes: Optional[str] = None
+    created_by: str = Field(default="admin")
+    deployed_at: Optional[datetime] = None
+    created_at: datetime = Field(default_factory=datetime.utcnow)
 
 class TicketComment(SQLModel, table=True):
     __tablename__ = "ticket_comments"

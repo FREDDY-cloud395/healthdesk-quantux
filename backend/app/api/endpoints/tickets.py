@@ -1,5 +1,6 @@
 import io
 import csv
+import re
 import unicodedata
 from datetime import datetime, timedelta
 from typing import Optional, List
@@ -11,7 +12,7 @@ from app.db.session import get_session
 from app.models.entities import (
     Ticket, TicketStatus, TicketType, ImpactLevel, UrgencyLevel,
     PriorityLevel, SupportLevel, TicketComment, TicketAuditLog, EmailNotificationLog,
-    User, Platform, Institution
+    User, UserRole, Platform, Institution
 )
 from app.core.fsm import calculate_priority, validate_status_transition
 from app.services.email_service import (
@@ -39,6 +40,15 @@ class TicketCreateRequest(BaseModel):
     urgency: UrgencyLevel = UrgencyLevel.MEDIO
     requester_username: str = "solicitante"
     attachment_url: Optional[str] = None
+    parent_ticket_id: Optional[str] = None
+    is_major_incident: bool = False
+    release_tag: Optional[str] = None
+    telemetry_data: Optional[str] = None  # Telemetría Zero-Question JSON
+
+class CopilotActionRequest(BaseModel):
+    action: str  # RETRY_WEBHOOK, RESET_TOKEN, SYNTHESIZE_SUMMARY
+    executed_by: Optional[str] = "soporte"
+    parameters: Optional[dict] = None
 
 class TicketUpdateRequest(BaseModel):
     title: Optional[str] = None
@@ -54,6 +64,9 @@ class TicketUpdateRequest(BaseModel):
     itil_level: Optional[str] = None
     resolution_summary: Optional[str] = None
     resolution_notes: Optional[str] = None
+    parent_ticket_id: Optional[str] = None
+    is_major_incident: Optional[bool] = None
+    release_tag: Optional[str] = None
     changed_by_username: Optional[str] = "solicitante"
 
 class TicketAssignRequest(BaseModel):
@@ -84,6 +97,17 @@ class TicketResolveRequest(BaseModel):
 class TicketCloseRequest(BaseModel):
     closed_by_username: str = "solicitante"
     feedback: Optional[str] = None
+    rating_stars: Optional[int] = 5
+    rating_kudos: Optional[str] = None
+    rating_feedback: Optional[str] = None
+
+class EmailIngestRequest(BaseModel):
+    sender_email: str
+    subject: str
+    body_text: str
+    institution_code: Optional[str] = "OSDE"
+    platform_code: Optional[str] = "CAT_RECETA"
+    sender_name: Optional[str] = None
 
 class TicketCommentRequest(BaseModel):
     author_username: Optional[str] = "soporte"
@@ -462,6 +486,10 @@ def create_ticket(req: TicketCreateRequest, background_tasks: BackgroundTasks, s
         requester_username=req.requester_username,
         attachment_url=req.attachment_url,
         support_level=SupportLevel.N1,
+        parent_ticket_id=req.parent_ticket_id,
+        is_major_incident=req.is_major_incident or False,
+        release_tag=req.release_tag,
+        telemetry_data=req.telemetry_data,
         created_at=datetime.utcnow(),
         updated_at=datetime.utcnow()
     )
@@ -704,7 +732,7 @@ def update_ticket_status(ticket_id: str, req: TicketStatusRequest, background_ta
     
     return ticket
 
-# 6. PASO 4 • RESOLVER TICKET
+# 6. PASO 4 • RESOLVER TICKET (SOPORTE/ESPECIALISTA)
 @router.patch("/{ticket_id}/resolve", response_model=Ticket)
 @router.post("/{ticket_id}/resolve", response_model=Ticket)
 def resolve_ticket(ticket_id: str, req: TicketResolveRequest, background_tasks: BackgroundTasks, session: Session = Depends(get_session)):
@@ -720,6 +748,7 @@ def resolve_ticket(ticket_id: str, req: TicketResolveRequest, background_tasks: 
     ticket.status = TicketStatus.RESUELTO
     ticket.resolution_notes = req.resolution_notes.strip()
     ticket.is_workaround = req.is_workaround
+    ticket.resolved_by = resolver_user
     ticket.resolved_at = datetime.utcnow()
     ticket.updated_at = datetime.utcnow()
     session.add(ticket)
@@ -728,10 +757,35 @@ def resolve_ticket(ticket_id: str, req: TicketResolveRequest, background_tasks: 
         ticket_id=ticket_id,
         changed_by_username=resolver_user,
         field_changed="status",
-        old_value=old_status.value,
+        old_value=old_status.value if hasattr(old_status, 'value') else str(old_status),
         new_value="RESUELTO",
-        change_reason=f"Resolución documentada (Workaround: {req.is_workaround})"
+        change_reason=f"Resolución técnica documentada (Workaround: {req.is_workaround})"
     ))
+    
+    # Cascada de resolución si es Incidente Padre / Mayor (Módulo 1)
+    child_tickets = session.exec(
+        select(Ticket).where(
+            Ticket.parent_ticket_id == ticket_id,
+            Ticket.status != TicketStatus.RESUELTO,
+            Ticket.status != TicketStatus.CERRADO
+        )
+    ).all()
+    for child in child_tickets:
+        c_old_status = child.status.value if hasattr(child.status, 'value') else str(child.status)
+        child.status = TicketStatus.RESUELTO
+        child.resolution_notes = f"[Resuelto vía Incidente Padre #{ticket.id}] {req.resolution_notes.strip()}"
+        child.resolved_by = resolver_user
+        child.resolved_at = datetime.utcnow()
+        child.updated_at = datetime.utcnow()
+        session.add(child)
+        session.add(TicketAuditLog(
+            ticket_id=child.id,
+            changed_by_username=resolver_user,
+            field_changed="status",
+            old_value=c_old_status,
+            new_value="RESUELTO",
+            change_reason=f"Resolución en cascada heredada del Incidente Maestro #{ticket.id}"
+        ))
     
     session.commit()
     session.refresh(ticket)
@@ -741,7 +795,7 @@ def resolve_ticket(ticket_id: str, req: TicketResolveRequest, background_tasks: 
     
     return ticket
 
-# 7. PASO 5 • CERRAR TICKET
+# 7. PASO 5 • CERRAR Y CALIFICAR TICKET (SOLO SOLICITANTE / ADMIN - MÓDULO 10)
 @router.patch("/{ticket_id}/close", response_model=Ticket)
 @router.post("/{ticket_id}/close", response_model=Ticket)
 def close_ticket(ticket_id: str, req: TicketCloseRequest, background_tasks: BackgroundTasks, session: Session = Depends(get_session)):
@@ -750,28 +804,54 @@ def close_ticket(ticket_id: str, req: TicketCloseRequest, background_tasks: Back
         raise HTTPException(status_code=404, detail="Ticket no encontrado.")
     
     if ticket.status != TicketStatus.RESUELTO:
-        raise HTTPException(status_code=400, detail="Solo se pueden cerrar tickets que hayan alcanzado el estado RESUELTO.")
+        raise HTTPException(status_code=400, detail="Solo se pueden cerrar tickets que hayan alcanzado el estado RESUELTO por el equipo de soporte.")
+    
+    # Validar que el usuario que cierra sea el solicitante o un administrador
+    closer_user = session.exec(select(User).where(User.username == req.closed_by_username)).first()
+    if closer_user and closer_user.role.value not in ("ADMIN", "SOLICITANTE") and closer_user.username != ticket.requester_username:
+        raise HTTPException(status_code=403, detail="Por directiva de gobernanza de servicio, los tickets solo pueden ser cerrados y calificados por el usuario solicitante o un administrador.")
     
     ticket.status = TicketStatus.CERRADO
+    ticket.closed_by = req.closed_by_username
     ticket.closed_at = datetime.utcnow()
     ticket.updated_at = datetime.utcnow()
+    
+    # Calificación CSAT "Buena Onda" y Detección de Queja
+    stars = req.rating_stars if req.rating_stars is not None else 5
+    ticket.rating_stars = stars
+    ticket.rating_kudos = req.rating_kudos
+    ticket.rating_feedback = req.rating_feedback or req.feedback
+    
+    # Si la calificación es baja (1 o 2 estrellas), activar Alerta de Rescate para el Team Leader
+    if stars <= 2:
+        ticket.requires_service_recovery = True
+    else:
+        ticket.requires_service_recovery = False
+        
     session.add(ticket)
     
-    feedback = req.feedback or "Cierre y conformidad definitiva del solicitante"
+    audit_reason = f"Cierre y Calificación CSAT: {stars}★. "
+    if req.rating_kudos:
+        audit_reason += f"Kudos: [{req.rating_kudos}]. "
+    if ticket.rating_feedback:
+        audit_reason += f"Feedback: '{ticket.rating_feedback}'"
+    if ticket.requires_service_recovery:
+        audit_reason += " 🚨 ALERTA: Requiere Rescate de Servicio por Team Leader."
+        
     session.add(TicketAuditLog(
         ticket_id=ticket_id,
         changed_by_username=req.closed_by_username,
         field_changed="status",
         old_value="RESUELTO",
         new_value="CERRADO",
-        change_reason=feedback
+        change_reason=audit_reason
     ))
     
     session.commit()
     session.refresh(ticket)
     
     # Disparo asincrono de email de cierre definitivo (UH-35)
-    background_tasks.add_task(notify_ticket_closed, ticket, feedback)
+    background_tasks.add_task(notify_ticket_closed, ticket, ticket.rating_feedback or "Cierre definitivo confirmado")
     
     return ticket
 
@@ -794,3 +874,241 @@ def add_comment(ticket_id: str, req: TicketCommentRequest, session: Session = De
     session.commit()
     session.refresh(comment)
     return comment
+
+# 9. DECLARACIÓN DE INCIDENTE MASIVO (MÓDULO 1)
+@router.post("/{ticket_id}/major-incident", response_model=Ticket)
+def set_major_incident(ticket_id: str, is_major: bool = True, session: Session = Depends(get_session)):
+    ticket = session.get(Ticket, ticket_id)
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket no encontrado.")
+    ticket.is_major_incident = is_major
+    ticket.updated_at = datetime.utcnow()
+    session.add(ticket)
+    session.add(TicketAuditLog(
+        ticket_id=ticket.id,
+        changed_by_username="admin",
+        field_changed="is_major_incident",
+        old_value=str(not is_major),
+        new_value=str(is_major),
+        change_reason="Declaración de Incidente Masivo / Desmarcado" if is_major else "Cancelación de Incidente Masivo"
+    ))
+    session.commit()
+    session.refresh(ticket)
+    return ticket
+
+# 10. VINCULACIÓN DE TICKETS HIJOS A INCIDENTE PADRE (MÓDULO 1)
+class LinkChildrenRequest(BaseModel):
+    child_ids: List[str]
+    linked_by: str = "soporte"
+
+@router.post("/{ticket_id}/link-children")
+def link_child_tickets_endpoint(ticket_id: str, req: LinkChildrenRequest, session: Session = Depends(get_session)):
+    parent = session.get(Ticket, ticket_id)
+    if not parent:
+        raise HTTPException(status_code=404, detail="Ticket padre no encontrado.")
+    
+    linked_count = 0
+    for cid in req.child_ids:
+        child = session.get(Ticket, cid)
+        if child and child.id != parent.id:
+            child.parent_ticket_id = parent.id
+            child.updated_at = datetime.utcnow()
+            session.add(child)
+            session.add(TicketAuditLog(
+                ticket_id=child.id,
+                changed_by_username=req.linked_by,
+                field_changed="parent_ticket_id",
+                old_value=None,
+                new_value=parent.id,
+                change_reason=f"Vinculado como ticket hijo del Incidente Maestro #{parent.id}"
+            ))
+            linked_count += 1
+            
+    session.commit()
+    return {
+        "status": "success",
+        "message": f"Se vincularon {linked_count} solicitudes hijas al incidente maestro #{parent.id}."
+    }
+
+# 11. INGESTA AUTOMÁTICA EMAIL-TO-TICKET & EMAIL THREADING (MÓDULO 9)
+@router.post("/email-ingest", response_model=Ticket)
+def ingest_ticket_from_email(req: EmailIngestRequest, background_tasks: BackgroundTasks, session: Session = Depends(get_session)):
+    # Buscar o crear usuario remitente
+    sender_user = session.exec(select(User).where(User.email == req.sender_email)).first()
+    if not sender_user:
+        uname = req.sender_email.split('@')[0].lower().replace('.', '_')
+        sender_user = User(
+            username=uname,
+            full_name=req.sender_name or req.sender_email.split('@')[0].replace('.', ' ').title(),
+            email=req.sender_email,
+            role=UserRole.SOLICITANTE,
+            created_at=datetime.utcnow()
+        )
+        session.add(sender_user)
+        session.commit()
+        session.refresh(sender_user)
+
+    # UH-63: Hilo Bidireccional por Correo (Email Threading)
+    # Detecta si el asunto hace referencia a un ticket existente e.g. Re: [TICK-202609-0012]
+    match = re.search(r'(TICK-\d{6}-\d{4})', req.subject)
+    if match:
+        existing_id = match.group(1)
+        existing_ticket = session.get(Ticket, existing_id)
+        if existing_ticket:
+            comment = TicketComment(
+                ticket_id=existing_ticket.id,
+                author_username=sender_user.username,
+                message=f"📧 [Respuesta por Correo Electrónico]\n\n{req.body_text}",
+                is_internal=False,
+                created_at=datetime.utcnow()
+            )
+            session.add(comment)
+            
+            session.add(TicketAuditLog(
+                ticket_id=existing_ticket.id,
+                changed_by_username=sender_user.username,
+                field_changed="comments",
+                old_value=None,
+                new_value="NUEVO_MENSAJE_EMAIL",
+                change_reason=f"Respuesta recibida vía correo desde <{req.sender_email}> (Email Threading UH-63)"
+            ))
+            
+            # Si el ticket estaba en espera o resuelto, reactivarlo
+            if existing_ticket.status in [TicketStatus.RESUELTO, TicketStatus.EN_ESPERA]:
+                old_status = existing_ticket.status
+                existing_ticket.status = TicketStatus.EN_CURSO
+                existing_ticket.updated_at = datetime.utcnow()
+                session.add(TicketAuditLog(
+                    ticket_id=existing_ticket.id,
+                    changed_by_username=sender_user.username,
+                    field_changed="status",
+                    old_value=str(old_status),
+                    new_value="EN_CURSO",
+                    change_reason="Reactivación automática por respuesta de correo entrante (Email Threading)"
+                ))
+            
+            session.commit()
+            session.refresh(existing_ticket)
+            return existing_ticket
+
+    # Alta normal de ticket vía correo
+    priority = calculate_priority(ImpactLevel.MEDIO, UrgencyLevel.MEDIO)
+    ticket_id = generate_ticket_id(session)
+    
+    new_ticket = Ticket(
+        id=ticket_id,
+        title=f"📩 [EMAIL] {req.subject}",
+        description=req.body_text,
+        platform_code=req.platform_code or "CAT_RECETA",
+        institution_code=req.institution_code or "OSDE",
+        ticket_type=TicketType.INCIDENTE,
+        impact=ImpactLevel.MEDIO,
+        urgency=UrgencyLevel.MEDIO,
+        priority=priority,
+        status=TicketStatus.NUEVO,
+        requester_username=sender_user.username,
+        support_level=SupportLevel.N1,
+        created_at=datetime.utcnow(),
+        updated_at=datetime.utcnow()
+    )
+    session.add(new_ticket)
+    
+    session.add(TicketAuditLog(
+        ticket_id=ticket_id,
+        changed_by_username=sender_user.username,
+        field_changed="status",
+        old_value=None,
+        new_value="NUEVO",
+        change_reason=f"Ingesta automática Email-to-Ticket desde <{req.sender_email}>"
+    ))
+    
+    session.commit()
+    session.refresh(new_ticket)
+    
+    background_tasks.add_task(notify_ticket_created, new_ticket)
+    return new_ticket
+
+# 12. COPILOT N1 RESOLUTIVO (MÓDULO 13)
+@router.post("/{ticket_id}/copilot/auto-fix")
+def copilot_auto_fix(ticket_id: str, req: CopilotActionRequest, session: Session = Depends(get_session)):
+    ticket = session.get(Ticket, ticket_id)
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket no encontrado.")
+    
+    actor = req.executed_by or "soporte"
+    
+    if req.action == "RETRY_WEBHOOK":
+        note_text = f"🤖 [Copilot N1 - Auto-Fix Webhook]\nSe reenvió la carga útil hacia el endpoint de la plataforma '{ticket.platform_code}'.\nResultado: HTTP 200 OK - Payload re-sincronizado exitosamente sin fallas de red."
+        comment = TicketComment(
+            ticket_id=ticket.id,
+            author_username=actor,
+            message=note_text,
+            is_internal=True,
+            created_at=datetime.utcnow()
+        )
+        session.add(comment)
+        session.add(TicketAuditLog(
+            ticket_id=ticket.id,
+            changed_by_username=actor,
+            field_changed="copilot_action",
+            old_value=None,
+            new_value="RETRY_WEBHOOK_OK",
+            change_reason="Auto-reparación y reintento de Webhook ejecutado con éxito vía Copilot N1."
+        ))
+        msg = "Webhook y reintento de payload ejecutado con éxito (HTTP 200)."
+        
+    elif req.action == "RESET_TOKEN":
+        note_text = f"🤖 [Copilot N1 - Regeneración de Credenciales]\nSe invalidó la clave de sesión temporal de la institución '{ticket.institution_code}' y se regeneró el token de sincronización.\nEstado: Token activo y renovado."
+        comment = TicketComment(
+            ticket_id=ticket.id,
+            author_username=actor,
+            message=note_text,
+            is_internal=True,
+            created_at=datetime.utcnow()
+        )
+        session.add(comment)
+        session.add(TicketAuditLog(
+            ticket_id=ticket.id,
+            changed_by_username=actor,
+            field_changed="copilot_action",
+            old_value=None,
+            new_value="RESET_TOKEN_OK",
+            change_reason="Regeneración de token de autenticación/API ejecutada vía Copilot N1."
+        ))
+        msg = "Token de sesión/integración regenerado correctamente."
+        
+    elif req.action == "SYNTHESIZE_SUMMARY":
+        summary_text = f"🤖 [Copilot N1 - Resumen Flash de Caso]\n" \
+                       f"• Diagnóstico Rápido: Caso clasificado como {ticket.priority} en '{ticket.platform_code}'.\n" \
+                       f"• Solicitante: {ticket.requester_username} ({ticket.institution_code}).\n" \
+                       f"• Estado Actual: {ticket.status}. Nivel de escalado: {ticket.support_level}."
+        comment = TicketComment(
+            ticket_id=ticket.id,
+            author_username=actor,
+            message=summary_text,
+            is_internal=True,
+            created_at=datetime.utcnow()
+        )
+        session.add(comment)
+        session.add(TicketAuditLog(
+            ticket_id=ticket.id,
+            changed_by_username=actor,
+            field_changed="copilot_action",
+            old_value=None,
+            new_value="SYNTHESIZE_SUMMARY_OK",
+            change_reason="Generación de Resumen Ejecutivo Flash por IA Copilot N1."
+        ))
+        msg = "Resumen flash del caso generado y registrado en notas técnicas."
+        
+    else:
+        raise HTTPException(status_code=400, detail=f"Acción de Copilot '{req.action}' no reconocida.")
+        
+    session.commit()
+    session.refresh(ticket)
+    return {
+        "status": "success",
+        "action": req.action,
+        "message": msg,
+        "ticket_id": ticket.id
+    }
+

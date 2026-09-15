@@ -20,7 +20,55 @@ class LoginResponse(BaseModel):
     full_name: str
     email: str
     role: UserRole
-    landing_view: str  # sol_bandeja, soporte_cockpit, admin_panel
+    landing_view: str  # mis_solicitudes, cockpit_soporte, torre_control, panel_administracion
+    iam_provider: str = "Quantux-IAM-Enterprise"
+    permissions: list[str] = []
+
+ROLE_PERMISSIONS = {
+    UserRole.ADMIN: [
+        "iam:manage_users",
+        "iam:assign_roles",
+        "catalog:manage_institutions",
+        "catalog:manage_platforms",
+        "releases:deploy",
+        "audit:export",
+        "team_leader:access",
+        "team_leader:reassign",
+        "team_leader:rescue",
+        "tickets:view_all",
+        "tickets:resolve",
+        "tickets:close",
+        "tickets:create",
+        "kb:manage"
+    ],
+    UserRole.TEAM_LEADER: [
+        "team_leader:access",
+        "team_leader:reassign",
+        "team_leader:rescue",
+        "tickets:view_all",
+        "tickets:resolve",
+        "tickets:create",
+        "kb:view",
+        "metrics:view"
+    ],
+    UserRole.SOPORTE: [
+        "tickets:view_all",
+        "tickets:work",
+        "tickets:internal_notes",
+        "tickets:escalate",
+        "tickets:resolve",
+        "kb:view",
+        "metrics:view"
+    ],
+    UserRole.SOLICITANTE: [
+        "tickets:create",
+        "tickets:view_own",
+        "tickets:reply",
+        "tickets:close",
+        "csat:rate",
+        "kb:view"
+    ]
+}
 
 # 1. POST /auth/login - Autenticación y Validación de Perfil (UH-01)
 @router.post("/login", response_model=LoginResponse)
@@ -66,18 +114,21 @@ def login_user(req: LoginRequest, session: Session = Depends(get_session)):
     landing_map = {
         UserRole.SOLICITANTE: "mis_solicitudes",
         UserRole.SOPORTE: "cockpit_soporte",
+        UserRole.TEAM_LEADER: "torre_control",
         UserRole.ADMIN: "panel_administracion"
     }
     
     return LoginResponse(
         status="SUCCESS",
-        message=f"Autenticación exitosa como {user.role.value}",
+        message=f"Autenticación exitosa vía Quantux IAM como {user.role.value}",
         user_id=user.id,
         username=user.username,
         full_name=user.full_name,
         email=user.email,
         role=user.role,
-        landing_view=landing_map.get(user.role, "mis_solicitudes")
+        landing_view=landing_map.get(user.role, "mis_solicitudes"),
+        iam_provider="Quantux-IAM-Enterprise",
+        permissions=ROLE_PERMISSIONS.get(user.role, [])
     )
 
 # 2. GET /auth/switch/{role} - Selector Rápido de Rol (UH-29)
@@ -90,16 +141,19 @@ def switch_role(target_role: UserRole, session: Session = Depends(get_session)):
     landing_map = {
         UserRole.SOLICITANTE: "mis_solicitudes",
         UserRole.SOPORTE: "cockpit_soporte",
+        UserRole.TEAM_LEADER: "torre_control",
         UserRole.ADMIN: "panel_administracion"
     }
     
     return LoginResponse(
         status="SUCCESS",
-        message=f"Rol alternado a {user.role.value}",
+        message=f"Rol alternado vía Quantux IAM a {user.role.value}",
         user_id=user.id,
         username=user.username,
         full_name=user.full_name,
         email=user.email,
         role=user.role,
-        landing_view=landing_map.get(user.role, "mis_solicitudes")
+        landing_view=landing_map.get(user.role, "mis_solicitudes"),
+        iam_provider="Quantux-IAM-Enterprise",
+        permissions=ROLE_PERMISSIONS.get(user.role, [])
     )

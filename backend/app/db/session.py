@@ -27,7 +27,17 @@ def init_db():
             "ALTER TABLE kb_articles ADD COLUMN version TEXT DEFAULT 'v1.0'",
             "ALTER TABLE kb_articles ADD COLUMN changelog TEXT DEFAULT 'Versión inicial homologada'",
             "ALTER TABLE kb_articles ADD COLUMN view_count INTEGER DEFAULT 0",
-            "ALTER TABLE kb_articles ADD COLUMN source_ticket_id TEXT"
+            "ALTER TABLE kb_articles ADD COLUMN source_ticket_id TEXT",
+            "ALTER TABLE tickets ADD COLUMN parent_ticket_id TEXT",
+            "ALTER TABLE tickets ADD COLUMN is_major_incident INTEGER DEFAULT 0",
+            "ALTER TABLE tickets ADD COLUMN release_tag TEXT",
+            "ALTER TABLE tickets ADD COLUMN resolved_by TEXT",
+            "ALTER TABLE tickets ADD COLUMN closed_by TEXT",
+            "ALTER TABLE tickets ADD COLUMN rating_stars INTEGER",
+            "ALTER TABLE tickets ADD COLUMN rating_kudos TEXT",
+            "ALTER TABLE tickets ADD COLUMN rating_feedback TEXT",
+            "ALTER TABLE tickets ADD COLUMN requires_service_recovery INTEGER DEFAULT 0",
+            "ALTER TABLE tickets ADD COLUMN telemetry_data TEXT"
         ]:
             try:
                 session.exec(text(col_def))
@@ -37,6 +47,20 @@ def init_db():
         try:
             session.exec(text("UPDATE users SET email = 'fcortes@quantuxsalud.com' WHERE username = 'admin' OR full_name LIKE '%Freddy%'"))
             session.commit()
+        except Exception:
+            pass
+        try:
+            from app.models.entities import User, UserRole, SupportLevel
+            tl = session.exec(select(User).where(User.username == "teamleader")).first()
+            if not tl:
+                session.add(User(
+                    username="teamleader",
+                    full_name="Carla Daneri",
+                    email="cdaneri@quantux.com",
+                    role=UserRole.TEAM_LEADER,
+                    support_level=SupportLevel.N2
+                ))
+                session.commit()
         except Exception:
             pass
 

@@ -664,23 +664,23 @@
   <section class="metrics-bar">
     <div class="metric-card">
       <span class="metric-label">Progreso del Backlog</span>
-      <span class="metric-val" id="metric-progress" style="color: #38BDF8;">78 <small>/ 78 SP (Liberado UAT)</small></span>
+      <span class="metric-val" id="metric-progress" style="color: #10B981;">165 <small>/ 165 SP (v4.0.0-DEV)</small></span>
     </div>
     <div class="metric-card">
-      <span class="metric-label">Historias & Casos QA</span>
-      <span class="metric-val" id="metric-stories">35 UHs + 7 QA <small>(En Validación UAT)</small></span>
+      <span class="metric-label">Historias de Usuario</span>
+      <span class="metric-val" id="metric-stories">48 UHs <small>(14 Módulos v4)</small></span>
     </div>
     <div class="metric-card">
       <span class="metric-label">Fase del Proyecto</span>
-      <span class="metric-val">Sprint 5 <small>Pruebas de Certificación</small></span>
+      <span class="metric-val">Release v4.0.0 <small>Certificación Cloud</small></span>
     </div>
     <div class="metric-card">
-      <span class="metric-label">Esfuerzo Ejecutado</span>
-      <span class="metric-val">185 / 185 hs <small>dedicación acumulada</small></span>
+      <span class="metric-label">Estado de Flujo</span>
+      <span class="metric-val">100% Implementado <small>E2E Verificado</small></span>
     </div>
     <div class="metric-card">
       <span class="metric-label">Solution Owner</span>
-      <span class="metric-val" style="font-size: 14px; margin-top: 4px;">Freddy Cortés <small>(AF)</small></span>
+      <span class="metric-val" style="font-size: 14px; margin-top: 4px;">Freddy Cortés <small>(AF / Tech Lead)</small></span>
     </div>
   </section>
 
@@ -690,26 +690,33 @@
       <div class="filter-item">
         <label for="filter-sprint">Sprint:</label>
         <select id="filter-sprint" onchange="renderBoard()">
-          <option value="ALL" selected>Todos los Sprints (1 a 5) — En Pruebas UAT</option>
-          <option value="Sprint 1">Sprint 1 (Planificación & Docs)</option>
-          <option value="Sprint 2">Sprint 2 (Backend Core & DB)</option>
-          <option value="Sprint 3">Sprint 3 (Frontend Consola Central)</option>
-          <option value="Sprint 4">Sprint 4 (Integración E2E & QA)</option>
-          <option value="Sprint 5">Sprint 5 (Estabilización & Liberación para Pruebas UAT)</option>
+          <option value="ALL" selected>Todos los Sprints (v4.0.0-DEV Completo: 165 SP)</option>
+          <option value="Sprint 1 (v4)">Sprint 1 (v4): Incidentes Masivos, Releases & Bandeja (30 SP)</option>
+          <option value="Sprint 2 (v4)">Sprint 2 (v4): Workspace Zen, Alta & Multi-Servicio (32 SP)</option>
+          <option value="Sprint 3 (v4)">Sprint 3 (v4): Analytics, Directorio, Email & CSAT (43 SP)</option>
+          <option value="Sprint 4 (v4)">Sprint 4 (v4): Catálogo, Team Leader & Suite Médicos (46 SP)</option>
+          <option value="Sprint 5 (v4)">Sprint 5 (v4): Sidebar Zen & Ergonomía (14 SP)</option>
         </select>
       </div>
 
       <div class="filter-item">
-        <label for="filter-epic">Épica:</label>
+        <label for="filter-epic">Módulo / Épica:</label>
         <select id="filter-epic" onchange="renderBoard()">
-          <option value="ALL">Todas las Épicas (EP-01 a EP-06 + QA)</option>
-          <option value="EP-01">EP-01: Acceso, Roles y Permisos (7 SP)</option>
-          <option value="EP-02">EP-02: Tickets y Datos (15 SP)</option>
-          <option value="EP-03">EP-03: Bandeja y Asignación (10 SP)</option>
-          <option value="EP-04">EP-04: Ciclo Estados & Solución (14 SP)</option>
-          <option value="EP-05">EP-05: Seguimiento e Historial (9 SP)</option>
-          <option value="EP-06">EP-06: Consola Operativa y Maestros (25 SP)</option>
-          <option value="QA-E2E">QA-E2E: Pruebas Funcionales & Auditoría (17 SP)</option>
+          <option value="ALL">Todos los Módulos v4 (48 UHs, 165 SP)</option>
+          <option value="1. Incidentes Masivos">Módulo 1: Incidentes Masivos (12 SP)</option>
+          <option value="2. Releases y Despliegues">Módulo 2: Releases y Despliegues (8 SP)</option>
+          <option value="3. Bandeja General & Paginación">Módulo 3: Bandeja General & Paginación (9 SP)</option>
+          <option value="4. Workspace Zen">Módulo 4: Workspace Zen (16 SP)</option>
+          <option value="5. Alta Sin Ruido">Módulo 5: Alta Sin Ruido (10 SP)</option>
+          <option value="6. Generalización Enterprise">Módulo 6: Generalización Enterprise (6 SP)</option>
+          <option value="7. Tablero de Control Zen">Módulo 7: Tablero de Control Zen (9 SP)</option>
+          <option value="8. Directorio de Usuarios Zen">Módulo 8: Directorio de Usuarios Zen (10 SP)</option>
+          <option value="9. Ingesta Email Omnicanal">Módulo 9: Ingesta Email Omnicanal (12 SP)</option>
+          <option value="10. Cierre & CSAT">Módulo 10: Cierre & CSAT (12 SP)</option>
+          <option value="11. Catálogo Zen">Módulo 11: Catálogo Zen (11 SP)</option>
+          <option value="12. Team Leader & Torre">Módulo 12: Team Leader & Torre (10 SP)</option>
+          <option value="14. Suite Médicos (Guardia)">Módulo 14: Suite Médicos Guardia (25 SP)</option>
+          <option value="15. Sidebar Zen & Ergonomía">Módulo 15: Sidebar Zen & Ergonomía (15 SP)</option>
         </select>
       </div>
 
@@ -786,70 +793,442 @@
   <script>
     // BASE DE DATOS ACTUALIZADA CON SPRINT 1, 2 Y 3 COMPLETADOS + SPRINT 4 QA E2E
     const INITIAL_BACKLOG = [
-      // SPRINT 1 & 2: DOCUMENTACIÓN Y ARQUITECTURA (DONE & QA)
-      { id: "DOC-01", title: "Plan de Gestión del Proyecto con IA (DOC-MGT-001)", epic: "Gestión", sp: 5, sprint: "Sprint 1", status: "done", discipline: "AF / PM" },
-      { id: "DOC-02", title: "Especificación Funcional y Backlog (DOC-REQ-002)", epic: "Gestión", sp: 8, sprint: "Sprint 1", status: "done", discipline: "AF" },
-      { id: "DOC-03", title: "Arquitectura y Diseño Técnico (DOC-ARC-003)", epic: "Gestión", sp: 5, sprint: "Sprint 2", status: "done", discipline: "Tech / AF" },
-      { id: "DOC-MAP", title: "User Story Mapping y Flujo de 5 Pasos", epic: "Gestión", sp: 3, sprint: "Sprint 1", status: "backlog", discipline: "AF / UX" },
-
-      // EP-01: Acceso y Roles (DONE)
-      { id: "UH-01", title: "Autenticación de Usuarios por Rol", epic: "EP-01", sp: 2, sprint: "Sprint 2", status: "done", discipline: "Backend" },
-      { id: "UH-02", title: "Control de Permisos por Perfil (RBAC)", epic: "EP-01", sp: 2, sprint: "Sprint 2", status: "done", discipline: "Backend" },
-      { id: "UH-03", title: "Auditoría Básica de Acceso", epic: "EP-01", sp: 2, sprint: "Sprint 3", status: "done", discipline: "Backend" },
-      { id: "UH-04", title: "Cierre de Sesión Seguro", epic: "EP-01", sp: 1, sprint: "Sprint 3", status: "done", discipline: "Frontend" },
-
-      // EP-02: Tickets y Datos (DONE & QA)
-      { id: "UH-05", title: "Formulario Unificado de Alta de Ticket", epic: "EP-02", sp: 3, sprint: "Sprint 2", status: "done", discipline: "Backend API" },
-      { id: "UH-06", title: "Selección de Plataforma / Categoría", epic: "EP-02", sp: 2, sprint: "Sprint 2", status: "done", discipline: "Backend" },
-      { id: "UH-07", title: "Vinculación con Cliente Institucional", epic: "EP-02", sp: 2, sprint: "Sprint 2", status: "done", discipline: "Backend" },
-      { id: "UH-08", title: "Tipificación de la Solicitud", epic: "EP-02", sp: 2, sprint: "Sprint 2", status: "done", discipline: "Backend" },
-      { id: "UH-09", title: "Asignación de Prioridad (P = I × U)", epic: "EP-02", sp: 3, sprint: "Sprint 2", status: "done", discipline: "Backend / UX" },
-      { id: "UH-10", title: "Adjunto de Evidencias", epic: "EP-02", sp: 2, sprint: "Sprint 3", status: "done", discipline: "Frontend" },
-      { id: "UH-11", title: "Consulta y Edición Básica de Ticket", epic: "EP-02", sp: 1, sprint: "Sprint 3", status: "done", discipline: "Frontend" },
-
-      // EP-03: Bandeja y Asignación (DONE, QA & PROGRESS)
-      { id: "UH-12", title: "Bandeja de Entrada de Solicitudes", epic: "EP-03", sp: 3, sprint: "Sprint 2", status: "done", discipline: "Backend API" },
-      { id: "UH-13", title: "Asignación de Responsable de Soporte", epic: "EP-03", sp: 2, sprint: "Sprint 2", status: "done", discipline: "Backend" },
-      { id: "UH-14", title: "Autoasignación Directa ('Tomar Ticket')", epic: "EP-03", sp: 1, sprint: "Sprint 3", status: "done", discipline: "Frontend" },
-      { id: "UH-15", title: "Derivación a Nivel de Soporte (N2/N3)", epic: "EP-03", sp: 2, sprint: "Sprint 3", status: "qa", discipline: "Backend" },
-      { id: "UH-16", title: "Reasignación de Responsable con Motivo", epic: "EP-03", sp: 2, sprint: "Sprint 4", status: "qa", discipline: "Backend / QA" },
-
-      // EP-04: Ciclo Estados y Solución (PROGRESS & QA)
-      { id: "UH-17", title: "Transición de Estado a 'En Curso'", epic: "EP-04", sp: 2, sprint: "Sprint 2", status: "done", discipline: "Backend" },
-      { id: "UH-18", title: "Pausa de Gestión por Info Pendiente", epic: "EP-04", sp: 2, sprint: "Sprint 2", status: "done", discipline: "Backend" },
-      { id: "UH-19", title: "Registro Obligatorio de Solución", epic: "EP-04", sp: 3, sprint: "Sprint 2", status: "qa", discipline: "Backend" },
-      { id: "UH-20", title: "Registro de Solución Provisoria (Workaround)", epic: "EP-04", sp: 3, sprint: "Sprint 4", status: "qa", discipline: "Backend / UX" },
-      { id: "UH-21", title: "Transición a Estado 'Resuelto'", epic: "EP-04", sp: 2, sprint: "Sprint 2", status: "progress", discipline: "Backend" },
-      { id: "UH-22", title: "Transición a Estado 'Cerrado'", epic: "EP-04", sp: 2, sprint: "Sprint 4", status: "progress", discipline: "Backend / QA" },
-
-      // EP-05: Seguimiento e Historial (PROGRESS, SPRINT & BACKLOG)
-      { id: "UH-23", title: "Comentarios Públicos de Seguimiento", epic: "EP-05", sp: 2, sprint: "Sprint 4", status: "progress", discipline: "Frontend / Backend" },
-      { id: "UH-24", title: "Notas Internas Privadas para Soporte", epic: "EP-05", sp: 2, sprint: "Sprint 4", status: "progress", discipline: "Backend" },
-      { id: "UH-25", title: "Avisos Básicos de Notificación", epic: "EP-05", sp: 2, sprint: "Sprint 4", status: "sprint", discipline: "Frontend" },
-      { id: "UH-26", title: "Aviso Destacado de Ticket Resuelto", epic: "EP-05", sp: 1, sprint: "Sprint 4", status: "sprint", discipline: "Frontend" },
-      { id: "UH-27", title: "Historial y Trazabilidad de Cambios", epic: "EP-05", sp: 2, sprint: "Sprint 4", status: "qa", discipline: "Backend / QA" },
-
-      // EP-06: Operación en Consola Unificada (SPRINT & DONE)
-      { id: "UH-28", title: "Consola Operativa en Pantalla Única (3 Columnas)", epic: "EP-06", sp: 6, sprint: "Sprint 3", status: "done", discipline: "UX / Frontend" },
-      { id: "UH-29", title: "Selector Rápido de Rol en 1 Clic", epic: "EP-06", sp: 3, sprint: "Sprint 3", status: "done", discipline: "Frontend" },
-      { id: "UH-30", title: "Listado, Búsqueda y Filtros Rápidos", epic: "EP-06", sp: 4, sprint: "Sprint 3", status: "done", discipline: "Frontend" },
-      { id: "UH-31", title: "Gestión de Dotación y Mesas de Soporte", epic: "EP-06", sp: 4, sprint: "Sprint 5", status: "sprint", discipline: "Admin" },
-      { id: "UH-32", title: "Configuración Global del ServiceDesk", epic: "EP-06", sp: 3, sprint: "Sprint 5", status: "sprint", discipline: "Admin" },
-
-      // EP-07: Base de Conocimiento (SPRINT & BACKLOG)
-      { id: "UH-33", title: "Consulta y Filtros en Base de Conocimiento", epic: "EP-07", sp: 3, sprint: "Sprint 5", status: "sprint", discipline: "KB Engine" },
-      { id: "UH-34", title: "Publicación de Artículos Clínicos v1.0", epic: "EP-07", sp: 3, sprint: "Sprint 5", status: "sprint", discipline: "KB Engine" },
-      { id: "UH-35", title: "Versionado Inmutable v1.1 con Changelog", epic: "EP-07", sp: 2, sprint: "Sprint 5", status: "backlog", discipline: "KB Engine" },
-      { id: "UH-36", title: "Auto-Publicación de KB desde Ticket", epic: "EP-07", sp: 2, sprint: "Sprint 5", status: "backlog", discipline: "KB Engine" },
-
-      // EP-08: Gobernanza de IA & Exportación (PROGRESS & BACKLOG)
-      { id: "UH-37", title: "Supervisión de Guardrails y 5 Preguntas IA", epic: "EP-08", sp: 3, sprint: "Sprint 5", status: "progress", discipline: "Gobernanza IA" },
-      { id: "UH-38", title: "Exportación Forense de Tickets en CSV UTF-8", epic: "EP-08", sp: 3, sprint: "Sprint 5", status: "backlog", discipline: "Data Export" },
-      { id: "UH-39", title: "Mecanismo de Mitigación (6ª Pregunta) ante Falla IA", epic: "EP-08", sp: 3, sprint: "Sprint 5", status: "backlog", discipline: "Resiliencia IA" },
-      { id: "UH-40", title: "Protocolo Clínico de Sanitización HL7 FHIR", epic: "EP-08", sp: 2, sprint: "Sprint 5", status: "backlog", discipline: "Seguridad IA" }
-    ];
+      {
+            "id": "UH-33",
+            "title": "Vinculación Jerárquica a Ticket Padre (Incidente Masivo)",
+            "epic": "1. Incidentes Masivos",
+            "sp": 5,
+            "sprint": "Sprint 1 (v4)",
+            "status": "done",
+            "discipline": "Backend / FSM"
+      },
+      {
+            "id": "UH-34",
+            "title": "Resolución y Cierre Automatizado en Cascada",
+            "epic": "1. Incidentes Masivos",
+            "sp": 4,
+            "sprint": "Sprint 1 (v4)",
+            "status": "done",
+            "discipline": "Backend / FSM"
+      },
+      {
+            "id": "UH-35",
+            "title": "Desvinculación por Excepción",
+            "epic": "1. Incidentes Masivos",
+            "sp": 3,
+            "sprint": "Sprint 1 (v4)",
+            "status": "done",
+            "discipline": "Backend / FSM"
+      },
+      {
+            "id": "UH-36",
+            "title": "Catálogo y Asociación de Versiones de Release",
+            "epic": "2. Releases y Despliegues",
+            "sp": 5,
+            "sprint": "Sprint 1 (v4)",
+            "status": "done",
+            "discipline": "DevOps / Releases"
+      },
+      {
+            "id": "UH-37",
+            "title": "Cierre Automático por Despliegue en Producción",
+            "epic": "2. Releases y Despliegues",
+            "sp": 3,
+            "sprint": "Sprint 1 (v4)",
+            "status": "done",
+            "discipline": "DevOps / Releases"
+      },
+      {
+            "id": "UH-38",
+            "title": "Grilla Despejada y Filtro por Defecto de Tickets Cerrados",
+            "epic": "3. Bandeja General & Paginación",
+            "sp": 2,
+            "sprint": "Sprint 1 (v4)",
+            "status": "done",
+            "discipline": "Frontend / UX"
+      },
+      {
+            "id": "UH-39",
+            "title": "Paginación Dinámica (10 / 25 / 50 registros)",
+            "epic": "3. Bandeja General & Paginación",
+            "sp": 3,
+            "sprint": "Sprint 1 (v4)",
+            "status": "done",
+            "discipline": "Frontend / UX"
+      },
+      {
+            "id": "UH-40",
+            "title": "Filtro Prominente \"⚡ Sin Asignar\"",
+            "epic": "3. Bandeja General & Paginación",
+            "sp": 2,
+            "sprint": "Sprint 1 (v4)",
+            "status": "done",
+            "discipline": "Frontend / UX"
+      },
+      {
+            "id": "UH-41",
+            "title": "Ergonomía de Grilla — Hover Amigable y Libre de Tinte de Alarma (Anti-Estrés)",
+            "epic": "3. Bandeja General & Paginación",
+            "sp": 2,
+            "sprint": "Sprint 1 (v4)",
+            "status": "done",
+            "discipline": "Frontend / UX"
+      },
+      {
+            "id": "UH-42",
+            "title": "Cabecera Minimalista y Jerarquía Esencial",
+            "epic": "4. Workspace Zen",
+            "sp": 3,
+            "sprint": "Sprint 2 (v4)",
+            "status": "done",
+            "discipline": "UX / Workspace"
+      },
+      {
+            "id": "UH-43",
+            "title": "Metadatos Secundarios y Ficha Técnica en Acordeones Desplegables",
+            "epic": "4. Workspace Zen",
+            "sp": 3,
+            "sprint": "Sprint 2 (v4)",
+            "status": "done",
+            "discipline": "UX / Workspace"
+      },
+      {
+            "id": "UH-44",
+            "title": "Indicador de SLA Ergonómico y Anti-Estrés",
+            "epic": "4. Workspace Zen",
+            "sp": 2,
+            "sprint": "Sprint 2 (v4)",
+            "status": "done",
+            "discipline": "UX / Workspace"
+      },
+      {
+            "id": "UH-45",
+            "title": "Separación de Vista de Conversación vs. Auditoría",
+            "epic": "4. Workspace Zen",
+            "sp": 3,
+            "sprint": "Sprint 2 (v4)",
+            "status": "done",
+            "discipline": "UX / Workspace"
+      },
+      {
+            "id": "UH-46",
+            "title": "Barra de Acciones Contextuales Flotante",
+            "epic": "4. Workspace Zen",
+            "sp": 3,
+            "sprint": "Sprint 2 (v4)",
+            "status": "done",
+            "discipline": "UX / Workspace"
+      },
+      {
+            "id": "UH-47",
+            "title": "Hilo de Respuestas y Notas Colapsables con Expansión Completa",
+            "epic": "4. Workspace Zen",
+            "sp": 2,
+            "sprint": "Sprint 2 (v4)",
+            "status": "done",
+            "discipline": "UX / Workspace"
+      },
+      {
+            "id": "UH-48",
+            "title": "Reorganización Estructurada del Flujo de Alta y Supresión de Ruido Visual",
+            "epic": "5. Alta Sin Ruido",
+            "sp": 3,
+            "sprint": "Sprint 2 (v4)",
+            "status": "done",
+            "discipline": "Frontend / Telemetría"
+      },
+      {
+            "id": "UH-49",
+            "title": "Segmented Controls Compactos de Prioridad (Fin de las Macro-Tarjetas)",
+            "epic": "5. Alta Sin Ruido",
+            "sp": 2,
+            "sprint": "Sprint 2 (v4)",
+            "status": "done",
+            "discipline": "Frontend / Telemetría"
+      },
+      {
+            "id": "UH-50",
+            "title": "Preselección Inteligente de Contexto (Smart Defaults)",
+            "epic": "5. Alta Sin Ruido",
+            "sp": 3,
+            "sprint": "Sprint 2 (v4)",
+            "status": "done",
+            "discipline": "Frontend / Telemetría"
+      },
+      {
+            "id": "UH-51",
+            "title": "Opciones Técnicas Avanzadas en Acordeón Colapsable",
+            "epic": "5. Alta Sin Ruido",
+            "sp": 2,
+            "sprint": "Sprint 2 (v4)",
+            "status": "done",
+            "discipline": "Frontend / Telemetría"
+      },
+      {
+            "id": "UH-52",
+            "title": "Limpieza Terminológica y Supresión del Vocablo \"Asistencial\"",
+            "epic": "6. Generalización Enterprise",
+            "sp": 3,
+            "sprint": "Sprint 2 (v4)",
+            "status": "done",
+            "discipline": "Enterprise Core"
+      },
+      {
+            "id": "UH-53",
+            "title": "Catálogo Universal de Tipologías y Servicios Técnicos",
+            "epic": "6. Generalización Enterprise",
+            "sp": 3,
+            "sprint": "Sprint 2 (v4)",
+            "status": "done",
+            "discipline": "Enterprise Core"
+      },
+      {
+            "id": "UH-54",
+            "title": "Reducción a las 4 Métricas de Oro (North Star KPIs)",
+            "epic": "7. Tablero de Control Zen",
+            "sp": 3,
+            "sprint": "Sprint 3 (v4)",
+            "status": "done",
+            "discipline": "Analytics / BI"
+      },
+      {
+            "id": "UH-55",
+            "title": "Reemplazo de Barras Masivas por Ranking Focalizado \"Top 5\"",
+            "epic": "7. Tablero de Control Zen",
+            "sp": 2,
+            "sprint": "Sprint 3 (v4)",
+            "status": "done",
+            "discipline": "Analytics / BI"
+      },
+      {
+            "id": "UH-56",
+            "title": "Gráficos de Estado Limpios (Dona Unificada con Filtro Rápido)",
+            "epic": "7. Tablero de Control Zen",
+            "sp": 2,
+            "sprint": "Sprint 3 (v4)",
+            "status": "done",
+            "discipline": "Analytics / BI"
+      },
+      {
+            "id": "UH-57",
+            "title": "Lenguaje Neutral y Universal en Gráficos y Reportes",
+            "epic": "7. Tablero de Control Zen",
+            "sp": 2,
+            "sprint": "Sprint 3 (v4)",
+            "status": "done",
+            "discipline": "Analytics / BI"
+      },
+      {
+            "id": "UH-58",
+            "title": "Paginación Dinámica y Buscador Rápido de Usuarios",
+            "epic": "8. Directorio de Usuarios Zen",
+            "sp": 3,
+            "sprint": "Sprint 3 (v4)",
+            "status": "done",
+            "discipline": "RBAC / Directorio"
+      },
+      {
+            "id": "UH-59",
+            "title": "Limpieza de Redundancias y Fusión de Rol / Nivel",
+            "epic": "8. Directorio de Usuarios Zen",
+            "sp": 2,
+            "sprint": "Sprint 3 (v4)",
+            "status": "done",
+            "discipline": "RBAC / Directorio"
+      },
+      {
+            "id": "UH-60",
+            "title": "Modal / Drawer Operativo de Perfil de Usuario (Botón 100% Funcional)",
+            "epic": "8. Directorio de Usuarios Zen",
+            "sp": 3,
+            "sprint": "Sprint 3 (v4)",
+            "status": "done",
+            "discipline": "RBAC / Directorio"
+      },
+      {
+            "id": "UH-61",
+            "title": "Neutralización Terminológica del Directorio",
+            "epic": "8. Directorio de Usuarios Zen",
+            "sp": 2,
+            "sprint": "Sprint 3 (v4)",
+            "status": "done",
+            "discipline": "RBAC / Directorio"
+      },
+      {
+            "id": "UH-62",
+            "title": "Procesamiento de Correos Entrantes y Alta Automática de Tickets",
+            "epic": "9. Ingesta Email Omnicanal",
+            "sp": 4,
+            "sprint": "Sprint 3 (v4)",
+            "status": "done",
+            "discipline": "Omnichannel / Email"
+      },
+      {
+            "id": "UH-63",
+            "title": "Hilo Bidireccional de Conversación por Correo (Email Threading)",
+            "epic": "9. Ingesta Email Omnicanal",
+            "sp": 5,
+            "sprint": "Sprint 3 (v4)",
+            "status": "done",
+            "discipline": "Omnichannel / Email"
+      },
+      {
+            "id": "UH-64",
+            "title": "Notificación Automática de Confirmación (Auto-Reply con Ticket ID)",
+            "epic": "9. Ingesta Email Omnicanal",
+            "sp": 3,
+            "sprint": "Sprint 3 (v4)",
+            "status": "done",
+            "discipline": "Omnichannel / Email"
+      },
+      {
+            "id": "UH-65",
+            "title": "Permiso Exclusivo del Solicitante para Cierre y Certificación de Solución",
+            "epic": "10. Cierre & CSAT",
+            "sp": 4,
+            "sprint": "Sprint 3 (v4)",
+            "status": "done",
+            "discipline": "CSAT / Requester UX"
+      },
+      {
+            "id": "UH-66",
+            "title": "Grilla de Calificación \"Buena Onda\" (CSAT Gamificado y Emojis Reactivos)",
+            "epic": "10. Cierre & CSAT",
+            "sp": 5,
+            "sprint": "Sprint 3 (v4)",
+            "status": "done",
+            "discipline": "CSAT / Requester UX"
+      },
+      {
+            "id": "UH-67",
+            "title": "Protocolo Colaborativo de Queja y Recuperación de Experiencia (Service Recovery)",
+            "epic": "10. Cierre & CSAT",
+            "sp": 3,
+            "sprint": "Sprint 3 (v4)",
+            "status": "done",
+            "discipline": "CSAT / Requester UX"
+      },
+      {
+            "id": "UH-68",
+            "title": "Rediseño de Tarjetas Zen (Supresión del Enjambre de Píldoras por Indicador de Cobertura)",
+            "epic": "11. Catálogo Zen",
+            "sp": 3,
+            "sprint": "Sprint 4 (v4)",
+            "status": "done",
+            "discipline": "Catálogo / Admin"
+      },
+      {
+            "id": "UH-69",
+            "title": "Ficha 360° en Drawer Lateral Interactivo (Toda la Información sin Embrollo)",
+            "epic": "11. Catálogo Zen",
+            "sp": 3,
+            "sprint": "Sprint 4 (v4)",
+            "status": "done",
+            "discipline": "Catálogo / Admin"
+      },
+      {
+            "id": "UH-70",
+            "title": "Cabecera Unificada y Segmented Control Moderno",
+            "epic": "11. Catálogo Zen",
+            "sp": 3,
+            "sprint": "Sprint 4 (v4)",
+            "status": "done",
+            "discipline": "Catálogo / Admin"
+      },
+      {
+            "id": "UH-71",
+            "title": "Vista de Tabla Maestra de Alta Densidad (List View Zen)",
+            "epic": "11. Catálogo Zen",
+            "sp": 2,
+            "sprint": "Sprint 4 (v4)",
+            "status": "done",
+            "discipline": "Catálogo / Admin"
+      },
+      {
+            "id": "UH-72",
+            "title": "Matriz RBAC con Rol Nativo Team Leader / Supervisor",
+            "epic": "12. Team Leader & Torre",
+            "sp": 5,
+            "sprint": "Sprint 4 (v4)",
+            "status": "done",
+            "discipline": "Team Leader / Torre"
+      },
+      {
+            "id": "UH-73",
+            "title": "Torre de Control del Team Leader & Protocolo de Rescate de Quejas",
+            "epic": "12. Team Leader & Torre",
+            "sp": 5,
+            "sprint": "Sprint 4 (v4)",
+            "status": "done",
+            "discipline": "Team Leader / Torre"
+      },
+      {
+            "id": "UH-74",
+            "title": "Botón de Emergencia Asistencial \"Paciente en Espera / Box Bloqueado\" (1-Tap Emergency)",
+            "epic": "14. Suite Médicos (Guardia)",
+            "sp": 8,
+            "sprint": "Sprint 4 (v4)",
+            "status": "done",
+            "discipline": "Clínico / IA Guardia"
+      },
+      {
+            "id": "UH-75",
+            "title": "Protocolo de Contingencia Asistencial Inmediato (Plan B Offline)",
+            "epic": "14. Suite Médicos (Guardia)",
+            "sp": 8,
+            "sprint": "Sprint 4 (v4)",
+            "status": "done",
+            "discipline": "Clínico / IA Guardia"
+      },
+      {
+            "id": "UH-76",
+            "title": "Audio-Ticket Clínico Asistencial (Dictado por Voz con IA)",
+            "epic": "14. Suite Médicos (Guardia)",
+            "sp": 5,
+            "sprint": "Sprint 4 (v4)",
+            "status": "done",
+            "discipline": "Clínico / IA Guardia"
+      },
+      {
+            "id": "UH-77",
+            "title": "Receptor Crítico en Consola de Soporte (Alerta Visual y Sonora de Rescate Asistencial)",
+            "epic": "14. Suite Médicos (Guardia)",
+            "sp": 4,
+            "sprint": "Sprint 4 (v4)",
+            "status": "done",
+            "discipline": "Clínico / IA Guardia"
+      },
+      {
+            "id": "UH-78",
+            "title": "Colapso y Expansión Dinámica del Sidebar (Modo Mini-Barra 64px con Tooltips Flotantes)",
+            "epic": "15. Sidebar Zen & Ergonomía",
+            "sp": 5,
+            "sprint": "Sprint 5 (v4)",
+            "status": "done",
+            "discipline": "Sidebar / Ergonomía"
+      },
+      {
+            "id": "UH-79",
+            "title": "Árbol Dinámico de Vistas Rápidas con Contadores Vivos (Sub-Filtros de Mesa de Ayuda)",
+            "epic": "15. Sidebar Zen & Ergonomía",
+            "sp": 5,
+            "sprint": "Sprint 5 (v4)",
+            "status": "done",
+            "discipline": "Sidebar / Ergonomía"
+      },
+      {
+            "id": "UH-80",
+            "title": "Reconfiguración Contextual Dinámica por Rol (RBAC Zen del Menú Lateral)",
+            "epic": "15. Sidebar Zen & Ergonomía",
+            "sp": 5,
+            "sprint": "Sprint 5 (v4)",
+            "status": "done",
+            "discipline": "Sidebar / Ergonomía"
+      }
+];
 
     let tasks = INITIAL_BACKLOG;
+    localStorage.setItem('quantux_board_tasks_v4', JSON.stringify(tasks));
     localStorage.setItem('quantux_board_tasks', JSON.stringify(tasks));
 
     const COLUMNS = ['backlog', 'sprint', 'progress', 'qa', 'done'];
@@ -908,7 +1287,9 @@
 
       // Métricas
       const percent = totalSP > 0 ? Math.round((completedSP / totalSP) * 100) : 0;
-      document.getElementById('metric-progress').innerHTML = `${completedSP} <small>/ 75 SP (${percent}%)</small>`;
+      document.getElementById('metric-progress').innerHTML = `${completedSP} <small>/ ${totalSP} SP (${percent}%)</small>`;
+      const storiesEl = document.getElementById('metric-stories');
+      if (storiesEl) storiesEl.innerHTML = `${tasks.length} UHs <small>(14 Módulos v4)</small>`;
     }
 
     function getMoveButtons(task) {
