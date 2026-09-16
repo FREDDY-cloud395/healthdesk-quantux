@@ -307,133 +307,75 @@
     <aside class="app-sidebar" id="app-sidebar">
       <div class="sidebar-top">
         
-        <!-- Logo / Marca Oficial: Quantux ServiceDesk -->
-        <div class="brand-box">
-          <div class="brand-left-group" id="brand-home-link" onclick="navigateHome()" title="Ir a la Página Principal - Quantux ServiceDesk" style="cursor: pointer; display: flex; align-items: center; gap: 8px; text-decoration: none; flex: 1; min-width: 0; overflow: hidden;">
-            <div class="brand-logo-icon" style="background: linear-gradient(135deg, #00A896 0%, #0284C7 100%); width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0, 168, 150, 0.35); flex-shrink: 0;">
-              <svg viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px;">
-                <path d="M3 18v-6a9 9 0 0 1 18 0v6"></path>
-                <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path>
-              </svg>
-            </div>
-            <div class="brand-info" style="min-width: 0; overflow: hidden;">
-              <div class="brand-name" style="font-size: 13.5px; font-weight: 800; color: #FFFFFF; letter-spacing: 0.3px; line-height: 1.2; display: flex; align-items: center; gap: 4px; white-space: nowrap;">QUANTUX <span style="color: #00E5C9;">SD</span> <span class="badge-v4-brand" style="background: rgba(0, 229, 201, 0.15); color: #00E5C9; border: 1px solid rgba(0, 229, 201, 0.4); font-size: 8.5px; font-weight: 800; padding: 1px 4px; border-radius: 3px;">v4</span></div>
-              <div class="brand-sub" style="font-size: 9px; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Enterprise Desk</div>
-            </div>
-          </div>
-          <div style="display: flex; align-items: center; gap: 4px; flex-shrink: 0;">
-            <button class="sidebar-collapse-toggle" id="btn-sidebar-collapse" title="Plegar / Expandir Menú (Modo Zen 64px) [Tecla '[']" aria-label="Plegar Menú">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;"><polyline points="15 18 9 12 15 6"></polyline></svg>
-            </button>
-            <button class="sidebar-close-btn" id="btn-sidebar-close" aria-label="Cerrar Menú">&times;</button>
-          </div>
-        </div>
-
-        <!-- Botón de Acción Principal (➕ Nueva Solicitud) -->
-        <div class="sidebar-action-box">
-          <button class="btn-sidebar-new" id="btn-open-modal" title="Nueva Solicitud (Tecla 'N')">
-            <svg class="btn-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 15px; height: 15px;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-            <span>Nueva Solicitud</span>
+        <!-- Fila Superior: Botón Hamburguesa Estilo Windows 11 Task Manager -->
+        <div class="win11-hamburger-row">
+          <button type="button" class="btn-win11-hamburger" id="btn-sidebar-collapse" onclick="toggleSidebarCollapse()" title="Plegar / Expandir Menú [Tecla '[']" aria-label="Menú">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
           </button>
         </div>
 
-        <!-- Enlaces de Navegación del Menú Izquierdo -->
-        <nav class="sidebar-nav">
-          <div class="sidebar-nav-label">Módulos de Gestión</div>
-
-          <div class="nav-link-item active nav-hub-tab" data-view="tickets" id="tab-tickets" data-tooltip="Mesa de Ayuda (143)" style="justify-content: space-between;">
+        <!-- Enlaces de Navegación del Menú Izquierdo (Estilo Windows 11) -->
+        <nav class="sidebar-nav win11-sidebar-nav">
+          <div class="nav-link-item active nav-hub-tab" data-view="tickets" id="tab-tickets" data-tooltip="Mesa de Ayuda">
+            <div class="nav-indicator-pill"></div>
             <div class="nav-link-left">
-              <svg class="nav-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 17px; height: 17px;"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></svg>
+              <svg class="nav-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px;"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></svg>
               <span>Mesa de Ayuda</span>
             </div>
-            <div style="display: flex; align-items: center; gap: 6px;">
-              <span class="sidebar-badge" id="sidebar-ticket-count">143</span>
-              <span id="subnav-tickets-chevron" style="font-size: 10px; color: #94A3B8; cursor: pointer; padding: 2px 4px; transition: transform 0.2s;" title="Plegar / desplegar vistas">▼</span>
-            </div>
-          </div>
-
-          <!-- Sub-Árbol Dinámico de Vistas Rápidas con Contadores Vivos (UH-79) -->
-          <div class="sidebar-subnav" id="subnav-tickets">
-            <div class="sidebar-subnav-item" id="subnav-unassigned" onclick="filterBySidebarQuick('unassigned')" title="Tickets sin técnico asignado">
-              <span class="subnav-dot dot-amber"></span>
-              <span class="subnav-label">⚡ Sin Asignar</span>
-              <span class="subnav-badge badge-unassigned" id="side-unassigned-count">0</span>
-            </div>
-            <div class="sidebar-subnav-item" id="subnav-my-tickets" onclick="filterBySidebarQuick('my_assigned')" title="Casos asignados a mi usuario">
-              <span class="subnav-dot dot-blue"></span>
-              <span class="subnav-label">👤 Mis Asignados</span>
-              <span class="subnav-badge badge-my-tickets" id="side-my-tickets-count">0</span>
-            </div>
-            <div class="sidebar-subnav-item" id="subnav-p1" onclick="filterBySidebarQuick('p1_critical')" title="Emergencias críticas de máxima prioridad">
-              <span class="subnav-dot dot-red pulsing"></span>
-              <span class="subnav-label">🔥 Críticos P1</span>
-              <span class="subnav-badge badge-p1" id="side-p1-count">0</span>
-            </div>
-            <div class="sidebar-subnav-item" id="subnav-waiting" onclick="filterBySidebarQuick('waiting')" title="En espera de respuesta o terceros">
-              <span class="subnav-dot dot-slate"></span>
-              <span class="subnav-label">⏳ En Espera</span>
-              <span class="subnav-badge badge-waiting" id="side-waiting-count">0</span>
-            </div>
-            <div class="sidebar-subnav-item active-subnav" id="subnav-all" onclick="filterBySidebarQuick('all_active')" title="Ver todos los casos activos">
-              <span class="subnav-dot dot-green"></span>
-              <span class="subnav-label">📥 Todos los Activos</span>
-            </div>
-          </div>
-
-          <!-- Módulo 12: Pestaña Exclusiva Team Leader / Torre de Control -->
-          <div class="nav-link-item nav-hub-tab" data-view="team-leader" id="tab-team-leader" data-tooltip="Torre de Control" style="display: none;">
-            <div class="nav-link-left">
-              <svg class="nav-link-icon" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 17px; height: 17px;"><circle cx="12" cy="12" r="10"></circle><polygon points="12 8 8 12 12 16 16 12 12 8"></polygon></svg>
-              <span style="color: #FBBF24; font-weight: 700;">🎖️ Torre de Control</span>
-            </div>
-            <span class="sidebar-badge" style="background: rgba(245, 158, 11, 0.2); color: #F59E0B;" id="tl-rescue-alert-badge">0</span>
           </div>
 
           <div class="nav-link-item nav-hub-tab" data-view="dashboard" id="tab-dashboard" data-tooltip="Tablero de Control">
+            <div class="nav-indicator-pill"></div>
             <div class="nav-link-left">
-              <svg class="nav-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 17px; height: 17px;"><rect x="3" y="3" width="7" height="9" rx="1"></rect><rect x="14" y="3" width="7" height="5" rx="1"></rect><rect x="14" y="12" width="7" height="9" rx="1"></rect><rect x="3" y="16" width="7" height="5" rx="1"></rect></svg>
+              <svg class="nav-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px;"><rect x="3" y="3" width="7" height="9" rx="1"></rect><rect x="14" y="3" width="7" height="5" rx="1"></rect><rect x="14" y="12" width="7" height="9" rx="1"></rect><rect x="3" y="16" width="7" height="5" rx="1"></rect></svg>
               <span>Tablero de Control</span>
             </div>
           </div>
 
           <div class="nav-link-item nav-hub-tab" data-view="users" id="tab-users" data-tooltip="Usuarios & Roles">
+            <div class="nav-indicator-pill"></div>
             <div class="nav-link-left">
-              <svg class="nav-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 17px; height: 17px;"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+              <svg class="nav-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px;"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
               <span>Usuarios & Roles</span>
             </div>
           </div>
 
-          <div class="nav-link-item nav-hub-tab" data-view="platforms" id="tab-platforms">
+          <div class="nav-link-item nav-hub-tab" data-view="platforms" id="tab-platforms" data-tooltip="Plataformas & Instituciones">
+            <div class="nav-indicator-pill"></div>
             <div class="nav-link-left">
-              <svg class="nav-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 17px; height: 17px;"><rect x="2" y="2" width="20" height="8" rx="2"></rect><rect x="2" y="14" width="20" height="8" rx="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
+              <svg class="nav-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px;"><rect x="2" y="2" width="20" height="8" rx="2"></rect><rect x="2" y="14" width="20" height="8" rx="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
               <span>Plataformas & Instituciones</span>
             </div>
-            <span class="sidebar-badge">9</span>
           </div>
 
-          <div class="nav-link-item nav-hub-tab" data-view="articles" id="tab-articles">
+          <div class="nav-link-item nav-hub-tab" data-view="articles" id="tab-articles" data-tooltip="Base de Conocimiento">
+            <div class="nav-indicator-pill"></div>
             <div class="nav-link-left">
-              <svg class="nav-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 17px; height: 17px;"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+              <svg class="nav-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px;"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
               <span>Base de Conocimiento</span>
             </div>
           </div>
 
-          <div class="nav-link-item nav-hub-tab" data-view="config" id="tab-config">
+          <div class="nav-link-item nav-hub-tab" data-view="config" id="tab-config" data-tooltip="Configuración">
+            <div class="nav-indicator-pill"></div>
             <div class="nav-link-left">
-              <svg class="nav-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 17px; height: 17px;"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+              <svg class="nav-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px;"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
               <span>Configuración</span>
             </div>
           </div>
 
-          <a href="/manual" target="_blank" class="nav-link-item" style="text-decoration: none; cursor: pointer; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 12px;" title="Abrir Manual Operativo (DOC-05)">
+          <a href="/manual" target="_blank" class="nav-link-item" style="text-decoration: none;" title="Abrir Manual Operativo (DOC-05)" data-tooltip="Manual Operativo">
+            <div class="nav-indicator-pill"></div>
             <div class="nav-link-left">
-              <svg class="nav-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 17px; height: 17px;"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
-              <span>Manual Operativo (DOC-05)</span>
+              <svg class="nav-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px;"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+              <span>Manual Operativo</span>
             </div>
           </a>
-
         </nav>
-
       </div>
 
       <!-- Footer del Menú Izquierdo (Estado del Sistema & Perfil de Usuario) -->
@@ -479,17 +421,6 @@
 
         <div class="navbar-right" id="top-navbar-right" style="display: flex; align-items: center; gap: 10px;">
           
-          <!-- SUITE ASISTENCIAL EXCLUSIVA PARA MÉDICOS / PERSONAL DE SALUD (100% Inaccesible para Mesa de Ayuda) -->
-          <div id="doctor-emergency-suite" style="display: none; align-items: center; gap: 8px;">
-            <button type="button" class="btn-doctor-emergency" id="btn-doctor-emergency" onclick="openDoctorEmergencyModal()" title="Emergencia Asistencial Inmediata: Paciente en Box / Consulta Bloqueada">
-              <span class="pulsing-beacon"></span>
-              <span style="font-weight: 800; font-size: 11.5px; letter-spacing: 0.3px;">🚨 Paciente en Box</span>
-            </button>
-            <button type="button" class="btn-doctor-contingency" id="btn-doctor-contingency" onclick="openDoctorContingencyModal()" title="Protocolos y Recetarios de Contingencia Offline">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 13px; height: 13px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-              <span>Plan B Contingencia</span>
-            </button>
-          </div>
 
           <!-- Indicador Oficial de Entorno & Versión v4.0.0-DEV -->
           <div class="env-status-indicator" style="display: inline-flex; align-items: center; gap: 8px; background: #F0FDF4; border: 1px solid #86EFAC; padding: 4px 12px; border-radius: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.03);" title="Quantux ServiceDesk Enterprise v4.0.0-DEV (Ambiente Cloud Dev)">
@@ -854,9 +785,9 @@
                 <table class="users-table-styled invgate-tickets-table" id="table-tickets-directory">
                   <thead>
                     <tr>
-                      <th style="width: 260px; min-width: 250px;">ID & Prioridad</th>
+                      <th style="width: 140px; min-width: 130px;">ID Solicitud</th>
                       <th style="min-width: 320px;">Detalle de la Solicitud</th>
-                      <th style="width: 170px; min-width: 160px;">Estado & SLA</th>
+                      <th style="width: 130px; min-width: 120px;">Estado</th>
                       <th style="width: 180px; min-width: 170px;">Asignado a</th>
                       <th style="width: 190px; min-width: 180px;">Solicitante / Institución</th>
                     </tr>
@@ -874,9 +805,9 @@
                   <span style="font-size: 11.5px; color: #94A3B8; font-weight: 500; margin-left: 8px;">(Casos resueltos y archivados accesibles vía filtros)</span>
                 </div>
                 <div class="invgate-pagination">
-                  <button type="button" class="invgate-page-btn" disabled>&lt;</button>
-                  <span class="invgate-page-info">1 / 1</span>
-                  <button type="button" class="invgate-page-btn" disabled>&gt;</button>
+                  <button type="button" class="invgate-page-btn" id="invgate-page-prev" onclick="changeTicketsPage(-1)" title="Página anterior">&lt;</button>
+                  <span class="invgate-page-info" id="invgate-page-info">1 / 1</span>
+                  <button type="button" class="invgate-page-btn" id="invgate-page-next" onclick="changeTicketsPage(1)" title="Página siguiente">&gt;</button>
                 </div>
               </div>
             </div>

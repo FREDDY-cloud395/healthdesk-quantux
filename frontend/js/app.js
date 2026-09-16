@@ -214,34 +214,29 @@ function initResponsiveDrawer() {
   if (closeBtn) closeBtn.addEventListener('click', closeDrawer);
   if (backdrop) backdrop.addEventListener('click', closeDrawer);
 
-  // Control de colapso a 64px (Modo Zen Anti-Fatiga - UH-79)
+  // Control de colapso estilo Windows 11 (Task Manager)
   const collapseBtn = document.getElementById('btn-sidebar-collapse');
   
-  const updateCollapseIcon = (isCollapsed) => {
-    if (!collapseBtn) return;
-    collapseBtn.innerHTML = isCollapsed
-      ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 15px; height: 15px;"><polyline points="9 18 15 12 9 6"></polyline></svg>`
-      : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 15px; height: 15px;"><polyline points="15 18 9 12 15 6"></polyline></svg>`;
-    collapseBtn.setAttribute('title', isCollapsed ? 'Expandir Menú (Tecla [)' : 'Plegar Menú (Modo Zen 64px) (Tecla [)');
-  };
-
   const toggleCollapse = () => {
     if (!sidebar) return;
     const isCollapsed = sidebar.classList.toggle('collapsed');
     localStorage.setItem('quantux_sidebar_collapsed', isCollapsed ? '1' : '0');
-    updateCollapseIcon(isCollapsed);
   };
 
   // Restaurar estado guardado de colapso
   const savedCollapsed = localStorage.getItem('quantux_sidebar_collapsed') === '1';
   if (savedCollapsed && sidebar) {
     sidebar.classList.add('collapsed');
-    updateCollapseIcon(true);
   }
 
-  if (collapseBtn) collapseBtn.addEventListener('click', toggleCollapse);
+  if (collapseBtn) {
+    collapseBtn.onclick = (e) => {
+      e.preventDefault();
+      toggleCollapse();
+    };
+  }
 
-  // Atajo de teclado tecla '[' para plegar/expandir menú lateral (Arma Secreta Módulo 13)
+  // Atajo de teclado tecla '[' para plegar/expandir menú lateral
   document.addEventListener('keydown', (e) => {
     if (e.key === '[' && !['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) {
       e.preventDefault();
@@ -1677,11 +1672,27 @@ function renderTicketList() {
   if (sidebarCount) sidebarCount.textContent = total;
   if (footerCount) footerCount.textContent = total;
 
+  // Paginación real y funcional (10 tickets por página)
+  const pageSize = 10;
+  if (!AppState.ticketCurrentPage || AppState.ticketCurrentPage < 1) AppState.ticketCurrentPage = 1;
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  if (AppState.ticketCurrentPage > totalPages) AppState.ticketCurrentPage = totalPages;
+
+  const pageInfo = document.getElementById('invgate-page-info');
+  if (pageInfo) pageInfo.textContent = `${AppState.ticketCurrentPage} / ${totalPages}`;
+  const prevBtn = document.getElementById('invgate-page-prev');
+  if (prevBtn) prevBtn.disabled = (AppState.ticketCurrentPage <= 1);
+  const nextBtn = document.getElementById('invgate-page-next');
+  if (nextBtn) nextBtn.disabled = (AppState.ticketCurrentPage >= totalPages);
+
+  const startIndex = (AppState.ticketCurrentPage - 1) * pageSize;
+  const pagedTickets = (AppState.tickets || []).slice(startIndex, startIndex + pageSize);
+
   if (tbody) {
-    if (!AppState.tickets || AppState.tickets.length === 0) {
+    if (!pagedTickets || pagedTickets.length === 0) {
       tbody.innerHTML = `
         <tr>
-          <td colspan="7" style="text-align:center; padding: 48px 16px; color:#94A3B8;">
+          <td colspan="5" style="text-align:center; padding: 48px 16px; color:#94A3B8;">
             <div style="font-size:36px; margin-bottom:10px;">📭</div>
             <div style="font-size:14px; font-weight:700; color:#475569;">No hay solicitudes activas con los filtros aplicados</div>
             <div style="font-size:12px; color:#94A3B8; margin-top:4px;">Utilice los filtros avanzados para consultar casos resueltos o cambiar de sede.</div>
@@ -1689,7 +1700,7 @@ function renderTicketList() {
         </tr>
       `;
     } else {
-      tbody.innerHTML = AppState.tickets.map(t => {
+      tbody.innerHTML = pagedTickets.map(t => {
         const priority = (t.priority || 'P3').toUpperCase();
         const status = (t.status || 'NUEVO').toUpperCase();
         const level = (t.support_level || 'N1').toUpperCase();
@@ -1700,15 +1711,8 @@ function renderTicketList() {
         // Detección de Emergencia Médica Asistencial (Paciente en Box)
         const isPatientInBox = (t.title || '').toUpperCase().includes('PACIENTE EN BOX');
 
-        // Clases de prioridad para borde lateral y pastilla
+        // Clases de prioridad
         const prioRowClass = isPatientInBox ? `prio-row-${priority.toLowerCase()} row-patient-emergency` : `prio-row-${priority.toLowerCase()}`;
-        const prioChipClass = `chip-${priority.toLowerCase()}`;
-        let prioIcon = '🔵';
-        let prioLabel = `${priority} • Media`;
-        if (priority === 'P1') { prioIcon = '🔴'; prioLabel = 'P1 • Crítica'; }
-        else if (priority === 'P2') { prioIcon = '🟡'; prioLabel = 'P2 • Alta'; }
-        else if (priority === 'P3') { prioIcon = '🔵'; prioLabel = 'P3 • Media'; }
-        else if (priority === 'P4') { prioIcon = '⚪'; prioLabel = 'P4 • Baja'; }
 
         // Pastilla de Estado
         let statusPillClass = 'status-pill-nuevo';
@@ -1718,12 +1722,6 @@ function renderTicketList() {
         else if (status === 'EN_CURSO') { statusPillClass = 'status-pill-en_curso'; statusIcon = '🟡'; statusText = 'EN CURSO'; }
         else if (status === 'RESUELTO') { statusPillClass = 'status-pill-resuelto'; statusIcon = '✅'; statusText = 'RESUELTO'; }
         else if (status === 'CERRADO') { statusPillClass = 'status-pill-cerrado'; statusIcon = '🔒'; statusText = 'CERRADO'; }
-
-        // Cálculo dinámico de SLA
-        const sla = calculateTicketSLA(t);
-        let slaChipClass = 'sla-chip-ok';
-        if (sla.status === 'BREACHED') slaChipClass = 'sla-chip-breached';
-        else if (sla.status === 'WARNING') slaChipClass = 'sla-chip-warn';
 
         // Asignado a
         const rawAgent = t.assignee_name || (t.assignee_username ? formatUserName(t.assignee_username) : 'Sin Asignar');
@@ -1735,12 +1733,9 @@ function renderTicketList() {
 
         return `
           <tr class="${prioRowClass}" onclick="openAgentWorkspace('${t.id}')" title="Haga clic para abrir el espacio de trabajo de la solicitud #${t.id}">
-            <!-- 1. ID & PRIORIDAD (Misma Fila / Horizontal) -->
-            <td style="white-space: nowrap; width: 230px; min-width: 220px;">
-              <div style="display: flex; align-items: center; gap: 8px;">
-                <span class="tkt-id-badge" style="margin-bottom: 0;">#${t.id}</span>
-                <span class="tkt-prio-chip ${prioChipClass}">${prioIcon} ${prioLabel}</span>
-              </div>
+            <!-- 1. ID SOLICITUD (Limpio y directo) -->
+            <td style="white-space: nowrap; width: 140px; min-width: 130px;">
+              <span class="tkt-id-badge" style="margin-bottom: 0;">#${t.id}</span>
             </td>
 
             <!-- 2. SOLICITUD & TAXONOMÍA -->
@@ -1761,11 +1756,10 @@ function renderTicketList() {
               </div>
             </td>
 
-            <!-- 3. ESTADO & TIEMPO SLA -->
-            <td style="width: 170px; white-space: nowrap;">
+            <!-- 3. ESTADO (Limpio, sin SLA de alarma) -->
+            <td style="width: 130px; white-space: nowrap;">
               <div class="tkt-sla-track-cell">
                 <span class="tkt-status-pill ${statusPillClass}">${statusIcon} ${statusText}</span>
-                <span class="tkt-sla-chip ${slaChipClass}">⏱️ ${sla.timeRemainingText || 'En plazo'}</span>
               </div>
             </td>
 
@@ -1838,9 +1832,19 @@ function renderTicketList() {
           </div>
         `;
       }).join('');
-    }
   }
 }
+
+window.changeTicketsPage = function(delta) {
+  if (!AppState.ticketCurrentPage) AppState.ticketCurrentPage = 1;
+  const total = AppState.tickets ? AppState.tickets.length : 0;
+  const totalPages = Math.max(1, Math.ceil(total / 10));
+  const newPage = AppState.ticketCurrentPage + delta;
+  if (newPage >= 1 && newPage <= totalPages) {
+    AppState.ticketCurrentPage = newPage;
+    renderTicketList();
+  }
+};
 
 async function selectTicket(ticketId, userTriggered = false) {
   try {

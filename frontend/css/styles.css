@@ -92,117 +92,206 @@ html, body {
 }
 
 /* 2. SIDEBAR */
+/* ==========================================================================
+   SIDEBAR ESTILO WINDOWS 11 (TASK MANAGER)
+   ========================================================================== */
 .app-sidebar {
-  width: 255px;
-  min-width: 255px;
-  max-width: 255px;
-  background-color: var(--q-sidebar-bg);
+  width: 240px;
+  min-width: 240px;
+  max-width: 240px;
+  background-color: #0F172A; /* Slate 900 elegante */
   color: #F8FAFC;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  border-right: 1px solid var(--q-sidebar-border);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
   z-index: 100;
   box-shadow: 2px 0 10px rgba(0,0,0,0.15);
-  transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1), min-width 0.25s cubic-bezier(0.4, 0, 0.2, 1), max-width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  overflow-y: auto;
-  overflow-x: hidden;
+  transition: width 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              min-width 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              max-width 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  overflow: hidden !important;
+  user-select: none;
 }
 
-/* MODO ZEN ANTI-FATIGA: SIDEBAR 64PX (UH-79) */
-.app-sidebar.collapsed {
-  width: 64px !important;
-  min-width: 64px !important;
-  max-width: 64px !important;
-  overflow-x: hidden !important;
+/* Fila Superior: Botón Hamburguesa ≡ */
+.win11-hamburger-row {
+  padding: 10px 10px 6px 10px;
+  display: flex;
+  align-items: center;
 }
 
-.app-sidebar.collapsed .brand-box {
-  padding: 12px 6px 12px 6px !important;
-  justify-content: center !important;
-  flex-direction: column !important;
-  gap: 8px !important;
-}
-
-.app-sidebar.collapsed .brand-left-group {
-  padding: 0 !important;
-  margin: 0 !important;
-  justify-content: center !important;
-}
-
-.app-sidebar.collapsed .brand-info {
-  display: none !important;
-}
-
-.app-sidebar.collapsed .sidebar-collapse-toggle {
-  margin: 0 auto !important;
-}
-
-.app-sidebar.collapsed .sidebar-action-box {
-  padding: 0 8px !important;
-  margin: 10px 0 !important;
-}
-
-.app-sidebar.collapsed .btn-sidebar-new {
-  width: 44px !important;
-  height: 44px !important;
-  padding: 0 !important;
-  margin: 0 auto !important;
-  border-radius: 10px !important;
+.btn-win11-hamburger {
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  color: #94A3B8 !important;
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 6px !important;
+  cursor: pointer !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
+  transition: background 0.15s ease, color 0.15s ease !important;
+  padding: 0 !important;
 }
 
-.app-sidebar.collapsed .btn-sidebar-new span {
-  display: none !important;
+.btn-win11-hamburger:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #FFFFFF !important;
 }
 
-.app-sidebar.collapsed .sidebar-nav-label {
-  display: none !important;
+.btn-win11-hamburger svg {
+  width: 20px !important;
+  height: 20px !important;
+  stroke: currentColor !important;
 }
 
-.app-sidebar.collapsed .nav-link-item {
+/* Lista de Navegación Windows 11 */
+.win11-sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px 6px;
+}
+
+.win11-sidebar-nav .nav-link-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 38px;
+  padding: 0 12px;
+  border-radius: 6px;
+  color: #94A3B8;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.win11-sidebar-nav .nav-link-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #F8FAFC;
+}
+
+/* Ítem Activo con Indicador Azul en Borde Izquierdo */
+.win11-sidebar-nav .nav-link-item.active {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #FFFFFF !important;
+  font-weight: 600;
+}
+
+.nav-indicator-pill {
+  display: none;
+}
+
+.win11-sidebar-nav .nav-link-item.active .nav-indicator-pill {
+  display: block;
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3.5px;
+  height: 18px;
+  background-color: #0084FF; /* Acento Azul Windows 11 */
+  border-radius: 0 3px 3px 0;
+}
+
+.win11-sidebar-nav .nav-link-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.win11-sidebar-nav .nav-link-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.win11-sidebar-nav .nav-link-item span {
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ==========================================================================
+   ESTADO COLAPSADO A 52PX (IDÉNTICO A WINDOWS 11 TASK MANAGER)
+   ========================================================================== */
+.app-sidebar.collapsed {
+  width: 52px !important;
+  min-width: 52px !important;
+  max-width: 52px !important;
+}
+
+.app-sidebar.collapsed .win11-hamburger-row {
+  padding: 10px 0 6px 0 !important;
   justify-content: center !important;
-  padding: 10px 0 !important;
-  margin: 4px 6px !important;
-  border-radius: 8px !important;
 }
 
-.app-sidebar.collapsed .nav-link-left {
+.app-sidebar.collapsed .btn-win11-hamburger {
+  margin: 0 auto !important;
+}
+
+.app-sidebar.collapsed .win11-sidebar-nav {
+  padding: 4px 4px !important;
+}
+
+.app-sidebar.collapsed .win11-sidebar-nav .nav-link-item {
+  padding: 0 !important;
+  justify-content: center !important;
+  width: 44px !important;
+  margin: 0 auto !important;
+}
+
+.app-sidebar.collapsed .win11-sidebar-nav .nav-link-left {
   justify-content: center !important;
   gap: 0 !important;
-  width: 100% !important;
+  width: auto !important;
 }
 
-.app-sidebar.collapsed .nav-link-left span {
-  display: none !important;
-}
-
-.app-sidebar.collapsed .sidebar-badge {
-  display: none !important;
-}
-
-.app-sidebar.collapsed .sidebar-subnav {
+.app-sidebar.collapsed .win11-sidebar-nav .nav-link-item span {
   display: none !important;
 }
 
 .app-sidebar.collapsed .sidebar-bottom {
-  padding: 10px 6px !important;
+  padding: 8px 0 !important;
+  display: flex !important;
+  justify-content: center !important;
 }
 
-.app-sidebar.collapsed .sidebar-sys-status {
+.app-sidebar.collapsed .sidebar-sys-status,
+.app-sidebar.collapsed .user-profile-info,
+.app-sidebar.collapsed .user-profile-action {
   display: none !important;
 }
 
 .app-sidebar.collapsed .user-profile-widget {
+  padding: 0 !important;
   justify-content: center !important;
-  padding: 6px 0 !important;
 }
 
-.app-sidebar.collapsed .user-profile-info,
-.app-sidebar.collapsed .user-profile-action {
-  display: none !important;
+/* Tooltips Flotantes en Modo Colapsado (Windows 11) */
+.app-sidebar.collapsed .win11-sidebar-nav .nav-link-item[data-tooltip]:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 60px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #1E293B;
+  color: #FFFFFF;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  z-index: 99999;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  pointer-events: none;
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .sidebar-collapse-toggle {
@@ -5533,72 +5622,14 @@ html, body {
   transform: scale(1.05);
 }
 
-/* Estado Colapsado del Sidebar */
+/* Estado Colapsado del Sidebar Windows 11 - Sin Overrides en conflicto */
 .app-sidebar.collapsed {
-  width: 64px !important;
-  min-width: 64px !important;
+  overflow: visible !important;
 }
 
-.app-sidebar.collapsed .brand-info,
-.app-sidebar.collapsed .sidebar-nav-label,
-.app-sidebar.collapsed .nav-link-text,
-.app-sidebar.collapsed .sidebar-badge,
-.app-sidebar.collapsed .sidebar-subnav,
-.app-sidebar.collapsed .sidebar-user-info,
-.app-sidebar.collapsed .btn-sidebar-new span:not(.btn-icon) {
-  display: none !important;
-}
-
-.app-sidebar.collapsed .brand-box {
-  justify-content: center !important;
-  padding: 0 !important;
-}
-
-.app-sidebar.collapsed .btn-sidebar-new {
-  padding: 10px !important;
-  justify-content: center !important;
-}
-
-.app-sidebar.collapsed .nav-link-item {
-  justify-content: center !important;
-  padding: 10px 0 !important;
-  border-left-width: 0 !important;
-  border-bottom: 2px solid transparent;
-}
-
-.app-sidebar.collapsed .nav-link-item.active {
-  background: rgba(0, 168, 150, 0.25) !important;
-  color: #00E5C9 !important;
-  border-radius: 8px !important;
-}
-
-.app-sidebar.collapsed .nav-link-left {
-  gap: 0 !important;
-  justify-content: center !important;
-}
-
-.app-sidebar.collapsed .nav-link-icon {
-  font-size: 19px !important;
-  margin: 0 !important;
-}
-
-/* Tooltips flotantes en modo colapsado */
-.app-sidebar.collapsed .nav-link-item[data-tooltip]:hover::after {
-  content: attr(data-tooltip);
-  position: absolute;
-  left: 72px;
-  background: #0F172A;
-  color: #FFFFFF;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 11.5px;
-  font-weight: 700;
-  white-space: nowrap;
-  z-index: 9999;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  pointer-events: none;
-  animation: fadeInTooltip 0.15s ease-out;
+.app-sidebar.collapsed .sidebar-top,
+.app-sidebar.collapsed .win11-sidebar-nav {
+  overflow: visible !important;
 }
 
 @keyframes fadeInTooltip {
