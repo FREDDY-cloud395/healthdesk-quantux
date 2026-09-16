@@ -888,6 +888,46 @@ function renderDashboard(selectedInst = '') {
   if (kpiConf) kpiConf.textContent = `${m.conformity_rate || 96.5}%`;
   if (kpiResolved) kpiResolved.textContent = (m.resolved_tickets + m.closed_tickets) || 0;
 
+  // 1.1 KPI Operativos Simplificados (Feedback Paula Punto 1)
+  const now = new Date();
+  const allTickets = Array.isArray(AppState.tickets) ? AppState.tickets : [];
+  const instTickets = currentInst ? allTickets.filter(t => (t.institution_code || t.institution) === currentInst) : allTickets;
+  
+  const activeCount = m.active_tickets !== undefined ? m.active_tickets : instTickets.filter(t => ['NUEVO', 'ASIGNADO', 'EN_CURSO', 'PENDIENTE', 'ESCALADO'].includes(t.status)).length;
+  const criticalCount = m.p1_critical_tickets !== undefined ? m.p1_critical_tickets : instTickets.filter(t => t.priority === 'P1').length;
+  
+  let expiringCount = 0;
+  let overdueCount = 0;
+  instTickets.forEach(t => {
+    if (['RESUELTO', 'CERRADO', 'CANCELADO'].includes(t.status)) return;
+    if (t.sla_expires_at) {
+      const exp = new Date(t.sla_expires_at);
+      const diffMin = (exp - now) / 60000;
+      if (diffMin < 0) overdueCount++;
+      else if (diffMin <= 120) expiringCount++;
+    }
+  });
+
+  const kpiOpOpen = document.getElementById('kpi-op-open');
+  const kpiOpCrit = document.getElementById('kpi-op-critical');
+  const kpiOpExp = document.getElementById('kpi-op-expiring');
+  const kpiOpOver = document.getElementById('kpi-op-overdue');
+  const kpiOpTotal = document.getElementById('kpi-op-total');
+  const kpiOpAvgRes = document.getElementById('kpi-op-avg-res');
+  const kpiOpSla = document.getElementById('kpi-op-sla-pct');
+
+  if (kpiOpOpen) kpiOpOpen.textContent = activeCount;
+  if (kpiOpCrit) kpiOpCrit.textContent = criticalCount;
+  if (kpiOpExp) kpiOpExp.textContent = expiringCount;
+  if (kpiOpOver) kpiOpOver.textContent = overdueCount;
+  if (kpiOpTotal) kpiOpTotal.textContent = m.total_tickets || instTickets.length || 0;
+  if (kpiOpAvgRes) kpiOpAvgRes.textContent = `${m.avg_resolution_hours || '1.8'}h`;
+  if (kpiOpSla) kpiOpSla.textContent = `${m.sla_compliance_pct || 98.4}%`;
+
+  if (typeof renderOperationalMyTickets === 'function') {
+    renderOperationalMyTickets(instTickets);
+  }
+
   // Center Metrics in Donut Charts
   const statusCenter = document.getElementById('chart-status-center-total');
   if (statusCenter) statusCenter.textContent = m.total_tickets || 0;
@@ -1358,35 +1398,160 @@ async function loadTickets(params = {}) {
 
 function updatePresetCounts(tickets) {
   if (!tickets) return;
+  updateQuickFilterCounts(tickets);
+}
+
+function setQuickFilter(filterKey) {
+  AppState.ticketQuickFilter = filterKey;
+
+  // Actualizar botones de filtro rápido
+  document.querySelectorAll('.tkt-filter-pill').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  const activeBtn = document.getElementById(`qf-btn-${filterKey}`);
+  if (activeBtn) activeBtn.classList.add('active');
+
+  const all = AppState.allTicketsRaw || AppState.tickets || [];
   const currentUsername = AppState.currentUser ? AppState.currentUser.username : '';
   const currentRole = AppState.currentUser ? AppState.currentUser.role : '';
 
-  const cAll = tickets.filter(t => t.status !== 'RESUELTO' && t.status !== 'CERRADO').length;
-  
-  const cMine = tickets.filter(t => {
-    if (t.status === 'RESUELTO' || t.status === 'CERRADO') return false;
-    if (currentRole === 'SOLICITANTE') {
-      return t.requester_username === currentUsername;
-    }
-    return t.assignee_username === currentUsername;
-  }).length;
+  let filtered = all;
+  if (filterKey === 'mine') {
+    filtered = all.filter(t => {
+      if (t.status === 'RESUELTO' || t.status === 'CERRADO') return false;
+      return currentRole === 'SOLICITANTE' ? t.requester_username === currentUsername : t.assignee_username === currentUsername;
+    });
+  } else if (filterKey === 'unassigned') {
+    filtered = all.filter(t => {
+      if (t.status === 'RESUELTO' || t.status === 'CERRADO') return false;
+      return !t.assignee_username || t.assignee_username === '' || t.assignee_username === 'null';
+    });
+  } else if (filterKey === 'critical') {
+    filtered = all.filter(t => ['P1', 'P2'].includes((t.priority || '').toUpperCase()) && t.status !== 'RESUELTO' && t.status !== 'CERRADO');
+  } else if (filterKey === 'expiring') {
+    filtered = all.filter(t => {
+      if (t.status === 'RESUELTO' || t.status === 'CERRADO') return false;
+      const sla = calculateTicketSLA(t);
+      return sla.status === 'AT_RISK' || (sla.percent >= 70 && sla.status !== 'BREACHED');
+    });
+  } else if (filterKey === 'overdue') {
+    filtered = all.filter(t => {
+      if (t.status === 'RESUELTO' || t.status === 'CERRADO') return false;
+      const sla = calculateTicketSLA(t);
+      return sla.status === 'BREACHED';
+    });
+  } else {
+    // 'all'
+    filtered = all.filter(t => t.status !== 'RESUELTO' && t.status !== 'CERRADO');
+  }
 
-  const cUnassigned = tickets.filter(t => {
+  AppState.tickets = filtered;
+  renderTicketList();
+  updateQuickFilterCounts(all);
+}
+
+function updateQuickFilterCounts(allTickets) {
+  if (!allTickets) return;
+  const currentUsername = AppState.currentUser ? AppState.currentUser.username : '';
+  const currentRole = AppState.currentUser ? AppState.currentUser.role : '';
+
+  const cAll = allTickets.filter(t => t.status !== 'RESUELTO' && t.status !== 'CERRADO').length;
+  const cMine = allTickets.filter(t => {
+    if (t.status === 'RESUELTO' || t.status === 'CERRADO') return false;
+    return currentRole === 'SOLICITANTE' ? t.requester_username === currentUsername : t.assignee_username === currentUsername;
+  }).length;
+  const cUnassigned = allTickets.filter(t => {
     if (t.status === 'RESUELTO' || t.status === 'CERRADO') return false;
     return !t.assignee_username || t.assignee_username === '' || t.assignee_username === 'null';
   }).length;
+  const cCritical = allTickets.filter(t => ['P1', 'P2'].includes((t.priority || '').toUpperCase()) && t.status !== 'RESUELTO' && t.status !== 'CERRADO').length;
+  
+  let cExpiring = 0;
+  let cOverdue = 0;
+  allTickets.forEach(t => {
+    if (t.status !== 'RESUELTO' && t.status !== 'CERRADO') {
+      const sla = calculateTicketSLA(t);
+      if (sla.status === 'BREACHED') cOverdue++;
+      else if (sla.status === 'AT_RISK' || sla.percent >= 70) cExpiring++;
+    }
+  });
 
-  const cP1 = tickets.filter(t => (t.priority || '').toUpperCase() === 'P1' && t.status !== 'RESUELTO' && t.status !== 'CERRADO').length;
+  const elAll = document.getElementById('qf-cnt-all');
+  const elMine = document.getElementById('qf-cnt-mine');
+  const elUnassigned = document.getElementById('qf-cnt-unassigned');
+  const elCritical = document.getElementById('qf-cnt-critical');
+  const elExpiring = document.getElementById('qf-cnt-expiring');
+  const elOverdue = document.getElementById('qf-cnt-overdue');
 
-  const elMine = document.getElementById('qv-count-mine');
-  const elUnassigned = document.getElementById('qv-count-unassigned');
-  const elP1 = document.getElementById('qv-count-p1');
-  const elTotalBadge = document.getElementById('tickets-badge-total');
-
+  if (elAll) elAll.textContent = cAll;
   if (elMine) elMine.textContent = cMine;
   if (elUnassigned) elUnassigned.textContent = cUnassigned;
-  if (elP1) elP1.textContent = cP1;
-  if (elTotalBadge) elTotalBadge.textContent = `${cAll} Solicitudes`;
+  if (elCritical) elCritical.textContent = cCritical;
+  if (elExpiring) elExpiring.textContent = cExpiring;
+  if (elOverdue) elOverdue.textContent = cOverdue;
+
+  // Actualizar KPIs de la Vista Operativa del Dashboard (Sugerencia Paula)
+  const kpiOpen = document.getElementById('kpi-op-open');
+  const kpiCrit = document.getElementById('kpi-op-critical');
+  const kpiExp = document.getElementById('kpi-op-expiring');
+  const kpiOver = document.getElementById('kpi-op-overdue');
+  const kpiTotal = document.getElementById('kpi-op-total');
+
+  if (kpiOpen) kpiOpen.textContent = cAll;
+  if (kpiCrit) kpiCrit.textContent = allTickets.filter(t => (t.priority || '').toUpperCase() === 'P1' && t.status !== 'RESUELTO' && t.status !== 'CERRADO').length;
+  if (kpiExp) kpiExp.textContent = cExpiring;
+  if (kpiOver) kpiOver.textContent = cOverdue;
+  if (kpiTotal) kpiTotal.textContent = allTickets.length;
+
+  renderOperationalMyTickets(allTickets);
+}
+
+function renderOperationalMyTickets(allTickets) {
+  const tbody = document.getElementById('tbody-op-my-tickets');
+  if (!tbody) return;
+
+  const currentUsername = AppState.currentUser ? AppState.currentUser.username : '';
+  const currentRole = AppState.currentUser ? AppState.currentUser.role : '';
+
+  let myTickets = (allTickets || []).filter(t => {
+    if (t.status === 'RESUELTO' || t.status === 'CERRADO') return false;
+    if (currentRole === 'SOLICITANTE') return t.requester_username === currentUsername;
+    if (currentRole === 'ADMIN') return true;
+    return t.assignee_username === currentUsername || !t.assignee_username;
+  });
+
+  if (myTickets.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 32px; color: #94A3B8; font-size: 13px;">No hay tickets pendientes asignados en este momento.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = myTickets.slice(0, 10).map(t => {
+    const priority = (t.priority || 'P3').toUpperCase();
+    const status = (t.status || 'NUEVO').toUpperCase();
+    const platName = formatPlatformName(t.platform_code);
+    const instName = formatInstitutionName(t.institution_code);
+    const timeAgo = formatDateFriendly(t.created_at);
+    const sla = calculateTicketSLA(t);
+    const agentName = (t.assignee_name || t.assignee_username || 'Sin Asignar').replace(/Lic\.\s*/gi, '').trim();
+
+    const prioRowClass = `prio-row-${priority.toLowerCase()}`;
+    const prioChipClass = `chip-${priority.toLowerCase()}`;
+    let prioIcon = priority === 'P1' ? '🔴' : (priority === 'P2' ? '🟠' : (priority === 'P3' ? '🔷' : '⚪'));
+    let statusPillClass = `status-pill-${status.toLowerCase()}`;
+    let slaChipClass = sla.status === 'BREACHED' ? 'sla-chip-breached' : (sla.status === 'WARNING' ? 'sla-chip-warn' : 'sla-chip-ok');
+
+    return `
+      <tr class="${prioRowClass}" onclick="openAgentWorkspace('${t.id}')" style="cursor: pointer;">
+        <td style="white-space: nowrap;"><span class="tkt-id-badge" style="font-size: 12px; padding: 3px 8px; border-radius: 6px; background: #E0F2FE; color: #0369A1; font-weight: 800;">#${t.id}</span></td>
+        <td style="max-width: 260px;"><strong style="color: #0F172A; font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;">${escapeHtml(t.title)}</strong><div style="font-size: 11px; color: #64748B;">${platName} · ${timeAgo}</div></td>
+        <td style="white-space: nowrap; font-size: 12px; font-weight: 600; color: #334155;">${instName}</td>
+        <td style="white-space: nowrap;"><span class="tkt-prio-chip ${prioChipClass}" style="font-size: 11px; font-weight: 800; padding: 2px 7px; border-radius: 6px;">${prioIcon} ${priority}</span></td>
+        <td style="white-space: nowrap;"><span class="tkt-status-pill ${statusPillClass}" style="font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 6px;">${status}</span></td>
+        <td style="white-space: nowrap; font-size: 12px; color: #475569;">${agentName.split('(')[0].trim()}</td>
+        <td style="white-space: nowrap;"><span class="tkt-sla-chip ${slaChipClass}" style="font-size: 11px; font-weight: 700;">${sla.timeRemainingText || 'En plazo'}</span></td>
+      </tr>
+    `;
+  }).join('');
 }
 
 function selectQuickView(viewKey) {
@@ -1607,56 +1772,52 @@ function renderTicketList() {
 
         return `
           <tr class="${prioRowClass}" onclick="openAgentWorkspace('${t.id}')" title="Haga clic para abrir el espacio de trabajo de la solicitud #${t.id}">
-            <!-- 1. ID & PRIORIDAD (Misma Fila / Horizontal) -->
-            <td style="white-space: nowrap; width: 250px; min-width: 240px;">
-              <div style="display: flex; align-items: center; gap: 8px;">
-                <span class="tkt-id-badge" style="margin-bottom: 0;">#${t.id}</span>
-                <span class="tkt-prio-chip ${prioChipClass}">${prioIcon} ${prioLabel}</span>
+            <!-- 1. TICKET -->
+            <td style="white-space: nowrap; font-weight: 800; color: #0284C7; width: 90px;">
+              <span class="tkt-id-badge" style="font-size: 12px; padding: 3px 8px; border-radius: 6px; background: #E0F2FE; color: #0369A1; font-weight: 800;">#${t.id}</span>
+            </td>
+
+            <!-- 2. ASUNTO -->
+            <td style="max-width: 320px;">
+              <div style="font-weight: 700; color: #0F172A; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${escapeHtml(t.title)}">${escapeHtml(t.title)}</div>
+              <div style="font-size: 11px; color: #64748B; margin-top: 2px;">
+                <span>${platName}</span> · <span>${timeAgo}</span>
               </div>
             </td>
 
-            <!-- 2. SOLICITUD & TAXONOMÍA -->
-            <td style="width: auto;">
-              <div class="tkt-table-subject-cell">
-                <div style="flex: 1; min-width: 0;">
-                  <div class="tkt-table-subject-title">${escapeHtml(t.title)}</div>
-                  <div class="tkt-chips-row">
-                    <span class="tkt-chip-module">💻 ${platName}</span>
-                    <span class="tkt-chip-inst">🏥 ${instName}</span>
-                    <span class="tkt-chip-time">🕒 ${timeAgo}</span>
-                  </div>
-                </div>
+            <!-- 3. CLIENTE / INSTITUCIÓN -->
+            <td style="white-space: nowrap; font-size: 12.5px; font-weight: 600; color: #334155; width: 160px;">
+              ${instName}
+            </td>
+
+            <!-- 4. PRIORIDAD -->
+            <td style="white-space: nowrap; width: 110px;">
+              <span class="tkt-prio-chip ${prioChipClass}" style="font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 6px;">${prioIcon} ${priority}</span>
+            </td>
+
+            <!-- 5. ESTADO -->
+            <td style="white-space: nowrap; width: 110px;">
+              <span class="tkt-status-pill ${statusPillClass}" style="font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 6px;">${statusText}</span>
+            </td>
+
+            <!-- 6. RESPONSABLE -->
+            <td style="white-space: nowrap; width: 170px;">
+              <div style="display: flex; align-items: center; gap: 6px;">
+                ${t.assignee_username ? getUserAvatarHtml(t.assignee_username, agentName, 24) : '<div style="width:24px; height:24px; border-radius:50%; background:#F1F5F9; border:1px dashed #CBD5E1; display:flex; align-items:center; justify-content:center; font-size:11px; color:#94A3B8;">?</div>'}
+                <span style="font-size: 12px; font-weight: 600; color: ${t.assignee_username ? '#334155' : '#94A3B8'};">${t.assignee_username ? agentName.split('(')[0].trim() : 'Sin asignar'}</span>
               </div>
             </td>
 
-            <!-- 3. ESTADO & TIEMPO SLA -->
-            <td style="width: 170px; white-space: nowrap;">
-              <div class="tkt-sla-track-cell">
-                <span class="tkt-status-pill ${statusPillClass}">${statusIcon} ${statusText}</span>
-                <span class="tkt-sla-chip ${slaChipClass}">⏱️ ${sla.timeRemainingText || 'En plazo'}</span>
-              </div>
+            <!-- 7. SLA -->
+            <td style="white-space: nowrap; width: 130px;">
+              <span class="tkt-sla-chip ${slaChipClass}" style="font-size: 11px; font-weight: 700;">${sla.timeRemainingText || 'En plazo'}</span>
             </td>
 
-            <!-- 4. ASIGNADO A -->
-            <td style="width: 180px;">
-              <div class="tkt-user-profile-cell">
-                ${getUserAvatarHtml(t.assignee_username, agentName, 28)}
-                <div class="tkt-user-details">
-                  <span class="tkt-user-name">${agentName.split('(')[0].trim()}</span>
-                  <span class="tkt-user-sub">${level} • Mesa de Ayuda</span>
-                </div>
-              </div>
-            </td>
-
-            <!-- 5. SOLICITANTE / INSTITUCIÓN -->
-            <td style="width: 190px;">
-              <div class="tkt-user-profile-cell">
-                ${getUserAvatarHtml(t.requester_username, reqName, 28)}
-                <div class="tkt-user-details">
-                  <span class="tkt-user-name" title="${reqName}">${reqName.split('(')[0].trim()}</span>
-                  <span class="tkt-user-sub">${instName}</span>
-                </div>
-              </div>
+            <!-- 8. ACCIÓN -->
+            <td style="text-align: right; white-space: nowrap; width: 80px;">
+              <button type="button" class="btn-sec" onclick="event.stopPropagation(); openAgentWorkspace('${t.id}')" style="padding: 4px 10px; font-size: 11px; font-weight: 700; border-radius: 6px;">
+                Abrir
+              </button>
             </td>
           </tr>
         `;
@@ -4391,25 +4552,79 @@ function selectUrgencyCard(urgencyVal, element) {
   updateWizardPriorityPreview();
 }
 
+let ticketSelectedFileBase64 = null;
+let ticketSelectedFileName = null;
+
+function handleTicketFileSelect(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+
+  ticketSelectedFileName = file.name;
+  const promptEl = document.getElementById('dropzone-prompt');
+  const previewEl = document.getElementById('dropzone-preview');
+  const filenameEl = document.getElementById('dropzone-filename');
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    ticketSelectedFileBase64 = e.target.result;
+    if (promptEl) promptEl.style.display = 'none';
+    if (previewEl) previewEl.style.display = 'flex';
+    if (filenameEl) filenameEl.textContent = `${file.name} (${Math.round(file.size / 1024)} KB)`;
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeTicketFile(event) {
+  if (event) event.stopPropagation();
+  ticketSelectedFileBase64 = null;
+  ticketSelectedFileName = null;
+  const input = document.getElementById('modal-attachment-file');
+  if (input) input.value = '';
+  const promptEl = document.getElementById('dropzone-prompt');
+  const previewEl = document.getElementById('dropzone-preview');
+  if (promptEl) promptEl.style.display = 'block';
+  if (previewEl) previewEl.style.display = 'none';
+}
+
 async function updateWizardPriorityPreview() {
   const impact = document.getElementById('modal-impact') ? document.getElementById('modal-impact').value : 'MEDIO';
   const urgency = document.getElementById('modal-urgency') ? document.getElementById('modal-urgency').value : 'MEDIO';
+  const patImpact = document.getElementById('modal-patient-impact') ? document.getElementById('modal-patient-impact').checked : false;
   const prioBadge = document.getElementById('modal-calculated-priority');
   const slaExpl = document.getElementById('wizard-sla-explanation');
 
-  try {
-    const res = await API.calculatePriority(impact, urgency);
-    if (prioBadge) {
-      prioBadge.textContent = `${res.priority} • ${res.priority === 'P1' ? 'CRÍTICA' : res.priority === 'P2' ? 'ALTA' : res.priority === 'P3' ? 'MEDIA' : res.priority === 'P4' ? 'BAJA' : 'PLAN'}`;
-      prioBadge.className = `badge-prio badge-${res.priority.toLowerCase()}`;
-    }
-    if (slaExpl) {
-      const respTime = res.sla_response_time_minutes < 60 ? `${res.sla_response_time_minutes} min` : `${res.sla_response_time_minutes / 60} h`;
-      const resolTime = res.sla_resolution_time_minutes < 60 ? `${res.sla_resolution_time_minutes} min` : `${res.sla_resolution_time_minutes / 60} h`;
-      slaExpl.textContent = `Respuesta inicial garantizada en ${respTime} • Resolución máxima en ${resolTime}`;
-    }
-  } catch (e) {
-    console.warn('Error calculando SLA dinámico:', e);
+  let prio = 'P3';
+  let slaText = '24 h';
+  let reason = 'Impacto individual sin afectación directa de pacientes en espera.';
+  let badgeClass = 'badge-p3';
+  let label = 'P3 – MEDIA';
+
+  if (patImpact || (impact === 'CRITICO' && urgency === 'CRITICO') || (impact === 'ALTO' && urgency === 'CRITICO')) {
+    prio = 'P1';
+    slaText = '2 h';
+    reason = 'Afectación asistencial crítica directa sobre la atención de pacientes o riesgo vital.';
+    badgeClass = 'badge-p1';
+    label = 'P1 – CRÍTICA';
+  } else if (impact === 'ALTO' || urgency === 'ALTO' || (impact === 'MEDIO' && urgency === 'ALTO')) {
+    prio = 'P2';
+    slaText = '8 h';
+    reason = 'Afectación parcial de servicio clínico con vías de contingencia activas.';
+    badgeClass = 'badge-p2';
+    label = 'P2 – ALTA';
+  } else if (impact === 'BAJO' && urgency === 'BAJO') {
+    prio = 'P4';
+    slaText = '48 h';
+    reason = 'Consulta operativa o requerimiento cosmético/no bloqueante.';
+    badgeClass = 'badge-p4';
+    label = 'P4 – BAJA';
+  }
+
+  if (prioBadge) {
+    prioBadge.textContent = `${label} · SLA: ${slaText}`;
+    prioBadge.className = `badge-prio ${badgeClass}`;
+  }
+  if (slaExpl) {
+    slaExpl.textContent = reason;
   }
 }
 
@@ -4830,7 +5045,7 @@ function initModalListeners() {
         impact: impactVal,
         urgency: urgencyVal,
         ticket_type: typeVal,
-        attachment_url: attachVal || null,
+        attachment_url: ticketSelectedFileBase64 || attachVal || null,
         requester_username: AppState.currentUser ? AppState.currentUser.username : 'solicitante'
       };
 
@@ -4838,6 +5053,7 @@ function initModalListeners() {
         const created = await API.createTicket(payload);
         if (modal) modal.classList.remove('active');
         form.reset();
+        removeTicketFile();
         goToWizardStep(1);
         showToast(`✅ ¡Solicitud #${created.id} creada con éxito! Prioridad asignada: ${created.priority}`, 'success');
         await loadTickets();
@@ -5778,6 +5994,25 @@ async function openAgentWorkspace(ticketId) {
     renderWsProgressSLA(ticket);
     renderWsWorkflowActions(ticket);
 
+    // Población de acciones rápidas de la columna derecha
+    const selStatus = document.getElementById('ws-side-status-select');
+    if (selStatus) {
+      selStatus.value = status;
+    }
+
+    const selOp = document.getElementById('ws-side-operator-select');
+    if (selOp) {
+      const users = AppState.users || [];
+      const operators = users.filter(u => u.role === 'ADMIN' || u.role.includes('SOPORTE') || u.role === 'SOPORTE');
+      selOp.innerHTML = `<option value="">Sin asignar</option>` + operators.map(u => {
+        const isSel = (ticket.assignee_username === u.username) ? 'selected' : '';
+        return `<option value="${u.username}" ${isSel}>${u.full_name} (${u.role})</option>`;
+      }).join('');
+    }
+
+    // Resetear a modo público de respuesta por defecto
+    setWsReplyMode('public');
+
     // Resetear a tab principal 'case'
     switchWsTab('case');
 
@@ -5794,6 +6029,107 @@ async function openAgentWorkspace(ticketId) {
 function closeAgentWorkspace() {
   const modal = document.getElementById('modal-agent-workspace');
   if (modal) modal.classList.remove('active');
+}
+
+function setWsReplyMode(mode) {
+  const isInternal = (mode === 'internal');
+  const btnPublic = document.getElementById('btn-reply-mode-public');
+  const btnInternal = document.getElementById('btn-reply-mode-internal');
+  const cardBox = document.getElementById('ws-reply-card-box');
+  const textarea = document.getElementById('ws-reply-textarea');
+  const isInternalVal = document.getElementById('ws-reply-is-internal-val');
+  const btnSubmit = document.getElementById('ws-btn-send-reply');
+
+  if (isInternalVal) isInternalVal.value = isInternal ? 'true' : 'false';
+
+  if (isInternal) {
+    if (btnInternal) {
+      btnInternal.style.background = '#FEF3C7';
+      btnInternal.style.borderColor = '#D97706';
+      btnInternal.style.color = '#B45309';
+      btnInternal.classList.add('active');
+    }
+    if (btnPublic) {
+      btnPublic.style.background = '#F8FAFC';
+      btnPublic.style.borderColor = '#E2E8F0';
+      btnPublic.style.color = '#64748B';
+      btnPublic.classList.remove('active');
+    }
+    if (cardBox) {
+      cardBox.style.borderColor = '#F59E0B';
+      cardBox.style.background = '#FFFBEB';
+    }
+    if (textarea) {
+      textarea.placeholder = '🔒 Escriba una nota técnica interna (visible solo para el equipo técnico)...';
+    }
+    if (btnSubmit) {
+      btnSubmit.style.background = '#D97706';
+      btnSubmit.innerHTML = '<span>Guardar Nota Interna 🔒</span>';
+    }
+  } else {
+    if (btnPublic) {
+      btnPublic.style.background = '#E0F2FE';
+      btnPublic.style.borderColor = '#0284C7';
+      btnPublic.style.color = '#0369A1';
+      btnPublic.classList.add('active');
+    }
+    if (btnInternal) {
+      btnInternal.style.background = '#F8FAFC';
+      btnInternal.style.borderColor = '#E2E8F0';
+      btnInternal.style.color = '#64748B';
+      btnInternal.classList.remove('active');
+    }
+    if (cardBox) {
+      cardBox.style.borderColor = '#0284C7';
+      cardBox.style.background = '#FFFFFF';
+    }
+    if (textarea) {
+      textarea.placeholder = 'Escriba un mensaje visible para el solicitante...';
+    }
+    if (btnSubmit) {
+      btnSubmit.style.background = '#0284C7';
+      btnSubmit.innerHTML = '<span>Enviar al Solicitante</span>';
+    }
+  }
+}
+
+let wsSelectedReplyFile = null;
+function handleWsReplyFileSelect(event) {
+  const file = event.target.files && event.target.files[0];
+  const nameLabel = document.getElementById('ws-reply-file-name');
+  if (file) {
+    wsSelectedReplyFile = file;
+    if (nameLabel) {
+      nameLabel.textContent = `📎 ${file.name}`;
+      nameLabel.style.display = 'inline';
+    }
+  }
+}
+
+async function quickUpdateWsStatus(newStatus) {
+  if (!AppState.selectedTicket) return;
+  try {
+    await API.updateTicketStatus(AppState.selectedTicket.id, newStatus, `Cambio rápido de estado a ${newStatus} desde ficha de ticket.`);
+    showToast(`Estado actualizado a ${newStatus}`, 'success');
+    await openAgentWorkspace(AppState.selectedTicket.id);
+    await loadTickets();
+  } catch (err) {
+    console.error('Error actualizando estado:', err);
+    showToast('Error al actualizar estado', 'error');
+  }
+}
+
+async function quickReassignWsOperator(newOperator) {
+  if (!AppState.selectedTicket) return;
+  try {
+    await API.reassignTicket(AppState.selectedTicket.id, newOperator || null, `Reasignación rápida desde ficha de ticket.`);
+    showToast(newOperator ? `Ticket reasignado a @${newOperator}` : 'Ticket desasignado', 'success');
+    await openAgentWorkspace(AppState.selectedTicket.id);
+    await loadTickets();
+  } catch (err) {
+    console.error('Error reasignando ticket:', err);
+    showToast('Error al reasignar ticket', 'error');
+  }
 }
 
 function switchWsTab(tab) {
@@ -6310,6 +6646,7 @@ function renderWsWorkflowActions(ticket) {
 async function submitAgentWorkspaceReply() {
   if (!AppState.selectedTicket) return;
   const textarea = document.getElementById('ws-reply-textarea');
+  const isInternalVal = document.getElementById('ws-reply-is-internal-val');
   const isInternalCheck = document.getElementById('ws-reply-is-internal');
   if (!textarea) return;
 
@@ -6319,12 +6656,13 @@ async function submitAgentWorkspaceReply() {
     return;
   }
 
-  const isInternal = isInternalCheck ? isInternalCheck.checked : false;
+  const isInternal = (isInternalVal && isInternalVal.value === 'true') || (isInternalCheck && isInternalCheck.checked);
+  const attachNote = wsSelectedReplyFile ? `\n\n📎 Adjunto: ${wsSelectedReplyFile.name}` : '';
 
   try {
     const payload = {
-      message: content,
-      content: content,
+      message: content + attachNote,
+      content: content + attachNote,
       is_internal: isInternal,
       author_username: AppState.currentUser ? AppState.currentUser.username : 'soporte',
       author_name: AppState.currentUser ? AppState.currentUser.full_name : 'Operador de Soporte',
@@ -6333,7 +6671,14 @@ async function submitAgentWorkspaceReply() {
 
     await API.addComment(AppState.selectedTicket.id, payload);
     textarea.value = '';
-    showToast(isInternal ? '🔒 Nota interna agregada' : '💬 Respuesta enviada con éxito', 'success');
+    wsSelectedReplyFile = null;
+    const nameLabel = document.getElementById('ws-reply-file-name');
+    if (nameLabel) {
+      nameLabel.textContent = '';
+      nameLabel.style.display = 'none';
+    }
+
+    showToast(isInternal ? '🔒 Nota interna agregada' : '💬 Respuesta enviada al solicitante', 'success');
 
     const refreshed = await API.getTicket(AppState.selectedTicket.id);
     AppState.selectedTicket = refreshed;

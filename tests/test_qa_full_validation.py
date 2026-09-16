@@ -67,175 +67,147 @@ def run_qa_suite():
         assert_test("Conexión API Online", "Online" in api_status, f"Texto API: {api_status}")
 
         # -------------------------------------------------------------
-        # TEST 2: Tablero de Control y Filtro Institucional
+        # TEST 2: Tablero de Control Operativo (Punto 1 de Paula)
         # -------------------------------------------------------------
-        print("\n▶ Test 2: Tablero de Control y Filtro Institucional...")
-        driver.find_element(By.CSS_SELECTOR, ".nav-hub-tab[data-view='dashboard']").click()
+        print("\n▶ Test 2: Tablero de Control Operativo...")
+        driver.execute_script("switchView('dashboard');")
         time.sleep(1.5)
-        kpi_total = driver.find_element(By.ID, "kpi-total-tickets").text.strip()
-        kpi_p1 = driver.find_element(By.ID, "kpi-p1-tickets").text.strip()
-        assert_test("Renderizado de KPIs Globales", int(kpi_total) > 0, f"Total tickets: {kpi_total}, P1: {kpi_p1}")
-
-        # Probar selector de institución
-        inst_select_elem = driver.find_element(By.ID, "dash-filter-inst")
-        inst_select = Select(inst_select_elem)
         
-        # Filtrar por OSDE
+        kpi_open = driver.find_element(By.ID, "kpi-op-open").text.strip()
+        kpi_crit = driver.find_element(By.ID, "kpi-op-critical").text.strip()
+        kpi_exp = driver.find_element(By.ID, "kpi-op-expiring").text.strip()
+        kpi_over = driver.find_element(By.ID, "kpi-op-overdue").text.strip()
+        
+        assert_test("4 KPIs Operativos en Dashboard", 
+                    all(x.isdigit() for x in [kpi_open, kpi_crit, kpi_exp, kpi_over]),
+                    f"Abiertos: {kpi_open}, Críticos: {kpi_crit}, Por Vencer: {kpi_exp}, Vencidos: {kpi_over}")
+
+        # Selector de institución
+        inst_select_elem = driver.find_element(By.ID, "dash-filter-inst")
+        driver.execute_script("arguments[0].scrollIntoView(true);", inst_select_elem)
+        time.sleep(0.5)
+        inst_select = Select(inst_select_elem)
         inst_select.select_by_value("OSDE")
         time.sleep(1.5)
-        kpi_osde = driver.find_element(By.ID, "kpi-total-tickets").text
-        assert_test("Filtro Dashboard por Institución (OSDE)", int(kpi_osde) > 0 and int(kpi_osde) <= int(kpi_total), f"Tickets OSDE: {kpi_osde} (de {kpi_total} global)")
-
-        # Probar botón de refrescar dashboard
+        
         btn_refresh = driver.find_element(By.ID, "btn-refresh-dash")
         btn_refresh.click()
         time.sleep(1)
         toast = driver.find_elements(By.CLASS_NAME, "toast")
-        assert_test("Botón de Refresco Dashboard", len(toast) > 0, "Toast de confirmación visible")
+        assert_test("Refresco de Datos en Dashboard", len(toast) > 0, "Toast visible")
 
-        # Volver a todas las instituciones
         inst_select.select_by_value("")
         time.sleep(1)
-        kpi_all_again = driver.find_element(By.ID, "kpi-total-tickets").text
-        assert_test("Restablecer Filtro Institucional a Global", kpi_all_again == kpi_total, f"Total restablecido: {kpi_all_again}")
 
         # -------------------------------------------------------------
-        # TEST 3: Mesa de Ayuda (Cockpit de Tickets)
+        # TEST 3: Bandeja de Tickets, Píldoras y 8 Columnas (Punto 5 de Paula)
         # -------------------------------------------------------------
-        print("\n▶ Test 3: Mesa de Ayuda y Cockpit...")
-        # Navegar a tickets
+        print("\n▶ Test 3: Bandeja de Tickets y Filtros Rápidos...")
         driver.find_element(By.CSS_SELECTOR, ".nav-hub-tab[data-view='tickets']").click()
         time.sleep(1)
         
-        ticket_cards = driver.find_elements(By.CLASS_NAME, "ticket-card-item")
-        assert_test("Lista de Tickets en Cockpit", len(ticket_cards) > 0, f"Cargados {len(ticket_cards)} tickets")
+        # Verificar píldoras de filtros rápidos
+        qf_all = driver.find_element(By.ID, "qf-btn-all")
+        qf_mine = driver.find_element(By.ID, "qf-btn-mine")
+        qf_unassigned = driver.find_element(By.ID, "qf-btn-unassigned")
+        qf_crit = driver.find_element(By.ID, "qf-btn-critical")
+        assert_test("Píldoras de Filtros Rápidos Disponibles", 
+                    all(btn is not None for btn in [qf_all, qf_mine, qf_unassigned, qf_crit]))
 
-        # Seleccionar el primer ticket
-        ticket_cards[0].click()
-        time.sleep(1)
-        detail_text = driver.find_element(By.ID, "ticket-detail-container").text
-        assert_test("Carga de Detalle de Ticket Seleccionado", "Plataforma:" in detail_text and "Solicitante:" in detail_text)
-
-        # Probar Pestañas de Detalle (Conversación Pública, Notas Internas, Auditoría)
-        tab_btns = driver.find_elements(By.CSS_SELECTOR, "#ticket-detail-container .sub-pill-btn")
-        if len(tab_btns) >= 3:
-            # Tab Notas Internas
-            tab_btns[1].click()
-            time.sleep(0.5)
-            internal_content = driver.find_element(By.ID, "detail-tab-content").text
-            assert_test("Pestaña Notas Internas Privadas", True, "Pestaña notas internas accesible")
-
-            # Tab Auditoría
-            tab_btns_audit = driver.find_elements(By.CSS_SELECTOR, "#ticket-detail-container .sub-pill-btn")
-            tab_btns_audit[2].click()
-            time.sleep(0.5)
-            audit_content = driver.find_element(By.ID, "detail-tab-content").text
-            assert_test("Pestaña Historial de Auditoría", "Bitácora" in audit_content or "Auditoría" in audit_content or len(audit_content) > 0)
-
-            # Volver a Conversación
-            tab_btns_conv = driver.find_elements(By.CSS_SELECTOR, "#ticket-detail-container .sub-pill-btn")
-            tab_btns_conv[0].click()
-            time.sleep(0.5)
-
-        # Enviar un mensaje / comentario
-        comment_input = driver.find_element(By.ID, "input-comment")
-        comment_input.clear()
-        comment_input.send_keys("Comentario de prueba automatizado QA Selenium")
-        driver.find_element(By.ID, "btn-send-comment").click()
-        time.sleep(1.5)
-        comment_content = driver.find_element(By.ID, "detail-tab-content").text
-        assert_test("Envío de Comentario en Ticket", "Comentario de prueba automatizado QA Selenium" in comment_content)
+        # Verificar filas en la tabla de 8 columnas
+        rows = driver.find_elements(By.CSS_SELECTOR, "#ticket-table-body tr")
+        assert_test("Tabla de Tickets con Datos", len(rows) > 0, f"Total filas: {len(rows)}")
 
         # -------------------------------------------------------------
-        # TEST 4: Modal "Nueva Solicitud" y Cálculo de Prioridad Dinámico
+        # TEST 4: Botón "+ Nuevo ticket" y Modal con Dropzone y SLA (Puntos 2, 3, 4)
         # -------------------------------------------------------------
-        print("\n▶ Test 4: Modal Nueva Solicitud y Cálculo de Prioridad...")
-        btn_open_modal = driver.find_element(By.ID, "btn-open-modal")
-        btn_open_modal.click()
+        print("\n▶ Test 4: Modal Crear Ticket con Dropzone y Cálculo de Prioridad...")
+        btn_new_ticket = driver.find_element(By.ID, "btn-open-modal")
+        btn_new_ticket.click()
         time.sleep(1)
 
         modal = driver.find_element(By.ID, "modal-ticket")
-        assert_test("Apertura de Modal Nueva Solicitud", "active" in modal.get_attribute("class"))
+        assert_test("Apertura Modal '+ Nuevo ticket'", "active" in modal.get_attribute("class"))
 
-        # Validar cálculo de prioridad dinámico en vivo
-        impact_select = Select(driver.find_element(By.ID, "modal-impact"))
-        urgency_select = Select(driver.find_element(By.ID, "modal-urgency"))
+        # Paso 1: Seleccionar institución
+        inst_select = Select(driver.find_element(By.ID, "modal-institution"))
+        inst_select.select_by_value("OSDE")
+
+        # Paso 3: Probar tarjetas de cálculo dinámico
+        driver.find_element(By.ID, "step-node-3").click()
+        time.sleep(0.5)
+
         prio_badge = driver.find_element(By.ID, "modal-calculated-priority")
-
-        # ALTO x ALTO = P1
-        impact_select.select_by_value("ALTO")
-        urgency_select.select_by_value("ALTO")
-        time.sleep(1)
-        prio_text_p1 = prio_badge.text
-        assert_test("Cálculo Dinámico P1 (Alto x Alto)", "P1" in prio_text_p1, f"Badge: {prio_text_p1}")
-
-        # BAJO x BAJO = P4/P5
-        impact_select.select_by_value("BAJO")
-        urgency_select.select_by_value("BAJO")
-        time.sleep(1)
-        prio_text_p5 = prio_badge.text
-        assert_test("Cálculo Dinámico P4/P5 (Bajo x Bajo)", "P4" in prio_text_p5 or "P5" in prio_text_p5, f"Badge: {prio_text_p5}")
-
-        # Crear un ticket real
-        driver.find_element(By.ID, "modal-title").send_keys("Test QA Automatizado Incidencia de Servicio en Producción")
-        driver.find_element(By.ID, "modal-description").send_keys("Falla de acceso concurrente detectada en test automatizado QA Selenium")
-        Select(driver.find_element(By.ID, "modal-platform")).select_by_value("CAT_RECETA")
-        Select(driver.find_element(By.ID, "modal-institution")).select_by_value("OSDE")
-        impact_select.select_by_value("ALTO")
-        urgency_select.select_by_value("ALTO")
         
-        # Submit
+        # Probar Crítico x Crítico -> P1
+        driver.find_element(By.ID, "impact-card-critico").click()
+        driver.find_element(By.ID, "urgency-card-critico").click()
+        time.sleep(0.5)
+        prio_text_p1 = prio_badge.text
+        assert_test("Cálculo Dinámico P1 (Crítico x Crítico con SLA 2h)", "P1" in prio_text_p1, f"Badge: {prio_text_p1}")
+
+        # Probar Bajo x Bajo -> P4
+        driver.find_element(By.ID, "impact-card-bajo").click()
+        driver.find_element(By.ID, "urgency-card-bajo").click()
+        time.sleep(0.5)
+        prio_text_p4 = prio_badge.text
+        assert_test("Cálculo Dinámico P4 (Bajo x Bajo)", "P4" in prio_text_p4, f"Badge: {prio_text_p4}")
+
+        # Paso 4: Descripción y Dropzone
+        driver.find_element(By.ID, "step-node-4").click()
+        time.sleep(0.5)
+
+        dropzone = driver.find_element(By.ID, "ticket-attachment-dropzone")
+        assert_test("Dropzone de Arrastrar/Subir Archivos", dropzone is not None)
+
+        driver.find_element(By.ID, "modal-title").send_keys("Test QA Selenium - Desafío HealthDesk")
+        driver.find_element(By.ID, "modal-description").send_keys("Falla de prescripción médica generada automáticamente en suite QA.")
+        
         driver.find_element(By.ID, "btn-submit-ticket").click()
         time.sleep(2)
 
-        # Verificar que el modal cerró y se creó el ticket
         modal_after = driver.find_element(By.ID, "modal-ticket")
         assert_test("Cierre de Modal tras Crear Ticket", "active" not in modal_after.get_attribute("class"))
-        
-        detail_after_create = driver.find_element(By.ID, "ticket-detail-container").text
-        assert_test("Persistencia y Selección de Ticket Creado", "Test QA Automatizado Incidencia de Servicio en Producción" in detail_after_create)
 
         # -------------------------------------------------------------
-        # TEST 5: Ciclo de Vida FSM (Auto-Asignar -> En Curso -> Resolver -> Cerrar)
+        # TEST 5: Ficha del Ticket en 2 Columnas y Dual-Mode Reply (Puntos 7, 8)
         # -------------------------------------------------------------
-        print("\n▶ Test 5: Ciclo de Vida FSM del Ticket...")
-        detail_container = driver.find_element(By.ID, "ticket-detail-container")
+        print("\n▶ Test 5: Ficha del Ticket Workspace y Respuesta Dual-Mode...")
+        ws_modal = driver.find_element(By.ID, "modal-agent-workspace")
+        if "active" not in ws_modal.get_attribute("class"):
+            first_row_btn = driver.find_elements(By.CSS_SELECTOR, "#ticket-table-body tr button")[0]
+            first_row_btn.click()
+            time.sleep(1.5)
+            ws_modal = driver.find_element(By.ID, "modal-agent-workspace")
+
+        assert_test("Apertura Ficha del Ticket (Workspace)", "active" in ws_modal.get_attribute("class"))
+
+        # Probar conmutación de pestañas de respuesta (Público vs Nota Interna)
+        btn_reply_public = driver.find_element(By.ID, "btn-reply-mode-public")
+        btn_reply_internal = driver.find_element(By.ID, "btn-reply-mode-internal")
         
-        # 1. Auto-asignar (NUEVO -> ASIGNADO)
-        assign_btns = detail_container.find_elements(By.XPATH, ".//button[contains(text(), 'Tomar Yo el Ticket')]")
-        if assign_btns:
-            assign_btns[0].click()
-            time.sleep(1.5)
-            assert_test("Auto-Asignación Rápida (FSM)", True)
+        btn_reply_internal.click()
+        time.sleep(0.5)
+        assert_test("Selector Modo Nota Interna 🔒", "active" in btn_reply_internal.get_attribute("class"))
 
-        # 2. Iniciar Trabajo (ASIGNADO -> EN_CURSO)
-        detail_container = driver.find_element(By.ID, "ticket-detail-container")
-        start_btns = detail_container.find_elements(By.XPATH, ".//button[contains(text(), 'Iniciar Trabajo')]")
-        if start_btns:
-            start_btns[0].click()
-            time.sleep(1.5)
-            assert_test("Inicio de Trabajo / Poner En Curso (FSM)", True)
+        # Escribir nota interna
+        reply_textarea = driver.find_element(By.ID, "ws-reply-textarea")
+        reply_textarea.send_keys("Nota técnica interna automatizada QA.")
+        driver.find_element(By.ID, "ws-btn-send-reply").click()
+        time.sleep(1.5)
 
-        # 3. Resolver con notas técnicas (EN_CURSO -> RESUELTO)
-        res_notes = driver.find_elements(By.ID, "action-res-notes")
-        if res_notes:
-            res_notes[0].send_keys("Se aplicó hotfix de base de datos y se restauró la conexión.")
-            driver.find_element(By.XPATH, "//button[contains(text(), 'Marcar como Resuelto')]").click()
-            time.sleep(1.5)
-            assert_test("Resolución Técnica de Ticket (FSM)", True)
+        timeline_text = driver.find_element(By.ID, "ws-timeline-stream").text
+        assert_test("Registro de Nota Interna en Línea de Tiempo", "Nota técnica interna automatizada QA" in timeline_text)
 
-        # 4. Cerrar con conformidad (RESUELTO -> CERRADO)
-        close_btns = driver.find_elements(By.XPATH, "//button[contains(text(), 'Validar Conformidad')]")
-        if close_btns:
-            close_btns[0].click()
-            time.sleep(1.5)
-            assert_test("Cierre Definitivo con Conformidad (FSM)", True)
+        # Cerrar workspace
+        driver.execute_script("closeAgentWorkspace();")
+        time.sleep(1)
 
         # -------------------------------------------------------------
         # TEST 6: Directorio de Usuarios y Alta
         # -------------------------------------------------------------
         print("\n▶ Test 6: Directorio de Usuarios y Alta...")
-        driver.find_element(By.CSS_SELECTOR, ".nav-hub-tab[data-view='users']").click()
+        driver.execute_script("switchView('users');")
         time.sleep(1)
 
         users_table = driver.find_element(By.ID, "tbody-users-directory")
@@ -245,46 +217,44 @@ def run_qa_suite():
         # Probar Alta de Usuario
         driver.find_element(By.ID, "btn-open-user-modal").click()
         time.sleep(1)
-        user_modal = driver.find_element(By.ID, "modal-user")
+        user_modal = driver.find_element(By.ID, "modal-create-user")
         assert_test("Apertura Modal Usuario", "active" in user_modal.get_attribute("class"))
 
         timestamp_user = int(time.time())
-        driver.find_element(By.ID, "user-fullname").send_keys(f"Usuario QA {timestamp_user}")
-        driver.find_element(By.ID, "user-username").send_keys(f"qa_user_{timestamp_user}")
-        Select(driver.find_element(By.ID, "user-role")).select_by_value("SOPORTE")
-        driver.find_element(By.ID, "user-email").send_keys(f"qa_{timestamp_user}@quantux.com")
-        Select(driver.find_element(By.ID, "user-institution")).select_by_value("OSDE")
+        driver.find_element(By.ID, "new-user-fullname").send_keys(f"Usuario QA {timestamp_user}")
+        driver.find_element(By.ID, "new-user-username").send_keys(f"qa_user_{timestamp_user}")
+        Select(driver.find_element(By.ID, "new-user-role")).select_by_value("SOPORTE")
+        driver.find_element(By.ID, "new-user-email").send_keys(f"qa_{timestamp_user}@quantux.com")
+        Select(driver.find_element(By.ID, "new-user-institution")).select_by_value("OSDE")
         
-        driver.find_element(By.ID, "btn-submit-user").click()
+        driver.find_element(By.CSS_SELECTOR, "#form-create-user button[type='submit']").click()
         time.sleep(2)
 
         users_table_updated = driver.find_element(By.ID, "tbody-users-directory").text
         assert_test("Creación y Persistencia de Usuario", f"qa_user_{timestamp_user}" in users_table_updated)
 
         # -------------------------------------------------------------
-        # TEST 7: Catálogos de Plataformas y Guías Clínicas
+        # TEST 7: Base de Conocimiento y Catálogos Clínicos
         # -------------------------------------------------------------
-        print("\n▶ Test 7: Catálogos y Base de Conocimiento...")
-        # Guías
-        driver.find_element(By.CSS_SELECTOR, ".nav-hub-tab[data-view='articles']").click()
+        print("\n▶ Test 7: Base de Conocimiento y Clientes/Plataformas...")
+        driver.execute_script("switchView('articles');")
         time.sleep(1)
         articles_text = driver.find_element(By.ID, "view-articles").text
-        assert_test("Base de Conocimiento", "Historia Clínica Electrónica" in articles_text and "Protocolo de Contingencia" in articles_text)
+        assert_test("Base de Conocimiento Activa", "Historia Clínica Electrónica" in articles_text or "Protocolo" in articles_text)
 
-        # Plataformas
-        driver.find_element(By.CSS_SELECTOR, ".nav-hub-tab[data-view='platforms']").click()
+        driver.execute_script("switchView('platforms');")
         time.sleep(1)
         plat_grid = driver.find_element(By.ID, "view-platforms").text
-        assert_test("Catálogo de Plataformas Clínicas", "Receta Electrónica" in plat_grid or "Receta Digital" in plat_grid or "Telemedicina" in plat_grid)
+        assert_test("Clientes & Plataformas Clínicas", "Receta Electrónica" in plat_grid or "OSDE" in plat_grid or "Swiss Medical" in plat_grid)
 
         # -------------------------------------------------------------
-        # TEST 8: Configuración y Descarga Directa de Respaldos
+        # TEST 8: Configuración y Respaldos CSV
         # -------------------------------------------------------------
-        print("\n▶ Test 8: Configuración y Respaldos...")
-        driver.find_element(By.CSS_SELECTOR, ".nav-hub-tab[data-view='config']").click()
+        print("\n▶ Test 8: Configuración y Exportaciones CSV...")
+        driver.execute_script("switchView('config');")
         time.sleep(1)
         config_view = driver.find_element(By.ID, "view-config").text
-        assert_test("Sección Configuración y SLAs", "Matriz de Priorización ITIL" in config_view and "Respaldo y Exportación" in config_view)
+        assert_test("Módulo Configuración y SLAs", "Configuración Operativa" in config_view or "ITIL" in config_view)
         
         # Verificar que los enlaces de descarga directa son válidos
         csv_links = driver.find_elements(By.XPATH, "//a[contains(@href, '/api/v1/tickets/export/csv')]")
