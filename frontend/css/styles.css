@@ -4525,12 +4525,12 @@ html, body {
 /* 3. Tabla con Tarjetas Separadas, Cabecera Sticky Sólida y Diseño Desahogado */
 .invgate-tickets-table {
   width: 100%;
-  min-width: 1050px;
+  min-width: 0;
   border-collapse: separate !important;
   border-spacing: 0 8px !important;
-  font-size: 12.5px;
+  font-size: 12px;
   text-align: left;
-  table-layout: auto;
+  table-layout: fixed;
 }
 
 .invgate-tickets-table thead {
@@ -4549,7 +4549,7 @@ html, body {
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.6px;
-  padding: 12px 14px;
+  padding: 9px 10px;
   border-top: 1px solid #1E3A5F !important;
   border-bottom: 2px solid #07152E !important;
   border-left: none !important;
@@ -4598,7 +4598,7 @@ html, body {
 }
 
 .invgate-tickets-table tbody td {
-  padding: 12px 14px;
+  padding: 9px 10px;
   vertical-align: middle;
   color: #1E293B;
   background-color: #FFFFFF;

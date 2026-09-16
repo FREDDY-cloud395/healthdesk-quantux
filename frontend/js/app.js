@@ -1773,49 +1773,49 @@ function renderTicketList() {
         return `
           <tr class="${prioRowClass}" onclick="openAgentWorkspace('${t.id}')" title="Haga clic para abrir el espacio de trabajo de la solicitud #${t.id}">
             <!-- 1. TICKET -->
-            <td style="white-space: nowrap; font-weight: 800; color: #0284C7; width: 90px;">
-              <span class="tkt-id-badge" style="font-size: 12px; padding: 3px 8px; border-radius: 6px; background: #E0F2FE; color: #0369A1; font-weight: 800;">#${t.id}</span>
+            <td style="white-space: nowrap; font-weight: 800; color: #0284C7; overflow: hidden; text-overflow: ellipsis;">
+              <span class="tkt-id-badge" style="font-size: 11.5px; padding: 3px 6px; border-radius: 6px; background: #E0F2FE; color: #0369A1; font-weight: 800; font-family: monospace;">#${t.id}</span>
             </td>
 
             <!-- 2. ASUNTO -->
-            <td style="max-width: 320px;">
-              <div style="font-weight: 700; color: #0F172A; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${escapeHtml(t.title)}">${escapeHtml(t.title)}</div>
-              <div style="font-size: 11px; color: #64748B; margin-top: 2px;">
+            <td style="overflow: hidden;">
+              <div style="font-weight: 700; color: #0F172A; font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${escapeHtml(t.title)}">${escapeHtml(t.title)}</div>
+              <div style="font-size: 10.5px; color: #64748B; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                 <span>${platName}</span> · <span>${timeAgo}</span>
               </div>
             </td>
 
             <!-- 3. CLIENTE / INSTITUCIÓN -->
-            <td style="white-space: nowrap; font-size: 12.5px; font-weight: 600; color: #334155; width: 160px;">
+            <td style="white-space: nowrap; font-size: 11.5px; font-weight: 600; color: #334155; overflow: hidden; text-overflow: ellipsis;" title="${instName}">
               ${instName}
             </td>
 
             <!-- 4. PRIORIDAD -->
-            <td style="white-space: nowrap; width: 110px;">
-              <span class="tkt-prio-chip ${prioChipClass}" style="font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 6px;">${prioIcon} ${priority}</span>
+            <td style="white-space: nowrap;">
+              <span class="tkt-prio-chip ${prioChipClass}" style="font-size: 10.5px; font-weight: 800; padding: 2px 6px; border-radius: 6px;">${prioIcon} ${priority}</span>
             </td>
 
             <!-- 5. ESTADO -->
-            <td style="white-space: nowrap; width: 110px;">
-              <span class="tkt-status-pill ${statusPillClass}" style="font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 6px;">${statusText}</span>
+            <td style="white-space: nowrap;">
+              <span class="tkt-status-pill ${statusPillClass}" style="font-size: 10.5px; font-weight: 700; padding: 2px 6px; border-radius: 6px;">${statusText}</span>
             </td>
 
             <!-- 6. RESPONSABLE -->
-            <td style="white-space: nowrap; width: 170px;">
-              <div style="display: flex; align-items: center; gap: 6px;">
-                ${t.assignee_username ? getUserAvatarHtml(t.assignee_username, agentName, 24) : '<div style="width:24px; height:24px; border-radius:50%; background:#F1F5F9; border:1px dashed #CBD5E1; display:flex; align-items:center; justify-content:center; font-size:11px; color:#94A3B8;">?</div>'}
-                <span style="font-size: 12px; font-weight: 600; color: ${t.assignee_username ? '#334155' : '#94A3B8'};">${t.assignee_username ? agentName.split('(')[0].trim() : 'Sin asignar'}</span>
+            <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+              <div style="display: flex; align-items: center; gap: 5px; overflow: hidden;">
+                ${t.assignee_username ? getUserAvatarHtml(t.assignee_username, agentName, 20) : '<div style="width:20px; height:20px; border-radius:50%; background:#F1F5F9; border:1px dashed #CBD5E1; display:flex; align-items:center; justify-content:center; font-size:10px; color:#94A3B8; flex-shrink:0;">?</div>'}
+                <span style="font-size: 11.5px; font-weight: 600; color: ${t.assignee_username ? '#334155' : '#94A3B8'}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${agentName}">${t.assignee_username ? agentName.split('(')[0].trim() : 'Sin asignar'}</span>
               </div>
             </td>
 
             <!-- 7. SLA -->
-            <td style="white-space: nowrap; width: 130px;">
-              <span class="tkt-sla-chip ${slaChipClass}" style="font-size: 11px; font-weight: 700;">${sla.timeRemainingText || 'En plazo'}</span>
+            <td style="white-space: nowrap;">
+              <span class="tkt-sla-chip ${slaChipClass}" style="font-size: 10.5px; font-weight: 700; padding: 2px 5px;">${sla.timeRemainingText || 'En plazo'}</span>
             </td>
 
             <!-- 8. ACCIÓN -->
-            <td style="text-align: right; white-space: nowrap; width: 80px;">
-              <button type="button" class="btn-sec" onclick="event.stopPropagation(); openAgentWorkspace('${t.id}')" style="padding: 4px 10px; font-size: 11px; font-weight: 700; border-radius: 6px;">
+            <td style="text-align: center; white-space: nowrap;">
+              <button type="button" class="btn-sec" onclick="event.stopPropagation(); openAgentWorkspace('${t.id}')" style="padding: 3px 8px; font-size: 11px; font-weight: 700; border-radius: 6px;">
                 Abrir
               </button>
             </td>
