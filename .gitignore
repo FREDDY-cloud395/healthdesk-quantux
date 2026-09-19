@@ -15,6 +15,7 @@ ENV/
 *.db-shm
 *.db-wal
 backend/backups/
+backups_archive/
 backend/uploads/
 backend/quantux.db
 backend/quantux_tickets.db
