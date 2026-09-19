@@ -15,13 +15,23 @@ class UserCreateRequest(BaseModel):
     email: str
     role: UserRole = UserRole.SOLICITANTE
     support_level: Optional[SupportLevel] = None
+    is_active: bool = True
+    groups: Optional[str] = "mesa-de-ayuda"
+    product_access: Optional[str] = "Mesa de Ayuda"
+    institution_code: Optional[str] = None
+    assigned_institutions: Optional[str] = "ALL"
+    phone: Optional[str] = None
 
 class UserUpdateRequest(BaseModel):
     full_name: Optional[str] = None
     email: Optional[str] = None
     role: Optional[UserRole] = None
     support_level: Optional[SupportLevel] = None
+    is_active: Optional[bool] = None
+    groups: Optional[str] = None
+    product_access: Optional[str] = None
     institution_code: Optional[str] = None
+    assigned_institutions: Optional[str] = None
     phone: Optional[str] = None
     avatar_url: Optional[str] = None
 
@@ -70,6 +80,18 @@ def update_user(user_id: int, req: UserUpdateRequest, session: Session = Depends
         user.role = req.role
     if req.support_level is not None:
         user.support_level = req.support_level
+    if req.is_active is not None:
+        user.is_active = req.is_active
+    if req.groups is not None:
+        user.groups = req.groups
+    if req.product_access is not None:
+        user.product_access = req.product_access
+    if req.institution_code is not None:
+        user.institution_code = req.institution_code.strip() if req.institution_code else None
+    if req.assigned_institutions is not None:
+        user.assigned_institutions = req.assigned_institutions.strip() if req.assigned_institutions else "ALL"
+    if req.phone is not None:
+        user.phone = req.phone.strip() if req.phone else None
     
     session.add(user)
     session.commit()
@@ -91,7 +113,30 @@ def update_user_by_username(username: str, req: UserUpdateRequest, session: Sess
         user.role = req.role
     if req.support_level is not None:
         user.support_level = req.support_level
+    if req.is_active is not None:
+        user.is_active = req.is_active
+    if req.groups is not None:
+        user.groups = req.groups
+    if req.product_access is not None:
+        user.product_access = req.product_access
+    if req.institution_code is not None:
+        user.institution_code = req.institution_code.strip() if req.institution_code else None
+    if req.assigned_institutions is not None:
+        user.assigned_institutions = req.assigned_institutions.strip() if req.assigned_institutions else "ALL"
+    if req.phone is not None:
+        user.phone = req.phone.strip() if req.phone else None
     
+    session.add(user)
+    session.commit()
+    session.refresh(user)
+    return user
+
+@router.patch("/{user_id}/toggle-status", response_model=User)
+def toggle_user_status(user_id: int, session: Session = Depends(get_session)):
+    user = session.get(User, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado.")
+    user.is_active = not user.is_active
     session.add(user)
     session.commit()
     session.refresh(user)
@@ -124,6 +169,12 @@ def create_user(req: UserCreateRequest, session: Session = Depends(get_session))
         email=req.email.strip().lower(),
         role=req.role,
         support_level=lvl,
+        is_active=req.is_active,
+        groups=req.groups or "mesa-de-ayuda",
+        product_access=req.product_access or "Mesa de Ayuda",
+        institution_code=req.institution_code.strip() if req.institution_code else None,
+        assigned_institutions=req.assigned_institutions.strip() if req.assigned_institutions else "ALL",
+        phone=req.phone.strip() if req.phone else None,
         created_at=datetime.utcnow()
     )
     session.add(new_user)

@@ -73,7 +73,14 @@ def create_institution(req: InstitutionCreateRequest, session: Session = Depends
     session.refresh(inst)
     return inst
 
-@router.get("/calculate-priority")
+class PriorityCalculationResponse(BaseModel):
+    impact: ImpactLevel
+    urgency: UrgencyLevel
+    priority: PriorityLevel
+    sla_response_time_minutes: int
+    sla_resolution_time_minutes: int
+
+@router.get("/calculate-priority", response_model=PriorityCalculationResponse)
 def get_calculated_priority(impact: ImpactLevel, urgency: UrgencyLevel):
     priority = calculate_priority(impact, urgency)
     p_val = priority.value if hasattr(priority, "value") else str(priority)
@@ -105,6 +112,9 @@ class ArticleCreateRequest(BaseModel):
     version: Optional[str] = "v1.0"
     changelog: Optional[str] = "Versión inicial homologada"
     source_ticket_id: Optional[str] = None
+    space_name: Optional[str] = "Guías y Documentación de Soporte Asistencial"
+    requests_deflected: Optional[int] = 0
+    helpful_score: Optional[int] = 95
 
 class ArticleUpdateRequest(BaseModel):
     title: Optional[str] = None
@@ -127,7 +137,7 @@ class ArticleFromTicketRequest(BaseModel):
 
 def _ensure_kb_seed(session: Session):
     existing_count = len(session.exec(select(KBArticle)).all())
-    if existing_count < 8:
+    if existing_count < 20:
         seed_data = [
             {
                 "article": KBArticle(
@@ -463,6 +473,232 @@ def _ensure_kb_seed(session: Session):
                     )
                 ]
             }
+            ,
+            {
+                "article": KBArticle(
+                    id=9,
+                    title="SOP-CD2-001: Gestión y Selección de Matrículas (SISA / CRM)",
+                    category="Consultorio Digital",
+                    content="1. Selector Bloqueado en Interfaz: Si el profesional tiene su matrícula por defecto inhabilitada pero cuenta con otra matrícula activa en SISA, la interfaz desbloquea automáticamente el menú desplegable para permitirle elegir la matrícula habilitada para prescribir.\n2. Inconsistencias y Matrículas Ficticias en CRM: Cuando se detecten matrículas con dígitos adicionales (como un 0 adelante o un 1 al final) generadas para saltear duplicados tras cambios de CUIT (nacional vs extranjero), tramitar formalmente la unificación de Identificadores Comerciales (ICs) vía ticket PAU a Soporte CRM/MDA (ej. PAU #895833).\n3. Contingencia Urgente en Base de Datos: Para destrabar bloqueos inmediatos en producción, ejecutar actualización en BD de CD2 replicando de forma exacta los campos del objeto matriculaSISA dentro de defaultMatricula.\n4. Criterio de Habilitación: El sistema toma de forma estricta y exclusiva el estado 'Habilitada' para habilitar recetas, prescindiendo de la fecha de caducidad.",
+                    author_username="admin",
+                    tags="cd2,sisa,crm,matricula,selector,pau,habilitada,v1.0",
+                    version="v1.0",
+                    changelog="Protocolo oficial de gestión de matrículas y contingencia SISA/CRM para CD2",
+                    view_count=84,
+                    created_at=datetime(2026, 9, 10, 10, 0),
+                    updated_at=datetime(2026, 9, 15, 14, 0)
+                ),
+                "history": [
+                    KBArticleHistory(
+                        article_id=9,
+                        version="v1.0",
+                        title="SOP-CD2-001: Gestión y Selección de Matrículas (SISA / CRM)",
+                        category="Consultorio Digital",
+                        content="1. Selector Bloqueado: Desbloqueo automático condicional.\n2. Matrículas Ficticias: Unificación de ICs vía ticket PAU a CRM.\n3. Contingencia BD: Replicar matriculaSISA en defaultMatricula.\n4. Validación: Solo estado Habilitada.",
+                        author_username="admin",
+                        tags="cd2,sisa,crm,matricula,v1.0",
+                        changelog="Creación del protocolo de matrículas CD2",
+                        created_at=datetime(2026, 9, 10, 10, 0)
+                    )
+                ]
+            },
+            {
+                "article": KBArticle(
+                    id=10,
+                    title="SOP-CD2-002: Videoconsulta, Sala de Espera y Conectividad (Jitsi)",
+                    category="Consultorio Digital",
+                    content="1. Reconexión y joinTimeout (Spinner eterno): El sistema cuenta con algoritmo de reconexión transparente en background limitado a 5 reintentos con intervalos de 20 segundos para prevenir bucles infinitos por microcortes o suspensión en móviles. Si no reconecta al 5to intento, instruir al usuario a refrescar pantalla o reingresar a sala de espera.\n2. Miniatura Propia (Self-view) y Permisos: Ejecutar validación pre-check de hardware. Verificar que la cámara y el micrófono no estén bloqueados por el navegador. Se aplica fix en el iframe de Jitsi para la visualización de la miniatura de video del prestador.\n3. Prevención de Cierre Accidental: Se incluye diálogo modal de confirmación obligatorio antes de cerrar la ventana de atención para evitar expulsar involuntariamente al paciente.",
+                    author_username="soporte",
+                    tags="cd2,videoconsulta,jitsi,conectividad,jointimeout,permisos,camara,v1.0",
+                    version="v1.0",
+                    changelog="Protocolo de videoconsulta, reconexión Jitsi y permisos de periféricos",
+                    view_count=112,
+                    created_at=datetime(2026, 9, 10, 11, 0),
+                    updated_at=datetime(2026, 9, 16, 9, 30)
+                ),
+                "history": [
+                    KBArticleHistory(
+                        article_id=10,
+                        version="v1.0",
+                        title="SOP-CD2-002: Videoconsulta, Sala de Espera y Conectividad (Jitsi)",
+                        category="Consultorio Digital",
+                        content="1. Reconexión Jitsi: 5 reintentos cada 20s.\n2. Permisos y Self-view: Pre-check de periféricos y fix en iframe.\n3. Cierre accidental: Modal de confirmación obligatorio.",
+                        author_username="soporte",
+                        tags="cd2,videoconsulta,jitsi,v1.0",
+                        changelog="Creación de protocolo de videoconsulta CD2",
+                        created_at=datetime(2026, 9, 10, 11, 0)
+                    )
+                ]
+            },
+            {
+                "article": KBArticle(
+                    id=11,
+                    title="SOP-CD2-003: Prescripción de Laboratorios y Búsqueda de Estudios (SNOMED CT)",
+                    category="Consultorio Digital",
+                    content="1. Términos Coloquiales: El catálogo local incorpora sinonimia entre paréntesis para determinaciones usuales (ej. 'Hepatograma', '(HIV)', 'Orina completa') facilitando la búsqueda y evitando rechazos en efectores externos por falta de concordancia.\n2. Servidor de Terminología Clínica: Búsqueda sincrónica sobre API Tips Salud (POST /os-terminologiaclinica/v2/textos-codificados/terminos-sugeridos) con debounce para optimizar peticiones.\n3. Fallback de Contingencia: Ante caídas de red o errores HTTP 422 o 500 del servidor de terminología, el sistema conmuta automáticamente (try-catch) al catálogo maestro de la base de datos local de CD2 sin interrumpir la atención.",
+                    author_username="admin",
+                    tags="cd2,laboratorio,snomed,estudios,terminologia,tips_salud,hepatograma,hiv,v1.0",
+                    version="v1.0",
+                    changelog="Integración SNOMED CT con términos coloquiales y fallback local",
+                    view_count=95,
+                    created_at=datetime(2026, 9, 11, 9, 0),
+                    updated_at=datetime(2026, 9, 16, 11, 0)
+                ),
+                "history": [
+                    KBArticleHistory(
+                        article_id=11,
+                        version="v1.0",
+                        title="SOP-CD2-003: Prescripción de Laboratorios y Búsqueda de Estudios (SNOMED CT)",
+                        category="Consultorio Digital",
+                        content="1. Términos comunes añadidos.\n2. Integración Tips Salud con debounce.\n3. Fallback local ante 422 o 500.",
+                        author_username="admin",
+                        tags="cd2,laboratorio,snomed,v1.0",
+                        changelog="Creación de protocolo de laboratorios CD2",
+                        created_at=datetime(2026, 9, 11, 9, 0)
+                    )
+                ]
+            },
+            {
+                "article": KBArticle(
+                    id=12,
+                    title="SOP-CD2-004: Medios de Registración y Configuración de Consultorio (CRM / Regiones)",
+                    category="Consultorio Digital",
+                    content="1. Bloqueo de 'Registrar Prestación' / Falta de Operador y Terminal: Causado por discrepancia en CRM entre la región donde el médico atiende efectivamente y la asignada en su contrato (ej. atención en Mar del Plata - Región 22 con residencia en Bariloche - Región 17).\n2. Auditoría de Concordancia: Validar coincidencia al 100% en efector, filial, región y estado entre CRM y CD2.\n3. Solución Operativa: Tramitar ante el equipo de CRM el alta de la región correspondiente a la sede de atención para habilitar los medios de registración y terminales.",
+                    author_username="soporte",
+                    tags="cd2,crm,regiones,terminal,operador,registrar_prestacion,efector,v1.0",
+                    version="v1.0",
+                    changelog="Procedimiento de auditoría regional y desbloqueo de medios de registración",
+                    view_count=73,
+                    created_at=datetime(2026, 9, 11, 14, 0),
+                    updated_at=datetime(2026, 9, 17, 10, 0)
+                ),
+                "history": [
+                    KBArticleHistory(
+                        article_id=12,
+                        version="v1.0",
+                        title="SOP-CD2-004: Medios de Registración y Configuración de Consultorio (CRM / Regiones)",
+                        category="Consultorio Digital",
+                        content="1. Error de concordancia regional.\n2. Auditoría CRM vs CD2.\n3. Trámite de alta de región.",
+                        author_username="soporte",
+                        tags="cd2,crm,regiones,v1.0",
+                        changelog="Creación de protocolo regional CRM",
+                        created_at=datetime(2026, 9, 11, 14, 0)
+                    )
+                ]
+            },
+            {
+                "article": KBArticle(
+                    id=13,
+                    title="SOP-CD2-005: Descarga y Apertura de Documentos / PDFs (Cifrado y Caducidad)",
+                    category="Consultorio Digital",
+                    content="1. Error 404 (Documento no encontrado o vencido): Los archivos PDF de recetas y certificados médicos almacenados en los buckets tienen una política de retención máxima de 6 meses (180 días), eliminándose automáticamente tras ese período. Instruir a solicitar reemisión si el documento tiene más de 6 meses.\n2. Error 400 (Bad Request / Hash incompleto): Ocurre cuando el usuario copia manualmente la URL desde el correo electrónico y corta o trunca la cadena del hash. Instruir a hacer clic directo en el enlace del correo o copiar la URL completa sin omitir caracteres.",
+                    author_username="soporte",
+                    tags="cd2,pdf,receta,certificado,error404,error400,cifrado,bucket,retencion,v1.0",
+                    version="v1.0",
+                    changelog="Políticas de almacenamiento en buckets y resolución de errores de enlace PDF",
+                    view_count=130,
+                    created_at=datetime(2026, 9, 12, 11, 0),
+                    updated_at=datetime(2026, 9, 17, 16, 0)
+                ),
+                "history": [
+                    KBArticleHistory(
+                        article_id=13,
+                        version="v1.0",
+                        title="SOP-CD2-005: Descarga y Apertura de Documentos / PDFs (Cifrado y Caducidad)",
+                        category="Consultorio Digital",
+                        content="1. Error 404: Retención máxima de 6 meses en bucket.\n2. Error 400: Hash truncado, cliquear enlace directo.",
+                        author_username="soporte",
+                        tags="cd2,pdf,cifrado,v1.0",
+                        changelog="Creación de protocolo de documentos PDF",
+                        created_at=datetime(2026, 9, 12, 11, 0)
+                    )
+                ]
+            },
+            {
+                "article": KBArticle(
+                    id=14,
+                    title="SOP-CD2-006: Repositorio de Medicamentos y Receta Electrónica (Mi Argentina)",
+                    category="Consultorio Digital",
+                    content="1. Código de Jurisdicción Sanitaria: Se transmite el código numérico de jurisdicción en lugar del texto libre para asegurar la integración formal con el Repositorio de Medicamentos de Mi Argentina.\n2. Discriminación de Errores: El sistema clasifica el motivo de rechazo informando si proviene de inconsistencias en el padrón del paciente o de fallas de servicio ministerial (HTTP 500 a 599).\n3. Contingencia HTTP 500: Si el repositorio nacional no responde, la receta se encola para reintento y se emite constancia con QR de contingencia.",
+                    author_username="admin",
+                    tags="cd2,receta,medicamentos,mi_argentina,jurisdiccion,repositorio,v1.0",
+                    version="v1.0",
+                    changelog="Interoperabilidad con Repositorio de Medicamentos y contingencia de recetas",
+                    view_count=108,
+                    created_at=datetime(2026, 9, 13, 10, 0),
+                    updated_at=datetime(2026, 9, 17, 18, 0)
+                ),
+                "history": [
+                    KBArticleHistory(
+                        article_id=14,
+                        version="v1.0",
+                        title="SOP-CD2-006: Repositorio de Medicamentos y Receta Electrónica (Mi Argentina)",
+                        category="Consultorio Digital",
+                        content="1. Código numérico de jurisdicción.\n2. Mensajes categorizados.\n3. Encolado de reintentos.",
+                        author_username="admin",
+                        tags="cd2,receta,mi_argentina,v1.0",
+                        changelog="Creación de protocolo de recetas Mi Argentina",
+                        created_at=datetime(2026, 9, 13, 10, 0)
+                    )
+                ]
+            },
+            {
+                "article": KBArticle(
+                    id=15,
+                    title="SOP-CD2-007: Actualización de Prefijos Profesionales en Turnos Futuros",
+                    category="Consultorio Digital",
+                    content="1. Inconsistencia de Título Profesional (Dr. / Lic.): La actualización del título no impacta turnos futuros ya agendados debido a que el prefijo queda fijado en la base al generarse el primer turno.\n2. Procedimiento de Sincronización: 1) Ejecutar actualización del prefijo en la base de datos de CD2. 2) Correr proceso batch en segundo plano fuera de horario sobre la colección de turnos en MongoDB mediante identificadores de profesional para sincronizar las notificaciones y citas agendadas.",
+                    author_username="admin",
+                    tags="cd2,turnos,prefijo,dr,lic,mongodb,agenda,v1.0",
+                    version="v1.0",
+                    changelog="Procedimiento batch de regularización de prefijos académicos en turnos futuros",
+                    view_count=67,
+                    created_at=datetime(2026, 9, 14, 12, 0),
+                    updated_at=datetime(2026, 9, 18, 8, 30)
+                ),
+                "history": [
+                    KBArticleHistory(
+                        article_id=15,
+                        version="v1.0",
+                        title="SOP-CD2-007: Actualización de Prefijos Profesionales en Turnos Futuros",
+                        category="Consultorio Digital",
+                        content="1. Prefijo fijo en primer turno.\n2. Update en CD2 + proceso batch en MongoDB.",
+                        author_username="admin",
+                        tags="cd2,turnos,prefijo,v1.0",
+                        changelog="Creación de protocolo de prefijos de turnos",
+                        created_at=datetime(2026, 9, 14, 12, 0)
+                    )
+                ]
+            },
+            {
+                "article": KBArticle(
+                    id=16,
+                    title="SOP-CD2-008: Validaciones de Formulario y Cierre de Consulta (RUSS)",
+                    category="Consultorio Digital",
+                    content="1. Diagnóstico Obligatorio: Es mandatorio seleccionar un Diagnóstico clínico codificado para finalizar y cerrar la consulta. Si no se selecciona, la atención no puede cerrarse.\n2. Evolución Asistida para RUSS: Si el profesional completa el diagnóstico pero deja la evolución en blanco, el backend autogenera un texto estándar para RUSS ('Turno Presencial / Turno Virtual' + Especialidad), evitando bloqueos operativos.\n3. Certificados con Valor 0: Las reglas de validación aceptan el valor 0 en días u horas en certificados médicos cuando no representen indicación de reposo laboral (ej. certificado de asistencia).",
+                    author_username="soporte",
+                    tags="cd2,russ,diagnostico,evolucion,certificados,cierre,formulario,v1.0",
+                    version="v1.0",
+                    changelog="Reglas de validación clínica, evolución automática RUSS y certificados de asistencia",
+                    view_count=121,
+                    created_at=datetime(2026, 9, 14, 15, 0),
+                    updated_at=datetime(2026, 9, 18, 11, 0)
+                ),
+                "history": [
+                    KBArticleHistory(
+                        article_id=16,
+                        version="v1.0",
+                        title="SOP-CD2-008: Validaciones de Formulario y Cierre de Consulta (RUSS)",
+                        category="Consultorio Digital",
+                        content="1. Diagnóstico mandatorio.\n2. Evolución asistida RUSS si está vacía.\n3. Certificados admiten 0 si no es reposo.",
+                        author_username="soporte",
+                        tags="cd2,russ,diagnostico,v1.0",
+                        changelog="Creación de protocolo de validaciones clínicas CD2",
+                        created_at=datetime(2026, 9, 14, 15, 0)
+                    )
+                ]
+            }
+
         ]
         for item in seed_data:
             a = item["article"]
@@ -576,6 +812,9 @@ def create_article(req: ArticleCreateRequest, session: Session = Depends(get_ses
         version=ver,
         changelog=log,
         view_count=1,
+        requests_deflected=req.requests_deflected or 0,
+        helpful_score=req.helpful_score or 95,
+        space_name=req.space_name or "Guías y Documentación de Soporte Asistencial",
         source_ticket_id=req.source_ticket_id,
         is_published=True,
         created_at=datetime.utcnow(),
@@ -824,6 +1063,60 @@ def update_system_config(req: SystemConfigUpdate):
         **_system_config
     }
 
+# =============================================================================
+# POLÍTICAS DE SLA CONFIGURABLES POR INSTITUCIÓN
+# =============================================================================
+_institution_slas = {
+    "GLOBAL": {
+        "n1": {"group": "OP_GUARDIA", "p1": 15, "p2": 30, "p3": 2, "p4": 4},
+        "n2": {"group": "ESP_CLINICOS", "p1": 1, "p2": 4, "p3": 8, "p4": 24},
+        "n3": {"group": "ING_CORE", "p1": 2, "p2": 8, "p3": 24, "p4": 48}
+    }
+}
+
+@router.get("/institutions/{institution_code}/sla")
+def get_institution_sla(institution_code: str):
+    code = institution_code.upper()
+    policy = _institution_slas.get(code, _institution_slas.get("GLOBAL"))
+    return {
+        "institution_code": code,
+        "is_custom": code in _institution_slas,
+        "policy": policy
+    }
+
+@router.put("/institutions/{institution_code}/sla")
+def update_institution_sla(institution_code: str, payload: dict):
+    code = institution_code.upper()
+    policy_data = payload.get("policy", payload)
+    _institution_slas[code] = policy_data
+    return {
+        "status": "success",
+        "institution_code": code,
+        "is_custom": code != "GLOBAL",
+        "message": f"Políticas de SLA actualizadas para {code}",
+        "policy": _institution_slas[code]
+    }
+
+@router.delete("/institutions/{institution_code}/sla")
+def reset_institution_sla(institution_code: str):
+    code = institution_code.upper()
+    if code in _institution_slas and code != "GLOBAL":
+        del _institution_slas[code]
+    return {
+        "status": "success",
+        "institution_code": code,
+        "is_custom": False,
+        "message": f"SLA de {code} restablecido a la Política Base",
+        "policy": _institution_slas.get("GLOBAL")
+    }
+
+@router.get("/sla/policies")
+def list_sla_policies():
+    return {
+        "status": "success",
+        "policies": _institution_slas
+    }
+
 
 # =============================================================================
 # GESTIÓN DE MESAS DE AYUDA Y NIVELES DE ATENCIÓN (ITIL N1, N2, N3)
@@ -1053,3 +1346,146 @@ def add_team_to_level(level_code: str, team: HelpdeskTeamCreate):
     }
 
 
+
+# =============================================================================
+# COPILOTO IA DE BASE DE CONOCIMIENTO PARA AGENTES DE SOPORTE
+# =============================================================================
+class CopilotQueryRequest(BaseModel):
+    query: str
+    ticket_id: Optional[str] = None
+
+class CopilotQueryResponse(BaseModel):
+    query: str
+    matched_article_id: Optional[int] = None
+    article_title: str
+    category: str
+    diagnostic: str
+    client_response: str
+    technical_sop: str
+    quick_solution: str
+
+@router.post("/articles/copilot-chat", response_model=CopilotQueryResponse)
+def copilot_chat_kb(req: CopilotQueryRequest, session: Session = Depends(get_session)):
+    """
+    Chat Copiloto amigable para agentes de soporte:
+    Analiza la consulta en lenguaje natural contra el catálogo unificado de 16 artículos
+    y devuelve diagnóstico, respuesta lista para enviar al cliente y SOP técnico N1/N2.
+    """
+    _ensure_kb_seed(session)
+    articles = session.exec(select(KBArticle).where(KBArticle.is_published == True)).all()
+    q = (req.query or "").lower().strip()
+    
+    # Mapeo heurístico inteligente y semántico por palabras clave
+    best_article = None
+    best_score = 0
+    
+    for art in articles:
+        score = 0
+        title_l = art.title.lower()
+        content_l = art.content.lower()
+        tags_l = (art.tags or "").lower()
+        
+        # Palabras clave ponderadas
+        terms = [t for t in q.replace(",", " ").replace(".", " ").replace("?", " ").split() if len(t) > 2]
+        for term in terms:
+            if term in title_l:
+                score += 5
+            if term in tags_l:
+                score += 3
+            if term in content_l:
+                score += 1
+                
+        # Bonus específicos por conceptos clave
+        if ("matrícula" in q or "matricula" in q or "sisa" in q) and art.id == 13:
+            score += 20
+        elif ("jitsi" in q or "videoconsulta" in q or "spinner" in q or "self-view" in q or "camara" in q) and art.id == 14:
+            score += 20
+        elif ("laboratorio" in q or "snomed" in q or "hepatograma" in q or "hiv" in q) and art.id == 15:
+            score += 20
+        elif ("registrar prestación" in q or "crm" in q or "terminal" in q or "operador" in q or "region" in q or "región" in q) and art.id == 16:
+            score += 20
+        elif ("404" in q or "400" in q or "pdf" in q or "bucket" in q or "caducidad" in q or "retención" in q) and art.id == 17:
+            score += 20
+        elif ("mi argentina" in q or "repositorio" in q or "medicamentos" in q or "jurisdicción" in q) and art.id == 18:
+            score += 20
+        elif ("prefijo" in q or "dr" in q or "lic" in q or "titulo" in q or "turnos futuros" in q) and art.id == 19:
+            score += 20
+        elif ("diagnostico" in q or "diagnóstico" in q or "russ" in q or "certificado" in q or "cierre" in q or "valor 0" in q) and art.id == 20:
+            score += 20
+        elif ("firma digital" in q or "osde" in q or "swiss" in q) and art.id == 1:
+            score += 15
+        elif ("webrtc" in q or "safari" in q or "h.264" in q) and art.id == 3:
+            score += 15
+        elif ("hl7" in q or "desincronizacion" in q or "adt" in q) and art.id == 12:
+            score += 15
+            
+        if score > best_score:
+            best_score = score
+            best_article = art
+            
+    if not best_article and articles:
+        # Fallback al primer artículo de CD2
+        best_article = next((a for a in articles if a.id == 13), articles[0])
+        
+    # Construcción de respuesta estructurada para el agente
+    art_id = best_article.id
+    if art_id == 13:
+        diag = "Selector de matrícula bloqueado o inconsistencia SISA/CRM por matrícula ficticia o CUIT modificado."
+        client_res = "Estimado/a profesional: Si visualiza el selector bloqueado, el sistema ya habilitó la selección manual de su matrícula activa de SISA. Por favor verifique el desplegable. En caso de requerir unificación de matrículas, su caso ha sido derivado para gestión prioritaria."
+        tech_sop = "1. Validar que la matrícula figure en estado 'Habilitada'. 2. Si hay ICs duplicados por CUIT extranjero en CRM, solicitar unificación mediante ticket PAU a Soporte CRM/MDA. 3. Para contingencia urgente en BD de CD2: copiar objeto matriculaSISA a defaultMatricula."
+        quick = "Desbloquear selector en frontend si difiere de default y unificar ICs vía PAU en CRM."
+    elif art_id == 14:
+        diag = "Dificultad de enlace Jitsi por joinTimeout, falta de permisos o bloqueo de miniatura self-view."
+        client_res = "Estimado/a profesional: El sistema realiza reconexiones automáticas continuas. Por favor asegúrese de tener permitidos cámara y micrófono en el candado de la barra del navegador y refresque la pantalla con F5 si el spinner persiste."
+        tech_sop = "1. Reconexión automática limitada a 5 intentos cada 20s. 2. Verificar pre-check de hardware en cliente. 3. El iframe de Jitsi cuenta con fix de renderizado para miniatura de video propia. 4. Se requiere confirmación modal antes de cerrar la sala."
+        quick = "Validar permisos en navegador, 5 reintentos automáticos y refrescar con F5."
+    elif art_id == 15:
+        diag = "Dificultad para localizar análisis clínicos por términos coloquiales bajo catálogo estricto SNOMED CT."
+        client_res = "Estimado/a profesional: Para la búsqueda de estudios habituales (ej. hepatograma, HIV, orina), puede escribir el nombre coloquial habitual, ya que el catálogo local cuenta con sinónimos automáticos entre paréntesis."
+        tech_sop = "1. Búsqueda sincrónica sobre API Tips Salud con debounce. 2. En caso de HTTP 422 o 500, el sistema conmuta automáticamente (fallback try-catch) al catálogo maestro local de CD2."
+        quick = "Usar sinónimos entre paréntesis en catálogo local con fallback automático ante caídas de Tips Salud."
+    elif art_id == 16:
+        diag = "Botón Registrar Prestación bloqueado por falta de operador/terminal debido a discordancia regional CRM."
+        client_res = "Estimado/a profesional: Se detectó una inconsistencia entre la región de atención y su contrato base en CRM. Estamos regularizando la vinculación de su sede de atención para habilitar los medios de registración."
+        tech_sop = "1. Auditar coincidencia 100% en efector, filial, región y estado entre CRM y CD2. 2. Tramitar el alta de la región operativa en CRM (ej. Región 22 Mar del Plata vs Región 17 Bariloche)."
+        quick = "Validar efector/filial/región al 100% y tramitar alta de región operativa en CRM."
+    elif art_id == 17:
+        diag = "Error 404 (documento expirado tras 6 meses) o Error 400 (cadena de hash incompleta en URL)."
+        client_res = "Estimado/a usuario: Si el enlace indica documento no encontrado (404), la receta/certificado ha superado la política de retención de 6 meses y debe solicitar su reemisión. Si observa error 400, por favor haga clic directamente en el enlace recibido en su correo sin copiar y pegar manualmente."
+        tech_sop = "1. Documentos en bucket se purgan a los 180 días por política de retención. 2. Error 400 se debe a truncado de hash en copy-paste; validar enlace completo."
+        quick = "Explicar caducidad de 6 meses para 404, y uso de enlace directo original sin truncar hash para 400."
+    elif art_id == 18:
+        diag = "Rechazo de validación en Repositorio Nacional de Medicamentos (Mi Argentina)."
+        client_res = "Estimado/a profesional: La validación de la receta se encuentra en procesamiento asistido. En caso de persistir, el sistema genera la constancia con código QR de contingencia para su dispensación."
+        tech_sop = "1. Verificar transmisión de código numérico de jurisdicción para Mi Argentina. 2. Si el fallo es HTTP 500+, la receta se encola para reintento y se emite duplicado de contingencia."
+        quick = "Transmitir código numérico de jurisdicción y encolar reintentos ante HTTP 500+."
+    elif art_id == 19:
+        diag = "Inconsistencia de prefijo profesional (Dr. / Lic.) en turnos futuros ya agendados."
+        client_res = "Estimado/a profesional: Su título académico ha sido actualizado en la ficha maestra. Los turnos futuros agendados se sincronizarán en el próximo proceso programado de actualización."
+        tech_sop = "1. Actualizar el prefijo en base de datos de CD2. 2. Ejecutar corrida batch programada fuera de horario sobre la colección de turnos en MongoDB mediante los IDs del profesional."
+        quick = "Actualizar en BD CD2 y sincronizar turnos futuros mediante proceso batch en MongoDB."
+    elif art_id == 20:
+        diag = "Bloqueo de cierre de atención por Diagnóstico obligatorio o error en certificado médico."
+        client_res = "Estimado/a profesional: Recuerde que es mandatorio seleccionar un Diagnóstico codificado para finalizar la consulta. Si no requiere ingresar Evolución, el sistema generará automáticamente la constancia clínica para RUSS."
+        tech_sop = "1. Diagnóstico es campo mandatorio ineludible. 2. Evolución vacía autogenera texto estandarizado RUSS ('Turno Presencial/Virtual' + Especialidad). 3. Certificados médicos aceptan valor 0 cuando no es reposo laboral."
+        quick = "Seleccionar Diagnóstico obligatorio, evolución asistida RUSS autogenerada y valor 0 permitido en certificados sin reposo."
+        diag = "Bloqueo de cierre de atención por Diagnóstico obligatorio o error en certificado médico."
+        client_res = "Estimado/a profesional: Recuerde que es mandatorio seleccionar un Diagnóstico codificado para finalizar la consulta. Si no requiere ingresar Evolución, el sistema generará automáticamente la constancia clínica para RUSS."
+        tech_sop = "1. Diagnóstico es campo mandatorio ineludible. 2. Evolución vacía autogenera texto estandarizado RUSS ('Turno Presencial/Virtual' + Especialidad). 3. Certificados médicos aceptan valor 0 cuando no es reposo laboral."
+        quick = "Seleccionar Diagnóstico obligatorio, evolución asistida RUSS autogenerada y valor 0 permitido en certificados sin reposo."
+    else:
+        diag = f"Procedimiento estándar para {best_article.category} ({best_article.title})."
+        client_res = f"Estimado/a usuario: Respecto a su consulta sobre {best_article.title}, le informamos los pasos recomendados según nuestro protocolo oficial:\n{best_article.content}"
+        tech_sop = f"Consultar artículo oficial #{best_article.id} en Base de Conocimiento para pasos detallados de N1/N2."
+        quick = best_article.title
+
+    return CopilotQueryResponse(
+        query=req.query,
+        matched_article_id=best_article.id,
+        article_title=best_article.title,
+        category=best_article.category,
+        diagnostic=diag,
+        client_response=client_res,
+        technical_sop=tech_sop,
+        quick_solution=quick
+    )

@@ -81,7 +81,11 @@ Si en algún momento el servidor no responde o el puerto 8000 queda tomado por u
    ```powershell
    Get-Process python -ErrorAction SilentlyContinue | Stop-Process -Force
    ```
-2. Ejecutar el lanzador verificado:
+2. Ejecutar el diagnóstico de preflight:
+   ```powershell
+   python check_health_env.py --fix
+   ```
+3. Ejecutar el lanzador verificado:
    ```powershell
    python run_server.py
    ```
@@ -89,3 +93,39 @@ Si en algún momento el servidor no responde o el puerto 8000 queda tomado por u
    ```cmd
    iniciar_healthdesk.bat
    ```
+
+---
+
+## 6. Preflight Check y Diagnóstico de Entorno (`check_health_env.py`)
+
+El script `check_health_env.py` permite validar de manera automatizada la preparación operativa del servidor:
+- **Python Runtime:** Verifica versión `>= 3.10`, arquitectura (64-bit) y entorno virtual.
+- **Dependencias Core:** Valida presencia y versiones de FastAPI, Uvicorn, SQLModel, SQLAlchemy, Pydantic, python-multipart y python-dotenv.
+- **Integridad de Archivos:** Comprueba existencia de `app/main.py`, `frontend/index.html`, carpeta de documentación y permisos de escritura en `backend/uploads/`.
+- **Integridad de Base de Datos:** Ejecuta `PRAGMA integrity_check` en SQLite y audita conteo de usuarios, tickets y base de conocimientos.
+- **Puertos de Red:** Comprueba disponibilidad de puertos clave (`8000`, `3000`, `8005`), identifica PIDs en conflicto y verifica si Quantux ya se encuentra activo en `/health`.
+- **Variables de Entorno:** Audita `.env` o `.env.production` frente al estándar maestro `.env.example`.
+
+Comandos útiles:
+```bash
+# Diagnóstico estándar con salida en color
+python check_health_env.py
+
+# Diagnóstico con auto-reparación (crea uploads/, copia .env.example si falta .env)
+python check_health_env.py --fix
+
+# Salida estructurada en JSON para pipelines de CI/CD
+python check_health_env.py --json
+
+# Verificación de puertos personalizados
+python check_health_env.py --ports 8000,3000,8080
+```
+
+---
+
+## 7. Contenedorización y Despliegue en la Nube
+
+- **Dockerfile Multi-Stage:** Configurado con stage de compilación (`builder`) y stage de ejecución mínima (`runner`) con usuario no privilegiado `appuser` (UID 10001) y directiva nativa `HEALTHCHECK` consultando `/health`.
+- **Docker Compose:** Volúmenes desacoplados persistiendo únicamente `/app/backend/uploads` para evitar sobreescribir el código fuente del contenedor.
+- **Render (`render.yaml`):** Especificación de Blueprint con `startCommand` verificado (`--port $PORT`), `healthCheckPath: /health` y versión de Python anclada a 3.11.9.
+

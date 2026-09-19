@@ -23,6 +23,23 @@ ROOT_DIR = Path(__file__).resolve().parent
 BACKEND_DIR = ROOT_DIR / "backend"
 sys.path.insert(0, str(BACKEND_DIR))
 
+# Cargar variables de entorno desde .env si existe
+env_file = ROOT_DIR / ".env"
+if env_file.exists():
+    try:
+        from dotenv import load_dotenv
+        load_dotenv(dotenv_path=env_file)
+    except Exception:
+        try:
+            with open(env_file, "r", encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith("#") and "=" in line:
+                        k, v = line.split("=", 1)
+                        os.environ.setdefault(k.strip(), v.strip().strip("'\""))
+        except Exception:
+            pass
+
 def check_port_free(host: str, port: int) -> bool:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.settimeout(0.5)
@@ -57,9 +74,9 @@ def main():
         print(f"  [ERROR] Error en inicializacion de base de datos: {e}")
         sys.exit(1)
 
-    # 2. Comprobar puerto (8005 para ambiente de desarrollo v4)
+    # 2. Comprobar puerto (Estándar 8000 o definido en PORT)
     host = "0.0.0.0"
-    port = int(os.environ.get("PORT", 8005))
+    port = int(os.environ.get("PORT", 8000))
     print(f"\n[2/3] Verificando disponibilidad de puerto {port}...")
     if not check_port_free(host, port):
         print(f"  [WARN] El puerto {port} esta ocupado por otra instancia.")

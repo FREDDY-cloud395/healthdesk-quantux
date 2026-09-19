@@ -307,10 +307,14 @@
     <aside class="app-sidebar" id="app-sidebar">
       <div class="sidebar-top">
         
-        <!-- Fila Superior: Botón Hamburguesa Estilo Windows 11 Task Manager -->
-        <div class="win11-hamburger-row">
-          <button type="button" class="btn-win11-hamburger" id="btn-sidebar-collapse" onclick="toggleSidebarCollapse()" title="Plegar / Expandir Menú [Tecla '[']" aria-label="Menú">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <!-- Header de Marca & Toggle de Colapso (Sin logo azul, botón hamburguesa destacado) -->
+        <div class="sidebar-brand-header" style="display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-bottom: 1px solid #E2E8F0; margin-bottom: 8px;">
+          <div class="sidebar-brand-text" style="display: flex; flex-direction: column; min-width: 0;">
+            <span style="font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 16px; color: #0F172A; letter-spacing: -0.3px; line-height: 1.1;">Service Desk</span>
+            <span style="font-size: 11px; color: #64748B; font-weight: 600; margin-top: 2px;">Mesa de Ayuda TI</span>
+          </div>
+          <button type="button" class="btn-win11-hamburger" id="btn-sidebar-collapse" onclick="toggleSidebarCollapse()" title="Plegar / Expandir Menú [Tecla '[']" aria-label="Menú" style="width: 34px; height: 34px; border-radius: 8px; background: #F1F5F9; border: 1.5px solid #CBD5E1; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #1E293B; box-shadow: 0 1px 3px rgba(0,0,0,0.05); transition: all 0.15s ease;" onmouseover="this.style.background='#E2E8F0'; this.style.borderColor='#94A3B8';" onmouseout="this.style.background='#F1F5F9'; this.style.borderColor='#CBD5E1';">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px;">
               <line x1="3" y1="6" x2="21" y2="6"></line>
               <line x1="3" y1="12" x2="21" y2="12"></line>
               <line x1="3" y1="18" x2="21" y2="18"></line>
@@ -318,21 +322,55 @@
           </button>
         </div>
 
-        <!-- Enlaces de Navegación del Menú Izquierdo (Estilo Windows 11) -->
+        <!-- Enlaces de Navegación del Menú Izquierdo (Patrón Unificado de Iconos Outline) -->
         <nav class="sidebar-nav win11-sidebar-nav">
-          <div class="nav-link-item active nav-hub-tab" data-view="tickets" id="tab-tickets" data-tooltip="Mesa de Ayuda">
+          <!-- Centro de Ayuda (Portal Solicitante con Chat de IA y Voz) -->
+          <div class="nav-link-item nav-hub-tab" data-view="requester-portal" id="tab-requester-portal" title="Centro de Ayuda • Asistente IA de Soporte" data-tooltip="Centro de Ayuda" style="display: none;">
             <div class="nav-indicator-pill"></div>
             <div class="nav-link-left">
-              <svg class="nav-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px;"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></svg>
-              <span>Mesa de Ayuda</span>
+              <svg class="nav-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+              <span class="nav-link-text" style="font-weight: 700;">Centro de Ayuda</span>
             </div>
           </div>
 
-          <div class="nav-link-item nav-hub-tab" data-view="dashboard" id="tab-dashboard" data-tooltip="Tablero de Control">
+          <div class="nav-link-item nav-hub-tab nav-link-tickets" data-view="tickets" id="tab-tickets" title="Mesa de Ayuda" data-tooltip="Mesa de Ayuda">
             <div class="nav-indicator-pill"></div>
             <div class="nav-link-left">
-              <svg class="nav-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px;"><rect x="3" y="3" width="7" height="9" rx="1"></rect><rect x="14" y="3" width="7" height="5" rx="1"></rect><rect x="14" y="12" width="7" height="9" rx="1"></rect><rect x="3" y="16" width="7" height="5" rx="1"></rect></svg>
-              <span>Tablero de Control</span>
+              <svg class="nav-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px;"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></svg>
+              <span class="nav-link-text">Mesa de Ayuda</span>
+            </div>
+          </div>
+
+          <div class="nav-link-item active nav-hub-tab nav-link-dashboard" data-view="dashboard" id="tab-dashboard" title="Tablero de Control" data-tooltip="Tablero de Control">
+            <div class="nav-indicator-pill"></div>
+            <div class="nav-link-left">
+              <svg class="nav-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px;"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect></svg>
+              <span class="nav-link-text">Tablero de Control</span>
+            </div>
+          </div>
+
+          <!-- Torre de Control (Icono de Torre de Control Real Lucide) -->
+          <div class="nav-link-item nav-hub-tab nav-link-team-leader" data-view="team-leader" id="tab-team-leader" title="Torre de Control" data-tooltip="Torre de Control">
+            <div class="nav-indicator-pill"></div>
+            <div class="nav-link-left">
+              <svg class="nav-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px;">
+                <path d="M18.2 12.27 20 6H4l1.8 6.27a1 1 0 0 0 .95.73h10.5a1 1 0 0 0 .95-.73Z"></path>
+                <path d="M8 13v9"></path>
+                <path d="M16 13v9"></path>
+                <path d="M12 6V2"></path>
+                <path d="M10 2h4"></path>
+                <path d="m9 10 3-3 3 3"></path>
+              </svg>
+              <span class="nav-link-text">Torre de Control</span>
+            </div>
+          </div>
+
+          <!-- Tablero Kanban N3 -->
+          <div class="nav-link-item nav-hub-tab nav-link-kanban" data-view="kanban" id="tab-kanban" title="Tablero Kanban N3" data-tooltip="Tablero Kanban N3">
+            <div class="nav-indicator-pill"></div>
+            <div class="nav-link-left">
+              <svg class="nav-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px;"><path d="M6 5v11"></path><path d="M12 5v6"></path><path d="M18 5v14"></path><rect x="3" y="3" width="18" height="18" rx="2"></rect></svg>
+              <span class="nav-link-text">Tablero Kanban N3</span>
             </div>
           </div>
 
@@ -368,7 +406,7 @@
             </div>
           </div>
 
-          <a href="/manual" target="_blank" class="nav-link-item" style="text-decoration: none;" title="Abrir Manual Operativo (DOC-05)" data-tooltip="Manual Operativo">
+          <a href="/manual" target="_blank" class="nav-link-item" id="tab-manual-nav" style="text-decoration: none;" title="Abrir Manual Operativo (DOC-05)" data-tooltip="Manual Operativo">
             <div class="nav-indicator-pill"></div>
             <div class="nav-link-left">
               <svg class="nav-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px;"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
@@ -419,32 +457,31 @@
           </div>
         </div>
 
-        <div class="navbar-right" id="top-navbar-right" style="display: flex; align-items: center; gap: 10px;">
-          
-
-          <!-- Indicador Oficial de Entorno & Versión v4.0.0-DEV -->
-          <div class="env-status-indicator" style="display: inline-flex; align-items: center; gap: 8px; background: #F0FDF4; border: 1px solid #86EFAC; padding: 4px 12px; border-radius: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.03);" title="Quantux ServiceDesk Enterprise v4.0.0-DEV (Ambiente Cloud Dev)">
-            <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #10B981; box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);"></span>
-            <div style="display: flex; flex-direction: column; text-align: left; line-height: 1.15;">
-              <span style="font-size: 11px; font-weight: 800; color: #166534; letter-spacing: 0.3px;">CLOUD DEV <span style="background: #DCFCE7; color: #15803D; padding: 1px 5px; border-radius: 4px; font-size: 9.5px; font-weight: 800; margin-left: 2px;">v4.0.0-DEV</span></span>
-              <span style="font-size: 9px; font-weight: 600; color: #15803D;">Quantux Enterprise</span>
-            </div>
+        <div class="navbar-right" id="top-navbar-right" style="display: flex; align-items: center; gap: 12px;">
+          <!-- Buscador Global Rápido y Funcional -->
+          <div class="top-omnisearch-box" style="display: flex; align-items: center; gap: 8px; background: #FFFFFF; border: 1.5px solid #CBD5E1; padding: 6px 14px; border-radius: 8px; min-width: 320px; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 15px; height: 15px; color: #00A896; flex-shrink: 0;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input type="text" id="top-global-search-input" placeholder="Buscar por número de ticket, paciente o médico..." style="border: none; background: transparent; outline: none; font-size: 12px; width: 100%; color: #0F172A;" oninput="onGlobalOmniSearch(this.value)" onkeydown="if(event.key === 'Escape') { this.value = ''; onGlobalOmniSearch(''); }">
           </div>
 
-          <button type="button" class="invgate-btn-tool" id="btn-top-releases" onclick="openReleasesModal()" title="Gestión de Versiones & Releases de Software (Módulo 2)" style="height: 32px; padding: 0 11px; font-weight: 700; font-size: 11.5px; display: inline-flex; align-items: center; gap: 5px;">
-            <span>📦</span>
-            <span>Releases</span>
+          <!-- Botón Primario: Crear Ticket / Solicitar Asistencia -->
+          <button type="button" class="btn-create-ticket-top" id="jira-btn-add-ticket" onclick="openCreateTicketModal()" style="display: inline-flex; align-items: center; gap: 6px; background: #00A896; color: #FFFFFF; border: none; padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; box-shadow: 0 1px 2px rgba(0, 168, 150, 0.25); transition: all 0.15s ease;" onmouseover="this.style.background='#008F80'" onmouseout="this.style.background='#00A896'" title="Crear nueva solicitud en la cola de guardia">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 14px; height: 14px;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <span id="jira-btn-add-ticket-text">Crear ticket</span>
           </button>
 
-          <button type="button" class="invgate-btn-tool" id="btn-top-email-simulator" onclick="openEmailSimulatorModal()" title="Simulador de Ingesta por Correo Omnicanal (Módulo 9)" style="height: 32px; padding: 0 11px; font-weight: 700; font-size: 11.5px; display: inline-flex; align-items: center; gap: 5px;">
-            <span>📨</span>
-            <span>Simulador Email</span>
-          </button>
+          <!-- Suite Asistencial Médica Exclusiva Solicitantes (Módulo 14) -->
+          <div id="doctor-emergency-suite" style="display: none; align-items: center; gap: 8px;">
+            <button type="button" class="btn-doctor-emergency" id="btn-doctor-emergency" onclick="openDoctorEmergencyModal()" title="Emergencia Asistencial Inmediata: Paciente en Box / Consulta Bloqueada">
+              <span class="pulsing-beacon"></span>
+              <span style="font-weight: 800; font-size: 11.5px; letter-spacing: 0.3px;">🚨 Paciente en Box</span>
+            </button>
+            <button type="button" class="btn-doctor-contingency" id="btn-doctor-contingency" onclick="openDoctorContingencyModal()" title="Protocolos y Recetarios de Contingencia Offline">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 13px; height: 13px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+              <span>Plan B Contingencia</span>
+            </button>
+          </div>
 
-          <button type="button" class="invgate-btn-tool" id="btn-export-csv-direct" onclick="exportTicketsCSV()" title="Exportar listado a CSV" style="height: 32px; padding: 0 12px; font-weight: 700; font-size: 12px;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 12px; height: 12px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-            <span>Exportar CSV</span>
-          </button>
         </div>
       </header>
 
@@ -454,7 +491,7 @@
         <!-- ===================================================================
              VISTA 1: TABLEROS DE SEGUIMIENTO Y CONTROL (DASHBOARD)
              =================================================================== -->
-        <section class="app-view" id="view-dashboard">
+        <section class="app-view active" id="view-dashboard">
           <div class="dashboard-scroll">
             
             <!-- Toolbar Superior del Dashboard con Filtros de Institución, Fechas y Acciones -->
@@ -464,21 +501,21 @@
                   
                   <!-- Filtro Institución -->
                   <div style="display: flex; align-items: center; gap: 6px;">
-                    <span style="font-weight: 800; color: #334155; font-size: 12.5px;">🏥 Institución:</span>
+                    <span style="font-weight: 700; color: #334155; font-size: 12px;">Institución:</span>
                     <select id="dash-filter-inst" class="filter-select" onchange="renderDashboard()" style="min-width: 220px; font-weight: 600;">
-                      <option value="">Todas las Instituciones (14 Sedes)</option>
+                      <option value="">Todas las Instituciones</option>
                     </select>
                   </div>
 
                   <!-- Filtro de Fechas y Períodos -->
                   <div style="display: flex; align-items: center; gap: 6px;">
-                    <span style="font-weight: 800; color: #334155; font-size: 12.5px;">📅 Período:</span>
+                    <span style="font-weight: 700; color: #334155; font-size: 12px;">Período:</span>
                     <select id="dash-filter-period" class="filter-select" onchange="onDashboardDateFilterChange()" style="min-width: 175px; font-weight: 600;">
-                      <option value="all" selected>📅 Todo el Historial</option>
-                      <option value="today">📅 Hoy (Guardia en Vivo)</option>
-                      <option value="7days">📅 Últimos 7 Días</option>
-                      <option value="30days">📅 Últimos 30 Días (Mes)</option>
-                      <option value="custom">📅 Personalizado (Rango)...</option>
+                      <option value="all" selected>Todo el Historial</option>
+                      <option value="today">Hoy (Guardia en Vivo)</option>
+                      <option value="7days">Últimos 7 Días</option>
+                      <option value="30days">Últimos 30 Días (Mes)</option>
+                      <option value="custom">Personalizado (Rango)...</option>
                     </select>
                   </div>
 
@@ -494,7 +531,7 @@
 
                 <div style="display: flex; align-items: center; gap: 8px;">
                   <button class="btn-table-action" id="btn-refresh-dash" onclick="onDashboardDateFilterChange()" style="background: var(--q-primary); color: #fff; padding: 7px 14px; border: none; font-weight: 700; border-radius: 8px; box-shadow: 0 1px 3px rgba(0, 168, 150, 0.3);">
-                    🔄 Actualizar Datos
+                    Actualizar Datos
                   </button>
                 </div>
               </div>
@@ -502,152 +539,148 @@
               <!-- Píldoras de Navegación entre Sub-Vistas del Dashboard -->
               <div style="display: flex; gap: 6px; border-top: 1px solid #F1F5F9; padding-top: 10px; overflow-x: auto;">
                 <button class="filter-tab-pill active" id="btn-dash-sub-summary" onclick="switchDashboardSubTab('summary')">
-                  📊 Resumen Ejecutivo
+                  Resumen Ejecutivo
                 </button>
                 <button class="filter-tab-pill" id="btn-dash-sub-critical" onclick="switchDashboardSubTab('critical')">
-                  ⏱️ Incidentes Críticos & SLA
+                  Incidentes Críticos & SLA
                 </button>
                 <button class="filter-tab-pill" id="btn-dash-sub-platforms" onclick="switchDashboardSubTab('platforms')">
-                  🩺 Por Plataforma Asistencial
+                  Por Plataforma Asistencial
                 </button>
                 <button class="filter-tab-pill" id="btn-dash-sub-institutions" onclick="switchDashboardSubTab('institutions')">
-                  🏥 Por Institución Sanitaria
+                  Por Institución Sanitaria
                 </button>
                 <button class="filter-tab-pill" id="btn-dash-sub-audit" onclick="switchDashboardSubTab('audit')">
-                  ⚖️ Auditoría & Conformidad
+                  Auditoría & Conformidad
                 </button>
               </div>
             </div>
 
-            <!-- SUB-VISTA 1: RESUMEN EJECUTIVO (KPIs + DONUTS + BARS) -->
+            <!-- SUB-VISTA 1: RESUMEN EJECUTIVO ESTILO JIRA SERVICE MANAGEMENT -->
             <div class="dash-subview active" id="dash-subview-summary">
               
-              <!-- 6 HERO KPI CARDS -->
-              <div class="kpi-cards-grid">
-                <div class="kpi-card kpi-total" onclick="openMetricsDrilldownModal('all', 'ALL', 'Total Solicitudes Registradas')" style="cursor: pointer;" title="Clic para ver detalle de solicitudes">
-                  <div class="kpi-card-header">
-                    <span class="kpi-title">Total Solicitudes</span>
-                    <span class="kpi-icon">📁</span>
+              <!-- 4 HERO KPI METRICS (ESTILO JIRA SERVICE MANAGEMENT) -->
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 20px;">
+                <div class="jira-kpi-card" style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 8px; padding: 16px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
+                  <div style="font-size: 11px; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px;">Resueltos</div>
+                  <div style="display: flex; align-items: baseline; gap: 8px; margin: 8px 0 4px 0;">
+                    <span id="jira-kpi-resolved" style="font-size: 28px; font-weight: 800; color: #00875A; font-family: 'Plus Jakarta Sans', sans-serif;">0</span>
+                    <span style="font-size: 11px; color: #64748B;">casos</span>
                   </div>
-                  <div class="kpi-value" id="kpi-total-tickets">0</div>
-                  <div class="kpi-subtext">Histórico acumulado 🔍</div>
+                  <div id="jira-kpi-sub-resolved" style="font-size: 11px; color: #94A3B8;">en todo el historial</div>
                 </div>
 
-                <div class="kpi-card kpi-crit" onclick="openMetricsDrilldownModal('priority', 'P1', 'Incidentes Críticos P1')" style="cursor: pointer;" title="Clic para ver detalle de incidentes críticos">
-                  <div class="kpi-card-header">
-                    <span class="kpi-title" style="color: #DC2626;">Críticos P1 Servicio</span>
-                    <div class="pulse-dot"></div>
+                <div class="jira-kpi-card" style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 8px; padding: 16px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
+                  <div style="font-size: 11px; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px;">En Curso / Activos</div>
+                  <div style="display: flex; align-items: baseline; gap: 8px; margin: 8px 0 4px 0;">
+                    <span id="jira-kpi-updated" style="font-size: 28px; font-weight: 800; color: #0052CC; font-family: 'Plus Jakarta Sans', sans-serif;">0</span>
+                    <span style="font-size: 11px; color: #64748B;">en gestión</span>
                   </div>
-                  <div class="kpi-value" id="kpi-p1-tickets">0</div>
-                  <div class="kpi-subtext" style="color: #DC2626; font-weight: 700;">Atención Inmediata &lt; 1h 🔍</div>
+                  <div id="jira-kpi-sub-updated" style="font-size: 11px; color: #94A3B8;">en proceso operativo</div>
                 </div>
 
-                <div class="kpi-card kpi-activos" onclick="openMetricsDrilldownModal('status', 'ACTIVE', 'Casos Activos en Proceso')" style="cursor: pointer;" title="Clic para ver casos activos">
-                  <div class="kpi-card-header">
-                    <span class="kpi-title">Casos Activos</span>
-                    <span class="kpi-icon">⚙️</span>
+                <div class="jira-kpi-card" style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 8px; padding: 16px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
+                  <div style="font-size: 11px; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px;">Total Solicitudes</div>
+                  <div style="display: flex; align-items: baseline; gap: 8px; margin: 8px 0 4px 0;">
+                    <span id="jira-kpi-created" style="font-size: 28px; font-weight: 800; color: #0F172A; font-family: 'Plus Jakarta Sans', sans-serif;">0</span>
+                    <span style="font-size: 11px; color: #64748B;">registradas</span>
                   </div>
-                  <div class="kpi-value" id="kpi-active-tickets" style="color: #0284C7;">0</div>
-                  <div class="kpi-subtext">En proceso de atención 🔍</div>
+                  <div id="jira-kpi-sub-created" style="font-size: 11px; color: #94A3B8;">volumen global</div>
                 </div>
 
-                <div class="kpi-card kpi-sla" onclick="openMetricsDrilldownModal('sla', 'SLA', 'Casos con Cumplimiento de SLA')" style="cursor: pointer;" title="Clic para ver métricas de cumplimiento de SLA">
-                  <div class="kpi-card-header">
-                    <span class="kpi-title">Cumplimiento SLA</span>
-                    <span class="kpi-icon">⏱️</span>
+                <div class="jira-kpi-card" style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 8px; padding: 16px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
+                  <div style="font-size: 11px; font-weight: 700; color: #DC2626; text-transform: uppercase; letter-spacing: 0.5px;">Atención Inmediata</div>
+                  <div style="display: flex; align-items: baseline; gap: 8px; margin: 8px 0 4px 0;">
+                    <span id="jira-kpi-due" style="font-size: 28px; font-weight: 800; color: #DC2626; font-family: 'Plus Jakarta Sans', sans-serif;">0</span>
+                    <span style="font-size: 11px; color: #DC2626; font-weight: 600;">SLA Crítico</span>
                   </div>
-                  <div class="kpi-value" id="kpi-sla-rate" style="color: #10B981;">98.4%</div>
-                  <div class="kpi-subtext">Meta hospitalaria: &ge; 95% 🔍</div>
-                </div>
-
-                <div class="kpi-card kpi-conformidad" onclick="openMetricsDrilldownModal('conformity', 'CONFORMITY', 'Casos Validados con Conformidad OK')" style="cursor: pointer;" title="Clic para ver detalle de conformidad">
-                  <div class="kpi-card-header">
-                    <span class="kpi-title">Tasa Conformidad</span>
-                    <span class="kpi-icon">✅</span>
-                  </div>
-                  <div class="kpi-value" id="kpi-conformity-rate" style="color: #059669;">96.5%</div>
-                  <div class="kpi-subtext">Cierres con validación OK 🔍</div>
-                </div>
-
-                <div class="kpi-card kpi-resueltos" onclick="openMetricsDrilldownModal('status', 'RESUELTO', 'Casos Resueltos')" style="cursor: pointer;" title="Clic para ver casos resueltos">
-                  <div class="kpi-card-header">
-                    <span class="kpi-title">Casos Resueltos</span>
-                    <span class="kpi-icon">🎉</span>
-                  </div>
-                  <div class="kpi-value" id="kpi-resolved-tickets" style="color: #7C3AED;">0</div>
-                  <div class="kpi-subtext">Solucionados / Cerrados 🔍</div>
+                  <div id="jira-kpi-sub-due" style="font-size: 11px; color: #94A3B8;">en riesgo o vencido</div>
                 </div>
               </div>
 
-              <!-- 4 GRÁFICOS INTERACTIVOS (2 DONUTS + 2 BARS) -->
-              <div class="charts-grid-2x2">
+              <!-- 3 PANELES HORIZONTALES (ESTILO JIRA: PRIORIDAD, ESTADO, TIPO DE TRABAJO) -->
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin-bottom: 24px;">
                 
-                <!-- Gráfico 1: Torta/Donut Distribución por Estado Operativo -->
-                <div class="chart-card-modern">
-                  <div class="chart-card-header-modern">
+                <!-- Panel 1: Prioridad -->
+                <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 8px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid #F1F5F9; padding-bottom: 10px;">
                     <div>
-                      <strong style="font-size: 13px; color: #0F172A;">🔄 Distribución por Estado Operativo</strong>
-                      <div style="font-size: 11px; color: #64748B;">Flujo de Estados FSM • Clic en porción para filtrar</div>
+                      <h4 style="margin: 0; font-size: 13.5px; font-weight: 700; color: #0F172A;">Distribución por Prioridad</h4>
+                      <div style="font-size: 11px; color: #64748B;">Nivel de criticidad asistencial</div>
                     </div>
-                    <span style="font-size: 10px; font-weight: 800; color: #00A896; background: rgba(0,168,150,0.1); padding: 3px 8px; border-radius: 6px;">MOTOR FSM</span>
+                    <span style="font-size: 10.5px; font-weight: 700; color: #475569; background: #F1F5F9; padding: 3px 8px; border-radius: 4px;">P1 a P5</span>
                   </div>
-                  <div class="chart-donut-container">
-                    <canvas id="chart-canvas-status" style="max-height: 210px;"></canvas>
-                    <div class="chart-donut-center-metric">
-                      <div class="chart-donut-center-val" id="chart-status-center-total">0</div>
-                      <div class="chart-donut-center-lbl">SOLICITUDES</div>
-                    </div>
-                  </div>
+                  <div id="dash-priority-progress-list"></div>
                 </div>
 
-                <!-- Gráfico 2: Torta/Donut Matriz de Prioridad (P1 a P5) -->
-                <div class="chart-card-modern">
-                  <div class="chart-card-header-modern">
+                <!-- Panel 2: Estado Operativo -->
+                <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 8px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid #F1F5F9; padding-bottom: 10px;">
                     <div>
-                      <strong style="font-size: 13px; color: #0F172A;">🎯 Matriz de Prioridad y Severidad</strong>
-                      <div style="font-size: 11px; color: #64748B;">Nivel de impacto asistencial P1 a P5 • Clic para desglose</div>
+                      <h4 style="margin: 0; font-size: 13.5px; font-weight: 700; color: #0F172A;">Estado Operativo</h4>
+                      <div style="font-size: 11px; color: #64748B;">Ciclo de vida FSM</div>
                     </div>
-                    <span style="font-size: 10px; font-weight: 800; color: #DC2626; background: #FEE2E2; padding: 3px 8px; border-radius: 6px;">SEVERIDAD</span>
+                    <span style="font-size: 10.5px; font-weight: 700; color: #0052CC; background: #DEEBFF; padding: 3px 8px; border-radius: 4px;">FSM ITIL</span>
                   </div>
-                  <div class="chart-donut-container">
-                    <canvas id="chart-canvas-priority" style="max-height: 210px;"></canvas>
-                    <div class="chart-donut-center-metric">
-                      <div class="chart-donut-center-val" id="chart-prio-center-crit" style="color: #DC2626;">0</div>
-                      <div class="chart-donut-center-lbl">CRÍTICOS P1/P2</div>
-                    </div>
-                  </div>
+                  <div id="dash-status-progress-list"></div>
                 </div>
 
-                <!-- Gráfico 3: Barras por Plataforma Asistencial -->
-                <div class="chart-card-modern">
-                  <div class="chart-card-header-modern">
+                <!-- Panel 3: Tipo de Trabajo -->
+                <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 8px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid #F1F5F9; padding-bottom: 10px;">
                     <div>
-                      <strong style="font-size: 13px; color: #0F172A;">🩺 Demanda por Plataforma Asistencial</strong>
-                      <div style="font-size: 11px; color: #64748B;">Volumen de incidentes por sistema clínico</div>
+                      <h4 style="margin: 0; font-size: 13.5px; font-weight: 700; color: #0F172A;">Tipos de Trabajo</h4>
+                      <div style="font-size: 11px; color: #64748B;">Clasificación de demanda técnica</div>
                     </div>
-                    <span style="font-size: 10px; font-weight: 800; color: #2563EB; background: #DBEAFE; padding: 3px 8px; border-radius: 6px;">9 PLATAFORMAS</span>
+                    <span style="font-size: 10.5px; font-weight: 700; color: #00875A; background: #E3FCEF; padding: 3px 8px; border-radius: 4px;">CATEGORÍAS</span>
                   </div>
-                  <div style="height: 220px; position: relative;">
-                    <canvas id="chart-canvas-platforms"></canvas>
-                  </div>
-                </div>
-
-                <!-- Gráfico 4: Barras por Institución / Sanatorio -->
-                <div class="chart-card-modern">
-                  <div class="chart-card-header-modern">
-                    <div>
-                      <strong style="font-size: 13px; color: #0F172A;">🏥 Distribución por Institución Sanitaria</strong>
-                      <div style="font-size: 11px; color: #64748B;">Top instituciones con mayor volumen asistencial</div>
-                    </div>
-                    <span style="font-size: 10px; font-weight: 800; color: #7C3AED; background: #EDE9FE; padding: 3px 8px; border-radius: 6px;">14 INSTITUCIONES</span>
-                  </div>
-                  <div style="height: 220px; position: relative;">
-                    <canvas id="chart-canvas-institutions"></canvas>
-                  </div>
+                  <div id="dash-category-progress-list"></div>
                 </div>
 
               </div>
 
+              <!-- TABLA OPERATIVA DE SEGUIMIENTO (OPTIMIZACIÓN DE ESPACIO EN BLANCO) -->
+              <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.02); margin-bottom: 24px;">
+                <div style="padding: 12px 18px; background: #F8FAFC; border-bottom: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center;">
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#0052CC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    <h4 style="margin: 0; font-size: 13px; font-weight: 700; color: #0F172A;">Incidentes Activos en Seguimiento Operativo</h4>
+                  </div>
+                  <span style="font-size: 11px; color: #64748B;">Haga clic en cualquier gráfico o ticket para acceder al detalle</span>
+                </div>
+                <div style="overflow-x: auto;">
+                  <table style="width: 100%; border-collapse: collapse; font-size: 12px; text-align: left;">
+                    <thead>
+                      <tr style="background: #F8FAFC; border-bottom: 1px solid #E2E8F0; color: #475569; font-weight: 700; font-size: 11px;">
+                        <th style="padding: 10px 14px;">ID</th>
+                        <th style="padding: 10px 14px;">Prioridad</th>
+                        <th style="padding: 10px 14px;">Asunto / Incidencia</th>
+                        <th style="padding: 10px 14px;">Plataforma</th>
+                        <th style="padding: 10px 14px;">Responsable</th>
+                        <th style="padding: 10px 14px;">Tiempo SLA</th>
+                        <th style="padding: 10px 14px; text-align: center;">Acción</th>
+                      </tr>
+                    </thead>
+                    <tbody id="tbody-active-sla-integrated">
+                      <!-- Renderizado dinámico -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Elementos de compatibilidad en segundo plano para listeners legacy -->
+              <span id="kpi-total-tickets" style="display:none;">0</span>
+              <span id="kpi-p1-tickets" style="display:none;">0</span>
+              <span id="kpi-active-tickets" style="display:none;">0</span>
+              <span id="kpi-sla-rate" style="display:none;">98.4%</span>
+              <span id="kpi-conformity-rate" style="display:none;">96.5%</span>
+              <span id="kpi-resolved-tickets" style="display:none;">0</span>
+              <span id="chart-status-center-total" style="display:none;">0</span>
+              <span id="chart-prio-center-crit" style="display:none;">0</span>
+              <canvas id="chart-canvas-status" style="display:none;"></canvas>
+              <canvas id="chart-canvas-priority" style="display:none;"></canvas>
+              <canvas id="chart-canvas-platforms" style="display:none;"></canvas>
+              <canvas id="chart-canvas-institutions" style="display:none;"></canvas>
             </div>
 
             <!-- SUB-VISTA 2: MONITOR DE INCIDENTES CRÍTICOS & SLA -->
@@ -740,39 +773,185 @@
         </section>
 
         <!-- ===================================================================
+             VISTA 1.5: CENTRO DE ASISTENCIA (EXCLUSIVA ROL SOLICITANTE)
+             =================================================================== -->
+        <section class="app-view" id="view-requester-portal">
+          <div class="users-board-wrapper" id="requester-clinical-portal" style="max-width: 1040px; margin: 0 auto; padding: 18px 24px; display: flex; flex-direction: column; min-height: calc(100vh - 80px);">
+            
+            <!-- Encabezado Corporativo Quantux HealthDesk -->
+            <div style="background: #FFFFFF; border: 1.5px solid #E2E8F0; border-radius: 12px; padding: 16px 22px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);">
+              <div style="display: flex; align-items: center; gap: 14px;">
+                <div style="width: 44px; height: 44px; border-radius: 10px; background: linear-gradient(135deg, #0A1C3E 0%, #00A896 100%); display: flex; align-items: center; justify-content: center; color: #FFFFFF; flex-shrink: 0; box-shadow: 0 4px 10px rgba(0, 168, 150, 0.25);">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width: 22px; height: 22px;"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></svg>
+                </div>
+                <div>
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <h2 style="margin: 0; font-size: 16.5px; font-weight: 800; color: #0A1C3E; font-family: 'Outfit', sans-serif; letter-spacing: -0.2px;">Centro de Asistencia Asistencial & Soporte TI</h2>
+                    <span style="display: inline-flex; align-items: center; gap: 5px; background: #E6FBF9; color: #008F80; font-size: 11px; font-weight: 800; padding: 2.5px 9px; border-radius: 9999px; border: 1px solid #A7F3D0;">
+                      <span style="width: 6px; height: 6px; border-radius: 50%; background: #00A896; box-shadow: 0 0 6px #00A896;"></span> Guardia en Línea
+                    </span>
+                  </div>
+                  <p style="margin: 3px 0 0 0; font-size: 12px; color: #64748B;">
+                    Hola, <strong id="req-portal-user-name" style="color: #0F172A;">Dr. Martín Gómez</strong> &bull; <span id="req-portal-user-inst" style="color: #00A896; font-weight: 700;">Swiss Medical</span>
+                  </p>
+                </div>
+              </div>
+
+              <!-- Acciones Superiores -->
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <button type="button" onclick="openRequesterHistoryModal()" title="Ver historial de mis solicitudes previas" style="background: #F8FAFC; border: 1px solid #CBD5E1; color: #334155; font-size: 12px; font-weight: 700; cursor: pointer; padding: 8px 14px; border-radius: 8px; display: inline-flex; align-items: center; gap: 6px; transition: all 0.15s ease;" onmouseover="this.style.background='#F1F5F9'; this.style.borderColor='#94A3B8';" onmouseout="this.style.background='#F8FAFC'; this.style.borderColor='#CBD5E1';">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" style="width: 14px; height: 14px;"><path d="M12 8v4l3 3"></path><circle cx="12" cy="12" r="9"></circle></svg>
+                  <span>Mis Solicitudes (<strong id="req-history-badge" style="color: #00A896;">0</strong>)</span>
+                </button>
+
+                <button type="button" onclick="openFastTicketModal()" title="Generar un ticket directo sin interactuar con el chat" style="display: flex; align-items: center; gap: 6px; background: #00A896; color: #FFFFFF; border: none; padding: 8px 16px; border-radius: 8px; font-size: 12.5px; font-weight: 700; cursor: pointer; transition: all 0.15s ease; box-shadow: 0 2px 6px rgba(0, 168, 150, 0.3);" onmouseover="this.style.background='#008F80'" onmouseout="this.style.background='#00A896'">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 14px; height: 14px;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                  <span>+ Crear Solicitud Directa</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Interfaz Principal: CHAT DE IA CONVERSACIONAL QUANTUX -->
+            <div style="flex: 1; background: #FFFFFF; border: 1.5px solid #E2E8F0; border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 4px 20px -2px rgba(10, 28, 62, 0.05); min-height: 540px;">
+              
+              <!-- Stream de Mensajes del Chat Asistencial -->
+              <div id="requester-inline-chat-stream" style="flex: 1; overflow-y: auto; padding: 24px 28px; display: flex; flex-direction: column; gap: 16px; scroll-behavior: smooth; background: #FAFAFC;">
+                
+                <!-- Estado Inicial / Hero de Bienvenida Quantux -->
+                <div id="requester-chat-hero" style="margin: auto 0; text-align: center; max-width: 680px; align-self: center; padding: 28px 16px;">
+                  <div style="width: 54px; height: 54px; border-radius: 14px; background: linear-gradient(135deg, #E6FBF9 0%, #CCF7F3 100%); border: 1.5px solid #99EFE7; color: #00A896; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 14px; box-shadow: 0 4px 12px rgba(0, 168, 150, 0.15);">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 28px; height: 28px;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><circle cx="9" cy="10" r="1"></circle><circle cx="15" cy="10" r="1"></circle></svg>
+                  </div>
+                  <h3 style="font-family: 'Outfit', sans-serif; font-size: 21px; font-weight: 800; color: #0A1C3E; margin: 0 0 8px 0; letter-spacing: -0.3px;">
+                    ¿En qué podemos asistirte en tu consultorio hoy?
+                  </h3>
+                  <p style="font-size: 13.5px; color: #64748B; margin: 0 0 24px 0; line-height: 1.55;">
+                    Consulta al motor de IA médica, transcribe tu reporte por voz en tiempo real o selecciona uno de los accesos rápidos a continuación:
+                  </p>
+
+                  <!-- 4 Accesos Rápidos Frecuentes Quantux -->
+                  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; text-align: left;">
+                    <button type="button" onclick="sendRequesterPrompt('No puedo firmar receta digital ni validar token')" style="padding: 14px 16px; border-radius: 10px; border: 1.5px solid #E2E8F0; background: #FFFFFF; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.02);" onmouseover="this.style.borderColor='#00A896'; this.style.background='#F0FDFB'; this.style.transform='translateY(-1px)';" onmouseout="this.style.borderColor='#E2E8F0'; this.style.background='#FFFFFF'; this.style.transform='none';">
+                      <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="width: 30px; height: 30px; border-radius: 6px; background: #E6FBF9; display: flex; align-items: center; justify-content: center; color: #00A896; flex-shrink: 0;">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px;"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                        </div>
+                        <span style="font-weight: 800; color: #0A1C3E; font-size: 13px;">Receta & Firma Digital</span>
+                      </div>
+                      <div style="font-size: 11.5px; color: #64748B; margin-top: 6px; line-height: 1.4;">Validación de firma, token criptográfico o padrón SISA</div>
+                    </button>
+
+                    <button type="button" onclick="sendRequesterPrompt('Error 500 / Timeout al guardar en Consultorio Digital')" style="padding: 14px 16px; border-radius: 10px; border: 1.5px solid #E2E8F0; background: #FFFFFF; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.02);" onmouseover="this.style.borderColor='#00A896'; this.style.background='#F0FDFB'; this.style.transform='translateY(-1px)';" onmouseout="this.style.borderColor='#E2E8F0'; this.style.background='#FFFFFF'; this.style.transform='none';">
+                      <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="width: 30px; height: 30px; border-radius: 6px; background: #FEF3C7; display: flex; align-items: center; justify-content: center; color: #D97706; flex-shrink: 0;">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                        </div>
+                        <span style="font-weight: 800; color: #0A1C3E; font-size: 13px;">Error de Sistema / Timeout 500</span>
+                      </div>
+                      <div style="font-size: 11.5px; color: #64748B; margin-top: 6px; line-height: 1.4;">Desbloqueo de concurrencia y reintento seguro en HCE</div>
+                    </button>
+
+                    <button type="button" onclick="sendRequesterPrompt('Desbloqueo de clave o restablecimiento de acceso')" style="padding: 14px 16px; border-radius: 10px; border: 1.5px solid #E2E8F0; background: #FFFFFF; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.02);" onmouseover="this.style.borderColor='#00A896'; this.style.background='#F0FDFB'; this.style.transform='translateY(-1px)';" onmouseout="this.style.borderColor='#E2E8F0'; this.style.background='#FFFFFF'; this.style.transform='none';">
+                      <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="width: 30px; height: 30px; border-radius: 6px; background: #EEF2FF; display: flex; align-items: center; justify-content: center; color: #4338CA; flex-shrink: 0;">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                        </div>
+                        <span style="font-weight: 800; color: #0A1C3E; font-size: 13px;">Acceso, Matrícula & Claves</span>
+                      </div>
+                      <div style="font-size: 11.5px; color: #64748B; margin-top: 6px; line-height: 1.4;">Restablecimiento exprés de usuario asistencial</div>
+                    </button>
+
+                    <button type="button" onclick="sendRequesterPrompt('Problema de impresión o exportación de PDF de historia clínica')" style="padding: 14px 16px; border-radius: 10px; border: 1.5px solid #E2E8F0; background: #FFFFFF; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.02);" onmouseover="this.style.borderColor='#00A896'; this.style.background='#F0FDFB'; this.style.transform='translateY(-1px)';" onmouseout="this.style.borderColor='#E2E8F0'; this.style.background='#FFFFFF'; this.style.transform='none';">
+                      <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="width: 30px; height: 30px; border-radius: 6px; background: #F1F5F9; display: flex; align-items: center; justify-content: center; color: #475569; flex-shrink: 0;">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px;"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                        </div>
+                        <span style="font-weight: 800; color: #0A1C3E; font-size: 13px;">Impresión & Exportación PDF</span>
+                      </div>
+                      <div style="font-size: 11.5px; color: #64748B; margin-top: 6px; line-height: 1.4;">Atasco de cola o formato no generado</div>
+                    </button>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- Indicador de Dictado por Voz Activo Quantux -->
+              <div id="voice-recording-indicator" style="display: none; padding: 10px 20px; background: #FEF2F2; border-top: 1.5px solid #FECACA; color: #B91C1C; font-size: 12.5px; font-weight: 700; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <span style="width: 10px; height: 10px; border-radius: 50%; background: #EF4444; animation: pulse 1s infinite;"></span>
+                  <span>Escuchando dictado por voz asistencial... hable con naturalidad</span>
+                </div>
+                <button type="button" onclick="stopVoiceRecording()" style="background: #EF4444; color: #FFF; border: none; padding: 4px 12px; border-radius: 6px; font-size: 11.5px; font-weight: 800; cursor: pointer;">Detener</button>
+              </div>
+
+              <!-- Barra Inferior de Entrada Quantux -->
+              <div style="padding: 16px 20px; border-top: 1.5px solid #E2E8F0; background: #FFFFFF; display: flex; flex-direction: column; gap: 10px;">
+                <div style="display: flex; align-items: center; gap: 10px; background: #FFFFFF; border: 1.5px solid #CBD5E1; border-radius: 10px; padding: 6px 8px 6px 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.03); transition: all 0.2s ease;" id="requester-input-container">
+                  
+                  <!-- Input de texto -->
+                  <input type="text" id="requester-chat-input" placeholder="Escribe tu consulta o pulsa el micrófono para dictar el problema..." onkeydown="handleRequesterChatKey(event)" style="flex: 1; border: none; outline: none; font-size: 13.5px; color: #0F172A; background: transparent; padding: 8px 0;">
+                  
+                  <!-- Botón de Micrófono (Dictado por Voz) -->
+                  <button type="button" id="btn-requester-voice" onclick="toggleVoiceRecording()" title="Dictar consulta o ticket por voz (Micrófono)" aria-label="Dictar por voz" style="width: 36px; height: 36px; border-radius: 8px; background: #E6FBF9; border: 1px solid #99EFE7; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #00A896; transition: all 0.15s ease;" onmouseover="this.style.background='#CCF7F3'" onmouseout="this.style.background='#E6FBF9'">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px;"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+                  </button>
+
+                  <!-- Botón Enviar Consulta -->
+                  <button type="button" id="btn-requester-send" onclick="sendRequesterChatMessage()" title="Enviar mensaje" aria-label="Enviar" style="width: 36px; height: 36px; border-radius: 8px; background: #00A896; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #FFFFFF; transition: all 0.15s ease; box-shadow: 0 2px 4px rgba(0, 168, 150, 0.25);" onmouseover="this.style.background='#008F80'" onmouseout="this.style.background='#00A896'">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px;"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                  </button>
+                </div>
+
+                <!-- Barra de atajos para médico en consultorio -->
+                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11.5px; color: #64748B; padding: 0 4px;">
+                  <span>Presiona <strong>Enter</strong> para enviar &bull; Micrófono para dictado inteligente</span>
+                  <div style="display: flex; gap: 8px;">
+                    <button type="button" onclick="createTicketFromCurrentInput()" style="background: none; border: none; color: #00A896; font-weight: 800; cursor: pointer; text-decoration: underline; padding: 0;" onmouseover="this.style.color='#008F80'" onmouseout="this.style.color='#00A896'">
+                      Generar ticket inmediato con este texto &rarr;
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </section>
+
+        <!-- ===================================================================
              VISTA 2: MESA DE AYUDA (BANDEJA OPERATIVA SENIOR ITIL)
              =================================================================== -->
-        <section class="app-view active" id="view-tickets">
+        <section class="app-view" id="view-tickets">
           <div class="users-board-wrapper">
             
             <!-- Barra de Filtros Limpia de Mesa de Ayuda -->
             <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 8px; padding: 8px 12px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
               <select id="tkt-filter-inst" class="invgate-filter-select" onchange="onFilterChange()" title="Filtrar por Institución">
-                <option value="">🏥 Todas las Instituciones</option>
+                <option value="">Todas las Instituciones</option>
               </select>
               <select id="tkt-filter-platform" class="invgate-filter-select" onchange="onFilterChange()" title="Filtrar por Plataforma / Módulo">
-                <option value="">💻 Todas las Plataformas</option>
+                <option value="">Todas las Plataformas</option>
               </select>
               <select id="tkt-filter-level" class="invgate-filter-select" onchange="onFilterChange()" title="Filtrar por Nivel de Soporte">
-                <option value="">⚡ Todos los Niveles</option>
+                <option value="">Todos los Niveles</option>
                 <option value="N1">N1 • Mesa Guardia</option>
                 <option value="N2">N2 • Especialistas</option>
                 <option value="N3">N3 • Ingeniería</option>
               </select>
               <select id="tkt-filter-status" class="invgate-filter-select" onchange="onFilterChange()" title="Filtrar por Estado Operativo">
-                <option value="ACTIVE">📊 Activos (En gestión)</option>
-                <option value="ALL">📊 Todos (Inc. Resueltos)</option>
-                <option value="NUEVO">🟢 Nuevos</option>
-                <option value="ASIGNADO">🔵 Asignados</option>
-                <option value="EN_CURSO">🟡 En Curso</option>
-                <option value="RESUELTO">✅ Resueltos</option>
-                <option value="CERRADO">🔒 Cerrados</option>
+                <option value="ACTIVE">Activos (En gestión)</option>
+                <option value="ALL">Todos (Inc. Resueltos)</option>
+                <option value="NUEVO">Nuevos</option>
+                <option value="ASIGNADO">Asignados</option>
+                <option value="EN_CURSO">En Curso</option>
+                <option value="RESUELTO">Resueltos</option>
+                <option value="CERRADO">Cerrados</option>
               </select>
               <select id="tkt-filter-period" class="invgate-filter-select" onchange="onFilterChange()" title="Filtrar por Período de Creación">
-                <option value="all">📅 Todas las Fechas</option>
-                <option value="today">📅 Hoy (Guardia)</option>
-                <option value="7days">📅 Últimos 7 Días</option>
-                <option value="30days">📅 Últimos 30 Días</option>
+                <option value="all">Todas las Fechas</option>
+                <option value="today">Hoy (Guardia)</option>
+                <option value="7days">Últimos 7 Días</option>
+                <option value="30days">Últimos 30 Días</option>
               </select>
               <button type="button" class="invgate-btn-tool" id="btn-refresh-tickets" onclick="resetBoardFilters()" title="Restablecer filtros y refrescar bandeja" style="padding: 0 10px; height: 32px; display: flex; align-items: center; justify-content: center; background: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 6px; cursor: pointer; transition: all 0.2s ease;">
                 <svg id="svg-refresh-icon" viewBox="0 0 24 24" fill="none" stroke="#334155" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px; transition: transform 0.45s ease;"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
@@ -785,11 +964,13 @@
                 <table class="users-table-styled invgate-tickets-table" id="table-tickets-directory">
                   <thead>
                     <tr>
-                      <th style="width: 140px; min-width: 130px;">ID Solicitud</th>
-                      <th style="min-width: 320px;">Detalle de la Solicitud</th>
-                      <th style="width: 130px; min-width: 120px;">Estado</th>
-                      <th style="width: 180px; min-width: 170px;">Asignado a</th>
-                      <th style="width: 190px; min-width: 180px;">Solicitante / Institución</th>
+                      <th style="width: 165px; min-width: 165px; white-space: nowrap;">ID Solicitud</th>
+                      <th style="min-width: 280px;">Detalle de la Solicitud</th>
+                      <th style="width: 140px; min-width: 130px;">Solicitante</th>
+                      <th style="width: 160px; min-width: 150px;">Responsable</th>
+                      <th style="width: 150px; min-width: 140px;">Plataforma</th>
+                      <th style="width: 110px; min-width: 100px;">Tipo</th>
+                      <th style="width: 85px; text-align: center;">Operar</th>
                     </tr>
                   </thead>
                   <tbody id="ticket-table-body">
@@ -821,32 +1002,8 @@
         <section class="app-view" id="view-team-leader">
           <div class="users-board-wrapper" style="padding: 16px 20px;">
             
-            <!-- Toolbar Superior Torre de Control -->
-            <div class="dashboard-toolbar" style="margin-bottom: 16px; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px; padding: 14px 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
-              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
-                <div style="display: flex; align-items: center; gap: 12px;">
-                  <div style="width: 42px; height: 42px; border-radius: 10px; background: #FFFBEB; border: 1px solid #FDE68A; display: flex; align-items: center; justify-content: center; font-size: 22px;">
-                    🎯
-                  </div>
-                  <div>
-                    <h2 style="margin: 0; font-size: 16px; font-weight: 800; color: #0F172A; display: flex; align-items: center; gap: 8px;">
-                      <span>Torre de Control • Supervisión Operativa de Turno</span>
-                      <span style="background: #FEF3C7; color: #92400E; font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 6px; letter-spacing: 0.5px;">ROL: LÍDER DE EQUIPO</span>
-                    </h2>
-                    <div style="font-size: 12px; color: #64748B; margin-top: 2px;">
-                      Monitoreo de saturación del equipo, rebalanceo de tickets en 1 clic y rescate proactivo de usuarios insatisfechos.
-                    </div>
-                  </div>
-                </div>
-                <div style="display: flex; gap: 8px; align-items: center;">
-                  <span id="tl-last-sync-time" style="font-size: 11px; color: #94A3B8; font-weight: 600;">Sincronizado: ahora</span>
-                  <button type="button" class="btn-sec" onclick="loadTeamLeaderData()" style="display: flex; align-items: center; gap: 6px; font-size: 11.5px; padding: 6px 12px; border-radius: 8px; font-weight: 700;">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 13px; height: 13px;"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path></svg>
-                    <span>Actualizar Monitor</span>
-                  </button>
-                </div>
-              </div>
-            </div>
+            <!-- Banner redundante eliminado a petición del usuario. Conservamos span para listener JS -->
+            <span id="tl-last-sync-time" style="display:none;"></span>
 
             <!-- Strip de 4 KPIs Operativos Clave -->
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin-bottom: 20px;">
@@ -933,32 +1090,117 @@
         </section>
 
         <!-- ===================================================================
+             VISTA 2.5: TABLERO KANBAN N3 • RELEASES Y CIERRE EN CASCADA
+             =================================================================== -->
+        <section class="app-view" id="view-kanban">
+          <div class="users-board-wrapper" style="padding: 16px 20px;">
+            
+            <!-- Toolbar Superior Kanban -->
+            <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px; padding: 14px 20px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 38px; height: 38px; border-radius: 9px; background: #EEF2FF; border: 1.5px solid #C7D2FE; display: flex; align-items: center; justify-content: center; color: #4338CA; flex-shrink: 0;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px;"><path d="M6 5v11"></path><path d="M12 5v6"></path><path d="M18 5v14"></path><rect x="3" y="3" width="18" height="18" rx="2"></rect></svg>
+                </div>
+                <div>
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <h2 style="margin: 0; font-size: 16px; font-weight: 800; color: #0F172A; font-family: 'Outfit', sans-serif;">Tablero Kanban N3 • Releases & Despliegues</h2>
+                    <span style="display: inline-flex; align-items: center; gap: 4px; background: #EEF2FF; color: #4338CA; font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 9999px; border: 1px solid #C7D2FE;">
+                      🚀 Cierre en Cascada
+                    </span>
+                  </div>
+                  <p style="margin: 2px 0 0 0; font-size: 12px; color: #64748B;">
+                    Vinculación de incidencias complejas N3 a versiones de desarrollo y cierre automático por despliegue a producción.
+                  </p>
+                </div>
+              </div>
+
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <button type="button" class="btn-sec" onclick="loadKanbanBoard()" title="Refrescar tablero Kanban" style="display: flex; align-items: center; gap: 6px; background: #FFFFFF; border: 1px solid #CBD5E1; color: #334155; padding: 7px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                  <span>Refrescar</span>
+                </button>
+                <button type="button" onclick="openNewReleaseModal()" style="display: flex; align-items: center; gap: 6px; background: #4338CA; color: #FFFFFF; border: none; padding: 8px 16px; border-radius: 8px; font-size: 12.5px; font-weight: 700; cursor: pointer; box-shadow: 0 1px 3px rgba(67,56,202,0.3); transition: background 0.15s ease;" onmouseover="this.style.background='#3730A3'" onmouseout="this.style.background='#4338CA'">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                  <span>+ Nueva Release / Versión</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Grilla de 4 Columnas Kanban -->
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; align-items: flex-start;">
+              
+              <!-- Columna 1: Planificadas -->
+              <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px; overflow: hidden; display: flex; flex-direction: column;">
+                <div style="padding: 10px 14px; background: #F1F5F9; border-bottom: 1.5px solid #CBD5E1; display: flex; justify-content: space-between; align-items: center;">
+                  <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 800; color: #475569;">
+                    <span style="width: 8px; height: 8px; border-radius: 50%; background: #94A3B8;"></span>
+                    <span>PLANIFICADAS</span>
+                  </div>
+                  <span id="kanban-count-planificada" style="font-size: 11px; font-weight: 800; background: #FFFFFF; border: 1px solid #CBD5E1; color: #475569; padding: 1px 7px; border-radius: 10px;">0</span>
+                </div>
+                <div id="kanban-col-planificada" style="padding: 10px; display: flex; flex-direction: column; gap: 10px; min-height: 480px; max-height: 720px; overflow-y: auto;">
+                  <!-- Renderizado dinámico -->
+                </div>
+              </div>
+
+              <!-- Columna 2: En Desarrollo -->
+              <div style="background: #F0F9FF; border: 1px solid #BAE6FD; border-radius: 10px; overflow: hidden; display: flex; flex-direction: column;">
+                <div style="padding: 10px 14px; background: #E0F2FE; border-bottom: 1.5px solid #7DD3FC; display: flex; justify-content: space-between; align-items: center;">
+                  <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 800; color: #0369A1;">
+                    <span style="width: 8px; height: 8px; border-radius: 50%; background: #0284C7;"></span>
+                    <span>EN DESARROLLO (N3)</span>
+                  </div>
+                  <span id="kanban-count-desarrollo" style="font-size: 11px; font-weight: 800; background: #FFFFFF; border: 1px solid #7DD3FC; color: #0369A1; padding: 1px 7px; border-radius: 10px;">0</span>
+                </div>
+                <div id="kanban-col-desarrollo" style="padding: 10px; display: flex; flex-direction: column; gap: 10px; min-height: 480px; max-height: 720px; overflow-y: auto;">
+                  <!-- Renderizado dinámico -->
+                </div>
+              </div>
+
+              <!-- Columna 3: Staging / QA -->
+              <div style="background: #FFFBEB; border: 1px solid #FDE68A; border-radius: 10px; overflow: hidden; display: flex; flex-direction: column;">
+                <div style="padding: 10px 14px; background: #FEF3C7; border-bottom: 1.5px solid #FCD34D; display: flex; justify-content: space-between; align-items: center;">
+                  <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 800; color: #B45309;">
+                    <span style="width: 8px; height: 8px; border-radius: 50%; background: #D97706;"></span>
+                    <span>STAGING / PRUEBAS</span>
+                  </div>
+                  <span id="kanban-count-staging" style="font-size: 11px; font-weight: 800; background: #FFFFFF; border: 1px solid #FCD34D; color: #B45309; padding: 1px 7px; border-radius: 10px;">0</span>
+                </div>
+                <div id="kanban-col-staging" style="padding: 10px; display: flex; flex-direction: column; gap: 10px; min-height: 480px; max-height: 720px; overflow-y: auto;">
+                  <!-- Renderizado dinámico -->
+                </div>
+              </div>
+
+              <!-- Columna 4: Desplegadas a Producción -->
+              <div style="background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 10px; overflow: hidden; display: flex; flex-direction: column;">
+                <div style="padding: 10px 14px; background: #DCFCE7; border-bottom: 1.5px solid #86EFAC; display: flex; justify-content: space-between; align-items: center;">
+                  <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 800; color: #15803D;">
+                    <span style="width: 8px; height: 8px; border-radius: 50%; background: #16A34A;"></span>
+                    <span>DESPLEGADAS (PROD)</span>
+                  </div>
+                  <span id="kanban-count-desplegada" style="font-size: 11px; font-weight: 800; background: #FFFFFF; border: 1px solid #86EFAC; color: #15803D; padding: 1px 7px; border-radius: 10px;">0</span>
+                </div>
+                <div id="kanban-col-desplegada" style="padding: 10px; display: flex; flex-direction: column; gap: 10px; min-height: 480px; max-height: 720px; overflow-y: auto;">
+                  <!-- Renderizado dinámico -->
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </section>
+
+
+        <!-- ===================================================================
              VISTA 3: DIRECTORIO DE USUARIOS Y ROLES (INVGATE SENIOR DESIGN)
              =================================================================== -->
         <section class="app-view" id="view-users">
           <div class="users-board-wrapper">
             
-            <!-- Toolbar Principal del Directorio (Fijo Permanente) -->
-            <div class="dashboard-toolbar" style="flex-direction: column; align-items: stretch; gap: 12px;">
-              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                <div>
-                  <h2 style="margin: 0; font-size: 15px; font-weight: 800; color: #0F172A; display: flex; align-items: center; gap: 8px;">
-                    <span>👥 Directorio General de Personal Asistencial y Soporte</span>
-                    <span class="user-badge-role role-badge-admin" id="users-badge-total" style="font-size: 11px;">14 Usuarios</span>
-                  </h2>
-                  <div style="font-size: 11.5px; color: #64748B; margin-top: 2px;">
-                    Gestión de operadores ITIL (Nivel 1 Triage, Nivel 2 Especialistas, Nivel 3 Ingeniería) y Médicos Solicitantes.
-                  </div>
-                </div>
-                <div style="display: flex; gap: 8px;">
-                  <button class="btn-pri" onclick="openCreateUserModal()" style="display: flex; align-items: center; gap: 6px; font-size: 12px; padding: 7px 16px; border-radius: 8px; background: #00A896; border-color: #00A896; color: #FFF; font-weight: 800;">
-                    <span>➕</span> Dar de Alta Usuario
-                  </button>
-                </div>
-              </div>
-
+            <!-- Toolbar Principal del Directorio (Fijo Permanente y Compacto) -->
+            <div class="dashboard-toolbar" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; padding: 12px 16px;">
               <!-- Píldoras de Filtro por Rol / Nivel -->
-              <div style="display: flex; gap: 6px; border-top: 1px solid #F1F5F9; padding-top: 10px; overflow-x: auto; align-items: center;">
+              <div style="display: flex; gap: 6px; overflow-x: auto; align-items: center;">
                 <span style="font-size: 11px; font-weight: 800; color: #64748B; text-transform: uppercase; margin-right: 4px;">Filtrar:</span>
                 <button class="filter-tab-pill active" data-user-filter="all" onclick="filterUsersByLevel('all')">Todos los Usuarios</button>
                 <button class="filter-tab-pill" data-user-filter="N1" onclick="filterUsersByLevel('N1')">🔵 Nivel 1 • Guardia</button>
@@ -966,6 +1208,11 @@
                 <button class="filter-tab-pill" data-user-filter="N3" onclick="filterUsersByLevel('N3')">🔴 Nivel 3 • Ingeniería</button>
                 <button class="filter-tab-pill" data-user-filter="ADMIN" onclick="filterUsersByLevel('ADMIN')">👑 Administradores</button>
                 <button class="filter-tab-pill" data-user-filter="SOLICITANTE" onclick="filterUsersByLevel('SOLICITANTE')">🩺 Médicos y Solicitantes</button>
+              </div>
+              <div>
+                <button class="btn-pri" onclick="openCreateUserModal()" style="display: inline-flex; align-items: center; gap: 6px; font-size: 12px; padding: 6px 14px; border-radius: 6px; background: #00A896; border: none; color: #FFF; font-weight: 700; white-space: nowrap; cursor: pointer;">
+                  <span>➕</span> Dar de Alta Usuario
+                </button>
               </div>
             </div>
 
@@ -996,66 +1243,163 @@
         </section>
 
         <!-- ===================================================================
-             VISTA 4: BASE DE CONOCIMIENTO (KB DINÁMICA & HISTÓRICO DE VERSIONES)
+             VISTA 4: BASE DE CONOCIMIENTO (CHAT ASISTENCIAL SIMPLE ESTILO GCP / GEMINI)
              =================================================================== -->
         <section class="app-view" id="view-articles">
-          <div class="dashboard-scroll">
-
-            <!-- Toolbar de Filtros y Búsqueda de Artículos (Fijo Permanente) -->
-            <div class="kb-sticky-toolbar">
-              <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between;">
-                <div style="position: relative; flex: 1; min-width: 260px;">
-                  <input type="text" id="kb-search-input" class="form-control" placeholder="Buscar por palabra clave, código de error, plataforma, protocolo..." style="padding-left: 32px; font-size: 12px; height: 36px; border-radius: 8px;">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position: absolute; left: 10px; top: 11px; width: 14px; height: 14px; color: #94A3B8;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                </div>
-                <button class="btn-pri" id="btn-open-article-modal" style="font-size: 11.5px; padding: 7px 14px; display: flex; align-items: center; gap: 6px; border-radius: 8px;">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 14px; height: 14px;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                  <span>+ Nuevo Artículo</span>
-                </button>
+          
+          <!-- SUB-BARRA SUPERIOR ESTILO GOOGLE CLOUD: SWITCH CHAT / CATÁLOGO -->
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8F0; padding: 12px 24px; background: #FFFFFF; flex-shrink: 0;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="width: 34px; height: 34px; border-radius: 8px; background: linear-gradient(135deg, #1A73E8 0%, #4285F4 100%); display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 2px 6px rgba(26,115,232,0.25);">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 18px; height: 18px;"><path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M4.93 19.07l14.14-14.14"/></svg>
               </div>
-              
-              <!-- Category Filter Pills con diseño Quantux -->
-              <div class="kb-pills-container" id="kb-category-pills">
-                <button class="kb-pill-filter sub-pill active" onclick="filterKBCategory('all')">
-                  <span>🌐 Todos</span>
-                  <span class="kb-pill-count" id="kb-pill-count-all">0</span>
-                </button>
-                <button class="kb-pill-filter sub-pill" onclick="filterKBCategory('Receta Digital')">
-                  <span>💊 Receta Digital</span>
-                  <span class="kb-pill-count" id="kb-pill-count-receta">0</span>
-                </button>
-                <button class="kb-pill-filter sub-pill" onclick="filterKBCategory('Telemedicina')">
-                  <span>📡 Telemedicina</span>
-                  <span class="kb-pill-count" id="kb-pill-count-telemed">0</span>
-                </button>
-                <button class="kb-pill-filter sub-pill" onclick="filterKBCategory('Historia Clínica')">
-                  <span>📋 Historia Clínica</span>
-                  <span class="kb-pill-count" id="kb-pill-count-hce">0</span>
-                </button>
-                <button class="kb-pill-filter sub-pill" onclick="filterKBCategory('Contingencias')">
-                  <span>🚨 Contingencias</span>
-                  <span class="kb-pill-count" id="kb-pill-count-contingencia">0</span>
-                </button>
-                <button class="kb-pill-filter sub-pill" onclick="filterKBCategory('Facturación y Pagos')">
-                  <span>💳 Facturación y Pagos</span>
-                  <span class="kb-pill-count" id="kb-pill-count-pagos">0</span>
-                </button>
-                <button class="kb-pill-filter sub-pill" onclick="filterKBCategory('Interoperabilidad')">
-                  <span>🔗 Interoperabilidad HL7/FHIR</span>
-                  <span class="kb-pill-count" id="kb-pill-count-interop">0</span>
-                </button>
-                <button class="kb-pill-filter sub-pill" onclick="filterKBCategory('Consultorio Digital')">
-                  <span>👨‍⚕️ Consultorio Digital</span>
-                  <span class="kb-pill-count" id="kb-pill-count-consultorio">0</span>
-                </button>
+              <div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <h2 style="font-size: 15px; font-weight: 800; color: #0F172A; margin: 0; font-family: 'Outfit', sans-serif;">Asistente de Base de Conocimiento CD2</h2>
+                  <span style="font-size: 10px; background: #E8F0FE; color: #1A73E8; font-weight: 700; padding: 2px 8px; border-radius: 12px; border: 1px solid #D2E3FC; display: inline-flex; align-items: center; gap: 4px;">
+                    <span style="width: 5px; height: 5px; border-radius: 50%; background: #1A73E8;"></span> GCP AI • 29 Runbooks
+                  </span>
+                </div>
+                <p style="font-size: 11.5px; color: #64748B; margin: 0;">Matriz Maestra de Interoperabilidad, Consultorio Digital 2, Cartilla Médica y SAP</p>
               </div>
             </div>
-
-            <!-- Grilla Dinámica de Artículos -->
-            <div class="charts-grid-2x2" id="kb-articles-grid" style="grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));">
-              <!-- Renderizado dinámico desde backend -->
+            
+            <div style="display: flex; gap: 6px; background: #F1F5F9; padding: 3px; border-radius: 8px;">
+              <button type="button" id="tab-btn-kb-chat" onclick="switchKbSubView('chat')" style="padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 700; border: none; cursor: pointer; background: #FFFFFF; color: #1A73E8; box-shadow: 0 1px 3px rgba(0,0,0,0.06); display: flex; align-items: center; gap: 6px; transition: all 0.15s ease;">
+                <span>💬 Chat Asistencial</span>
+              </button>
+              <button type="button" id="tab-btn-kb-catalog" onclick="switchKbSubView('catalog')" style="padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; border: none; cursor: pointer; background: transparent; color: #64748B; display: flex; align-items: center; gap: 6px; transition: all 0.15s ease;">
+                <span>📚 Catálogo de Artículos (29)</span>
+              </button>
             </div>
           </div>
+
+          <!-- SUB-VISTA 1: CHAT ASISTENCIAL SIMPLE (ESTILO GCP / GEMINI / CHATGPT) -->
+          <div id="kb-chat-subview" style="display: flex; flex-direction: column; flex: 1; overflow: hidden; background: #F8FAFC;">
+            
+            <!-- CONTENIDO DE LA CONVERSACIÓN (SCROLLABLE) -->
+            <div id="kb-chat-scroll-area" style="flex: 1; overflow-y: auto; padding: 24px 20px;">
+              <div style="max-width: 820px; margin: 0 auto; width: 100%;">
+                
+                <!-- ESTADO INICIAL / BIENVENIDA LIMPIA ESTILO GCP -->
+                <div id="kb-chat-welcome-box" style="text-align: center; padding: 36px 16px 24px 16px;">
+                  <div style="width: 52px; height: 52px; border-radius: 16px; background: #E8F0FE; border: 1.5px solid #D2E3FC; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 16px; color: #1A73E8;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 28px; height: 28px;"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+                  </div>
+                  <h3 style="font-family: 'Outfit', sans-serif; font-size: 22px; font-weight: 800; color: #0F172A; margin: 0 0 8px 0; letter-spacing: -0.4px;">
+                    ¿En qué puedo ayudarte hoy?
+                  </h3>
+                  <p style="font-size: 13.5px; color: #64748B; margin: 0 0 28px 0; max-width: 540px; margin-left: auto; margin-right: auto; line-height: 1.5;">
+                    Consulta de forma directa sobre procedimientos de CD2, correo del prestador, turnos, recetas electrónicas o contingencias técnicas.
+                  </p>
+
+                  <!-- 4 TARJETAS DE PROMPTS RÁPIDOS ESTILO GCP -->
+                  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; text-align: left; max-width: 760px; margin: 0 auto;">
+                    <div onclick="askKbAi('mail de consultorio y mensajería')" style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px; padding: 14px 16px; cursor: pointer; transition: all 0.15s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.03);" onmouseover="this.style.borderColor='#1A73E8'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='#E2E8F0'; this.style.transform='none'">
+                      <div style="font-size: 16px; margin-bottom: 4px;">✉️</div>
+                      <div style="font-size: 13px; font-weight: 700; color: #0F172A; margin-bottom: 2px;">Mail de Consultorio</div>
+                      <div style="font-size: 11.5px; color: #64748B; line-height: 1.4;">Reglas de correo del médico, paciente y casilla principal de Cartilla.</div>
+                    </div>
+                    <div onclick="askKbAi('baja consultorio')" style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px; padding: 14px 16px; cursor: pointer; transition: all 0.15s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.03);" onmouseover="this.style.borderColor='#1A73E8'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='#E2E8F0'; this.style.transform='none'">
+                      <div style="font-size: 16px; margin-bottom: 4px;">🏢</div>
+                      <div style="font-size: 13px; font-weight: 700; color: #0F172A; margin-bottom: 2px;">Baja de Consultorio</div>
+                      <div style="font-size: 11.5px; color: #64748B; line-height: 1.4;">Procedimiento administrativo y bandera isDeleted en base de datos.</div>
+                    </div>
+                    <div onclick="askKbAi('rechazo de receta digital por firma')" style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px; padding: 14px 16px; cursor: pointer; transition: all 0.15s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.03);" onmouseover="this.style.borderColor='#1A73E8'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='#E2E8F0'; this.style.transform='none'">
+                      <div style="font-size: 16px; margin-bottom: 4px;">💊</div>
+                      <div style="font-size: 13px; font-weight: 700; color: #0F172A; margin-bottom: 2px;">Receta Rechazada por Firma</div>
+                      <div style="font-size: 11.5px; color: #64748B; line-height: 1.4;">Token criptográfico, sincronización NTP y modo de contingencia offline.</div>
+                    </div>
+                    <div onclick="askKbAi('error 404 al descargar pdf')" style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px; padding: 14px 16px; cursor: pointer; transition: all 0.15s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.03);" onmouseover="this.style.borderColor='#1A73E8'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='#E2E8F0'; this.style.transform='none'">
+                      <div style="font-size: 16px; margin-bottom: 4px;">📄</div>
+                      <div style="font-size: 13px; font-weight: 700; color: #0F172A; margin-bottom: 2px;">Error 404 / 400 en PDF</div>
+                      <div style="font-size: 11.5px; color: #64748B; line-height: 1.4;">Política de retención de 6 meses en bucket y validación de hash.</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- STREAM DE HISTORIAL DE MENSAJES -->
+                <div id="kb-ai-chat-history" style="display: none; flex-direction: column; gap: 16px;">
+                  <!-- Se inyecta dinámicamente -->
+                </div>
+
+              </div>
+            </div>
+
+            <!-- CAJA DE ENTRADA FIJA AL PIE ESTILO GOOGLE CLOUD / CHATGPT -->
+            <div style="background: #FFFFFF; border-top: 1px solid #E2E8F0; padding: 14px 20px; flex-shrink: 0;">
+              <div style="max-width: 820px; margin: 0 auto; width: 100%;">
+                <div style="display: flex; align-items: center; gap: 10px; background: #FFFFFF; border: 1.5px solid #CBD5E1; border-radius: 28px; padding: 6px 8px 6px 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); transition: all 0.2s ease;" id="kb-input-capsule">
+                  <input type="text" id="kb-ai-chat-input" placeholder="Escribe tu consulta sobre CD2, consultorios, contingencias o errores..." style="flex: 1; border: none; outline: none; font-size: 13.5px; color: #0F172A; background: transparent;" onkeydown="if(event.key === 'Enter') submitKbAiQuestion()">
+                  <button type="button" id="btn-submit-kb-ai" onclick="submitKbAiQuestion()" style="width: 36px; height: 36px; border-radius: 50%; background: #1A73E8; border: none; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 6px rgba(26,115,232,0.3); transition: transform 0.15s ease;" title="Enviar consulta">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 16px; height: 16px;"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                  </button>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px; padding: 0 6px;">
+                  <span style="font-size: 11px; color: #94A3B8;">Asistente pericial N3 conectado a la base de conocimiento y Matriz Maestra de CD2</span>
+                  <button type="button" onclick="clearKbAiChat()" style="font-size: 11px; color: #64748B; background: none; border: none; cursor: pointer; text-decoration: underline;">Limpiar conversación</button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- SUB-VISTA 2: CATÁLOGO COMPLETO DE ARTÍCULOS HOMOLOGADOS (29) -->
+          <div id="kb-catalog-subview" style="display: none; flex: 1; overflow-y: auto; padding: 16px 24px; background: #F8FAFC;">
+            <div style="max-width: 1200px; margin: 0 auto;">
+              <!-- Toolbar de Filtros y Búsqueda de Artículos -->
+              <div class="kb-sticky-toolbar" style="margin-bottom: 16px; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px; padding: 14px 18px;">
+                <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between;">
+                  <div style="position: relative; flex: 1;">
+                    <input type="text" id="kb-search-input" class="form-control" placeholder="Buscar en los 29 artículos por palabra clave, código de error, plataforma o protocolo..." style="padding-left: 34px; font-size: 12.5px; height: 38px; border-radius: 8px; border: 1px solid #CBD5E1;" oninput="filterKBCategory(AppState.kbSelectedCategory || 'all')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position: absolute; left: 10px; top: 11px; width: 16px; height: 16px; color: #94A3B8;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                  </div>
+                </div>
+                
+                <!-- Category Filter Pills -->
+                <div class="kb-pills-container" id="kb-category-pills" style="margin-top: 12px; display: flex; flex-wrap: wrap; gap: 6px;">
+                  <button class="kb-pill-filter sub-pill active" onclick="filterKBCategory('all')">
+                    <span>🌐 Todos</span>
+                    <span class="kb-pill-count" id="kb-pill-count-all">29</span>
+                  </button>
+                  <button class="kb-pill-filter sub-pill" onclick="filterKBCategory('Consultorio Digital')">
+                    <span>🏢 Consultorio Digital</span>
+                    <span class="kb-pill-count" id="kb-pill-count-consultorio">0</span>
+                  </button>
+                  <button class="kb-pill-filter sub-pill" onclick="filterKBCategory('Receta Digital')">
+                    <span>💊 Receta Digital</span>
+                    <span class="kb-pill-count" id="kb-pill-count-receta">0</span>
+                  </button>
+                  <button class="kb-pill-filter sub-pill" onclick="filterKBCategory('Telemedicina')">
+                    <span>📡 Telemedicina</span>
+                    <span class="kb-pill-count" id="kb-pill-count-telemed">0</span>
+                  </button>
+                  <button class="kb-pill-filter sub-pill" onclick="filterKBCategory('Historia Clínica')">
+                    <span>📋 Historia Clínica</span>
+                    <span class="kb-pill-count" id="kb-pill-count-hce">0</span>
+                  </button>
+                  <button class="kb-pill-filter sub-pill" onclick="filterKBCategory('Contingencias')">
+                    <span>🚨 Contingencias</span>
+                    <span class="kb-pill-count" id="kb-pill-count-contingencia">0</span>
+                  </button>
+                  <button class="kb-pill-filter sub-pill" onclick="filterKBCategory('Facturación y Pagos')">
+                    <span>💳 Facturación</span>
+                    <span class="kb-pill-count" id="kb-pill-count-pagos">0</span>
+                  </button>
+                  <button class="kb-pill-filter sub-pill" onclick="filterKBCategory('Interoperabilidad')">
+                    <span>🔗 HL7/FHIR</span>
+                    <span class="kb-pill-count" id="kb-pill-count-interop">0</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Grilla Dinámica de Artículos -->
+              <div class="charts-grid-2x2" id="kb-articles-grid" style="grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 14px;">
+                <!-- Renderizado dinámico desde backend -->
+              </div>
+            </div>
+          </div>
+
         </section>
 
         <!-- ===================================================================
@@ -1064,31 +1408,36 @@
         <section class="app-view" id="view-platforms">
           <div class="dashboard-scroll">
             
-            <!-- NAVEGACIÓN POR SUB-PESTAÑAS DE LA VISTA (Fijo Permanente) -->
-            <div class="platforms-subtabs-toolbar">
-              <div style="display: flex; gap: 8px; overflow-x: auto;">
-                <button type="button" class="dash-tab-btn active" id="btn-subtab-inst" onclick="switchPlatformsSubTab('institutions')" style="font-size: 12.5px; font-weight: 800; padding: 8px 16px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
-                  <span>🏥 Red de Instituciones Sanitarias</span>
-                  <span style="font-size: 10px; background: rgba(37,99,235,0.12); color: #2563EB; padding: 1px 6px; border-radius: 10px;">14</span>
+            <!-- NAVEGACIÓN POR SUB-PESTAÑAS DE LA VISTA (Fijo Permanente y Compacto) -->
+            <div class="platforms-subtabs-toolbar" style="padding: 6px 10px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; background: #FFFFFF; border-radius: 8px; border: 1px solid #E2E8F0;">
+              <div style="display: flex; gap: 6px; overflow-x: auto;">
+                <button type="button" class="dash-tab-btn active" id="btn-subtab-inst" onclick="switchPlatformsSubTab('institutions')" style="padding: 4px 10px; font-size: 11px; border: 1px solid #00A896; background: #F0FDFA; color: #0F766E;">
+                  <span>Red de Instituciones</span>
+                  <span style="font-size: 9.5px; background: rgba(0,168,150,0.15); color: #00A896; padding: 1px 5px; border-radius: 8px; font-weight: 700;">14</span>
                 </button>
 
-                <button type="button" class="dash-tab-btn" id="btn-subtab-plat" onclick="switchPlatformsSubTab('platforms')" style="font-size: 12.5px; font-weight: 800; padding: 8px 16px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
-                  <span>💻 Módulos & Sistemas de Software</span>
-                  <span style="font-size: 10px; background: rgba(0,168,150,0.12); color: #00A896; padding: 1px 6px; border-radius: 10px;">9</span>
+                <button type="button" class="dash-tab-btn" id="btn-subtab-plat" onclick="switchPlatformsSubTab('platforms')" style="padding: 4px 10px; font-size: 11px; border: 1px solid #E2E8F0; background: #FFFFFF; color: #475569;">
+                  <span>Módulos de Software</span>
+                  <span style="font-size: 9.5px; background: rgba(0,168,150,0.1); color: #00A896; padding: 1px 5px; border-radius: 8px; font-weight: 700;">9</span>
                 </button>
 
-                <button type="button" class="dash-tab-btn" id="btn-subtab-matrix" onclick="switchPlatformsSubTab('matrix')" style="font-size: 12.5px; font-weight: 800; padding: 8px 16px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
-                  <span>🔄 Matriz Multi-Tenant de Habilitación</span>
-                  <span style="font-size: 10px; background: #FEF3C7; color: #D97706; padding: 1px 6px; border-radius: 10px;">Interactivo</span>
+                <button type="button" class="dash-tab-btn" id="btn-subtab-matrix" onclick="switchPlatformsSubTab('matrix')" style="padding: 4px 10px; font-size: 11px; border: 1px solid #E2E8F0; background: #FFFFFF; color: #475569;">
+                  <span>Matriz Multi-Tenant</span>
+                  <span style="font-size: 9.5px; background: #FEF3C7; color: #D97706; padding: 1px 5px; border-radius: 8px; font-weight: 700;">Interactivo</span>
+                </button>
+
+                <button type="button" class="dash-tab-btn" id="btn-subtab-helpdesks" onclick="switchPlatformsSubTab('helpdesks')" style="padding: 4px 10px; font-size: 11px; border: 1px solid #E2E8F0; background: #FFFFFF; color: #475569;">
+                  <span>Mesas ITIL</span>
+                  <span style="font-size: 9.5px; background: rgba(2,132,199,0.1); color: #0284C7; padding: 1px 5px; border-radius: 8px; font-weight: 700;">N1/N2/N3</span>
                 </button>
               </div>
 
-              <div style="display: flex; gap: 8px;">
-                <button type="button" class="btn-sec" onclick="openCreatePlatformModal()" style="font-size: 11.5px; padding: 6px 12px; font-weight: 700; border-radius: 8px; display: inline-flex; align-items: center; gap: 5px;">
-                  <span>💻 + Alta Sistema</span>
+              <div style="display: flex; gap: 6px;">
+                <button type="button" class="btn-sec" onclick="openCreatePlatformModal()" style="font-size: 11px; padding: 4px 10px; font-weight: 700; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px;">
+                  <span>+ Alta Sistema</span>
                 </button>
-                <button type="button" class="btn-pri" onclick="openCreateInstitutionModal()" style="font-size: 11.5px; padding: 6px 14px; font-weight: 800; border-radius: 8px; background: #00A896; border: none; color: #FFF; display: inline-flex; align-items: center; gap: 5px;">
-                  <span>🏥 + Alta Institución</span>
+                <button type="button" class="btn-pri" onclick="openCreateInstitutionModal()" style="font-size: 11px; padding: 4px 12px; font-weight: 800; border-radius: 6px; background: #00A896; border: none; color: #FFF; display: inline-flex; align-items: center; gap: 4px;">
+                  <span>+ Alta Institución</span>
                 </button>
               </div>
             </div>
@@ -1098,34 +1447,34 @@
                  =============================================================== -->
             <div class="platforms-subview active" id="platforms-subview-institutions">
               
-              <!-- Toolbar de Búsqueda, Filtros y Selector de Modo de Vista (Cards vs Tabla) -->
-              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; background: #FFFFFF; padding: 10px 14px; border-radius: 10px; border: 1px solid #E2E8F0;">
-                <div style="position: relative; max-width: 340px; flex: 1;">
-                  <input type="text" id="filter-inst-cards-input" class="form-control" placeholder="Buscar institución, código o sede..." style="padding-left: 32px; font-size: 12px; height: 34px; border-radius: 8px;" oninput="filterInstitutionCards(this.value)">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position: absolute; left: 10px; top: 10px; width: 14px; height: 14px; color: #94A3B8;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              <!-- Toolbar Compacta de Búsqueda y Filtros -->
+              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; background: #FFFFFF; padding: 6px 12px; border-radius: 8px; border: 1px solid #E2E8F0;">
+                <div style="position: relative; width: 220px;">
+                  <input type="text" id="filter-inst-cards-input" class="form-control" placeholder="Buscar institución..." style="padding-left: 28px; font-size: 11px; height: 28px; border-radius: 6px;" oninput="filterInstitutionCards(this.value)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position: absolute; left: 8px; top: 8px; width: 12px; height: 12px; color: #94A3B8;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                 </div>
 
-                <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
-                  <button type="button" class="btn-clean-action active" data-inst-type-filter="all" onclick="filterInstitutionCardsByType('all')" style="padding: 5px 10px; font-size: 11px; font-weight: 700; border-radius: 6px;">Todas (14)</button>
-                  <button type="button" class="btn-clean-action" data-inst-type-filter="PREPAGA" onclick="filterInstitutionCardsByType('PREPAGA')" style="padding: 5px 10px; font-size: 11px; font-weight: 700; border-radius: 6px;">Prepagas (6)</button>
-                  <button type="button" class="btn-clean-action" data-inst-type-filter="SANATORIO" onclick="filterInstitutionCardsByType('SANATORIO')" style="padding: 5px 10px; font-size: 11px; font-weight: 700; border-radius: 6px;">Sanatorios (4)</button>
-                  <button type="button" class="btn-clean-action" data-inst-type-filter="HOSPITAL" onclick="filterInstitutionCardsByType('HOSPITAL')" style="padding: 5px 10px; font-size: 11px; font-weight: 700; border-radius: 6px;">Hospitales (4)</button>
-                  <button type="button" class="btn-clean-action" data-inst-type-filter="INCIDENTS" onclick="filterInstitutionCardsByType('INCIDENTS')" style="padding: 5px 10px; font-size: 11px; font-weight: 700; border-radius: 6px; color: #DC2626; border-color: #FECACA;">🚨 Con Incidentes</button>
+                <div style="display: flex; gap: 4px; align-items: center; flex-wrap: wrap;">
+                  <button type="button" class="btn-clean-action active" data-inst-type-filter="all" onclick="filterInstitutionCardsByType('all')" style="padding: 3px 8px; font-size: 10.5px; font-weight: 700; border-radius: 5px;">Todas (14)</button>
+                  <button type="button" class="btn-clean-action" data-inst-type-filter="PREPAGA" onclick="filterInstitutionCardsByType('PREPAGA')" style="padding: 3px 8px; font-size: 10.5px; font-weight: 700; border-radius: 5px;">Prepagas (6)</button>
+                  <button type="button" class="btn-clean-action" data-inst-type-filter="SANATORIO" onclick="filterInstitutionCardsByType('SANATORIO')" style="padding: 3px 8px; font-size: 10.5px; font-weight: 700; border-radius: 5px;">Sanatorios (4)</button>
+                  <button type="button" class="btn-clean-action" data-inst-type-filter="HOSPITAL" onclick="filterInstitutionCardsByType('HOSPITAL')" style="padding: 3px 8px; font-size: 10.5px; font-weight: 700; border-radius: 5px;">Hospitales (4)</button>
+                  <button type="button" class="btn-clean-action" data-inst-type-filter="INCIDENTS" onclick="filterInstitutionCardsByType('INCIDENTS')" style="padding: 3px 8px; font-size: 10.5px; font-weight: 700; border-radius: 5px; color: #DC2626; border-color: #FECACA;">Con Incidentes</button>
                 </div>
 
-                <!-- Selector de Modo de Vista (Cuadrícula vs Tabla) -->
-                <div style="display: flex; background: #F1F5F9; padding: 2px; border-radius: 8px; gap: 2px;">
-                  <button type="button" id="btn-view-mode-cards" class="btn-view-mode active" onclick="togglePlatformsViewMode('cards')" title="Vista en Cuadrícula 360°" style="border: none; background: #FFFFFF; color: #0F172A; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 800; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.06); display: flex; align-items: center; gap: 4px;">
-                    <span>🔲</span> <span>Tarjetas</span>
+                <!-- Selector de Modo de Vista -->
+                <div style="display: flex; background: #F1F5F9; padding: 2px; border-radius: 6px; gap: 2px;">
+                  <button type="button" id="btn-view-mode-cards" class="btn-view-mode active" onclick="togglePlatformsViewMode('cards')" title="Vista en Cuadrícula" style="border: none; background: #FFFFFF; color: #0F172A; padding: 3px 8px; border-radius: 5px; font-size: 10.5px; font-weight: 800; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.06);">
+                    <span>Tarjetas</span>
                   </button>
-                  <button type="button" id="btn-view-mode-table" class="btn-view-mode" onclick="togglePlatformsViewMode('table')" title="Vista en Tabla Ejecutiva" style="border: none; background: transparent; color: #64748B; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 4px;">
-                    <span>📋</span> <span>Tabla</span>
+                  <button type="button" id="btn-view-mode-table" class="btn-view-mode" onclick="togglePlatformsViewMode('table')" title="Vista en Tabla" style="border: none; background: transparent; color: #64748B; padding: 3px 8px; border-radius: 5px; font-size: 10.5px; font-weight: 700; cursor: pointer;">
+                    <span>Tabla</span>
                   </button>
                 </div>
               </div>
 
-              <!-- Contenedor Cuadrícula de Tarjetas -->
-              <div id="grid-institutions-cards" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 14px;">
+              <!-- Contenedor Cuadrícula de Tarjetas Responsiva (Auto-Adaptable sin cortes y sin scroll) -->
+              <div id="grid-institutions-cards" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; width: 100%; box-sizing: border-box;">
                 <!-- Se inyecta dinámicamente desde renderInstitutionsCatalog() -->
               </div>
 
@@ -1201,6 +1550,62 @@
 
             </div>
 
+            <!-- ===============================================================
+                 SUB-VISTA 4: MESAS DE AYUDA Y NIVELES DE ATENCIÓN ITIL (N1 / N2 / N3)
+                 =============================================================== -->
+            <div class="platforms-subview" id="platforms-subview-helpdesks" style="display: none;">
+              <div style="background: #FFFFFF; border: 1.5px solid #CBD5E1; border-radius: 12px; padding: 18px; margin-bottom: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.03);">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px solid #E2E8F0;">
+                  <div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                      <span style="font-weight: 800; font-size: 15px; color: #0F172A;">Mesas de Ayuda & Niveles de Atención ITIL (N1 / N2 / N3)</span>
+                      <span style="background: #EFF6FF; color: #0284C7; font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 12px; border: 1px solid #BFDBFE;">ESTÁNDAR ASISTENCIAL</span>
+                    </div>
+                    <p style="font-size: 12px; color: #64748B; margin: 4px 0 0 0;">
+                      Configure tiempos de retención máxima (SLA), modos de despacho inteligente, colas especializadas y reglas de escalamiento automático entre niveles.
+                    </p>
+                  </div>
+                  <div style="display: flex; gap: 8px;">
+                    <button type="button" class="btn-sec" onclick="openAddTeamModal()" style="font-size: 11.5px; padding: 6px 12px; font-weight: 700; display: flex; align-items: center; gap: 5px;">
+                      <span>+ Nueva Mesa Especializada</span>
+                    </button>
+                    <button type="button" class="btn-pri" onclick="saveAllHelpdeskLevels()" style="font-size: 11.5px; padding: 6px 14px; font-weight: 800; display: flex; align-items: center; gap: 5px;">
+                      <span>Guardar Todos los Niveles</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- FLUJO OPERATIVO ITIL VISUAL (WORKFLOW RIBBON) -->
+                <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px; padding: 12px 16px; margin-bottom: 16px;">
+                  <div style="font-size: 10.5px; font-weight: 800; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
+                    Circuito de Escalamiento Asistencial Multicapa
+                  </div>
+                  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; align-items: center;">
+                    <div style="background: #FFFFFF; border: 1px solid #BFDBFE; border-left: 4px solid #0284C7; padding: 8px 12px; border-radius: 6px;">
+                      <div style="font-size: 11px; font-weight: 800; color: #0284C7;">1. NIVEL 1 • TRIAGE</div>
+                      <div style="font-size: 10px; color: #64748B; margin-top: 2px;">Diagnóstico primario • SLA &le; 30m</div>
+                    </div>
+                    <div style="text-align: center; color: #94A3B8; font-weight: 800; font-size: 14px;">➔</div>
+                    <div style="background: #FFFFFF; border: 1px solid #DDD6FE; border-left: 4px solid #7C3AED; padding: 8px 12px; border-radius: 6px;">
+                      <div style="font-size: 11px; font-weight: 800; color: #7C3AED;">2. NIVEL 2 • ESPECIALISTAS</div>
+                      <div style="font-size: 10px; color: #64748B; margin-top: 2px;">HIS, Firma PKI, HL7 • SLA &le; 4h</div>
+                    </div>
+                    <div style="text-align: center; color: #94A3B8; font-weight: 800; font-size: 14px;">➔</div>
+                    <div style="background: #FFFFFF; border: 1px solid #FECACA; border-left: 4px solid #DC2626; padding: 8px 12px; border-radius: 6px;">
+                      <div style="font-size: 11px; font-weight: 800; color: #DC2626;">3. NIVEL 3 • INGENIERÍA</div>
+                      <div style="font-size: 10px; color: #64748B; margin-top: 2px;">Core Dev, DevOps, DBA • SLA &le; 8h</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- CONTENEDOR DINÁMICO DE LAS 3 TARJETAS DE NIVELES (N1, N2, N3) -->
+                <div class="level-card-grid" id="helpdesk-levels-container">
+                  <!-- Se inyecta dinámicamente desde loadHelpdeskLevelsConfig() -->
+                  <div style="text-align: center; padding: 20px; color: #64748B;">Cargando configuración de niveles de soporte...</div>
+                </div>
+              </div>
+            </div>
+
           </div>
         </section>
 
@@ -1213,7 +1618,7 @@
           <div class="dashboard-scroll">
             <div class="dashboard-toolbar" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
               <div>
-                <span style="font-weight: 800; font-size: 14px; color: var(--q-text-dark);">⚙️ Panel de Configuración Operativa y Políticas de SLA</span>
+                <span style="font-weight: 800; font-size: 14px; color: var(--q-text-dark);">Panel de Configuración Operativa y Políticas de SLA</span>
                 <div style="font-size: 11.5px; color: var(--q-text-muted); margin-top: 2px;">
                   Ajuste parámetros de respuesta, notificación por correo y validaciones obligatorias de cierre.
                 </div>
@@ -1222,66 +1627,6 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 14px; height: 14px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
                 <span>Guardar Configuración</span>
               </button>
-            </div>
-
-            <!-- SECCIÓN PRINCIPAL: MESAS DE AYUDA Y NIVELES DE ATENCIÓN ITIL (N1 / N2 / N3) -->
-            <div style="background: #FFFFFF; border: 1.5px solid #CBD5E1; border-radius: 12px; padding: 18px; margin-bottom: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.03);">
-              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px solid #E2E8F0;">
-                <div>
-                  <div style="display: flex; align-items: center; gap: 8px;">
-                    <span style="font-size: 18px;">🏢</span>
-                    <span style="font-weight: 800; font-size: 15px; color: #0F172A;">Mesas de Ayuda & Niveles de Atención ITIL (N1 / N2 / N3)</span>
-                    <span style="background: #EFF6FF; color: #0284C7; font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 12px; border: 1px solid #BFDBFE;">ESTÁNDAR ASISTENCIAL</span>
-                  </div>
-                  <p style="font-size: 12px; color: #64748B; margin: 4px 0 0 0;">
-                    Configure tiempos de retención máxima (SLA), modos de despacho inteligente, colas especializadas y reglas de escalamiento automático entre niveles.
-                  </p>
-                </div>
-                <div style="display: flex; gap: 8px;">
-                  <button type="button" class="btn-sec" onclick="openAddTeamModal()" style="font-size: 11.5px; padding: 6px 12px; font-weight: 700; display: flex; align-items: center; gap: 5px;">
-                    <span>➕ Nueva Mesa Especializada</span>
-                  </button>
-                  <button type="button" class="btn-pri" onclick="saveAllHelpdeskLevels()" style="font-size: 11.5px; padding: 6px 14px; font-weight: 800; display: flex; align-items: center; gap: 5px;">
-                    <span>💾 Guardar Todos los Niveles</span>
-                  </button>
-                </div>
-              </div>
-
-              <!-- FLUJO OPERATIVO ITIL VISUAL (WORKFLOW RIBBON) -->
-              <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px; padding: 12px 16px; margin-bottom: 16px;">
-                <div style="font-size: 10.5px; font-weight: 800; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
-                  🔄 Circuito de Escalamiento Asistencial Multicapa
-                </div>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; align-items: center;">
-                  
-                  <div style="background: #FFFFFF; border: 1px solid #BFDBFE; border-left: 4px solid #0284C7; padding: 8px 12px; border-radius: 6px;">
-                    <div style="font-size: 11px; font-weight: 800; color: #0284C7;">1. NIVEL 1 • TRIAGE</div>
-                    <div style="font-size: 10px; color: #64748B; margin-top: 2px;">Diagnóstico primario • SLA &le; 30m</div>
-                  </div>
-
-                  <div style="text-align: center; color: #94A3B8; font-weight: 800; font-size: 14px;">➔</div>
-
-                  <div style="background: #FFFFFF; border: 1px solid #DDD6FE; border-left: 4px solid #7C3AED; padding: 8px 12px; border-radius: 6px;">
-                    <div style="font-size: 11px; font-weight: 800; color: #7C3AED;">2. NIVEL 2 • ESPECIALISTAS</div>
-                    <div style="font-size: 10px; color: #64748B; margin-top: 2px;">HIS, Firma PKI, HL7 • SLA &le; 4h</div>
-                  </div>
-
-                  <div style="text-align: center; color: #94A3B8; font-weight: 800; font-size: 14px;">➔</div>
-
-                  <div style="background: #FFFFFF; border: 1px solid #FECACA; border-left: 4px solid #DC2626; padding: 8px 12px; border-radius: 6px;">
-                    <div style="font-size: 11px; font-weight: 800; color: #DC2626;">3. NIVEL 3 • INGENIERÍA</div>
-                    <div style="font-size: 10px; color: #64748B; margin-top: 2px;">Core Dev, DevOps, DBA • SLA &le; 8h</div>
-                  </div>
-
-                </div>
-              </div>
-
-              <!-- CONTENEDOR DINÁMICO DE LAS 3 TARJETAS DE NIVELES (N1, N2, N3) -->
-              <div class="level-card-grid" id="helpdesk-levels-container">
-                <!-- Se inyecta dinámicamente desde loadHelpdeskLevelsConfig() -->
-                <div style="text-align: center; padding: 20px; color: #64748B;">Cargando configuración de niveles de soporte...</div>
-              </div>
-
             </div>
 
             <!-- Grilla Secundaria de Parámetros Globales -->
@@ -1647,289 +1992,121 @@
        ========================================================================= -->
 
   <div class="modal-overlay" id="modal-ticket">
-    <div class="modal-wizard-box">
-      <!-- HEADER CON ASISTENTE DE 4 PASOS -->
-      <div class="modal-header modal-header-senior">
-        <span class="modal-title" style="display: flex; align-items: center; gap: 8px;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 18px; height: 18px; color: #00E5CC;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-          <span style="font-weight: 800; font-size: 15px;">Nueva Solicitud Enterprise</span>
-        </span>
-        <button class="modal-close-btn" id="modal-close" style="color: #94A3B8;">&times;</button>
+    <div class="modal-box-senior" style="max-width: 680px; width: 94%; border-radius: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.22); overflow: hidden; background: #FFFFFF;">
+      <!-- HEADER JIRA SERVICE MANAGEMENT -->
+      <div style="background: #0052CC; color: #FFFFFF; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <svg viewBox="0 0 24 24" fill="currentColor" style="width: 20px; height: 20px;"><path d="M11.53 2c0 2.4 1.97 4.35 4.35 4.35h1.78v1.7c0 2.4 1.94 4.34 4.34 4.35V2.84a.84.84 0 0 0-.84-.84H11.53zM6.77 6.8a4.36 4.36 0 0 0 4.34 4.34h1.8v1.72a4.36 4.36 0 0 0 4.34 4.34V7.63a.84.84 0 0 0-.83-.83H6.77zM2 11.6a4.36 4.36 0 0 0 4.34 4.34h1.8v1.72a4.35 4.35 0 0 0 4.35 4.34V12.44a.84.84 0 0 0-.84-.84H2z"/></svg>
+          <div>
+            <h3 style="font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 800; margin: 0; color: #FFFFFF;">Crear Solicitud</h3>
+            <p style="margin: 0; font-size: 11px; color: #DEEBFF; opacity: 0.9;">Quantux Health Service Desk • ITIL v4</p>
+          </div>
+        </div>
+        <button type="button" class="modal-close-btn" id="modal-close" onclick="closeTicketModal()" style="color: #FFFFFF; font-size: 22px; background: none; border: none; cursor: pointer; line-height: 1;" title="Cerrar">&times;</button>
       </div>
 
-      <div class="wizard-stepper-bar">
-        <div class="wizard-step-node active" id="step-node-1" onclick="goToWizardStep(1)">
-          <div class="wizard-step-circle">1</div>
-          <span>1. Organización & Tipo</span>
-        </div>
-        <div class="wizard-step-arrow">➔</div>
-        <div class="wizard-step-node" id="step-node-2" onclick="goToWizardStep(2)">
-          <div class="wizard-step-circle">2</div>
-          <span>2. Plataforma</span>
-        </div>
-        <div class="wizard-step-arrow">➔</div>
-        <div class="wizard-step-node" id="step-node-3" onclick="goToWizardStep(3)">
-          <div class="wizard-step-circle">3</div>
-          <span>3. Afectación & SLA</span>
-        </div>
-        <div class="wizard-step-arrow">➔</div>
-        <div class="wizard-step-node" id="step-node-4" onclick="goToWizardStep(4)">
-          <div class="wizard-step-circle">4</div>
-          <span>4. Descripción</span>
-        </div>
-      </div>
-
-      <form id="form-new-ticket">
-        <input type="hidden" id="modal-platform" name="platform" value="CAT_RECETA" required>
-        <input type="hidden" id="modal-type" name="ticket_type" value="INCIDENTE">
-        <input type="hidden" id="modal-impact" name="impact" value="MEDIO">
-        <input type="hidden" id="modal-urgency" name="urgency" value="MEDIO">
-
-        <!-- PASO 1: SEDE E INSTITUCIÓN Y TIPO DE REQUERIMIENTO -->
-        <div class="wizard-panel active" id="wizard-panel-1">
-          <div style="margin-bottom: 12px;">
-            <h4 style="font-size: 14px; font-weight: 800; color: #0F172A; margin: 0;">¿En qué Organización o Sede ocurre y qué tipo de solicitud es?</h4>
-            <p style="font-size: 12px; color: #64748B; margin-top: 4px;">Seleccione la organización o cliente y el tipo de requerimiento técnico u operativo.</p>
-          </div>
-
-          <div class="form-group" style="margin-bottom: 16px;">
-            <label class="form-label" for="modal-institution" style="font-weight: 800;">Organización / Cliente *</label>
-            <select id="modal-institution" class="form-control" required style="font-size: 13px; height: 42px; border-radius: 8px;">
-              <option value="">Seleccione Organización...</option>
-            </select>
-          </div>
-
-          <label class="form-label" style="font-weight: 800; margin-bottom: 8px; display: block;">Tipo de Solicitud *</label>
-          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 18px;">
-            <div class="impact-card-choice selected" id="type-card-incidente" onclick="selectTypeCard('INCIDENTE', this)">
-              <div class="impact-card-icon">🚨</div>
-              <div>
-                <div class="impact-card-title">Incidente</div>
-                <div class="impact-card-desc">Falla o corte del servicio en producción</div>
-              </div>
+      <form id="form-new-ticket" novalidate>
+        <div style="padding: 16px 22px; background: #FFFFFF; display: flex; flex-direction: column; gap: 12px;">
+          <!-- Fila 1: Organización Solicitante y Plataforma Afectada (Compacto) -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div>
+              <label for="modal-institution" style="display: block; font-size: 11.5px; font-weight: 700; color: #172B4D; margin-bottom: 4px;">Organización Solicitante <span style="color: #DE350B;">*</span></label>
+              <select id="modal-institution" name="institution_code" class="form-control" required style="font-size: 12px; height: 34px; border-radius: 6px; border: 1.5px solid #DFE1E6; width: 100%; background: #FAFBFC; color: #172B4D;">
+                <option value="">Seleccione Organización...</option>
+              </select>
             </div>
-            <div class="impact-card-choice" id="type-card-requerimiento" onclick="selectTypeCard('REQUERIMIENTO', this)">
-              <div class="impact-card-icon">🛠️</div>
-              <div>
-                <div class="impact-card-title">Requerimiento</div>
-                <div class="impact-card-desc">Nueva configuración, usuario o permiso</div>
-              </div>
-            </div>
-            <div class="impact-card-choice" id="type-card-consulta" onclick="selectTypeCard('CONSULTA', this)">
-              <div class="impact-card-icon">❓</div>
-              <div>
-                <div class="impact-card-title">Consulta</div>
-                <div class="impact-card-desc">Duda de uso o inquietud operativa</div>
-              </div>
+            <div>
+              <label for="modal-platform" style="display: block; font-size: 11.5px; font-weight: 700; color: #172B4D; margin-bottom: 4px;">Plataforma Afectada <span style="color: #DE350B;">*</span></label>
+              <select id="modal-platform" name="platform" class="form-control" required style="font-size: 12px; height: 34px; border-radius: 6px; border: 1.5px solid #DFE1E6; width: 100%; background: #FAFBFC; color: #172B4D;">
+                <option value="CAT_RECETA">Receta Electrónica</option>
+                <option value="CAT_TELEMEDICINA">Telemedicina</option>
+                <option value="CAT_CONSULTORIO_DIGITAL">Consultorio Digital (HCE)</option>
+                <option value="CAT_REGISTRO_INTEROP">Interoperabilidad & HL7/FHIR</option>
+                <option value="CAT_RPM_MONITOREO">Monitoreo Remoto (RPM)</option>
+                <option value="CAT_AFILIADOS_PORTAL">Portal Paciente</option>
+                <option value="CAT_COPAGOS_PAGOS">Copagos & Financiadores</option>
+                <option value="CAT_INTERNACION_DOM">Internación Domiciliaria</option>
+                <option value="CAT_CARTILLA_TURNOS">Servicios & Turnos</option>
+              </select>
             </div>
           </div>
 
-          <div style="margin-top: 20px; display: flex; justify-content: flex-end;">
-            <button type="button" class="btn-pri" onclick="goToWizardStep(2)" id="btn-wizard-next-1">
-              <span>Continuar a Plataforma</span> ➔
-            </button>
-          </div>
-        </div>
-
-        <!-- PASO 2: SELECCIÓN VISUAL DE PLATAFORMA -->
-        <div class="wizard-panel" id="wizard-panel-2">
-          <div style="margin-bottom: 12px;">
-            <h4 style="font-size: 14px; font-weight: 800; color: #0F172A; margin: 0;">¿En qué sistema o plataforma se presenta la incidencia?</h4>
-            <p style="font-size: 12px; color: #64748B; margin-top: 4px;">Haga clic en el módulo o servicio afectado.</p>
+          <!-- Fila 2: Resumen / Título -->
+          <div>
+            <label for="modal-title" style="display: block; font-size: 11.5px; font-weight: 700; color: #172B4D; margin-bottom: 4px;">Resumen / Asunto de la Solicitud <span style="color: #DE350B;">*</span></label>
+            <input type="text" id="modal-title" name="title" class="form-control" required placeholder="Ej: Error al emitir receta digital / Bloqueo de sistema" style="font-size: 12.5px; height: 34px; border-radius: 6px; border: 1.5px solid #DFE1E6; width: 100%; padding: 0 12px; color: #172B4D;">
           </div>
 
-          <div class="platform-grid-selector" id="platform-grid-container">
-            <div class="platform-card-choice selected" data-platform="CAT_RECETA" onclick="selectPlatformCard('CAT_RECETA', this)">
-              <div class="platform-icon-big">🩺</div>
-              <div class="platform-name-bold">Receta Electrónica</div>
-              <div class="platform-desc-small">Firma electrónica, validación y dispensación</div>
-            </div>
-            <div class="platform-card-choice" data-platform="CAT_TELEMEDICINA" onclick="selectPlatformCard('CAT_TELEMEDICINA', this)">
-              <div class="platform-icon-big">📹</div>
-              <div class="platform-name-bold">Telemedicina</div>
-              <div class="platform-desc-small">Salas WebRTC, audio/video y videoconsultas</div>
-            </div>
-            <div class="platform-card-choice" data-platform="CAT_CONSULTORIO_DIGITAL" onclick="selectPlatformCard('CAT_CONSULTORIO_DIGITAL', this)">
-              <div class="platform-icon-big">📁</div>
-              <div class="platform-name-bold">Consultorio Digital (HCE)</div>
-              <div class="platform-desc-small">Evoluciones, anamnesis y registros médicos</div>
-            </div>
-            <div class="platform-card-choice" data-platform="CAT_REGISTRO_INTEROP" onclick="selectPlatformCard('CAT_REGISTRO_INTEROP', this)">
-              <div class="platform-icon-big">🧪</div>
-              <div class="platform-name-bold">Interoperabilidad & HL7</div>
-              <div class="platform-desc-small">Resultados, integración y protocolos FHIR</div>
-            </div>
-            <div class="platform-card-choice" data-platform="CAT_RPM_MONITOREO" onclick="selectPlatformCard('CAT_RPM_MONITOREO', this)">
-              <div class="platform-icon-big">🩻</div>
-              <div class="platform-name-bold">Monitoreo Remoto (RPM)</div>
-              <div class="platform-desc-small">Telemetría de pacientes crónicos</div>
-            </div>
-            <div class="platform-card-choice" data-platform="CAT_AFILIADOS_PORTAL" onclick="selectPlatformCard('CAT_AFILIADOS_PORTAL', this)">
-              <div class="platform-icon-big">🏥</div>
-              <div class="platform-name-bold">Portal Paciente</div>
-              <div class="platform-desc-small">Turnos online, consultas y credenciales</div>
-            </div>
-            <div class="platform-card-choice" data-platform="CAT_COPAGOS_PAGOS" onclick="selectPlatformCard('CAT_COPAGOS_PAGOS', this)">
-              <div class="platform-icon-big">💳</div>
-              <div class="platform-name-bold">Copagos & Financiadores</div>
-              <div class="platform-desc-small">Validación con prepagas, copagos y aranceles</div>
-            </div>
-            <div class="platform-card-choice" data-platform="CAT_INTERNACION_DOM" onclick="selectPlatformCard('CAT_INTERNACION_DOM', this)">
-              <div class="platform-icon-big">🏠</div>
-              <div class="platform-name-bold">Internación Domiciliaria</div>
-              <div class="platform-desc-small">Visitas, insumos y seguimiento domiciliario</div>
-            </div>
-            <div class="platform-card-choice" data-platform="CAT_CARTILLA_TURNOS" onclick="selectPlatformCard('CAT_CARTILLA_TURNOS', this)">
-              <div class="platform-icon-big">🌐</div>
-              <div class="platform-name-bold">Servicios & Turnos</div>
-              <div class="platform-desc-small">Reserva de citas y geolocalización</div>
-            </div>
+          <!-- Fila 3: Descripción del Caso (Compacto 3 líneas) -->
+          <div>
+            <label for="modal-description" style="display: block; font-size: 11.5px; font-weight: 700; color: #172B4D; margin-bottom: 4px;">Descripción del Problema o Solicitud <span style="color: #DE350B;">*</span></label>
+            <textarea id="modal-description" name="description" class="form-control" rows="3" required placeholder="Describa brevemente qué ocurrió o qué necesita asistencia..." style="font-size: 12px; border-radius: 6px; border: 1.5px solid #DFE1E6; width: 100%; padding: 8px 12px; color: #172B4D; resize: vertical; min-height: 64px;"></textarea>
           </div>
 
-          <div style="display: flex; justify-content: space-between; margin-top: 20px;">
-            <button type="button" class="btn-sec" onclick="goToWizardStep(1)">⬅️ Volver a Organización</button>
-            <button type="button" class="btn-pri" onclick="goToWizardStep(3)">Continuar a Afectación ➔</button>
-          </div>
-        </div>
-
-        <!-- PASO 3: EVALUACIÓN DE CRITICIDAD Y SLA -->
-        <div class="wizard-panel" id="wizard-panel-3">
-          <div style="margin-bottom: 14px;">
-            <h4 style="font-size: 14px; font-weight: 800; color: #0F172A; margin: 0;">Evaluación de Criticidad y SLA</h4>
-            <p style="font-size: 12px; color: #64748B; margin-top: 4px;">Seleccione el alcance y tiempo de respuesta requerido con los controles compactos.</p>
-          </div>
-
-          <!-- Segmented Control de Alcance / Impacto (UH-49) -->
-          <div style="margin-bottom: 16px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-              <label class="form-label" style="font-weight: 800; margin: 0;">Alcance del Problema (Impacto) *</label>
-              <span id="selected-impact-label" style="font-size: 11.5px; font-weight: 700; color: #D97706;">Medio / Puesto Individual</span>
-            </div>
-            <div class="segmented-control-zen" id="wizard-impact-grid">
-              <button type="button" class="segmented-option" data-impact="BAJO" onclick="selectImpactSegmented('BAJO', this)">
-                <span class="seg-dot dot-green"></span>
-                <span class="seg-text">🟢 Bajo</span>
-              </button>
-              <button type="button" class="segmented-option selected" data-impact="MEDIO" onclick="selectImpactSegmented('MEDIO', this)">
-                <span class="seg-dot dot-amber"></span>
-                <span class="seg-text">🟡 Medio</span>
-              </button>
-              <button type="button" class="segmented-option" data-impact="ALTO" onclick="selectImpactSegmented('ALTO', this)">
-                <span class="seg-dot dot-orange"></span>
-                <span class="seg-text">🟠 Alto</span>
-              </button>
-              <button type="button" class="segmented-option" data-impact="CRITICO" onclick="selectImpactSegmented('CRITICO', this)">
-                <span class="seg-dot dot-red"></span>
-                <span class="seg-text">🔴 Crítico</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Segmented Control de Urgencia (UH-49) -->
-          <div style="margin-bottom: 16px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-              <label class="form-label" style="font-weight: 800; margin: 0;">Urgencia Requerida *</label>
-              <span id="selected-urgency-label" style="font-size: 11.5px; font-weight: 700; color: #D97706;">Media (Mismo Día)</span>
-            </div>
-            <div class="segmented-control-zen" id="wizard-urgency-grid">
-              <button type="button" class="segmented-option" data-urgency="BAJO" onclick="selectUrgencySegmented('BAJO', this)">
-                <span class="seg-dot dot-green"></span>
-                <span class="seg-text">🟢 Baja</span>
-              </button>
-              <button type="button" class="segmented-option selected" data-urgency="MEDIO" onclick="selectUrgencySegmented('MEDIO', this)">
-                <span class="seg-dot dot-amber"></span>
-                <span class="seg-text">🟡 Media</span>
-              </button>
-              <button type="button" class="segmented-option" data-urgency="ALTO" onclick="selectUrgencySegmented('ALTO', this)">
-                <span class="seg-dot dot-orange"></span>
-                <span class="seg-text">🟠 Alta</span>
-              </button>
-              <button type="button" class="segmented-option" data-urgency="CRITICO" onclick="selectUrgencySegmented('CRITICO', this)">
-                <span class="seg-dot dot-red"></span>
-                <span class="seg-text">🔴 Inmediata</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Banner de Prioridad y SLA Dinámico en Vivo -->
-          <div class="prio-live-banner" id="wizard-prio-banner" style="margin-top: 14px; padding: 12px 16px; border-radius: 10px; background: #F8FAFC; border: 1px solid #E2E8F0; display: flex; align-items: center; justify-content: space-between;">
-            <div class="prio-live-left">
-              <span class="prio-live-title" style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: #475569;">Prioridad y SLA Estimado:</span>
-              <span class="prio-live-desc" id="wizard-sla-explanation" style="font-size: 11.5px; color: #64748B;">Respuesta garantizada en 4h • Resolución en 24h</span>
-            </div>
-            <span id="modal-calculated-priority" class="badge-prio badge-p3" style="font-size: 12px; font-weight: 800; padding: 4px 10px;">P3 • MEDIA</span>
-          </div>
-
-          <div style="display: flex; justify-content: space-between; margin-top: 20px;">
-            <button type="button" class="btn-sec" onclick="goToWizardStep(2)">⬅️ Volver a Plataforma</button>
-            <button type="button" class="btn-pri" onclick="goToWizardStep(4)">Continuar a Descripción ➔</button>
-          </div>
-        </div>
-
-        <!-- PASO 4: TÍTULO, DESCRIPCIÓN Y OPCIONES TÉCNICAS (UH-51) -->
-        <div class="wizard-panel" id="wizard-panel-4">
-          <div style="margin-bottom: 12px;">
-            <h4 style="font-size: 14px; font-weight: 800; color: #0F172A; margin: 0;">Detalles de la Solicitud y Evidencias</h4>
-            <p style="font-size: 12px; color: #64748B; margin-top: 4px;">Ingrese un título claro y adjunte referencias para agilizar la resolución.</p>
-          </div>
-
-          <div class="form-group" style="margin-bottom: 14px;">
-            <label class="form-label" for="modal-title" style="font-weight: 800;">Título Breve de la Solicitud *</label>
-            <input type="text" id="modal-title" class="form-control" placeholder="Ej: Error de autenticación en pasarela al emitir orden en Sede Norte" required style="font-size: 13px; height: 38px; border-radius: 8px;">
-          </div>
-
-          <div class="form-group" style="margin-bottom: 14px;">
-            <label class="form-label" for="modal-description" style="font-weight: 800;">Descripción Detallada y Pasos para Reproducir *</label>
-            <textarea id="modal-description" class="form-control" rows="4" placeholder="Indique qué acción realizaba el usuario, mensaje exacto de error en pantalla y datos relevantes..." required style="font-size: 12.5px; border-radius: 8px;"></textarea>
-          </div>
-
-          <div class="form-group" style="margin-bottom: 14px;">
-            <label class="form-label" for="modal-attachment-url" style="font-weight: 700;">Enlace de Captura / Evidencia Adjunta (Opcional)</label>
-            <input type="url" id="modal-attachment-url" class="form-control" placeholder="https://drive.google.com/... o enlace de captura de pantalla" style="font-size: 12.5px; height: 38px; border-radius: 8px;">
-          </div>
-
-          <!-- Acordeón Desplegable de Opciones Técnicas Avanzadas (UH-51) -->
-          <div class="tech-accordion-box" style="margin-bottom: 16px;">
-            <button type="button" class="btn-accordion-toggle" id="btn-toggle-tech-options" onclick="toggleTechAccordion()" style="background: none; border: 1px dashed #CBD5E1; width: 100%; padding: 8px 12px; border-radius: 6px; font-size: 11.5px; font-weight: 700; color: #475569; display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
-              <span>⚙️ [+ Opciones Técnicas Avanzadas & Incidentes Masivos]</span>
-              <span id="tech-accordion-arrow">▼</span>
-            </button>
-            <div id="tech-options-content" style="display: none; padding: 12px; background: #F8FAFC; border: 1px solid #E2E8F0; border-top: none; border-radius: 0 0 6px 6px;">
-              <div style="display: flex; gap: 16px; margin-bottom: 10px; flex-wrap: wrap;">
-                <label style="display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; cursor: pointer;">
-                  <input type="checkbox" id="modal-is-major" name="is_major_incident" value="1">
-                  <span>🚨 Declarar como Incidente Masivo (Ticket Padre)</span>
-                </label>
-              </div>
-              <div class="form-grid-2" style="margin-bottom: 0;">
-                <div class="form-group" style="margin-bottom: 0;">
-                  <label class="form-label" for="modal-parent-id" style="font-size: 11px;">Vincular a Ticket Padre (Hijo de):</label>
-                  <select id="modal-parent-id" class="form-control" style="font-size: 11.5px; height: 32px;">
-                    <option value="">Ninguno (Caso independiente)</option>
-                  </select>
-                </div>
-                <div class="form-group" style="margin-bottom: 0;">
-                  <label class="form-label" for="modal-release-tag" style="font-size: 11px;">Versión de Release Asociada:</label>
-                  <select id="modal-release-tag" class="form-control" style="font-size: 11.5px; height: 32px;">
-                    <option value="">Sin versión vinculada</option>
-                    <option value="v4.0.0">v4.0.0 (Próxima entrega)</option>
-                    <option value="v4.1.0">v4.1.0 (Backlog evolutivo)</option>
-                  </select>
+          <!-- Fila 4: Adjuntar Archivos Directamente (Sin necesidad de scrollear) -->
+          <div>
+            <div id="jira-drag-drop-zone" onclick="document.getElementById('modal-file-upload-input').click()" style="display: flex; align-items: center; justify-content: space-between; gap: 10px; background: #F8FAFC; border: 1.5px dashed #0052CC; border-radius: 8px; padding: 7px 12px; cursor: pointer; transition: all 0.2s ease;">
+              <div style="display: flex; align-items: center; gap: 8px; min-width: 0;">
+                <span style="font-size: 16px;">📎</span>
+                <span id="jira-drag-title" style="font-size: 11.5px; font-weight: 600; color: #172B4D;">Haga clic para adjuntar archivo, imagen o captura</span>
+                <div id="jira-attached-file-badge" style="display: none; align-items: center; gap: 6px; background: #DEEBFF; color: #0747A6; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700;">
+                  <span id="jira-attached-file-name"></span>
+                  <span id="jira-attached-file-size" style="opacity: 0.8;"></span>
+                  <button type="button" onclick="clearModalUploadedFile(event)" style="background: none; border: none; color: #DE350B; font-weight: 800; cursor: pointer; padding: 0 2px;" title="Quitar adjunto">&times;</button>
                 </div>
               </div>
+              <button type="button" class="btn-sec" style="font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 5px; white-space: nowrap; background: #FFFFFF; border: 1px solid #DFE1E6; color: #0052CC; pointer-events: none;">
+                Examinar...
+              </button>
             </div>
+            <input type="file" id="modal-file-upload-input" style="display: none;" onchange="handleModalFileUpload(this)">
+            <input type="hidden" id="modal-attachment-url" name="attachment_url">
           </div>
 
-          <div style="display: flex; justify-content: space-between; margin-top: 20px;">
-            <button type="button" class="btn-sec" onclick="goToWizardStep(3)">⬅️ Volver a Criticidad</button>
-            <button type="submit" class="btn-pri" id="btn-submit-ticket" style="background: #00A896; padding: 10px 22px; font-weight: 800;">
-              🚀 Confirmar y Enviar Solicitud
-            </button>
-          </div>
+          <!-- Fila 5: Opciones Técnicas Avanzadas Colapsadas (Cero impacto de altura) -->
+          <details style="font-size: 11px; color: #6B778C;">
+            <summary style="cursor: pointer; font-weight: 700; color: #0052CC; outline: none;">⚙️ Opciones avanzadas (Prioridad, Impacto, Urgencia)</summary>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; padding: 8px; background: #FAFBFC; border: 1px solid #DFE1E6; border-radius: 6px;">
+              <div>
+                <label for="modal-calculated-priority" style="display: block; font-size: 10.5px; font-weight: 600; margin-bottom: 2px;">Prioridad ITIL</label>
+                <select id="modal-calculated-priority" name="priority" class="form-control" style="font-size: 11px; height: 28px; width: 100%;">
+                  <option value="P1">🔴 P1 • Crítica (Resolución &lt; 2h)</option>
+                  <option value="P2">🟠 P2 • Alta (Resolución &lt; 8h)</option>
+                  <option value="P3" selected>🟡 P3 • Media (Resolución &lt; 24h)</option>
+                  <option value="P4">🟢 P4 • Baja (Resolución &lt; 48h)</option>
+                </select>
+              </div>
+              <div>
+                <label for="modal-type" style="display: block; font-size: 10.5px; font-weight: 600; margin-bottom: 2px;">Tipo de Solicitud</label>
+                <select id="modal-type" name="ticket_type" class="form-control" style="font-size: 11px; height: 28px; width: 100%;">
+                  <option value="INCIDENTE">🚨 Incidente en Producción</option>
+                  <option value="REQUERIMIENTO">🛠️ Solicitud de Servicio</option>
+                  <option value="CONSULTA">❓ Consulta Operativa</option>
+                </select>
+              </div>
+            </div>
+            <input type="hidden" id="modal-impact" name="impact" value="MEDIO">
+            <input type="hidden" id="modal-urgency" name="urgency" value="MEDIO">
+            <input type="hidden" id="modal-is-major" name="is_major_incident" value="0">
+            <input type="hidden" id="modal-parent-id" name="parent_id" value="">
+            <input type="hidden" id="modal-release-tag" name="release_tag" value="">
+          </details>
         </div>
 
+        <!-- FOOTER JIRA SERVICE MANAGEMENT -->
+        <div style="padding: 12px 22px; background: #F4F5F7; border-top: 1px solid #DFE1E6; display: flex; justify-content: space-between; align-items: center;">
+          <label style="display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: #5E6C84; cursor: pointer;">
+            <input type="checkbox" id="jira-create-another">
+            <span>Crear otra solicitud</span>
+          </label>
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <button type="button" class="btn-sec" id="btn-cancel-modal" onclick="closeTicketModal()" style="padding: 7px 14px; font-size: 12px; font-weight: 600; border-radius: 4px; border: 1px solid #DFE1E6; background: #FFFFFF; color: #42526E; cursor: pointer;">Cancelar</button>
+            <button type="submit" class="btn-pri" id="btn-submit-ticket" style="padding: 7px 20px; font-size: 12.5px; font-weight: 800; border-radius: 4px; border: none; background: #0052CC; color: #FFFFFF; cursor: pointer; box-shadow: 0 1px 3px rgba(0,82,204,0.35);">Crear</button>
+          </div>
+        </div>
       </form>
     </div>
+  </div>
   </div>
 
   <!-- MODAL EDICIÓN RÁPIDA DE TICKET EN ESTADO NUEVO -->
@@ -2465,6 +2642,43 @@
     </div>
   </div>
 
+  <!-- 3.5. MODAL POPUP: CHAT ASISTENCIAL EXCLUSIVO SOLICITANTE CON TRIAGE Y RESOLUCIÓN -->
+  <div class="modal-overlay" id="modal-requester-chat" style="display: none;">
+    <div class="modal-box modal-box-senior" style="max-width: 620px; border-radius: 14px; overflow: hidden; padding: 0; border: 1px solid #E2E8F0; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);">
+      
+      <!-- HEADER DEL CHAT -->
+      <div style="background: #00A896; color: #FFFFFF; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="width: 32px; height: 32px; border-radius: 50%; background: rgba(255, 255, 255, 0.2); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px;">
+            Q
+          </div>
+          <div>
+            <div style="font-weight: 700; font-size: 13.5px; line-height: 1.2;">Asistencia Inmediata Quantux</div>
+            <div style="font-size: 11px; opacity: 0.9; display: flex; align-items: center; gap: 4px;">
+              <span style="width: 6px; height: 6px; border-radius: 50%; background: #4ADE80; display: inline-block;"></span>
+              <span>Guardia Activa &bull; Respuestas y Protocolos Clínicos</span>
+            </div>
+          </div>
+        </div>
+        <button type="button" onclick="closeRequesterChatModal()" style="background: none; border: none; color: #FFFFFF; font-size: 22px; cursor: pointer; padding: 0 4px; line-height: 1;">&times;</button>
+      </div>
+
+      <!-- STREAM DEL CHAT -->
+      <div id="requester-chat-stream" style="padding: 16px; background: #F8FAFC; min-height: 280px; max-height: 400px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; font-size: 12px;">
+        <!-- Se inicializa dinámicamente con saludo fresco en openRequesterChatModal() -->
+      </div>
+
+      <!-- INPUT INFERIOR DEL CHAT -->
+      <div style="background: #FFFFFF; border-top: 1px solid #E2E8F0; padding: 10px 14px; display: flex; gap: 8px; align-items: center;">
+        <input type="text" id="requester-chat-input" placeholder="Escriba su consulta al equipo de guardia..." style="flex: 1; height: 36px; font-size: 12px; border: 1px solid #CBD5E1; border-radius: 6px; padding: 0 12px; outline: none;" onkeydown="if(event.key==='Enter') sendRequesterChatMessage()">
+        <button type="button" onclick="sendRequesterChatMessage()" style="background: #00A896; color: #FFFFFF; border: none; padding: 0 16px; height: 36px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer;">
+          Enviar
+        </button>
+      </div>
+
+    </div>
+  </div>
+
   <!-- 4. MODAL POPUP: DETALLES DE USUARIO / PERFIL -->
   <div class="modal-overlay" id="modal-user-profile-view">
     <div class="modal-box modal-box-senior" style="max-width: 550px;">
@@ -2627,25 +2841,10 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
               <span>Métricas & SLA</span>
             </button>
-            <button class="ws-tab-btn" id="ws-tab-tech" onclick="switchWsTab('tech')" title="Ficha técnica de integración, endpoints y especificación">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-              <span>Ficha Técnica & APIs</span>
-            </button>
-            <button class="ws-tab-btn" id="ws-tab-audit" onclick="switchWsTab('audit')" title="Registro de auditoría forense inmutable">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
-              <span>Auditoría Forense</span>
-            </button>
           </div>
         </div>
 
         <div class="ws-topbar-right">
-          <!-- Badges de Estado, Prioridad y Nivel -->
-          <div id="ws-header-status-badge" class="status-pill status-pill-nuevo" style="font-size: 11px; padding: 4px 10px; font-weight: 800;">
-            <span id="ws-header-status-text">🟢 NUEVO</span>
-          </div>
-          <div id="ws-header-prio-badge" class="ws-prio-badge prio-p1">P1 CRÍTICA</div>
-          <div id="ws-header-level-badge" class="ws-level-badge">NIVEL 1 ITIL</div>
-
           <!-- Botón Cerrar Workspace -->
           <button type="button" class="ws-btn-close" onclick="closeAgentWorkspace()" title="Cerrar espacio de trabajo (Esc)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 18px; height: 18px;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
@@ -2694,10 +2893,24 @@
               <div class="ws-desc-content" id="ws-desc-text">
                 Descripción del incidente o requerimiento operativo.
               </div>
-              <div id="ws-desc-attachment-wrapper" style="margin-top: 8px; display: none;">
-                <a href="#" target="_blank" id="ws-desc-attachment-link" class="ws-attachment-chip">
-                  📎 <span id="ws-desc-attachment-name">Ver Evidencia / Adjunto</span>
-                </a>
+              <!-- Evidencia Técnica Adjunta (Explicación clara y botón directo de descarga) -->
+              <div id="ws-desc-attachment-wrapper" style="margin-top: 10px; display: none; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 10px 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap;">
+                  <div style="display: flex; align-items: center; gap: 10px; min-width: 0;">
+                    <div style="width: 32px; height: 32px; border-radius: 6px; background: #EFF6FF; border: 1px solid #DBEAFE; display: flex; align-items: center; justify-content: center; font-size: 15px; color: #2563EB; flex-shrink: 0;">
+                      📄
+                    </div>
+                    <div style="min-width: 0;">
+                      <div style="font-size: 10px; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px;">Evidencia Técnica Adjunta</div>
+                      <div id="ws-desc-attachment-name" style="font-size: 12px; font-weight: 700; color: #0F172A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        archivo_adjunto.log
+                      </div>
+                    </div>
+                  </div>
+                  <a href="#" target="_blank" id="ws-desc-attachment-link" class="btn-clean-action" style="background: #00A896 !important; color: #FFFFFF !important; border: none !important; padding: 5px 12px !important; border-radius: 6px !important; font-size: 11px !important; font-weight: 700 !important; text-decoration: none !important; display: inline-flex !important; align-items: center !important; gap: 4px !important; white-space: nowrap !important; cursor: pointer !important;">
+                    <span>⬇ Descargar Log / Evidencia</span>
+                  </a>
+                </div>
               </div>
             </div>
 
@@ -2780,28 +2993,24 @@
 
         </div>
 
-        <!-- PANE DERECHO (SIDEBAR): PARTICIPANTES, PROGRESO SLA Y ACCIONES DE TRABAJO -->
+        <!-- PANE DERECHO (SIDEBAR): ACCIONES DE CICLO DE VIDA (PROTAGONISMO), SLA Y PARTICIPANTES COLAPSADOS -->
         <div class="ws-side-pane">
           
-          <!-- SECCIÓN 1: PARTICIPANTES -->
-          <div class="ws-side-section">
-            <div class="ws-side-section-header">
-              <div style="display: flex; align-items: center; gap: 6px;">
-                <span class="ws-count-bubble" id="ws-participants-count">2</span>
-                <span style="font-weight: 800; font-size: 12.5px; color: #334155;">Participantes</span>
-              </div>
-              <button type="button" class="ws-btn-add-part" title="Reasignar o invitar participante" onclick="reassignFromWorkspace()">
-                +
-              </button>
+          <!-- SECCIÓN 1: ACCIONES RESOLUTIVAS Y DE CICLO DE VIDA FSM (MÁXIMO PROTAGONISMO) -->
+          <div class="ws-side-section" style="border: 1.5px solid #00A896; background: #F0FDFA; border-radius: 10px; padding: 12px; margin-bottom: 12px;">
+            <div class="ws-side-section-header" style="margin-bottom: 8px; border-bottom: 1px solid #CCFBF1; padding-bottom: 6px;">
+              <span style="font-weight: 800; font-size: 12.5px; color: #0F766E; display: flex; align-items: center; gap: 6px;">
+                ⚡ Acciones Rápidas
+              </span>
             </div>
 
-            <div class="ws-participants-list" id="ws-participants-list">
-              <!-- Renderizado dinámico: Solicitante, Agente Asignado, Mesa de Ayuda -->
+            <div class="ws-workflow-actions" id="ws-workflow-actions">
+              <!-- Botones de transición rápida FSM inyectados dinámicamente -->
             </div>
           </div>
 
           <!-- SECCIÓN 2: PROGRESO Y CONTROL DE SLA -->
-          <div class="ws-side-section">
+          <div class="ws-side-section" style="margin-bottom: 12px;">
             <div class="ws-side-section-header">
               <div style="display: flex; align-items: center; gap: 6px;">
                 <span class="ws-count-bubble" style="background: #3B82F6;">⏱️</span>
@@ -2824,14 +3033,23 @@
             </div>
           </div>
 
-          <!-- SECCIÓN 3: ACCIONES RÁPIDAS DE ESTADO FSM -->
-          <div class="ws-side-section">
-            <div class="ws-side-section-header">
-              <span style="font-weight: 800; font-size: 12.5px; color: #334155;">Acciones de Ciclo de Vida</span>
+          <!-- SECCIÓN 3: PARTICIPANTES (COLAPSABLE POR DEFECTO PARA NO OCUPAR ESPACIO VERTICAL) -->
+          <div class="ws-side-section" style="border: 1px solid #E2E8F0; border-radius: 8px; overflow: hidden;">
+            <div class="ws-side-section-header" onclick="toggleWsParticipants()" style="cursor: pointer; user-select: none; padding: 10px 12px; background: #F8FAFC; margin-bottom: 0;" title="Clic para expandir/colapsar participantes">
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <span class="ws-count-bubble" id="ws-participants-count">2</span>
+                <span style="font-weight: 800; font-size: 12px; color: #334155;">Participantes</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <button type="button" class="ws-btn-add-part" title="Reasignar o invitar participante" onclick="event.stopPropagation(); reassignFromWorkspace()">
+                  +
+                </button>
+                <span id="ws-participants-toggle-icon" style="font-size: 11px; color: #64748B; font-weight: 700;">▶</span>
+              </div>
             </div>
 
-            <div class="ws-workflow-actions" id="ws-workflow-actions">
-              <!-- Botones de transición rápida FSM -->
+            <div class="ws-participants-list" id="ws-participants-list" style="display: none; padding: 10px 12px;">
+              <!-- Renderizado dinámico: Solicitante, Agente Asignado, Mesa de Ayuda -->
             </div>
           </div>
 
@@ -3214,6 +3432,134 @@
   </div>
 
   <!-- =========================================================================
+       MODAL: CREACIÓN RÁPIDA DE TICKET EN CONSULTORIO (EXPRESS BYPASS)
+       ========================================================================= -->
+  <div class="modal-overlay" id="modal-fast-ticket">
+    <div class="modal-box" style="max-width: 520px; width: 92%; border-radius: 12px; overflow: hidden; box-shadow: 0 15px 35px rgba(15, 23, 42, 0.25); background: #FFFFFF;">
+      <!-- Header -->
+      <div style="background: #0052CC; color: #FFFFFF; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(255,255,255,0.18); display: flex; align-items: center; justify-content: center;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          </div>
+          <div>
+            <h3 style="font-size: 15px; font-weight: 800; margin: 0; color: #FFFFFF; font-family: 'Outfit', sans-serif;">Crear Ticket Rápido</h3>
+            <p style="font-size: 11px; color: #E0E7FF; margin: 2px 0 0 0;">Generación directa de solicitud para guardia de soporte</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeFastTicketModal()" style="background: transparent; border: none; color: #FFFFFF; font-size: 22px; cursor: pointer; line-height: 1;">&times;</button>
+      </div>
+
+      <!-- Formulario Express -->
+      <form id="form-fast-ticket" onsubmit="submitFastTicket(event)" style="padding: 20px;">
+        <div style="margin-bottom: 14px;">
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #1E293B; margin-bottom: 5px;">
+            ¿Qué inconveniente presentas? *
+          </label>
+          <input type="text" id="fast-ticket-title" required placeholder="Ej: No puedo emitir receta con firma digital" class="form-control" style="font-size: 13px; height: 38px; width: 100%; border-radius: 7px; border: 1.5px solid #CBD5E1; padding: 0 12px;">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+          <div>
+            <label style="display: block; font-size: 12px; font-weight: 700; color: #1E293B; margin-bottom: 5px;">
+              Plataforma o Módulo *
+            </label>
+            <select id="fast-ticket-platform" class="form-control" style="font-size: 12.5px; height: 38px; width: 100%; border-radius: 7px; border: 1.5px solid #CBD5E1; padding: 0 10px; background: #FFFFFF;">
+              <option value="Receta Electrónica">Receta Electrónica</option>
+              <option value="Consultorio Digital">Consultorio Digital</option>
+              <option value="CORE EMR">CORE EMR (Historia Clínica)</option>
+              <option value="Portal Pacientes">Portal Pacientes</option>
+              <option value="Telemedicina">Telemedicina</option>
+              <option value="Facturación y Obras Sociales">Facturación Médica</option>
+              <option value="Infraestructura / Red">Red / Equipo local</option>
+            </select>
+          </div>
+
+          <div>
+            <label style="display: block; font-size: 12px; font-weight: 700; color: #1E293B; margin-bottom: 5px;">
+              Urgencia Asistencial *
+            </label>
+            <select id="fast-ticket-priority" class="form-control" style="font-size: 12.5px; height: 38px; width: 100%; border-radius: 7px; border: 1.5px solid #CBD5E1; padding: 0 10px; background: #FFFFFF; font-weight: 600;">
+              <option value="P1" style="color: #DC2626; font-weight: 700;">Urgente (Paciente esperando)</option>
+              <option value="P2" selected>Alta (Dificulta la atención)</option>
+              <option value="P3">Normal (Consulta o mejora)</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 18px;">
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #1E293B; margin-bottom: 5px;">
+            Detalle adicional o mensaje de error (opcional)
+          </label>
+          <textarea id="fast-ticket-description" rows="3" placeholder="Indica el mensaje de error o matrícula si corresponde..." class="form-control" style="font-size: 12.5px; width: 100%; border-radius: 7px; border: 1.5px solid #CBD5E1; padding: 8px 12px;"></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #F1F5F9; padding-top: 14px;">
+          <button type="button" onclick="closeFastTicketModal()" style="padding: 9px 16px; font-size: 12.5px; font-weight: 600; color: #475569; background: #F1F5F9; border: 1px solid #CBD5E1; border-radius: 7px; cursor: pointer;">
+            Cancelar
+          </button>
+          <button type="submit" style="padding: 9px 20px; font-size: 12.5px; font-weight: 700; color: #FFFFFF; background: #0052CC; border: none; border-radius: 7px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+            <span>Enviar Ticket</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL: HISTORIAL DISCRETO DE SOLICITUDES DEL SOLICITANTE
+       ========================================================================= -->
+  <div class="modal-overlay" id="modal-requester-history">
+    <div class="modal-box" style="max-width: 820px; width: 94%; border-radius: 14px; overflow: hidden; box-shadow: 0 15px 40px rgba(15, 23, 42, 0.25); max-height: 85vh; display: flex; flex-direction: column; background: #FFFFFF;">
+      <!-- Header -->
+      <div style="background: #0F172A; color: #FFFFFF; padding: 16px 22px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="width: 34px; height: 34px; border-radius: 8px; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px;"><polyline points="12 8 12 12 14 14"></polyline><path d="M3.05 11a9 9 0 1 1 .5 4m-.5 5v-5h5"></path></svg>
+          </div>
+          <div>
+            <h3 style="font-size: 15px; font-weight: 800; margin: 0; color: #FFFFFF; font-family: 'Outfit', sans-serif;">Mis Solicitudes Anteriores</h3>
+            <p style="font-size: 11px; color: #94A3B8; margin: 2px 0 0 0;">Historial de casos técnicos e incidentes registrados en soporte</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeRequesterHistoryModal()" style="background: transparent; border: none; color: #94A3B8; font-size: 24px; cursor: pointer; line-height: 1;">&times;</button>
+      </div>
+
+      <!-- Filtros y Buscador -->
+      <div style="padding: 12px 20px; background: #F8FAFC; border-bottom: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; flex-shrink: 0;">
+        <div style="display: flex; gap: 6px;">
+          <button type="button" id="req-modal-tab-all" class="req-filter-tab active" onclick="setRequesterModalTab('all')" style="padding: 5px 12px; border-radius: 6px; font-size: 11.5px; font-weight: 700; border: 1px solid #CBD5E1; background: #0052CC; color: #FFFFFF; cursor: pointer;">
+            Todas (<span id="req-modal-tab-count-all">0</span>)
+          </button>
+          <button type="button" id="req-modal-tab-open" class="req-filter-tab" onclick="setRequesterModalTab('open')" style="padding: 5px 12px; border-radius: 6px; font-size: 11.5px; font-weight: 600; border: 1px solid #E2E8F0; background: #FFFFFF; color: #475569; cursor: pointer;">
+            En Curso (<span id="req-modal-tab-count-open">0</span>)
+          </button>
+          <button type="button" id="req-modal-tab-resolved" class="req-filter-tab" onclick="setRequesterModalTab('resolved')" style="padding: 5px 12px; border-radius: 6px; font-size: 11.5px; font-weight: 600; border: 1px solid #E2E8F0; background: #FFFFFF; color: #475569; cursor: pointer;">
+            Resueltas (<span id="req-modal-tab-count-resolved">0</span>)
+          </button>
+        </div>
+
+        <div style="position: relative; width: 220px;">
+          <input type="text" id="req-modal-search" placeholder="Buscar ticket..." oninput="filterRequesterModalTickets(this.value)" style="width: 100%; height: 30px; font-size: 11.5px; padding: 0 10px; border-radius: 6px; border: 1px solid #CBD5E1; background: #FFFFFF;">
+        </div>
+      </div>
+
+      <!-- Lista de Tickets -->
+      <div id="req-modal-tickets-list" style="padding: 16px 20px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 10px; background: #FFFFFF;">
+        <!-- Se rellena dinámicamente desde app.js -->
+      </div>
+
+      <!-- Footer -->
+      <div style="padding: 10px 20px; background: #F8FAFC; border-top: 1px solid #E2E8F0; display: flex; justify-content: flex-end; flex-shrink: 0;">
+        <button type="button" onclick="closeRequesterHistoryModal()" style="padding: 7px 16px; font-size: 12px; font-weight: 700; background: #E2E8F0; color: #334155; border: none; border-radius: 6px; cursor: pointer;">
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
        MODAL: FICHA INSTITUCIONAL 360° & GESTIÓN MULTI-TENANT (SENIOR UX)
        ========================================================================= -->
   <div class="modal-overlay" id="modal-institution-detail">
@@ -3225,23 +3571,104 @@
       </div>
 
       <!-- Navegación por Pestañas Internas del Modal -->
-      <div style="display: flex; gap: 4px; background: #F8FAFC; border-bottom: 1.5px solid #E2E8F0; padding: 8px 20px 0 20px; flex-shrink: 0;">
-        <button type="button" class="dash-tab-btn active" id="btn-inst-tab-modules" onclick="switchInstModalTab('modules')" style="font-size: 12px; font-weight: 800; padding: 8px 14px; border-radius: 6px 6px 0 0;">
-          ⚙️ Módulos Habilitados
+      <div style="display: flex; gap: 4px; background: #F8FAFC; border-bottom: 1.5px solid #E2E8F0; padding: 8px 20px 0 20px; flex-shrink: 0; overflow-x: auto;">
+        <button type="button" class="dash-tab-btn active" id="btn-inst-tab-overview" onclick="switchInstModalTab('overview')" style="font-size: 12px; font-weight: 800; padding: 8px 14px; border-radius: 6px 6px 0 0;">
+          🏛️ Información & SLA
+        </button>
+        <button type="button" class="dash-tab-btn" id="btn-inst-tab-modules" onclick="switchInstModalTab('modules')" style="font-size: 12px; font-weight: 800; padding: 8px 14px; border-radius: 6px 6px 0 0;">
+          ⚙️ Plataformas & Software
         </button>
         <button type="button" class="dash-tab-btn" id="btn-inst-tab-incidents" onclick="switchInstModalTab('incidents')" style="font-size: 12px; font-weight: 800; padding: 8px 14px; border-radius: 6px 6px 0 0;">
           🚨 Incidentes en Curso (<span id="modal-inst-incidents-count">0</span>)
         </button>
-        <button type="button" class="dash-tab-btn" id="btn-inst-tab-contract" onclick="switchInstModalTab('contract')" style="font-size: 12px; font-weight: 800; padding: 8px 14px; border-radius: 6px 6px 0 0;">
-          🏢 Contrato SLA & Sedes
+        <button type="button" class="dash-tab-btn" id="btn-inst-tab-members" onclick="switchInstModalTab('members')" style="font-size: 12px; font-weight: 800; padding: 8px 14px; border-radius: 6px 6px 0 0;">
+          👥 Personal & Miembros (<span id="zd-org-members-count">0</span>)
         </button>
       </div>
 
       <!-- Modal Body con Scroll -->
       <div style="padding: 20px 24px; overflow-y: auto; flex: 1; background: #FFFFFF;">
         
+        <!-- Tab 0: Información General & Configuración de SLA -->
+        <div id="inst-tab-content-overview" class="inst-tab-pane">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+            <div>
+              <label style="display: block; font-size: 11.5px; font-weight: 700; color: #1E293B; margin-bottom: 4px;">Razón Social / Organización</label>
+              <input type="text" id="zd-org-name" class="form-control" style="font-size: 12.5px; height: 36px; width: 100%; border-radius: 6px; border: 1.5px solid #CBD5E1; padding: 0 10px;">
+            </div>
+            <div>
+              <label style="display: block; font-size: 11.5px; font-weight: 700; color: #1E293B; margin-bottom: 4px;">Dominios Institucionales Autorizados</label>
+              <input type="text" id="zd-org-domains" class="form-control" style="font-size: 12.5px; height: 36px; width: 100%; border-radius: 6px; border: 1.5px solid #CBD5E1; padding: 0 10px;">
+            </div>
+          </div>
+
+          <div style="margin-bottom: 16px;">
+            <label style="display: block; font-size: 11.5px; font-weight: 700; color: #1E293B; margin-bottom: 4px;">Descripción & Alcance de la Sede</label>
+            <textarea id="zd-org-desc" class="form-control" rows="2" style="font-size: 12px; width: 100%; border-radius: 6px; border: 1.5px solid #CBD5E1; padding: 8px 10px;"></textarea>
+          </div>
+
+          <!-- Bloque de Configuración de SLA Destacado -->
+          <div style="background: #F0FDFA; border: 1.5px solid #99F6E4; border-radius: 10px; padding: 14px 16px; margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+              <div style="font-size: 12.5px; font-weight: 800; color: #0F766E; display: flex; align-items: center; gap: 6px;">
+                <span>⏱️</span> <span>Política de Servicio y Compromiso SLA</span>
+              </div>
+              <span style="font-size: 11px; font-weight: 800; background: #CCFBF1; color: #0D9488; padding: 3px 8px; border-radius: 6px;">SLA Histórico: 99.4% Cumplido</span>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+              <div>
+                <label style="display: block; font-size: 11px; font-weight: 700; color: #134E4A; margin-bottom: 3px;">Política de SLA Asignada</label>
+                <select id="zd-org-sla" class="form-control" style="font-size: 12px; height: 34px; width: 100%; border-radius: 6px; border: 1px solid #5EEAD4; background: #FFFFFF; font-weight: 600;">
+                  <option value="SLA Platino VIP - 15m Respuesta">💎 SLA Platino VIP (P1 &lt; 15m / Res. &lt; 2h)</option>
+                  <option value="SLA Oro Asistencial - 30m Respuesta">🥇 SLA Oro Asistencial (P1 &lt; 30m / Res. &lt; 4h)</option>
+                  <option value="SLA Estándar - 2h Respuesta">🥈 SLA Estándar Hospitalario (P1 &lt; 1h / Res. &lt; 8h)</option>
+                </select>
+              </div>
+              <div>
+                <label style="display: block; font-size: 11px; font-weight: 700; color: #134E4A; margin-bottom: 3px;">Grupo de Guardia Asignado</label>
+                <select id="zd-org-group" class="form-control" style="font-size: 12px; height: 34px; width: 100%; border-radius: 6px; border: 1px solid #5EEAD4; background: #FFFFFF; font-weight: 600;">
+                  <option value="Guardia Asistencial Nivel 1">Guardia Asistencial Nivel 1 (24/7)</option>
+                  <option value="Soporte Especializado Nivel 2">Soporte Especializado Nivel 2</option>
+                  <option value="Infraestructura & HL7 Nivel 3">Infraestructura &amp; HL7 Nivel 3</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Tiempos de Respuesta y Resolución por Prioridad -->
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; text-align: center; background: #FFFFFF; border: 1px solid #CCFBF1; border-radius: 8px; padding: 10px;">
+              <div>
+                <div style="font-size: 10px; font-weight: 800; color: #DC2626;">P1 CRÍTICA</div>
+                <div style="font-size: 12px; font-weight: 800; color: #1E293B;">&lt; 15 min</div>
+                <div style="font-size: 9.5px; color: #64748B;">Res. &lt; 2h</div>
+              </div>
+              <div>
+                <div style="font-size: 10px; font-weight: 800; color: #EA580C;">P2 ALTA</div>
+                <div style="font-size: 12px; font-weight: 800; color: #1E293B;">&lt; 30 min</div>
+                <div style="font-size: 9.5px; color: #64748B;">Res. &lt; 4h</div>
+              </div>
+              <div>
+                <div style="font-size: 10px; font-weight: 800; color: #CA8A04;">P3 MEDIA</div>
+                <div style="font-size: 12px; font-weight: 800; color: #1E293B;">&lt; 2 horas</div>
+                <div style="font-size: 9.5px; color: #64748B;">Res. &lt; 24h</div>
+              </div>
+              <div>
+                <div style="font-size: 10px; font-weight: 800; color: #16A34A;">P4 BAJA</div>
+                <div style="font-size: 12px; font-weight: 800; color: #1E293B;">&lt; 4 horas</div>
+                <div style="font-size: 9.5px; color: #64748B;">Res. &lt; 48h</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 8px;">
+            <button type="button" class="btn-pri" onclick="saveZdOrgSettings()" style="font-size: 12px; font-weight: 800; padding: 8px 18px; border-radius: 6px; background: #00875A; color: #FFF; border: none; cursor: pointer;">
+              💾 Guardar Configuración de SLA
+            </button>
+          </div>
+        </div>
+
         <!-- Tab 1: Módulos con Toggle Switches Interactivos -->
-        <div id="inst-tab-content-modules" class="inst-tab-pane active">
+        <div id="inst-tab-content-modules" class="inst-tab-pane" style="display: none;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
             <div>
               <h4 style="margin: 0; font-size: 13.5px; font-weight: 800; color: #0F172A;">Habilitación de Sistemas Quantux para esta Institución</h4>
@@ -3262,10 +3689,17 @@
           </div>
         </div>
 
-        <!-- Tab 3: Contrato SLA & Sedes -->
-        <div id="inst-tab-content-contract" class="inst-tab-pane" style="display: none;">
-          <div id="modal-inst-contract-info">
-            <!-- Renderizado dinámico -->
+        <!-- Tab 3: Personal & Miembros -->
+        <div id="inst-tab-content-members" class="inst-tab-pane" style="display: none;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <div>
+              <h4 style="margin: 0; font-size: 13.5px; font-weight: 800; color: #0F172A;">Personal & Profesionales de la Salud</h4>
+              <p style="margin: 2px 0 0 0; font-size: 11.5px; color: #64748B;">Usuarios habilitados para operar y solicitar asistencia desde esta institución:</p>
+            </div>
+            <input type="text" id="zd-org-members-search" placeholder="🔍 Buscar profesional..." oninput="onZdOrgMembersSearch(this.value)" style="font-size: 12px; height: 32px; width: 220px; border-radius: 6px; border: 1.5px solid #CBD5E1; padding: 0 10px;">
+          </div>
+          <div id="zd-org-members-list" style="display: flex; flex-direction: column; gap: 8px;">
+            <!-- Renderizado dinámico de miembros -->
           </div>
         </div>
 
@@ -3520,12 +3954,12 @@
     <div class="modal-card" style="max-width: 520px; width: 92%; background: #FFFFFF; border-radius: 16px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); border: 1px solid #E2E8F0; overflow: hidden;">
       
       <!-- Header Buena Onda -->
-      <div style="background: linear-gradient(135deg, #0A1C3E 0%, #1E3A8A 100%); color: #FFFFFF; padding: 20px 24px; text-align: center; position: relative;">
-        <button type="button" onclick="closeCsatModal()" style="position: absolute; right: 16px; top: 16px; background: none; border: none; color: #FFFFFF; font-size: 22px; cursor: pointer; line-height: 1; opacity: 0.8;">&times;</button>
-        <div style="font-size: 36px; margin-bottom: 6px;">✨</div>
-        <h3 style="margin: 0; font-size: 17px; font-weight: 800; letter-spacing: 0.2px;">¿Cómo fue la solución de tu solicitud?</h3>
-        <p style="margin: 4px 0 0 0; font-size: 12px; opacity: 0.85;">Tu opinión es clave para reconocer el esfuerzo de nuestro equipo y seguir mejorando.</p>
-        <div style="margin-top: 8px; display: inline-block; background: rgba(255,255,255,0.15); padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700;">
+      <div style="background: #F8FAFC; color: #0F172A; padding: 20px 24px; text-align: center; position: relative; border-bottom: 1px solid #E2E8F0;">
+        <button type="button" onclick="closeCsatModal()" style="position: absolute; right: 16px; top: 16px; background: none; border: none; color: #64748B; font-size: 22px; cursor: pointer; line-height: 1;">&times;</button>
+        <div style="font-size: 32px; margin-bottom: 6px;">⭐</div>
+        <h3 style="margin: 0; font-size: 17px; font-weight: 700; color: #0F172A;">¿Cómo fue la solución de tu solicitud?</h3>
+        <p style="margin: 4px 0 0 0; font-size: 12px; color: #64748B;">Tu opinión es clave para reconocer el esfuerzo de nuestro equipo y seguir mejorando.</p>
+        <div style="margin-top: 8px; display: inline-block; background: #E2E8F0; color: #334155; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700;">
           Caso: <span id="csat-ticket-id-label">#TKT-000</span>
         </div>
       </div>
@@ -3611,39 +4045,87 @@
   </div>
 
   <!-- =========================================================================
-       MODAL: REBALANCEO RÁPIDO DE CASO (TEAM LEADER V4)
+       MODAL: CONSOLA DE BALANCEO DE CARGA DEL TURNO (REDiseño EJECUTIVO SENIOR)
        ========================================================================= -->
-  <div class="modal-overlay" id="modal-tl-reassign" style="display: none; align-items: center; justify-content: center; z-index: 10000; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px);">
-    <div class="modal-card" style="max-width: 480px; width: 92%; background: #FFFFFF; border-radius: 14px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); border: 1px solid #E2E8F0; overflow: hidden;">
-      <div style="background: #0F172A; color: #FFFFFF; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;">
-        <div style="display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 14px;">
-          <span>🔄 Rebalancear Ticket de Soporte</span>
+  <div class="modal-overlay" id="modal-tl-reassign" style="display: none; align-items: center; justify-content: center; z-index: 10000; background: rgba(15, 23, 42, 0.55); backdrop-filter: blur(5px);">
+    <div class="modal-card" style="max-width: 680px; width: 94%; background: #FFFFFF; border-radius: 16px; box-shadow: 0 20px 45px rgba(15, 23, 42, 0.16); border: 1px solid #E2E8F0; overflow: hidden; animation: fadeInModal 0.2s cubic-bezier(0.16, 1, 0.3, 1);">
+      
+      <!-- Cabecera Limpia Estilo Windows 11 / InvGate -->
+      <div style="background: #FFFFFF; border-bottom: 1px solid #E2E8F0; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="width: 40px; height: 40px; border-radius: 10px; background: #E6F7F5; color: #00A896; display: flex; align-items: center; justify-content: center; font-size: 20px; box-shadow: 0 2px 6px rgba(0, 168, 150, 0.15);">
+            ⚖️
+          </div>
+          <div>
+            <h3 style="margin: 0; font-size: 16px; font-weight: 800; color: #0F172A; letter-spacing: -0.2px;">Consola de Balanceo de Carga del Turno</h3>
+            <p style="margin: 2px 0 0 0; font-size: 12px; color: #64748B;">Supervisión de capacidad analítica y redistribución asistida en tiempo real</p>
+          </div>
         </div>
-        <button type="button" onclick="closeQuickReassignModal()" style="background: none; border: none; color: #FFFFFF; font-size: 20px; cursor: pointer;">&times;</button>
+        <button type="button" onclick="closeQuickReassignModal()" style="width: 32px; height: 32px; border-radius: 8px; border: 1px solid #E2E8F0; background: #F8FAFC; color: #64748B; font-size: 16px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.background='#F1F5F9'; this.style.color='#0F172A'" onmouseout="this.style.background='#F8FAFC'; this.style.color='#64748B'">
+          ✕
+        </button>
       </div>
-      <div style="padding: 20px;">
-        <div style="margin-bottom: 14px;">
-          <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px;">Seleccionar Ticket:</label>
-          <select id="tl-reassign-ticket-select" class="form-control" style="font-size: 12.5px;">
+
+      <!-- Cuerpo del Modal -->
+      <div style="padding: 22px 24px; max-height: calc(85vh - 140px); overflow-y: auto;">
+        
+        <!-- Indicador de Sobrecarga Detectada en el Turno -->
+        <div style="background: #FFFBEB; border: 1px solid #FDE68A; border-radius: 10px; padding: 12px 16px; margin-bottom: 20px; display: flex; align-items: center; gap: 12px;">
+          <span style="font-size: 22px;">⚠️</span>
+          <div style="flex: 1;">
+            <div style="font-size: 12.5px; font-weight: 700; color: #92400E;">Desbalance Operativo Activo</div>
+            <div style="font-size: 11.5px; color: #B45309;">Se detectó saturación en <strong>Carlos Páez (74 casos)</strong> y <strong>Laura Benítez (82 casos)</strong> mientras otros analistas tienen capacidad inmediata disponible.</div>
+          </div>
+          <button type="button" onclick="autoBalanceWorkload()" style="background: #00A896; color: #FFFFFF; border: none; padding: 6px 14px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,168,150,0.25);">
+            ⚡ Sugerencia IA
+          </button>
+        </div>
+
+        <!-- Formulario de Rebalanceo Ejecutivo -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+          
+          <div>
+            <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px;">Analista Origen (Sobrecargado):</label>
+            <select id="tl-reassign-origin-user" class="form-control" style="font-size: 12.5px; border-radius: 8px; border: 1px solid #CBD5E1; padding: 8px 12px; height: 38px;" onchange="onRebalanceOriginChanged()">
+              <option value="cpaez">Carlos Páez (N1 • 74 casos activos)</option>
+              <option value="lbenitez">Laura Benítez (N2 • 82 casos activos)</option>
+            </select>
+          </div>
+
+          <div>
+            <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px;">Analista Receptor (Capacidad Disponible):</label>
+            <select id="tl-reassign-user-select" class="form-control" style="font-size: 12.5px; border-radius: 8px; border: 1px solid #CBD5E1; padding: 8px 12px; height: 38px;">
+              <option value="svaldez">Sofía Valdez (N1 • Capacidad 100% libre)</option>
+              <option value="mflores">Marcos Flores (N1 • Capacidad 100% libre)</option>
+              <option value="gfernandez">Gonzalo Fernández (N2 • Capacidad 100% libre)</option>
+              <option value="admin">Freddy Cortés (N3 • Líder Técnico)</option>
+            </select>
+          </div>
+
+        </div>
+
+        <div style="margin-bottom: 16px;">
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px;">Ticket Específico o Lote de Carga:</label>
+          <select id="tl-reassign-ticket-select" class="form-control" style="font-size: 12.5px; border-radius: 8px; border: 1px solid #CBD5E1; padding: 8px 12px; height: 38px;">
             <!-- Opciones dinámicas -->
           </select>
         </div>
-        <div style="margin-bottom: 14px;">
-          <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px;">Reasignar a Analista:</label>
-          <select id="tl-reassign-user-select" class="form-control" style="font-size: 12.5px;">
-            <!-- Analistas disponibles -->
-          </select>
+
+        <div style="margin-bottom: 22px;">
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px;">Motivo Operativo del Rebalanceo:</label>
+          <input type="text" id="tl-reassign-reason" class="form-control" value="Rebalanceo dinámico de guardia por optimización de SLA y nivelación de carga" style="font-size: 12.5px; border-radius: 8px; border: 1px solid #CBD5E1; padding: 8px 12px; height: 38px;">
         </div>
-        <div style="margin-bottom: 18px;">
-          <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px;">Motivo del Rebalanceo:</label>
-          <input type="text" id="tl-reassign-reason" class="form-control" value="Rebalanceo de guardia por saturación de carga" style="font-size: 12.5px;">
-        </div>
-        <div style="display: flex; justify-content: flex-end; gap: 10px;">
-          <button type="button" class="btn-sec" onclick="closeQuickReassignModal()">Cancelar</button>
-          <button type="button" class="btn-pri" onclick="submitQuickReassign()" style="background: #0F172A; border-color: #0F172A; font-weight: 800; color: #FFF;">
-            Confirmar Rebalanceo
+
+        <!-- Footer de Acciones del Modal -->
+        <div style="display: flex; justify-content: flex-end; align-items: center; gap: 12px; border-top: 1px solid #F1F5F9; padding-top: 16px;">
+          <button type="button" onclick="closeQuickReassignModal()" style="background: #F1F5F9; border: 1px solid #CBD5E1; color: #475569; font-weight: 600; font-size: 12.5px; padding: 8px 18px; border-radius: 8px; cursor: pointer;">
+            Cancelar
+          </button>
+          <button type="button" class="btn-pri" onclick="submitQuickReassign()" style="background: #00A896; border: none; font-weight: 800; font-size: 12.5px; color: #FFFFFF; padding: 8px 22px; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 6px rgba(0, 168, 150, 0.3);">
+            ✓ Confirmar Rebalanceo Inmediato
           </button>
         </div>
+
       </div>
     </div>
   </div>
@@ -3921,5 +4403,66 @@ Muchas gracias.</textarea>
       });
     })();
   </script>
+
+
+  <!-- MODAL: NUEVA RELEASE / VERSIÓN EN KANBAN -->
+  <div class="modal-overlay" id="modal-new-release" style="display: none; align-items: center; justify-content: center; background: rgba(15,23,42,0.65); z-index: 9999;">
+    <div style="background: #FFFFFF; border-radius: 12px; width: 100%; max-width: 480px; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);">
+      <div style="padding: 16px 20px; background: #4338CA; color: #FFFFFF; display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="margin: 0; font-size: 15px; font-weight: 800;">+ Crear Nueva Release de Software</h3>
+        <button type="button" onclick="closeNewReleaseModal()" style="background: none; border: none; color: #FFFFFF; font-size: 20px; cursor: pointer;">&times;</button>
+      </div>
+      <form id="form-new-release" onsubmit="submitNewRelease(event)" style="padding: 20px; display: flex; flex-direction: column; gap: 14px;">
+        <div>
+          <label style="display: block; font-size: 11.5px; font-weight: 700; color: #334155; margin-bottom: 4px;">Etiqueta / Tag (SemVer):</label>
+          <input type="text" id="new-rel-tag" placeholder="Ej: v4.1.0 o hotfix-202609-01" required style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1.5px solid #CBD5E1; font-size: 12.5px; font-family: monospace;">
+        </div>
+        <div>
+          <label style="display: block; font-size: 11.5px; font-weight: 700; color: #334155; margin-bottom: 4px;">Nombre del Release / Objetivo:</label>
+          <input type="text" id="new-rel-name" placeholder="Ej: Fix masivo pasarela de pagos e interoperabilidad" required style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1.5px solid #CBD5E1; font-size: 12.5px;">
+        </div>
+        <div>
+          <label style="display: block; font-size: 11.5px; font-weight: 700; color: #334155; margin-bottom: 4px;">Notas Técnicas / Alcance (Opcional):</label>
+          <textarea id="new-rel-notes" rows="3" placeholder="Detalles del despliegue, ramas o componentes afectados..." style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1.5px solid #CBD5E1; font-size: 12px;"></textarea>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 6px;">
+          <button type="button" onclick="closeNewReleaseModal()" style="padding: 8px 14px; border-radius: 6px; border: 1px solid #CBD5E1; background: #FFFFFF; font-size: 12px; font-weight: 700; cursor: pointer;">Cancelar</button>
+          <button type="submit" style="padding: 8px 16px; border-radius: 6px; border: none; background: #4338CA; color: #FFFFFF; font-size: 12px; font-weight: 700; cursor: pointer;">Guardar Release</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: ESCALAR TICKET A N3 Y VINCULAR A KANBAN -->
+  <div class="modal-overlay" id="modal-escalate-n3-kanban" style="display: none; align-items: center; justify-content: center; background: rgba(15,23,42,0.65); z-index: 9999;">
+    <div style="background: #FFFFFF; border-radius: 12px; width: 100%; max-width: 500px; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);">
+      <div style="padding: 16px 20px; background: #0F172A; color: #FFFFFF; display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="margin: 0; font-size: 15px; font-weight: 800;">⚡ Escalar a Ingeniería N3 & Vincular a Release</h3>
+        <button type="button" onclick="closeEscalateN3Modal()" style="background: none; border: none; color: #FFFFFF; font-size: 20px; cursor: pointer;">&times;</button>
+      </div>
+      <div style="padding: 20px; display: flex; flex-direction: column; gap: 14px;">
+        <input type="hidden" id="escalate-n3-ticket-id">
+        <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 10px 14px;">
+          <div style="font-size: 11px; font-weight: 700; color: #64748B;">Solicitud Seleccionada:</div>
+          <div id="escalate-n3-ticket-title" style="font-size: 13px; font-weight: 800; color: #0F172A; margin-top: 2px;">-</div>
+        </div>
+        <div>
+          <label style="display: block; font-size: 11.5px; font-weight: 700; color: #334155; margin-bottom: 4px;">Seleccionar Release de Software:</label>
+          <select id="escalate-n3-release-select" onchange="if(this.value==='__NEW__'){document.getElementById('escalate-n3-new-tag-box').style.display='block';}else{document.getElementById('escalate-n3-new-tag-box').style.display='none';}" style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1.5px solid #CBD5E1; font-size: 12.5px;">
+            <!-- Poblado dinámicamente -->
+          </select>
+        </div>
+        <div id="escalate-n3-new-tag-box" style="display: none;">
+          <label style="display: block; font-size: 11.5px; font-weight: 700; color: #334155; margin-bottom: 4px;">Nueva Etiqueta de Release:</label>
+          <input type="text" id="escalate-n3-new-tag" placeholder="Ej: v4.0.2-patch" style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1.5px solid #CBD5E1; font-size: 12.5px; font-family: monospace;">
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 6px;">
+          <button type="button" onclick="closeEscalateN3Modal()" style="padding: 8px 14px; border-radius: 6px; border: 1px solid #CBD5E1; background: #FFFFFF; font-size: 12px; font-weight: 700; cursor: pointer;">Cancelar</button>
+          <button type="button" onclick="submitEscalateN3()" style="padding: 8px 16px; border-radius: 6px; border: none; background: #16A34A; color: #FFFFFF; font-size: 12px; font-weight: 700; cursor: pointer;">Vincular y Escalar a N3</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>

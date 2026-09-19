@@ -13,7 +13,21 @@ import os
 if hasattr(sys.stdout, 'reconfigure'):
     sys.stdout.reconfigure(encoding='utf-8')
 
-BASE_URL = "http://127.0.0.1:8000"
+def detect_base_url():
+    if "BASE_URL" in os.environ:
+        return os.environ["BASE_URL"]
+    for port in [8005, 8000, 8080]:
+        try:
+            url = f"http://127.0.0.1:{port}/api"
+            req = urllib.request.Request(url, method="GET")
+            with urllib.request.urlopen(req, timeout=1.0) as res:
+                if res.status == 200:
+                    return f"http://127.0.0.1:{port}"
+        except Exception:
+            continue
+    return "http://127.0.0.1:8000"
+
+BASE_URL = detect_base_url()
 
 def request(method, path, data=None, headers=None):
     if "?" in path:
@@ -64,7 +78,8 @@ def run_suite():
             failed.append((name, details))
 
     print("\n=======================================================")
-    print(" INICIANDO VERIFICACIÓN E2E DE FUNCIONALIDADES MVP")
+    print(f" INICIANDO VERIFICACIÓN E2E DE FUNCIONALIDADES v4.0.0")
+    print(f" Servidor Objetivo: {BASE_URL}")
     print("=======================================================\n")
 
     # -------------------------------------------------------------
@@ -80,8 +95,8 @@ def run_suite():
     test("HTML contiene Modal Nuevo Usuario (#modal-user)", 'id="modal-user"' in html)
     test("HTML contiene Modal de Autenticación y Cambio de Usuario (#modal-auth-login)", 'id="modal-auth-login"' in html)
     test("HTML NO contiene selector inseguro de cambio de rol al vuelo", 'role-pill-group' not in html)
-    test("HTML contiene Cockpit Operativo (col-list, col-detail)", 'id="col-list"' in html and 'id="col-detail"' in html)
-    test("HTML contiene Botón Topbar Cerrar Sesión / Cambiar Usuario (#btn-top-switch-user)", 'id="btn-top-switch-user"' in html)
+    test("HTML contiene Mesa de Ayuda (#view-tickets, #ticket-table-body)", 'id="view-tickets"' in html and 'id="ticket-table-body"' in html)
+    test("HTML contiene Controles de Sesión y Perfil (#btn-sidebar-user-profile)", 'id="btn-sidebar-user-profile"' in html or 'id="btn-top-switch-user"' in html)
     test("HTML contiene Widget Sidebar de Usuario (#btn-sidebar-user-profile)", 'id="btn-sidebar-user-profile"' in html)
     test("HTML contiene Enlaces de Respaldo CSV Directo", '/api/v1/tickets/export/csv' in html and '/api/v1/tickets/audit/export/csv' in html)
 
@@ -108,7 +123,7 @@ def run_suite():
     test("Endpoint /api Estado ONLINE", status == 200 and api_info.get("status") == "ONLINE")
 
     status, plats, _ = request("GET", "/api/v1/platforms")
-    test("Maestro de Plataformas (9 Oficiales)", status == 200 and len(plats) == 9, f"Plataformas: {len(plats)}")
+    test("Maestro de Plataformas Enterprise (>= 9 Catálogos)", status == 200 and len(plats) >= 9, f"Plataformas: {len(plats)}")
 
     status, insts, _ = request("GET", "/api/v1/institutions")
     test("Maestro de Instituciones (14 Oficiales)", status == 200 and len(insts) >= 14, f"Instituciones: {len(insts)}")
@@ -356,6 +371,31 @@ def run_suite():
     test("Omni-Búsqueda por Nombre de Plataforma Clínica", st == 200 and len(omni_plat_tickets) > 0)
 
     # -------------------------------------------------------------
+    # 12. TORRE DE CONTROL Y SUPERVISIÓN TEAM LEADER (v4.0.0)
+    # -------------------------------------------------------------
+    print("\n--> 12. Verificación de Torre de Control Team Leader...")
+    st_tl, tl_data, _ = request("GET", "/api/v1/team-leader/overview")
+    test("Endpoint Torre de Control (Status 200)", st_tl == 200 and "agent_workload" in tl_data, f"Operadores evaluados: {len(tl_data.get('agent_workload', []))}")
+    test("Detección de Cola de Rescate CSAT", "rescue_alerts" in tl_data)
+
+    # -------------------------------------------------------------
+    # 13. CATÁLOGO DE VERSIONES Y SOFTWARE RELEASES (v4.0.0)
+    # -------------------------------------------------------------
+    print("\n--> 13. Verificación de Releases y Despliegues...")
+    st_rel, releases_data, _ = request("GET", "/api/v1/releases")
+    test("Catálogo de Releases de Software (Status 200)", st_rel == 200 and isinstance(releases_data, list), f"Releases registradas: {len(releases_data) if isinstance(releases_data, list) else 0}")
+
+    # -------------------------------------------------------------
+    # 14. ASISTENTE IA COGNITIVO Y TRIAGE (v4.0.0)
+    # -------------------------------------------------------------
+    print("\n--> 14. Verificación de Asistente IA Cognitivo y Triage...")
+    ai_triage_payload = {
+        "query": "Error 500 al emitir firma digital de receta médica en consultorio"
+    }
+    st_ai, ai_res, _ = request("POST", "/api/v1/ai/triage", ai_triage_payload)
+    test("Motor de Triage IA (Status 200)", st_ai == 200 and ("subsystem" in ai_res or "root_cause" in ai_res or "diagnosis" in ai_res), f"Subsistema diagnosticado: {ai_res.get('subsystem', 'N/A')}")
+
+    # -------------------------------------------------------------
     # RESUMEN FINAL
     # -------------------------------------------------------------
     print("\n=======================================================")
@@ -374,4 +414,6 @@ def run_suite():
 if __name__ == "__main__":
     success = run_suite()
     sys.exit(0 if success else 1)
+
+
 

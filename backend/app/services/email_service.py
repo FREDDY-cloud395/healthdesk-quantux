@@ -21,7 +21,7 @@ logger = logging.getLogger("healthdesk.email")
 logger.setLevel(logging.INFO)
 
 # CONFIGURACIÓN SMTP (Variables de Entorno o Fallback Seguro)
-SMTP_HOST = os.getenv("SMTP_HOST", "")
+SMTP_HOST = os.getenv("SMTP_HOST", os.getenv("SMTP_SERVER", ""))
 SMTP_PORT = int(os.getenv("SMTP_PORT", "587"))
 SMTP_USER = os.getenv("SMTP_USER", "")
 SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "")
@@ -241,23 +241,31 @@ def _dispatch_email_record(
         sent_status = "SENT (Outbox Simulado)"
         logger.info(f"[OUTBOX EMAIL] Disparado a {recipient_email} [{recipient_role}] - Asunto: {subject}")
 
-    # Guardar en base de datos inmutable de auditoría
-    with Session(engine) as session:
-        log_entry = EmailNotificationLog(
-            ticket_id=ticket_id,
-            recipient_email=recipient_email,
-            recipient_role=recipient_role,
-            subject=subject,
-            event_type=event_type,
-            body_html=body_html,
-            sent_status=sent_status,
-            error_message=error_msg,
-            created_at=datetime.utcnow()
-        )
-        session.add(log_entry)
-        session.commit()
-        session.refresh(log_entry)
-        return log_entry
+    # Guardar en base de datos inmutable de auditoría con reintentos para alta concurrencia
+    import time
+    for attempt in range(3):
+        try:
+            with Session(engine) as session:
+                log_entry = EmailNotificationLog(
+                    ticket_id=ticket_id,
+                    recipient_email=recipient_email,
+                    recipient_role=recipient_role,
+                    subject=subject,
+                    event_type=event_type,
+                    body_html=body_html,
+                    sent_status=sent_status,
+                    error_message=error_msg,
+                    created_at=datetime.utcnow()
+                )
+                session.add(log_entry)
+                session.commit()
+                session.refresh(log_entry)
+                return log_entry
+        except Exception as e:
+            if attempt == 2:
+                logger.error(f"Fallo persistencia de EmailNotificationLog tras 3 intentos: {e}")
+            else:
+                time.sleep(0.05 * (attempt + 1))
 
 
 # ==============================================================================
@@ -290,6 +298,25 @@ def notify_ticket_created(ticket: Ticket):
             main_message=f"Estimado/a <strong>{r['name']}</strong>:<br><br>Se ha registrado un nuevo ticket en la plataforma <strong>{ticket.platform_code}</strong> para la institución <strong>{ticket.institution_code}</strong>.<br><br><strong>Descripción:</strong> {ticket.description}<br><br>Un operador tomará el caso según la severidad indicada."
         )
         _dispatch_email_record(ticket.id, r["email"], r["role_label"], subject, "TICKET_CREATED", body)
+
+    # Disparar Alerta Roja Crítica P1 si corresponde (UH-35)
+    if prio_val == "P1":
+        p1_subject = f"🚨 [ALERTA CRÍTICA P1] Incidente Mayor: {ticket.id} - {ticket.title}"
+        body_p1 = _render_email_template(
+            title="ALERTA CRÍTICA DE MÁXIMA PRIORIDAD (P1)",
+            badge_text="EMERGENCIA CRÍTICA • P1",
+            badge_color="#DC2626",
+            ticket_id=ticket.id,
+            ticket_title=ticket.title,
+            platform=ticket.platform_code,
+            institution=ticket.institution_code,
+            priority="P1",
+            status="NUEVO",
+            recipient_name="Guardia Técnica y Supervisión TI",
+            recipient_role="GUARDIA_TI",
+            main_message=f"Se ha detectado la apertura de un incidente de severidad <strong>CRÍTICA (P1)</strong> que impacta directamente en la operación asistencial de <strong>{ticket.institution_code}</strong>.<br><br><strong>Descripción:</strong> {ticket.description}<br><br>Tiempo SLA de Respuesta comprometido: &le; 15 minutos."
+        )
+        _dispatch_email_record(ticket.id, "guardia.soporte@quantuxsalud.com", "GUARDIA_TI", p1_subject, "P1_ALERT", body_p1)
 
 
 def notify_ticket_assigned(ticket: Ticket, assignee_username: str, support_level: str):

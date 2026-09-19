@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Centro de Asistencia - Rol Solicitante</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: #F8FAFC;
+    }
+  </style>
+</head>
+<body class="p-6 md:p-10 text-slate-800 antialiased">
+
+  <div class="max-w-5xl mx-auto space-y-6">
+
+    <!-- 1. ENCABEZADO ULTRA-LIVIANO (ACCIÓN DIRECTA CON IDENTIDAD QUANTUX) -->
+    <header class="bg-white border border-slate-200 rounded-xl px-6 py-5 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div>
+        <h1 class="text-xl font-bold text-slate-900 tracking-tight">Centro de Asistencia</h1>
+        <p class="text-xs text-slate-500 mt-0.5">Soporte técnico para profesionales y plataformas de salud</p>
+      </div>
+
+      <!-- ÚNICA ACCIÓN: CHAT CON SOPORTE -->
+      <div class="w-full sm:w-auto flex justify-end">
+        <button 
+          type="button" 
+          onclick="openChatModal()"
+          class="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold shadow-sm transition min-h-[42px] sm:min-h-0"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+          </svg>
+          <span>Chat con Soporte</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- 2. BARRA DE CONTROL DIRECTA: MIS SOLICITUDES CON FILTROS CLAROS -->
+    <div class="bg-white border border-slate-200 rounded-xl px-5 py-3.5 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+      
+      <!-- IDENTIFICACIÓN CLARA DE LA SECCIÓN Y FILTROS -->
+      <div class="flex flex-col sm:flex-row sm:items-center gap-3 w-full sm:w-auto">
+        <div class="text-sm font-bold text-slate-900 flex items-center gap-2">
+          <span>Mis Solicitudes</span>
+          <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">14</span>
+        </div>
+        
+        <div class="flex items-center gap-1.5 overflow-x-auto whitespace-nowrap pb-1 sm:pb-0">
+          <button class="px-3 py-1.5 rounded-lg text-xs font-bold bg-teal-600 text-white shadow-xs transition">
+            Todas
+          </button>
+          <button class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100 transition">
+            En Curso (2)
+          </button>
+          <button class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100 transition">
+            Resueltas (12)
+          </button>
+        </div>
+      </div>
+
+      <!-- BUSCADOR CONCISO -->
+      <div class="relative w-full sm:w-72">
+        <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input 
+          type="text" 
+          placeholder="Buscar por número o asunto..."
+          class="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-teal-500 focus:bg-white transition"
+        >
+      </div>
+
+    </div>
+
+    <!-- 3. LISTA DE SOLICITUDES LIMPIA (ESCANEABLE EN 2 SEGUNDOS) -->
+    <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm divide-y divide-slate-100">
+      
+      <!-- FILA 1: CASO EN ATENCIÓN TÉCNICA -->
+      <div class="p-4 hover:bg-slate-50/80 transition flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 cursor-pointer">
+        <div class="space-y-1">
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-xs text-teal-700">#1042</span>
+            <span class="text-xs font-medium text-slate-400">•</span>
+            <span class="text-xs font-semibold text-slate-500">Receta Electrónica</span>
+          </div>
+          <div class="text-sm font-semibold text-slate-800">
+            Falla al emitir receta hacia Mi Argentina (error de sincronización QR)
+          </div>
+        </div>
+
+        <div class="flex items-center gap-4 self-end sm:self-center shrink-0">
+          <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
+            En Atención (Técnico N2)
+          </span>
+          <span class="text-xs text-slate-400 font-medium">hace 14 min</span>
+          <svg class="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+        </div>
+      </div>
+
+      <!-- FILA 2: CASO EN PROCESO -->
+      <div class="p-4 hover:bg-slate-50/80 transition flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 cursor-pointer">
+        <div class="space-y-1">
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-xs text-teal-700">#1038</span>
+            <span class="text-xs font-medium text-slate-400">•</span>
+            <span class="text-xs font-semibold text-slate-500">Telemedicina</span>
+          </div>
+          <div class="text-sm font-semibold text-slate-800">
+            Desconexión intermitente en videollamada de guardia sincrónica
+          </div>
+        </div>
+
+        <div class="flex items-center gap-4 self-end sm:self-center shrink-0">
+          <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-sky-50 text-sky-700 border border-sky-200">
+            En Proceso
+          </span>
+          <span class="text-xs text-slate-400 font-medium">hace 1 hora</span>
+          <svg class="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+        </div>
+      </div>
+
+      <!-- FILA 3: CASO RESUELTO EN CHAT -->
+      <div class="p-4 hover:bg-slate-50/80 transition flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 cursor-pointer">
+        <div class="space-y-1">
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-xs text-teal-700">#1035</span>
+            <span class="text-xs font-medium text-slate-400">•</span>
+            <span class="text-xs font-semibold text-slate-500">Consultorio Digital 2</span>
+          </div>
+          <div class="text-sm font-semibold text-slate-800">
+            Selector de matrícula no toma CRM provincial
+          </div>
+        </div>
+
+        <div class="flex items-center gap-4 self-end sm:self-center shrink-0">
+          <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+            Resuelto en Chat
+          </span>
+          <span class="text-xs text-slate-400 font-medium">hace 3 horas</span>
+          <svg class="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+        </div>
+      </div>
+
+      <!-- FILA 4: CASO RESUELTO EN CHAT (LABORATORIO) -->
+      <div class="p-4 hover:bg-slate-50/80 transition flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 cursor-pointer">
+        <div class="space-y-1">
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-xs text-teal-700">#1029</span>
+            <span class="text-xs font-medium text-slate-400">•</span>
+            <span class="text-xs font-semibold text-slate-500">Consultorio Digital 2</span>
+          </div>
+          <div class="text-sm font-semibold text-slate-800">
+            Estudio Hepatograma no encontrado en prescripción SNOMED
+          </div>
+        </div>
+
+        <div class="flex items-center gap-4 self-end sm:self-center shrink-0">
+          <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+            Resuelto en Chat
+          </span>
+          <span class="text-xs text-slate-400 font-medium">Ayer</span>
+          <svg class="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+        </div>
+      </div>
+
+      <!-- FILA 5: CASO CERRADO -->
+      <div class="p-4 hover:bg-slate-50/80 transition flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 cursor-pointer">
+        <div class="space-y-1">
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-xs text-teal-700">#1015</span>
+            <span class="text-xs font-medium text-slate-400">•</span>
+            <span class="text-xs font-semibold text-slate-500">Portal Pacientes</span>
+          </div>
+          <div class="text-sm font-semibold text-slate-800">
+            Corrección de prefijo en agenda de turnos de consultorio externo
+          </div>
+        </div>
+
+        <div class="flex items-center gap-4 self-end sm:self-center shrink-0">
+          <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-600 border border-slate-200">
+            Cerrado
+          </span>
+          <span class="text-xs text-slate-400 font-medium">14 Sep</span>
+          <svg class="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- PIE DISCRETO CON PAGINACIÓN -->
+    <div class="flex items-center justify-between text-xs text-slate-500 px-1">
+      <span>Mostrando 5 de 14 solicitudes</span>
+      <div class="flex gap-1">
+        <button class="px-2.5 py-1 rounded border border-slate-200 bg-white text-slate-400 cursor-not-allowed">Anterior</button>
+        <button class="px-2.5 py-1 rounded border border-slate-200 bg-white text-slate-600 hover:bg-slate-50">Siguiente</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- MODAL DE ATENCIÓN: CHAT CON SOPORTE (DISEÑO COHERENTE CON QUANTUX) -->
+  <div id="chat-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs hidden flex items-center justify-center p-0 sm:p-4 z-50">
+    <div class="bg-white sm:rounded-2xl shadow-xl w-full max-w-lg border-0 sm:border border-slate-200 overflow-hidden flex flex-col h-full sm:h-[520px]">
+      
+      <!-- CABECERA DEL MODAL: CLARA, AMIGABLE Y CON EXCELENTE CONTRASTE -->
+      <div class="bg-white text-slate-800 px-6 py-4 flex items-center justify-between border-b border-slate-200">
+        <div>
+          <h3 class="text-sm font-bold text-slate-900">Chat con Soporte</h3>
+          <p class="text-xs text-slate-500 mt-0.5">Estamos en línea para ayudarle con cualquier inconveniente</p>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <!-- BOTÓN DESTACADO Y VISIBLE: FONDO TEAL SOBRE BLANCO -->
+          <button 
+            type="button" 
+            onclick="alert('Abriendo formulario de ticket directo...'); closeChatModal();" 
+            class="px-3.5 py-1.5 rounded-lg bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs shadow-xs transition cursor-pointer"
+            title="Crear ticket formal sin chatear"
+          >
+            Crear Ticket
+          </button>
+          
+          <button type="button" onclick="closeChatModal()" class="text-slate-400 hover:text-slate-700 text-2xl font-bold ml-1 leading-none cursor-pointer">&times;</button>
+        </div>
+      </div>
+
+      <!-- HISTORIAL DE CONVERSACIÓN -->
+      <div class="flex-1 p-4 overflow-y-auto space-y-3 bg-slate-50/50 text-xs">
+        
+        <!-- BIENVENIDA -->
+        <div class="flex gap-2.5 items-start">
+          <div class="w-7 h-7 rounded-full bg-teal-600 text-white flex items-center justify-center text-[10px] font-bold shrink-0">
+            S
+          </div>
+          <div class="bg-white border border-slate-200 rounded-lg p-3 text-slate-700 max-w-[85%] shadow-xs leading-relaxed">
+            Hola, Dr. Gómez. ¿En qué podemos ayudarle hoy? Cuéntenos qué problema tiene y lo asistimos de inmediato.
+          </div>
+        </div>
+
+        <!-- CONSULTA DEL MÉDICO -->
+        <div class="flex gap-2.5 items-start justify-end">
+          <div class="bg-teal-600 text-white rounded-lg p-3 max-w-[85%] shadow-xs leading-relaxed">
+            No puedo seleccionar mi matrícula CRM provincial en Consultorio Digital 2
+          </div>
+          <div class="w-7 h-7 rounded-full bg-slate-700 text-white flex items-center justify-center text-[10px] font-bold shrink-0">MG</div>
+        </div>
+
+        <!-- RESPUESTA ASISTENCIAL CON PREGUNTA EXPLÍCITA -->
+        <div class="flex gap-2.5 items-start">
+          <div class="w-7 h-7 rounded-full bg-teal-600 text-white flex items-center justify-center text-[10px] font-bold shrink-0">
+            S
+          </div>
+          <div class="bg-white border border-slate-200 rounded-lg p-3 text-slate-700 max-w-[85%] shadow-xs leading-relaxed space-y-2">
+            <div>
+              Para habilitar el selector de matrícula CRM en CD2:<br>
+              1. Ingrese a <strong>Mi Perfil &gt; Matrículas Habilitadas</strong>.<br>
+              2. Compruebe la circunscripción de su colegio médico.<br>
+              3. Al revalidar con SISA, la matrícula quedará activa para prescribir.
+            </div>
+            
+            <!-- PREGUNTA EXPLÍCITA Y BOTONES DE RESPUESTA COHERENTES -->
+            <div class="pt-2 border-t border-slate-100">
+              <p class="font-bold text-slate-800 text-[11.5px] mb-2">¿Esta indicación resolvió su problema?</p>
+              <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-2.5">
+                <!-- ACCIÓN POSITIVA: VERDE ESMERALDA SÓLIDO CON CHECKMARK -->
+                <button 
+                  type="button" 
+                  onclick="alert('Ticket generado automáticamente como RESUELTO para estadísticas'); closeChatModal();"
+                  class="w-full sm:w-auto justify-center px-3.5 py-2 sm:py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition flex items-center gap-1.5 cursor-pointer min-h-[40px] sm:min-h-0"
+                >
+                  <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+                  </svg>
+                  <span>Sí, problema resuelto</span>
+                </button>
+
+                <!-- ACCIÓN SECUNDARIA / ESCALAMIENTO: BLANCO CON BORDE Y CONTRASTE SLATE (CERO VERDE) -->
+                <button 
+                  type="button" 
+                  onclick="alert('Abriendo formulario para generar el ticket formal...'); closeChatModal();"
+                  class="w-full sm:w-auto justify-center px-3.5 py-2 sm:py-1.5 rounded-lg bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 border border-slate-300 text-xs font-semibold shadow-xs transition flex items-center gap-1.5 cursor-pointer min-h-[40px] sm:min-h-0"
+                >
+                  <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                  </svg>
+                  <span>No, generar ticket</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- INPUT DEL CHAT: LIMPIO Y SIN BOTONES REPETIDOS -->
+      <div class="p-3 bg-white border-t border-slate-200 flex gap-2 items-center">
+        <input 
+          type="text" 
+          placeholder="Escriba su consulta al equipo de soporte..." 
+          class="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-teal-500"
+        >
+        <button class="px-4 py-2 bg-teal-600 text-white text-xs font-bold rounded-lg hover:bg-teal-700 transition">
+          Enviar
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    function openChatModal() {
+      document.getElementById('chat-modal').classList.remove('hidden');
+    }
+    function closeChatModal() {
+      document.getElementById('chat-modal').classList.add('hidden');
+    }
+    if (window.location.search.includes('chat=open')) {
+      openChatModal();
+    }
+  </script>
+
+</body>
+</html>

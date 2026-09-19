@@ -476,6 +476,37 @@ const API = {
     return res.json();
   },
 
+  // 12. V4.0.0 IA ASISTENCIAL & AUTOGESTIÓN CLÍNICA (PORTAL SOLICITANTE)
+  async aiTriage(payload) {
+    const res = await fetch(`${API_BASE}/api/v1/ai/triage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw await res.json();
+    return res.json();
+  },
+
+  async aiResolveIncident(payload) {
+    const res = await fetch(`${API_BASE}/api/v1/ai/resolve-incident`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw await res.json();
+    return res.json();
+  },
+
+  async aiEscalateIncident(payload) {
+    const res = await fetch(`${API_BASE}/api/v1/ai/escalate-incident`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw await res.json();
+    return res.json();
+  },
+
   async checkHealth() {
     try {
       const res = await fetch(`${API_BASE}/`);

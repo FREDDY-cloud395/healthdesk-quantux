@@ -12,6 +12,13 @@ ENV/
 # Database & SQLite
 *.db-journal
 *.sqlite3-journal
+*.db-shm
+*.db-wal
+backend/backups/
+backend/uploads/
+backend/quantux.db
+backend/quantux_tickets.db
+backend/quantux_v4.db
 
 # Screenshots & Local Test Dumps
 *.png
@@ -19,6 +26,7 @@ ENV/
 *.jpeg
 scratch/
 qa_screenshots/
+.agents/
 
 # Environment Variables (Secrets)
 .env

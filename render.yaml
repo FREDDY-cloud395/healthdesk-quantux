@@ -1,11 +1,17 @@
-﻿services:
+# =============================================================================
+# HEALTHDESK QUANTUX — RENDER CLOUD BLUEPRINT SPECIFICATION (v4.0.0)
+# =============================================================================
+
+services:
   - type: web
     name: quantux-servicedesk-v4-dev
     env: python
     branch: v4-dev
     plan: free
-    buildCommand: pip install -r backend/requirements.txt
-    startCommand: uvicorn app.main:app --host 0.0.0.0 --port  --app-dir backend
+    autoDeploy: true
+    buildCommand: pip install --upgrade pip && pip install -r backend/requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT --app-dir backend
+    healthCheckPath: /health
     envVars:
       - key: APP_ENV
         value: development
@@ -13,3 +19,11 @@
         value: v4.0.0-DEV
       - key: PORT
         value: 10000
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: PYTHONUNBUFFERED
+        value: "1"
+      - key: ALLOWED_ORIGINS
+        value: "*"
+      - key: LOG_LEVEL
+        value: INFO

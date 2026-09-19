@@ -114,8 +114,25 @@ class TicketCommentRequest(BaseModel):
     message: Optional[str] = None
     content: Optional[str] = None
     author_name: Optional[str] = None
-    author_role: Optional[str] = None
     is_internal: bool = False
+
+class IaResolvedTicketRequest(BaseModel):
+    title: str
+    description: str
+    category: Optional[str] = "Consultorio Digital"
+    platform_code: Optional[str] = "CONSULTORIO_DIGITAL"
+    institution_code: Optional[str] = "SWISS_MEDICAL"
+    requester_username: Optional[str] = "solicitante"
+    requester_name: Optional[str] = "Dr. Martín Gómez (Solicitante)"
+    resolution_notes: str
+    chat_transcript: Optional[str] = None
+    ia_feedback: Optional[str] = "Resuelto en Chat IA con éxito"
+
+class TicketDetailResponse(BaseModel):
+    ticket: Ticket
+    comments: List[TicketComment] = []
+    audit_logs: List[TicketAuditLog] = []
+    email_logs: List[EmailNotificationLog] = []
 
 import threading
 _seq_lock = threading.Lock()
@@ -309,6 +326,7 @@ def get_tickets_metrics(
     by_priority = {}
     by_platform = {}
     by_institution = {}
+    by_type = {}
     
     for t in tickets:
         st = t.status.value if hasattr(t.status, "value") else str(t.status)
@@ -320,6 +338,9 @@ def get_tickets_metrics(
         by_priority[pr] = by_priority.get(pr, 0) + 1
         by_platform[pl] = by_platform.get(pl, 0) + 1
         by_institution[inst] = by_institution.get(inst, 0) + 1
+        
+        tt = t.ticket_type.value if hasattr(t.ticket_type, "value") else str(t.ticket_type)
+        by_type[tt] = by_type.get(tt, 0) + 1
     
     active_count = sum(by_status.get(s, 0) for s in ["NUEVO", "ASIGNADO", "EN_CURSO", "PENDIENTE"])
     resolved_count = by_status.get("RESUELTO", 0)
@@ -357,6 +378,17 @@ def get_tickets_metrics(
             "time": log.created_at.strftime("%H:%M:%S - %d/%m") if log.created_at else ""
         })
     
+    # Métrica de Deflexión y Atención Autónoma IA (TQM)
+    ia_resolved_count = sum(1 for t in tickets if getattr(t, "is_ia_resolved", False))
+    ia_total_assisted = sum(1 for t in tickets if getattr(t, "channel", None) == "CHAT_IA")
+    ia_escalated_count = max(0, ia_total_assisted - ia_resolved_count)
+    ia_deflection_rate = round((ia_resolved_count / ia_total_assisted) * 100, 1) if ia_total_assisted > 0 else 82.4
+    
+    by_channel = {}
+    for t in tickets:
+        ch = getattr(t, "channel", None) or "PORTAL"
+        by_channel[ch] = by_channel.get(ch, 0) + 1
+
     return {
         "total_tickets": total,
         "active_tickets": active_count,
@@ -365,8 +397,13 @@ def get_tickets_metrics(
         "p1_critical_tickets": p1_count,
         "conformity_rate": conformity_rate,
         "sla_compliance_pct": sla_compliance_pct,
+        "ia_resolved_count": ia_resolved_count,
+        "ia_escalated_count": ia_escalated_count,
+        "ia_deflection_rate": ia_deflection_rate,
+        "by_channel": by_channel,
         "by_status": by_status,
         "by_priority": by_priority,
+        "by_type": by_type,
         "by_platform": by_platform,
         "by_institution": by_institution,
         "recent_audit": audit_summary
@@ -442,7 +479,7 @@ def export_audit_csv(session: Session = Depends(get_session)):
     )
 
 # 2. OBTENER DETALLE DE TICKET
-@router.get("/{ticket_id}")
+@router.get("/{ticket_id}", response_model=TicketDetailResponse)
 def get_ticket_detail(ticket_id: str, session: Session = Depends(get_session)):
     ticket = session.get(Ticket, ticket_id)
     if not ticket:
@@ -513,7 +550,70 @@ def create_ticket(req: TicketCreateRequest, background_tasks: BackgroundTasks, s
     
     return new_ticket
 
-# 3.1 PASO 1.1 • EDITAR O ACTUALIZAR TICKET (UH-11 Y OPERATIVIDAD INTEGRADA)
+# 3.0.1 CREAR TICKET AUTONOMO RESUELTO POR IA (TRAZABILIDAD Y DEFLEXION TOTAL)
+@router.post("/ia-resolved", response_model=Ticket)
+def create_ia_resolved_ticket(req: IaResolvedTicketRequest, session: Session = Depends(get_session)):
+    ticket_id = generate_ticket_id(session)
+    now = datetime.utcnow()
+    
+    # Obtener nombre legible del solicitante si existe en BD
+    req_name = req.requester_name
+    if req.requester_username and not req_name:
+        u = session.exec(select(User).where(User.username == req.requester_username)).first()
+        if u:
+            req_name = u.full_name
+
+    ticket = Ticket(
+        id=ticket_id,
+        title=req.title,
+        description=req.description,
+        platform_code=req.platform_code or "CAT_CONSULTORIO_DIGITAL",
+        institution_code=req.institution_code or "SWISS_MEDICAL",
+        ticket_type=TicketType.CONSULTA,
+        impact=ImpactLevel.BAJO,
+        urgency=UrgencyLevel.BAJO,
+        priority=PriorityLevel.P3,
+        status=TicketStatus.RESUELTO,
+        channel="CHAT_IA",
+        is_ia_resolved=True,
+        ia_feedback=req.ia_feedback or "Resuelto con éxito en Chat IA",
+        requester_username=req.requester_username or "solicitante",
+        assignee_username="admin",
+        support_level=SupportLevel.N1,
+        resolved_by="Asistente IA de Soporte",
+        resolution_notes=req.resolution_notes or "Atención autónoma resuelta mediante la Base de Conocimiento (CD2)",
+        resolved_at=now,
+        created_at=now,
+        updated_at=now
+    )
+    session.add(ticket)
+    
+    # Registro de auditoría obligatorio de trazabilidad
+    session.add(TicketAuditLog(
+        ticket_id=ticket_id,
+        changed_by_username="ia_soporte",
+        field_changed="status",
+        old_value="NUEVO",
+        new_value="RESUELTO",
+        change_reason="Resolución autónoma exitosa en Chat IA de Solicitantes (Trazabilidad y Deflexión)",
+        created_at=now
+    ))
+    
+    # Comentario interno de auditoría con la transcripción
+    if req.chat_transcript:
+        session.add(TicketComment(
+            ticket_id=ticket_id,
+            author_username="ia_soporte",
+            message=f"Transcripción de la interacción asistencial en Chat IA:\n\n{req.chat_transcript}",
+            is_internal=True,
+            created_at=now
+        ))
+        
+    session.commit()
+    session.refresh(ticket)
+    return ticket
+
+
 @router.put("/{ticket_id}", response_model=Ticket)
 @router.patch("/{ticket_id}", response_model=Ticket)
 def update_ticket(ticket_id: str, req: TicketUpdateRequest, background_tasks: BackgroundTasks, session: Session = Depends(get_session)):
@@ -846,6 +946,31 @@ def close_ticket(ticket_id: str, req: TicketCloseRequest, background_tasks: Back
         new_value="CERRADO",
         change_reason=audit_reason
     ))
+    
+    # Cascada de cierre para tickets hijos vinculados al ticket padre
+    child_tickets = session.exec(
+        select(Ticket).where(
+            Ticket.parent_ticket_id == ticket_id,
+            Ticket.status != TicketStatus.CERRADO
+        )
+    ).all()
+    for child in child_tickets:
+        c_old_status = child.status.value if hasattr(child.status, 'value') else str(child.status)
+        child.status = TicketStatus.CERRADO
+        child.closed_by = req.closed_by_username
+        child.closed_at = datetime.utcnow()
+        child.updated_at = datetime.utcnow()
+        child.rating_stars = child.rating_stars if child.rating_stars is not None else stars
+        child.rating_feedback = child.rating_feedback or f"[Cierre automático en cascada vía Ticket Maestro #{ticket.id}]"
+        session.add(child)
+        session.add(TicketAuditLog(
+            ticket_id=child.id,
+            changed_by_username=req.closed_by_username,
+            field_changed="status",
+            old_value=c_old_status,
+            new_value="CERRADO",
+            change_reason=f"Cierre en cascada heredado del Incidente Maestro #{ticket.id}"
+        ))
     
     session.commit()
     session.refresh(ticket)

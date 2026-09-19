@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mesa de Ayuda - Estilo InvGate Service Desk Enterprise</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@500&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #F4F6F8;
+      color: #1F2937;
+    }
+    .font-mono {
+      font-family: 'Roboto Mono', monospace;
+    }
+    /* Estilos InvGate Table */
+    .invgate-table th {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #6B7280;
+      background-color: #F9FAFB;
+      border-bottom: 1px solid #E5E7EB;
+      padding: 10px 14px;
+      white-space: nowrap;
+    }
+    .invgate-table td {
+      font-size: 12.5px;
+      color: #374151;
+      padding: 11px 14px;
+      border-bottom: 1px solid #F3F4F6;
+      vertical-align: middle;
+    }
+    .invgate-table tr:hover td {
+      background-color: #F8FAFC;
+    }
+    .invgate-table tr.selected td {
+      background-color: #EFF6FF;
+    }
+    /* Badges de estado InvGate */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .status-nuevo { background-color: #F3F4F6; color: #4B5563; border: 1px solid #E5E7EB; }
+    .status-asignado { background-color: #EFF6FF; color: #1D4ED8; border: 1px solid #DBEAFE; }
+    .status-en-curso { background-color: #FEF3C7; color: #92400E; border: 1px solid #FDE68A; }
+    .status-en-espera { background-color: #F1F5F9; color: #475569; border: 1px solid #CBD5E1; }
+    .status-resuelto { background-color: #ECFDF5; color: #065F46; border: 1px solid #A7F3D0; }
+    /* Indicadores de prioridad InvGate */
+    .prio-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11.5px;
+      font-weight: 600;
+    }
+    .prio-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+    }
+    .prio-critica .prio-dot { background-color: #DC2626; }
+    .prio-critica { color: #DC2626; }
+    .prio-alta .prio-dot { background-color: #EA580C; }
+    .prio-alta { color: #EA580C; }
+    .prio-media .prio-dot { background-color: #D97706; }
+    .prio-media { color: #D97706; }
+    .prio-baja .prio-dot { background-color: #6B7280; }
+    .prio-baja { color: #6B7280; }
+  </style>
+</head>
+<body class="flex flex-col h-screen overflow-hidden antialiased">
+
+  <!-- =========================================================================
+       1. CABECERA SUPERIOR CORPORATIVA ESTILO INVGATE SERVICE DESK
+       ========================================================================= -->
+  <header class="h-13 bg-white border-b border-gray-200 px-5 flex items-center justify-between shrink-0 z-20">
+    <div class="flex items-center gap-6">
+      <!-- Logo y Nombre del Sistema -->
+      <div class="flex items-center gap-2.5">
+        <div class="w-7 h-7 rounded bg-[#0F62FE] flex items-center justify-center text-white font-bold text-xs tracking-tight">
+          Q
+        </div>
+        <span class="text-sm font-bold text-gray-900 tracking-tight">Quantux <span class="font-normal text-gray-500">Service Desk</span></span>
+      </div>
+
+      <!-- Navegación Primaria -->
+      <nav class="hidden md:flex items-center gap-1 text-xs font-medium">
+        <a href="#" class="px-3 py-1.5 rounded text-[#0F62FE] bg-blue-50 font-semibold">Solicitudes</a>
+        <a href="#" class="px-3 py-1.5 rounded text-gray-600 hover:text-gray-900 hover:bg-gray-50">Problemas</a>
+        <a href="#" class="px-3 py-1.5 rounded text-gray-600 hover:text-gray-900 hover:bg-gray-50">Cambios</a>
+        <a href="#" class="px-3 py-1.5 rounded text-gray-600 hover:text-gray-900 hover:bg-gray-50">Base de Conocimiento</a>
+        <a href="#" class="px-3 py-1.5 rounded text-gray-600 hover:text-gray-900 hover:bg-gray-50">Reportes</a>
+      </nav>
+    </div>
+
+    <!-- Buscador Global y Perfil del Agente -->
+    <div class="flex items-center gap-3">
+      <div class="relative w-64 hidden sm:block">
+        <input 
+          type="text" 
+          placeholder="Buscar por ID, solicitante, palabra..." 
+          class="w-full h-8 pl-8 pr-3 text-xs bg-gray-50 border border-gray-200 rounded focus:bg-white focus:outline-none focus:border-[#0F62FE] transition"
+        >
+        <svg class="w-3.5 h-3.5 text-gray-400 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      </div>
+
+      <button class="h-8 px-3.5 bg-[#0F62FE] hover:bg-[#0353E9] text-white text-xs font-semibold rounded flex items-center gap-1.5 transition">
+        <span>+ Nueva solicitud</span>
+      </button>
+
+      <div class="h-4 w-px bg-gray-200 mx-1"></div>
+
+      <div class="flex items-center gap-2 cursor-pointer">
+        <div class="w-7 h-7 rounded-full bg-gray-200 text-gray-700 text-xs font-bold flex items-center justify-center">
+          CP
+        </div>
+        <div class="hidden lg:block text-left text-xs">
+          <div class="font-semibold text-gray-800 leading-none">Carlos Páez</div>
+          <div class="text-[10px] text-gray-500 mt-0.5">Soporte Nivel 2</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- =========================================================================
+       2. LAYOUT PRINCIPAL: SIDEBAR DE BANDEJAS (INVGATE QUEUES) + GRID
+       ========================================================================= -->
+  <div class="flex flex-1 overflow-hidden">
+
+    <!-- SIDEBAR LATERAL IZQUIERDO DE COLAS DE TRABAJO (INVGATE SIDEBAR) -->
+    <aside class="w-60 bg-[#FAFAFA] border-r border-gray-200 flex flex-col shrink-0 text-xs select-none">
+      <div class="p-3 border-b border-gray-200">
+        <div class="text-[11px] font-bold uppercase tracking-wider text-gray-500">Vistas de Trabajo</div>
+      </div>
+
+      <div class="flex-1 overflow-y-auto py-2 space-y-0.5 px-2">
+        <!-- VISTA: MIS ASIGNADAS -->
+        <button onclick="setQueue('assigned_to_me')" id="queue-assigned_to_me" class="w-full flex items-center justify-between px-2.5 py-2 rounded text-gray-900 bg-white shadow-2xs font-semibold border border-gray-200/80">
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4 text-[#0F62FE]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+            <span>Mis asignadas</span>
+          </div>
+          <span class="text-[11px] font-bold text-[#0F62FE] bg-blue-50 px-2 py-0.2 rounded-full">12</span>
+        </button>
+
+        <!-- VISTA: SIN ASIGNAR / MESA DE ENTRADA -->
+        <button onclick="setQueue('unassigned')" id="queue-unassigned" class="w-full flex items-center justify-between px-2.5 py-2 rounded text-gray-600 hover:bg-gray-100/70 font-medium transition">
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
+            <span>Sin asignar (Cola)</span>
+          </div>
+          <span class="text-[11px] font-semibold text-gray-600 bg-gray-100 px-2 py-0.2 rounded-full">8</span>
+        </button>
+
+        <!-- VISTA: EN RIESGO DE SLA -->
+        <button onclick="setQueue('sla_risk')" id="queue-sla_risk" class="w-full flex items-center justify-between px-2.5 py-2 rounded text-gray-600 hover:bg-gray-100/70 font-medium transition">
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            <span>SLA en riesgo (&lt; 1h)</span>
+          </div>
+          <span class="text-[11px] font-bold text-red-600 bg-red-50 px-2 py-0.2 rounded-full">3</span>
+        </button>
+
+        <!-- VISTA: ESPERANDO SOLICITANTE -->
+        <button onclick="setQueue('waiting')" id="queue-waiting" class="w-full flex items-center justify-between px-2.5 py-2 rounded text-gray-600 hover:bg-gray-100/70 font-medium transition">
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <span>En espera de usuario</span>
+          </div>
+          <span class="text-[11px] font-semibold text-gray-600 bg-gray-100 px-2 py-0.2 rounded-full">14</span>
+        </button>
+
+        <div class="pt-3 pb-1 px-1">
+          <div class="text-[10px] font-bold uppercase tracking-wider text-gray-400">Mesas de Soporte</div>
+        </div>
+
+        <button onclick="setQueue('all_n1')" class="w-full flex items-center justify-between px-2.5 py-1.5 rounded text-gray-600 hover:bg-gray-100/70 font-medium transition">
+          <span>Mesa Nivel 1 (Guardia)</span>
+          <span class="text-[10px] text-gray-400">42</span>
+        </button>
+
+        <button onclick="setQueue('all_n2')" class="w-full flex items-center justify-between px-2.5 py-1.5 rounded text-gray-600 hover:bg-gray-100/70 font-medium transition">
+          <span>Mesa Nivel 2 (Clínica)</span>
+          <span class="text-[10px] text-gray-400">18</span>
+        </button>
+
+        <button onclick="setQueue('all_n3')" class="w-full flex items-center justify-between px-2.5 py-1.5 rounded text-gray-600 hover:bg-gray-100/70 font-medium transition">
+          <span>Mesa Nivel 3 (Infraestructura)</span>
+          <span class="text-[10px] text-gray-400">6</span>
+        </button>
+
+        <div class="pt-3 pb-1 px-1">
+          <div class="text-[10px] font-bold uppercase tracking-wider text-gray-400">Histórico</div>
+        </div>
+
+        <button onclick="setQueue('all')" class="w-full flex items-center justify-between px-2.5 py-1.5 rounded text-gray-600 hover:bg-gray-100/70 font-medium transition">
+          <span>Todas las solicitudes</span>
+          <span class="text-[10px] text-gray-400">286</span>
+        </button>
+      </div>
+
+      <!-- FOOTER DEL SIDEBAR: ESTADO DE SLA GENERAL -->
+      <div class="p-3 border-t border-gray-200 bg-white text-[11px]">
+        <div class="flex justify-between items-center text-gray-500 mb-1">
+          <span>Cumplimiento SLA</span>
+          <span class="font-bold text-green-700">98.4%</span>
+        </div>
+        <div class="w-full bg-gray-200 h-1.5 rounded-full overflow-hidden">
+          <div class="bg-green-600 h-full rounded-full" style="width: 98.4%;"></div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ÁREA DE CONTENIDO: BARRA DE FILTROS + TABLA PRINCIPAL -->
+    <section class="flex-1 flex flex-col min-w-0 bg-white overflow-hidden">
+
+      <!-- TOOLBAR DE ACCIONES Y FILTROS ESTILO INVGATE -->
+      <div class="p-3.5 border-b border-gray-200 flex flex-wrap items-center justify-between gap-3 bg-white">
+        <div class="flex items-center gap-3">
+          <h2 class="text-sm font-bold text-gray-900" id="current-queue-title">Mis asignadas</h2>
+          <span class="text-xs text-gray-500 font-normal">12 solicitudes</span>
+
+          <!-- BARRA DE ACCIÓN MASIVA (SE MUESTRA CUANDO HAY CHECKBOXES ACTIVOS) -->
+          <div id="bulk-actions" class="hidden items-center gap-2 pl-3 border-l border-gray-200">
+            <span class="text-xs font-semibold text-gray-700" id="selected-count">0 seleccionadas</span>
+            <button class="h-7 px-2.5 text-xs bg-white border border-gray-300 rounded font-medium text-gray-700 hover:bg-gray-50">Asignar a...</button>
+            <button class="h-7 px-2.5 text-xs bg-white border border-gray-300 rounded font-medium text-gray-700 hover:bg-gray-50">Cambiar estado...</button>
+            <button class="h-7 px-2.5 text-xs bg-white border border-gray-300 rounded font-medium text-gray-700 hover:bg-gray-50">Escalar...</button>
+          </div>
+        </div>
+
+        <!-- FILTROS DROPDOWN INVGATE -->
+        <div class="flex items-center gap-2 text-xs">
+          <!-- Filtro Organización / Institución -->
+          <select class="h-8 px-2.5 bg-white border border-gray-300 rounded text-gray-700 text-xs focus:outline-none focus:border-[#0F62FE]">
+            <option>Todas las organizaciones</option>
+            <option>OSDE</option>
+            <option>Swiss Medical</option>
+            <option>Hospital Británico</option>
+            <option>Galeno</option>
+          </select>
+
+          <!-- Filtro Estado -->
+          <select class="h-8 px-2.5 bg-white border border-gray-300 rounded text-gray-700 text-xs focus:outline-none focus:border-[#0F62FE]">
+            <option>Todos los estados</option>
+            <option>Abierto / Nuevo</option>
+            <option>Asignado</option>
+            <option>En proceso</option>
+            <option>En espera</option>
+            <option>Resuelto</option>
+          </select>
+
+          <!-- Filtro Prioridad -->
+          <select class="h-8 px-2.5 bg-white border border-gray-300 rounded text-gray-700 text-xs focus:outline-none focus:border-[#0F62FE]">
+            <option>Todas las prioridades</option>
+            <option>Crítica</option>
+            <option>Alta</option>
+            <option>Media</option>
+            <option>Baja</option>
+          </select>
+
+          <!-- Botón de recarga -->
+          <button title="Recargar bandeja" class="h-8 w-8 flex items-center justify-center border border-gray-300 rounded hover:bg-gray-50 text-gray-600">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- TABLA GRID PRINCIPAL (DATA GRID PROFESIONAL INVGATE) -->
+      <div class="flex-1 overflow-auto">
+        <table class="w-full text-left invgate-table">
+          <thead>
+            <tr>
+              <th style="width: 38px;" class="text-center">
+                <input type="checkbox" id="select-all-checkbox" onchange="toggleSelectAll(this)" class="rounded border-gray-300 text-[#0F62FE] focus:ring-0">
+              </th>
+              <th style="width: 80px;">ID</th>
+              <th>Título</th>
+              <th style="width: 140px;">Organización</th>
+              <th style="width: 130px;">Plataforma</th>
+              <th style="width: 150px;">Solicitante</th>
+              <th style="width: 110px;">Estado</th>
+              <th style="width: 100px;">Prioridad</th>
+              <th style="width: 130px;">Asignado a</th>
+              <th style="width: 120px;">Vencimiento SLA</th>
+              <th style="width: 110px;">Actualizado</th>
+            </tr>
+          </thead>
+          <tbody id="tickets-tbody">
+            
+            <!-- FILA 1: CRÍTICA OSDE -->
+            <tr onclick="openTicketModal(235)" class="cursor-pointer">
+              <td class="text-center" onclick="event.stopPropagation()">
+                <input type="checkbox" class="ticket-row-cb rounded border-gray-300 text-[#0F62FE] focus:ring-0" onchange="updateSelectedCount()">
+              </td>
+              <td class="font-mono font-medium text-[#0F62FE]">#10235</td>
+              <td>
+                <span class="font-semibold text-gray-900 hover:text-[#0F62FE]">Error 504 Gateway al consultar historial farmacológico del paciente</span>
+                <span class="block text-[11px] text-gray-500 mt-0.5 truncate max-w-md">Falla de timeout en endpoint FHIR /medication. Impacto en guardia pediátrica.</span>
+              </td>
+              <td class="font-medium text-gray-800">OSDE</td>
+              <td class="text-gray-600">HCE Core</td>
+              <td class="text-gray-700">Dr. Martín Gómez</td>
+              <td>
+                <span class="status-badge status-en-curso">En proceso</span>
+              </td>
+              <td>
+                <div class="prio-indicator prio-critica">
+                  <span class="prio-dot"></span>
+                  <span>Crítica</span>
+                </div>
+              </td>
+              <td class="text-gray-800 font-medium">Carlos Páez</td>
+              <td>
+                <span class="text-red-600 font-semibold font-mono text-[11.5px]">En 26m</span>
+              </td>
+              <td class="text-gray-500 text-[11.5px]">Hace 12 min</td>
+            </tr>
+
+            <!-- FILA 2: ALTA SWISS MEDICAL -->
+            <tr onclick="openTicketModal(241)" class="cursor-pointer">
+              <td class="text-center" onclick="event.stopPropagation()">
+                <input type="checkbox" class="ticket-row-cb rounded border-gray-300 text-[#0F62FE] focus:ring-0" onchange="updateSelectedCount()">
+              </td>
+              <td class="font-mono font-medium text-[#0F62FE]">#10241</td>
+              <td>
+                <span class="font-semibold text-gray-900 hover:text-[#0F62FE]">Falla de sincronización en Receta Electrónica de guardia</span>
+                <span class="block text-[11px] text-gray-500 mt-0.5 truncate max-w-md">Token de firma médica arroja error de certificado vencido.</span>
+              </td>
+              <td class="font-medium text-gray-800">Swiss Medical</td>
+              <td class="text-gray-600">Receta Digital</td>
+              <td class="text-gray-700">Dra. Laura Martínez</td>
+              <td>
+                <span class="status-badge status-asignado">Asignado</span>
+              </td>
+              <td>
+                <div class="prio-indicator prio-alta">
+                  <span class="prio-dot"></span>
+                  <span>Alta</span>
+                </div>
+              </td>
+              <td class="text-gray-800 font-medium">Carlos Páez</td>
+              <td>
+                <span class="text-amber-700 font-medium font-mono text-[11.5px]">En 1h 45m</span>
+              </td>
+              <td class="text-gray-500 text-[11.5px]">Hace 24 min</td>
+            </tr>
+
+            <!-- FILA 3: MEDIA HOSPITAL BRITÁNICO -->
+            <tr onclick="openTicketModal(248)" class="cursor-pointer">
+              <td class="text-center" onclick="event.stopPropagation()">
+                <input type="checkbox" class="ticket-row-cb rounded border-gray-300 text-[#0F62FE] focus:ring-0" onchange="updateSelectedCount()">
+              </td>
+              <td class="font-mono font-medium text-[#0F62FE]">#10248</td>
+              <td>
+                <span class="font-semibold text-gray-900 hover:text-[#0F62FE]">Demora en recepción de hemogramas desde interfaz LIS de laboratorio</span>
+                <span class="block text-[11px] text-gray-500 mt-0.5 truncate max-w-md">Cola de mensajes HL7 acumula 14 resultados sin procesar en consulta externa.</span>
+              </td>
+              <td class="font-medium text-gray-800">Hospital Británico</td>
+              <td class="text-gray-600">LIS / Interop</td>
+              <td class="text-gray-700">Bioq. Javier Ramos</td>
+              <td>
+                <span class="status-badge status-nuevo">Abierto</span>
+              </td>
+              <td>
+                <div class="prio-indicator prio-media">
+                  <span class="prio-dot"></span>
+                  <span>Media</span>
+                </div>
+              </td>
+              <td class="text-gray-400 italic">Sin asignar</td>
+              <td>
+                <span class="text-gray-600 font-mono text-[11.5px]">En 3h 15m</span>
+              </td>
+              <td class="text-gray-500 text-[11.5px]">Hace 45 min</td>
+            </tr>
+
+            <!-- FILA 4: BAJA GALENO -->
+            <tr onclick="openTicketModal(254)" class="cursor-pointer">
+              <td class="text-center" onclick="event.stopPropagation()">
+                <input type="checkbox" class="ticket-row-cb rounded border-gray-300 text-[#0F62FE] focus:ring-0" onchange="updateSelectedCount()">
+              </td>
+              <td class="font-mono font-medium text-[#0F62FE]">#10254</td>
+              <td>
+                <span class="font-semibold text-gray-900 hover:text-[#0F62FE]">Habilitación de agenda médica y turnos para consultorio de Cardiología</span>
+                <span class="block text-[11px] text-gray-500 mt-0.5 truncate max-w-md">Alta de profesional y configuración de franjas horarias de 20 minutos.</span>
+              </td>
+              <td class="font-medium text-gray-800">Galeno</td>
+              <td class="text-gray-600">Portal Médico</td>
+              <td class="text-gray-700">Lic. Sofía Bianchi</td>
+              <td>
+                <span class="status-badge status-en-espera">En espera de usuario</span>
+              </td>
+              <td>
+                <div class="prio-indicator prio-baja">
+                  <span class="prio-dot"></span>
+                  <span>Baja</span>
+                </div>
+              </td>
+              <td class="text-gray-800 font-medium">Carlos Páez</td>
+              <td>
+                <span class="text-gray-500 font-mono text-[11.5px]">Pausado</span>
+              </td>
+              <td class="text-gray-500 text-[11.5px]">Hace 1 hora</td>
+            </tr>
+
+            <!-- FILA 5: RESUELTO OSDE -->
+            <tr onclick="openTicketModal(260)" class="cursor-pointer">
+              <td class="text-center" onclick="event.stopPropagation()">
+                <input type="checkbox" class="ticket-row-cb rounded border-gray-300 text-[#0F62FE] focus:ring-0" onchange="updateSelectedCount()">
+              </td>
+              <td class="font-mono font-medium text-[#0F62FE]">#10260</td>
+              <td>
+                <span class="font-semibold text-gray-900 hover:text-[#0F62FE]">Reinicio de servicio DICOM PACS en sala de tomografía</span>
+                <span class="block text-[11px] text-gray-500 mt-0.5 truncate max-w-md">Servicio levantado correctamente tras corte eléctrico de contingencia.</span>
+              </td>
+              <td class="font-medium text-gray-800">OSDE</td>
+              <td class="text-gray-600">PACS / Imágenes</td>
+              <td class="text-gray-700">Dr. Alberto Fontana</td>
+              <td>
+                <span class="status-badge status-resuelto">Resuelto</span>
+              </td>
+              <td>
+                <div class="prio-indicator prio-alta">
+                  <span class="prio-dot"></span>
+                  <span>Alta</span>
+                </div>
+              </td>
+              <td class="text-gray-800 font-medium">Carlos Páez</td>
+              <td>
+                <span class="text-green-700 font-semibold font-mono text-[11.5px]">Cumplido</span>
+              </td>
+              <td class="text-gray-500 text-[11.5px]">Hace 2 horas</td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+
+      <!-- FOOTER DE PAGINACIÓN CORPORATIVA (ESTILO INVGATE) -->
+      <div class="p-3 border-t border-gray-200 bg-white flex items-center justify-between text-xs text-gray-600 shrink-0">
+        <div class="flex items-center gap-2">
+          <span>Mostrando <strong>1 - 5</strong> de <strong>12</strong> solicitudes</span>
+          <span class="text-gray-300">|</span>
+          <div class="flex items-center gap-1">
+            <span>Filas por página:</span>
+            <select class="border border-gray-300 rounded px-1.5 py-0.5 bg-white text-xs">
+              <option>15</option>
+              <option selected>25</option>
+              <option>50</option>
+              <option>100</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-1">
+          <button class="px-2.5 py-1 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-40" disabled>Anterior</button>
+          <button class="px-2.5 py-1 border border-[#0F62FE] bg-blue-50 text-[#0F62FE] font-bold rounded">1</button>
+          <button class="px-2.5 py-1 border border-gray-300 rounded hover:bg-gray-50">2</button>
+          <button class="px-2.5 py-1 border border-gray-300 rounded hover:bg-gray-50">Siguiente</button>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <!-- =========================================================================
+       3. MODAL DE SOLICITUD DETALLADA (INVGATE TICKET DETAIL VIEW)
+       ========================================================================= -->
+  <div id="ticket-modal" class="fixed inset-0 bg-black/40 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg shadow-xl border border-gray-200 w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden text-xs">
+      
+      <!-- HEADER DEL TICKET -->
+      <div class="p-4 border-b border-gray-200 bg-[#FAFAFA] flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <span class="font-mono font-bold text-sm text-[#0F62FE] bg-white px-2 py-0.5 rounded border border-gray-200">#10235</span>
+          <span class="status-badge status-en-curso">En proceso</span>
+          <div class="prio-indicator prio-critica">
+            <span class="prio-dot"></span>
+            <span>Prioridad Crítica</span>
+          </div>
+          <span class="text-gray-400">|</span>
+          <span class="text-gray-700 font-medium">OSDE Sede Central</span>
+        </div>
+
+        <button onclick="closeTicketModal()" class="text-gray-400 hover:text-gray-600 text-lg font-bold px-2">✕</button>
+      </div>
+
+      <!-- TÍTULO Y METADATOS BÁSICOS -->
+      <div class="p-4 border-b border-gray-200">
+        <h3 class="text-base font-bold text-gray-900 leading-snug">
+          Error 504 Gateway al consultar historial farmacológico del paciente
+        </h3>
+        
+        <div class="grid grid-cols-4 gap-4 mt-3 pt-3 border-t border-gray-100 text-xs">
+          <div>
+            <span class="text-gray-400 block text-[11px]">Solicitante</span>
+            <strong class="text-gray-800">Dr. Martín Gómez</strong>
+            <span class="block text-[11px] text-gray-500">Guardia Urgencias (Int. 4022)</span>
+          </div>
+          <div>
+            <span class="text-gray-400 block text-[11px]">Asignado a</span>
+            <strong class="text-gray-800">Carlos Páez</strong>
+            <span class="block text-[11px] text-gray-500">Mesa Nivel 2</span>
+          </div>
+          <div>
+            <span class="text-gray-400 block text-[11px]">Vencimiento SLA</span>
+            <strong class="text-red-600 font-semibold font-mono">En 26 minutos</strong>
+            <span class="block text-[11px] text-gray-500">Meta: 45 min (Resolución)</span>
+          </div>
+          <div>
+            <span class="text-gray-400 block text-[11px]">Plataforma</span>
+            <strong class="text-gray-800">HCE Core v3.2</strong>
+            <span class="block text-[11px] text-gray-500">Módulo Farmacia</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- BARRA DE ACCIONES DEL CICLO DE VIDA (INVGATE ACTION BAR) -->
+      <div class="bg-gray-50 px-4 py-2 border-b border-gray-200 flex items-center gap-2">
+        <button class="px-3 py-1.5 bg-white border border-gray-300 rounded font-semibold text-gray-700 hover:bg-gray-100">
+          Asignar a otro agente
+        </button>
+        <button class="px-3 py-1.5 bg-white border border-gray-300 rounded font-semibold text-gray-700 hover:bg-gray-100">
+          Cambiar a En Espera
+        </button>
+        <button class="px-3 py-1.5 bg-white border border-gray-300 rounded font-semibold text-purple-700 hover:bg-purple-50">
+          Escalar a Nivel 3
+        </button>
+        <button class="px-3 py-1.5 bg-green-700 text-white rounded font-semibold hover:bg-green-800 ml-auto">
+          ✓ Resolver solicitud
+        </button>
+      </div>
+
+      <!-- CUERPO DE CONVERSACIÓN / HISTORIAL -->
+      <div class="p-4 flex-1 overflow-y-auto space-y-3 bg-white">
+        <!-- MENSAJE ORIGINAL -->
+        <div class="border border-gray-200 rounded p-3 bg-gray-50">
+          <div class="flex justify-between items-center mb-1 text-gray-500 text-[11px]">
+            <strong class="text-gray-800 text-xs">Dr. Martín Gómez (Solicitante)</strong>
+            <span>Hoy a las 23:04</span>
+          </div>
+          <p class="text-gray-700 leading-relaxed text-xs">
+            Al intentar ingresar al módulo de Historial Farmacológico desde la estación médica de Shockroom, la consulta queda cargando y finaliza con error 504 Gateway Timeout. Requiero asistencia urgente para validar prescripciones activas.
+          </p>
+        </div>
+
+        <!-- NOTA INTERNA DE CARLOS PÁEZ -->
+        <div class="border border-amber-200 rounded p-3 bg-amber-50/50">
+          <div class="flex justify-between items-center mb-1 text-amber-900 text-[11px]">
+            <strong class="text-amber-950 text-xs">Carlos Páez (Nota interna)</strong>
+            <span>Hoy a las 23:08</span>
+          </div>
+          <p class="text-amber-900 leading-relaxed text-xs">
+            Verifiqué los logs del proxy Nginx en OSDE. El microservicio de FHIR está saturado por una corrida de sincronización batch. Se contacta a guardia de N3 para reiniciar el pool de conexiones.
+          </p>
+        </div>
+      </div>
+
+      <!-- INPUT DE RESPUESTA / NOTA -->
+      <div class="p-3 border-t border-gray-200 bg-[#FAFAFA] flex flex-col gap-2">
+        <div class="flex gap-2">
+          <button class="text-xs font-semibold text-[#0F62FE] border-b-2 border-[#0F62FE] pb-1">Respuesta pública al usuario</button>
+          <button class="text-xs font-medium text-gray-500 hover:text-gray-700 pb-1">Nota interna privada</button>
+        </div>
+        <textarea rows="2" placeholder="Escribe una respuesta para el Dr. Martín Gómez..." class="w-full p-2 border border-gray-300 rounded text-xs focus:outline-none focus:border-[#0F62FE]"></textarea>
+        <div class="flex justify-between items-center">
+          <span class="text-[11px] text-gray-400">Adjuntar archivo o captura (máx 10 MB)</span>
+          <button class="px-4 py-1.5 bg-[#0F62FE] text-white rounded font-semibold text-xs hover:bg-[#0353E9]">
+            Enviar respuesta
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    function setQueue(queueKey) {
+      // Actualizar estilo visual activo en sidebar
+      const buttons = document.querySelectorAll('aside button');
+      buttons.forEach(b => {
+        b.classList.remove('bg-white', 'text-gray-900', 'shadow-2xs', 'border', 'border-gray-200/80');
+        b.classList.add('text-gray-600');
+      });
+
+      const activeBtn = document.getElementById('queue-' + queueKey);
+      if (activeBtn) {
+        activeBtn.classList.add('bg-white', 'text-gray-900', 'shadow-2xs', 'border', 'border-gray-200/80');
+        activeBtn.classList.remove('text-gray-600');
+      }
+
+      // Título
+      const titles = {
+        'assigned_to_me': 'Mis asignadas',
+        'unassigned': 'Sin asignar (Cola de entrada)',
+        'sla_risk': 'SLA en riesgo (< 1h)',
+        'waiting': 'En espera de usuario',
+        'all': 'Todas las solicitudes'
+      };
+      document.getElementById('current-queue-title').textContent = titles[queueKey] || 'Solicitudes';
+    }
+
+    function toggleSelectAll(masterCb) {
+      const cbs = document.querySelectorAll('.ticket-row-cb');
+      cbs.forEach(cb => {
+        cb.checked = masterCb.checked;
+        const row = cb.closest('tr');
+        if (masterCb.checked) row.classList.add('selected');
+        else row.classList.remove('selected');
+      });
+      updateSelectedCount();
+    }
+
+    function updateSelectedCount() {
+      const checked = document.querySelectorAll('.ticket-row-cb:checked');
+      const bulkBar = document.getElementById('bulk-actions');
+      const countLabel = document.getElementById('selected-count');
+
+      // Update row class
+      document.querySelectorAll('.ticket-row-cb').forEach(cb => {
+        const row = cb.closest('tr');
+        if (cb.checked) row.classList.add('selected');
+        else row.classList.remove('selected');
+      });
+
+      if (checked.length > 0) {
+        bulkBar.classList.remove('hidden');
+        bulkBar.classList.add('flex');
+        countLabel.textContent = `${checked.length} seleccionada${checked.length > 1 ? 's' : ''}`;
+      } else {
+        bulkBar.classList.add('hidden');
+        bulkBar.classList.remove('flex');
+      }
+    }
+
+    function openTicketModal(id) {
+      document.getElementById('ticket-modal').classList.remove('hidden');
+    }
+
+    function closeTicketModal() {
+      document.getElementById('ticket-modal').classList.add('hidden');
+    }
+  </script>
+</body>
+</html>

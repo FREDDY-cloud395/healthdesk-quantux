@@ -22,9 +22,13 @@ class TicketType(str, Enum):
     INCIDENTE = "INCIDENTE"
     REQUERIMIENTO = "REQUERIMIENTO"
     CONSULTA = "CONSULTA"
+    CAMBIO = "CAMBIO"
+    PROBLEMA = "PROBLEMA"
     INC = "INC"
     REQ = "REQ"
     CON = "CON"
+    CHG = "CHG"
+    PRB = "PRB"
 
 class ImpactLevel(str, Enum):
     CRITICO = "CRITICO"
@@ -68,8 +72,14 @@ class User(SQLModel, table=True):
     username: str = Field(unique=True, index=True)
     full_name: str
     email: str
-    role: UserRole = Field(default=UserRole.SOLICITANTE)
+    role: UserRole = Field(default=UserRole.SOLICITANTE, index=True)
     support_level: Optional[SupportLevel] = Field(default=None)
+    is_active: bool = Field(default=True, index=True)
+    groups: Optional[str] = Field(default="mesa-de-ayuda")
+    product_access: Optional[str] = Field(default="Mesa de Ayuda")
+    institution_code: Optional[str] = Field(default=None, nullable=True)
+    assigned_institutions: Optional[str] = Field(default="ALL", nullable=True)
+    phone: Optional[str] = Field(default=None, nullable=True)
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 class Platform(SQLModel, table=True):
@@ -98,10 +108,10 @@ class Ticket(SQLModel, table=True):
     ticket_type: TicketType = Field(default=TicketType.INCIDENTE)
     impact: ImpactLevel = Field(default=ImpactLevel.MEDIO)
     urgency: UrgencyLevel = Field(default=UrgencyLevel.MEDIO)
-    priority: PriorityLevel = Field(default=PriorityLevel.P3)
+    priority: PriorityLevel = Field(default=PriorityLevel.P3, index=True)
     status: TicketStatus = Field(default=TicketStatus.NUEVO, index=True)
-    requester_username: str = Field(foreign_key="users.username")
-    assignee_username: Optional[str] = Field(default=None, foreign_key="users.username", nullable=True)
+    requester_username: str = Field(foreign_key="users.username", index=True)
+    assignee_username: Optional[str] = Field(default=None, foreign_key="users.username", nullable=True, index=True)
     support_level: SupportLevel = Field(default=SupportLevel.N1)
     attachment_url: Optional[str] = Field(default=None, nullable=True)
     resolution_notes: Optional[str] = Field(default=None, nullable=True)
@@ -118,9 +128,17 @@ class Ticket(SQLModel, table=True):
     rating_feedback: Optional[str] = Field(default=None, nullable=True)
     requires_service_recovery: bool = Field(default=False)
     telemetry_data: Optional[str] = Field(default=None, nullable=True)  # JSON Zero-Question
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    # v4.1.0 Mejoras: Trazabilidad Total Chat IA & Deflexión Asistencial
+    channel: Optional[str] = Field(default="PORTAL", nullable=True)  # PORTAL, CHAT_IA, CORREO, MANUAL
+    is_ia_resolved: bool = Field(default=False)
+    ia_feedback: Optional[str] = Field(default=None, nullable=True)
+    # v4.2.0 Ingeniería N3: Git & DevOps Metadata
+    git_branch: Optional[str] = Field(default=None, nullable=True)
+    git_pr: Optional[str] = Field(default=None, nullable=True)
+    git_commit: Optional[str] = Field(default=None, nullable=True)
+    created_at: datetime = Field(default_factory=datetime.utcnow, index=True)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
-    resolved_at: Optional[datetime] = Field(default=None, nullable=True)
+    resolved_at: Optional[datetime] = Field(default=None, nullable=True, index=True)
     closed_at: Optional[datetime] = Field(default=None, nullable=True)
 
 class SoftwareRelease(SQLModel, table=True):
@@ -147,12 +165,12 @@ class TicketAuditLog(SQLModel, table=True):
     __tablename__ = "ticket_audit_log"
     id: Optional[int] = Field(default=None, primary_key=True)
     ticket_id: str = Field(foreign_key="tickets.id", index=True)
-    changed_by_username: str = Field(foreign_key="users.username")
+    changed_by_username: str = Field(foreign_key="users.username", index=True)
     field_changed: str
     old_value: Optional[str] = None
     new_value: Optional[str] = None
     change_reason: Optional[str] = None
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=datetime.utcnow, index=True)
 
 class EmailNotificationLog(SQLModel, table=True):
     __tablename__ = "email_notification_logs"
@@ -163,9 +181,9 @@ class EmailNotificationLog(SQLModel, table=True):
     subject: str
     event_type: str  # TICKET_CREATED, TICKET_ASSIGNED, STATUS_CHANGED, TICKET_RESOLVED, TICKET_CLOSED, P1_ALERT, COMMENT_ADDED
     body_html: str
-    sent_status: str = Field(default="SENT")  # SENT | SIMULATED | FAILED
+    sent_status: str = Field(default="SENT", index=True)  # SENT | SIMULATED | FAILED
     error_message: Optional[str] = None
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=datetime.utcnow, index=True)
 
 class KBArticle(SQLModel, table=True):
     __tablename__ = "kb_articles"
@@ -178,6 +196,9 @@ class KBArticle(SQLModel, table=True):
     version: str = Field(default="v1.0")
     changelog: Optional[str] = Field(default="Versión inicial homologada")
     view_count: int = Field(default=0)
+    requests_deflected: int = Field(default=0)
+    helpful_score: int = Field(default=95)
+    space_name: Optional[str] = Field(default="Guías Asistenciales")
     source_ticket_id: Optional[str] = Field(default=None, nullable=True)
     is_published: bool = Field(default=True)
     created_at: datetime = Field(default_factory=datetime.utcnow)
@@ -195,5 +216,26 @@ class KBArticleHistory(SQLModel, table=True):
     tags: Optional[str] = None
     changelog: str = Field(default="Actualización de contenido")
     source_ticket_id: Optional[str] = Field(default=None, nullable=True)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+class TicketAttachment(SQLModel, table=True):
+    __tablename__ = "ticket_attachments"
+    id: Optional[int] = Field(default=None, primary_key=True)
+    ticket_id: str = Field(foreign_key="tickets.id", index=True)
+    filename: str
+    file_path: str
+    file_size_bytes: int
+    content_type: str
+    sha256_hash: str
+    uploaded_by: str
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+class TicketChatMessage(SQLModel, table=True):
+    __tablename__ = "ticket_chat_messages"
+    id: Optional[int] = Field(default=None, primary_key=True)
+    ticket_id: str = Field(foreign_key="tickets.id", index=True)
+    sender_username: str
+    sender_role: str  # N1, SOLICITANTE, N2, SYSTEM
+    message: str
     created_at: datetime = Field(default_factory=datetime.utcnow)
 

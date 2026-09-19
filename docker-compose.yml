@@ -1,26 +1,47 @@
 version: '3.8'
 
+# =============================================================================
+# HEALTHDESK QUANTUX — DOCKER COMPOSE ORQUESTACIÓN LOCAL / DESARROLLO (v4.0.0)
+# =============================================================================
+
 services:
   healthdesk-quantux:
     build:
       context: .
       dockerfile: Dockerfile
     container_name: quantux-healthdesk-app
-    restart: always
+    restart: unless-stopped
     ports:
-      - "8000:8000"
+      - "${PORT:-8000}:8000"
+    env_file:
+      - .env
     environment:
-      - APP_ENV=production
-      - SMTP_SERVER=localhost
-      - SMTP_PORT=1025
+      - APP_ENV=${APP_ENV:-development}
+      - PORT=8000
+      - SMTP_HOST=${SMTP_HOST:-localhost}
+      - SMTP_SERVER=${SMTP_SERVER:-localhost}
+      - SMTP_PORT=${SMTP_PORT:-1025}
+      - ENABLE_EMAIL_NOTIFICATIONS=${ENABLE_EMAIL_NOTIFICATIONS:-false}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
     volumes:
-      - healthdesk_data:/app/backend
+      # Persistencia de archivos adjuntos subidos
+      - healthdesk_uploads:/app/backend/uploads
+      # Descomentar las siguientes líneas si desea recarga en caliente (Hot-Reload) en desarrollo local:
+      # - ./backend:/app/backend
+      # - ./frontend:/app/frontend
+      # - ./docs:/app/docs
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/docs"]
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
-      timeout: 10s
+      timeout: 5s
       retries: 3
+      start_period: 10s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 volumes:
-  healthdesk_data:
+  healthdesk_uploads:
     driver: local

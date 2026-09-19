@@ -1,14 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700&display=swap');
 
 :root {
-  --q-sidebar-bg: #0A1C3E;
-  --q-sidebar-hover: #162E5B;
-  --q-sidebar-active: #162E5B;
-  --q-sidebar-border: #162E5B;
+  --q-sidebar-bg: #FFFFFF;
+  --q-sidebar-hover: #F1F5F9;
+  --q-sidebar-active: #E2E8F0;
+  --q-sidebar-border: #E2E8F0;
   
-  --q-navy: #0A1C3E;
-  --q-navy-dark: #07132B;
-  --q-navy-light: #162E5B;
+  --q-navy: #1E293B;
+  --q-navy-dark: #0F172A;
+  --q-navy-light: #334155;
   --q-teal: #00C9B7;
   --q-teal-dark: #00A896;
   --q-teal-light: #00E5CC;
@@ -99,14 +99,14 @@ html, body {
   width: 240px;
   min-width: 240px;
   max-width: 240px;
-  background-color: #0F172A; /* Slate 900 elegante */
-  color: #F8FAFC;
+  background-color: #FFFFFF; /* Blanco institucional limpio, no azul */
+  color: #334155;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  border-right: 1px solid #E2E8F0;
   z-index: 100;
-  box-shadow: 2px 0 10px rgba(0,0,0,0.15);
+  box-shadow: 1px 0 4px rgba(0, 0, 0, 0.03);
   transition: width 0.2s cubic-bezier(0.16, 1, 0.3, 1),
               min-width 0.2s cubic-bezier(0.16, 1, 0.3, 1),
               max-width 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
@@ -126,9 +126,9 @@ html, body {
   border: none !important;
   outline: none !important;
   box-shadow: none !important;
-  color: #94A3B8 !important;
-  width: 40px !important;
-  height: 40px !important;
+  color: #64748B !important;
+  width: 38px !important;
+  height: 38px !important;
   border-radius: 6px !important;
   cursor: pointer !important;
   display: flex !important;
@@ -139,8 +139,8 @@ html, body {
 }
 
 .btn-win11-hamburger:hover {
-  background: rgba(255, 255, 255, 0.08) !important;
-  color: #FFFFFF !important;
+  background: #F1F5F9 !important;
+  color: #0F172A !important;
 }
 
 .btn-win11-hamburger svg {
@@ -164,22 +164,22 @@ html, body {
   height: 38px;
   padding: 0 12px;
   border-radius: 6px;
-  color: #94A3B8;
+  color: #64748B;
   text-decoration: none;
   cursor: pointer;
   transition: background 0.15s ease, color 0.15s ease;
 }
 
 .win11-sidebar-nav .nav-link-item:hover {
-  background: rgba(255, 255, 255, 0.06);
-  color: #F8FAFC;
+  background: #F1F5F9;
+  color: #0F172A;
 }
 
-/* Ítem Activo con Indicador Azul en Borde Izquierdo */
+/* Ítem Activo con Indicador en Borde Izquierdo */
 .win11-sidebar-nav .nav-link-item.active {
-  background: rgba(255, 255, 255, 0.1) !important;
-  color: #FFFFFF !important;
-  font-weight: 600;
+  background: #F1F5F9 !important;
+  color: #0F172A !important;
+  font-weight: 700;
 }
 
 .nav-indicator-pill {
@@ -194,7 +194,7 @@ html, body {
   transform: translateY(-50%);
   width: 3.5px;
   height: 18px;
-  background-color: #0084FF; /* Acento Azul Windows 11 */
+  background-color: #00A896; /* Teal institucional */
   border-radius: 0 3px 3px 0;
 }
 
@@ -209,58 +209,138 @@ html, body {
   width: 18px;
   height: 18px;
   flex-shrink: 0;
+  color: #64748B;
+}
+
+.win11-sidebar-nav .nav-link-item.active .nav-link-icon {
+  color: #00A896;
 }
 
 .win11-sidebar-nav .nav-link-item span {
   font-size: 13px;
+  font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 /* ==========================================================================
-   ESTADO COLAPSADO A 52PX (IDÉNTICO A WINDOWS 11 TASK MANAGER)
+   ESTADO COLAPSADO A 60PX (ICONOS, HAMBURGUESA Y AVATAR PERFECTAMENTE CENTRADOS)
    ========================================================================== */
 .app-sidebar.collapsed {
-  width: 52px !important;
-  min-width: 52px !important;
-  max-width: 52px !important;
+  width: 60px !important;
+  min-width: 60px !important;
+  max-width: 60px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+}
+
+.app-sidebar.collapsed .sidebar-top {
+  width: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+}
+
+.sidebar-brand-header {
+  width: 100%;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+
+.app-sidebar.collapsed .sidebar-brand-header {
+  padding: 10px 0 !important;
+  justify-content: center !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+}
+
+.app-sidebar.collapsed .sidebar-brand-text {
+  display: none !important;
 }
 
 .app-sidebar.collapsed .win11-hamburger-row {
-  padding: 10px 0 6px 0 !important;
+  width: 100% !important;
+  padding: 12px 0 8px 0 !important;
+  display: flex !important;
   justify-content: center !important;
+  align-items: center !important;
+  box-sizing: border-box !important;
 }
 
 .app-sidebar.collapsed .btn-win11-hamburger {
   margin: 0 auto !important;
+  width: 40px !important;
+  height: 40px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
 .app-sidebar.collapsed .win11-sidebar-nav {
-  padding: 4px 4px !important;
+  width: 100% !important;
+  padding: 4px 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 6px !important;
+  box-sizing: border-box !important;
 }
 
 .app-sidebar.collapsed .win11-sidebar-nav .nav-link-item {
   padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
   justify-content: center !important;
-  width: 44px !important;
+  width: 42px !important;
+  height: 42px !important;
   margin: 0 auto !important;
+  border-radius: 8px !important;
+  box-sizing: border-box !important;
+  position: relative !important;
 }
 
 .app-sidebar.collapsed .win11-sidebar-nav .nav-link-left {
+  display: flex !important;
   justify-content: center !important;
+  align-items: center !important;
   gap: 0 !important;
-  width: auto !important;
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.app-sidebar.collapsed .win11-sidebar-nav .nav-link-icon {
+  margin: 0 auto !important;
+  width: 20px !important;
+  height: 20px !important;
+  display: block !important;
 }
 
 .app-sidebar.collapsed .win11-sidebar-nav .nav-link-item span {
   display: none !important;
 }
 
+/* En modo colapsado ocultamos la barra vertical izquierda asimétrica y destacamos con fondo suave centrado */
+.app-sidebar.collapsed .win11-sidebar-nav .nav-indicator-pill {
+  display: none !important;
+}
+
+.app-sidebar.collapsed .win11-sidebar-nav .nav-link-item.active {
+  background: #E6F7F5 !important;
+  color: #00A896 !important;
+}
+
 .app-sidebar.collapsed .sidebar-bottom {
-  padding: 8px 0 !important;
+  width: 100% !important;
+  padding: 12px 0 !important;
   display: flex !important;
+  flex-direction: column !important;
   justify-content: center !important;
+  align-items: center !important;
+  box-sizing: border-box !important;
 }
 
 .app-sidebar.collapsed .sidebar-sys-status,
@@ -271,7 +351,18 @@ html, body {
 
 .app-sidebar.collapsed .user-profile-widget {
   padding: 0 !important;
+  width: 42px !important;
+  height: 42px !important;
+  display: flex !important;
+  align-items: center !important;
   justify-content: center !important;
+  margin: 0 auto !important;
+  border: none !important;
+  background: transparent !important;
+}
+
+.app-sidebar.collapsed #profile-avatar {
+  margin: 0 auto !important;
 }
 
 /* Tooltips Flotantes en Modo Colapsado (Windows 11) */
@@ -501,11 +592,11 @@ html, body {
 
 .sidebar-bottom {
   padding: 12px 14px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid #E2E8F0;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  background: rgba(0, 0, 0, 0.15);
+  background: #F8FAFC;
 }
 
 .sidebar-sys-status {
@@ -513,7 +604,7 @@ html, body {
   align-items: center;
   justify-content: space-between;
   font-size: 10.5px;
-  color: #94A3B8;
+  color: #64748B;
   padding: 0 4px;
 }
 
@@ -537,10 +628,11 @@ html, body {
   display: flex;
   align-items: center;
   gap: 10px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
   border-radius: 8px;
   padding: 8px 10px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
 .user-avatar-sm {
@@ -556,8 +648,10 @@ html, body {
   font-weight: 800;
   font-size: 12px;
   border: 1.5px solid rgba(255, 255, 255, 0.2);
+  flex-shrink: 0;
 }
 
+.user-profile-info,
 .user-details {
   display: flex;
   flex-direction: column;
@@ -565,19 +659,27 @@ html, body {
   overflow: hidden;
 }
 
+.user-profile-name,
 .user-full-name {
   font-size: 11.5px;
   font-weight: 700;
-  color: #FFFFFF;
+  color: #0F172A;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
+.user-profile-role,
 .user-role-badge {
   font-size: 9.5px;
-  color: var(--q-accent);
+  color: #00A896;
   font-weight: 700;
+}
+
+.user-profile-action {
+  color: #94A3B8;
+  display: flex;
+  align-items: center;
 }
 
 .sidebar-backdrop {
@@ -974,16 +1076,115 @@ html, body {
   position: sticky;
   top: 0;
   z-index: 25;
-  background: #F8FAFC;
-  padding: 8px 0;
-  border-bottom: 2px solid #E2E8F0;
-  margin-bottom: 16px;
+  background: #FFFFFF !important;
+  padding: 8px 14px !important;
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 10px !important;
+  margin-bottom: 12px !important;
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
   gap: 10px;
   flex-shrink: 0;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+}
+
+.dash-tab-btn {
+  background: #FFFFFF !important;
+  border: 1px solid #E2E8F0 !important;
+  color: #475569 !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  padding: 6px 13px !important;
+  border-radius: 6px !important;
+  cursor: pointer !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  transition: all 0.15s ease !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03) !important;
+  outline: none !important;
+}
+
+.dash-tab-btn:hover {
+  background: #F8FAFC !important;
+  color: #0F172A !important;
+  border-color: #CBD5E1 !important;
+}
+
+.dash-tab-btn.active {
+  background: #F0FDFA !important;
+  color: #0F766E !important;
+  border-color: #00A896 !important;
+  font-weight: 700 !important;
+  box-shadow: 0 1px 3px rgba(0, 168, 150, 0.15) !important;
+}
+
+.btn-clean-action {
+  background: #FFFFFF !important;
+  border: 1px solid #E2E8F0 !important;
+  color: #64748B !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  padding: 5px 10px !important;
+  border-radius: 6px !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+  outline: none !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03) !important;
+}
+
+.btn-clean-action:hover {
+  background: #F8FAFC !important;
+  color: #0F172A !important;
+  border-color: #CBD5E1 !important;
+}
+
+.btn-clean-action.active {
+  background: #00A896 !important;
+  color: #FFFFFF !important;
+  border-color: #00A896 !important;
+  box-shadow: 0 1px 3px rgba(0, 168, 150, 0.25) !important;
+}
+
+.inst-compact-card {
+  background: #FFFFFF !important;
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03) !important;
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease !important;
+  min-height: 195px !important;
+}
+
+.inst-compact-card:hover {
+  border-color: #00A896 !important;
+  box-shadow: 0 4px 14px rgba(0, 168, 150, 0.12) !important;
+  transform: translateY(-2px) !important;
+}
+
+#grid-institutions-cards {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 14px !important;
+}
+
+.kb-quick-query-chip {
+  background: #FFFFFF !important;
+  border: 1px solid #CBD5E1 !important;
+  color: #334155 !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  padding: 4px 10px !important;
+  border-radius: 6px !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+}
+
+.kb-quick-query-chip:hover {
+  background: #F0FDFA !important;
+  border-color: #00A896 !important;
+  color: #0F766E !important;
 }
 
 .kpi-cards-grid {
@@ -4692,9 +4893,9 @@ html, body {
 }
 
 .invgate-btn-tool:hover {
-  background: #0A1C3E;
-  border-color: #0A1C3E;
-  color: #FFFFFF;
+  background: #F1F5F9;
+  border-color: #CBD5E1;
+  color: #1E293B;
 }
 
 /* 2. Contenedor con Scroll de la Tabla de Tarjetas */
@@ -4752,19 +4953,19 @@ html, body {
   position: sticky;
   top: 0;
   z-index: 30;
-  background: #0A1C3E !important;
-  color: #FFFFFF !important;
+  background: #F8FAFC !important;
+  color: #475569 !important;
   font-size: 11px;
-  font-weight: 800;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.6px;
-  padding: 12px 14px;
-  border-top: 1px solid #1E3A5F !important;
-  border-bottom: 2px solid #07152E !important;
+  letter-spacing: 0.5px;
+  padding: 11px 14px;
+  border-top: 1px solid #E2E8F0 !important;
+  border-bottom: 1px solid #CBD5E1 !important;
   border-left: none !important;
   border-right: none !important;
   white-space: nowrap;
-  box-shadow: 0 2px 4px rgba(10, 28, 62, 0.15);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
 }
 
 .invgate-tickets-table thead th:first-child {
@@ -5251,10 +5452,10 @@ html, body {
 }
 
 .filter-tab-pill.active {
-  background: #0A1C3E !important;
-  border-color: #0A1C3E !important;
+  background: #0284C7 !important;
+  border-color: #0284C7 !important;
   color: #FFFFFF !important;
-  box-shadow: 0 2px 5px rgba(10, 28, 62, 0.2);
+  box-shadow: 0 1px 3px rgba(2, 132, 199, 0.25);
 }
 
 .filter-tab-pill .qv-pill-count {
@@ -5328,24 +5529,24 @@ html, body {
 }
 
 .users-table-styled thead tr {
-  background: #0A1C3E;
-  border-bottom: 2px solid #07152E;
+  background: #F8FAFC;
+  border-bottom: 1px solid #CBD5E1;
 }
 
 .users-table-styled th {
-  padding: 12px 16px;
+  padding: 11px 16px;
   font-size: 11px;
-  font-weight: 800;
-  color: #FFFFFF !important;
+  font-weight: 700;
+  color: #475569 !important;
   text-transform: uppercase;
-  letter-spacing: 0.6px;
+  letter-spacing: 0.5px;
   position: sticky;
   top: 0;
   z-index: 20;
-  background: #0A1C3E !important;
-  border-top: 1px solid #1E3A5F;
-  border-bottom: 2px solid #07152E;
-  box-shadow: 0 2px 4px rgba(10, 28, 62, 0.12);
+  background: #F8FAFC !important;
+  border-top: 1px solid #E2E8F0;
+  border-bottom: 1px solid #CBD5E1;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
 }
 
 .users-table-styled tbody tr {
@@ -5358,10 +5559,77 @@ html, body {
 }
 
 .users-table-styled td {
-  padding: 12px 16px;
-  font-size: 12.5px;
+  padding: 8px 14px !important;
+  font-size: 12px;
   color: #1E293B;
   vertical-align: middle;
+}
+
+/* Forzar ID de Ticket siempre en UNA SOLA LÍNEA continua sin saltos */
+.jira-td-key,
+.users-table-styled td.jira-td-key,
+.invgate-tickets-table td:first-child {
+  white-space: nowrap !important;
+  min-width: 160px !important;
+  width: 160px !important;
+  word-break: keep-all !important;
+}
+
+.jira-key-link {
+  white-space: nowrap !important;
+  display: inline-block !important;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  font-weight: 700;
+  font-size: 12px;
+  color: #0284C7 !important;
+  letter-spacing: -0.2px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.jira-key-link:hover {
+  color: #0369A1 !important;
+  text-decoration: underline !important;
+}
+
+.jira-summary-link {
+  color: #0F172A !important;
+  text-decoration: none !important;
+  font-weight: 600 !important;
+  display: inline-block !important;
+  cursor: pointer !important;
+  transition: color 0.15s ease !important;
+}
+
+.jira-summary-link:hover {
+  color: #0284C7 !important;
+  text-decoration: underline !important;
+}
+
+.jira-kebab-menu-btn,
+.jira-dots-btn {
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  width: 28px !important;
+  height: 28px !important;
+  border-radius: 6px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #64748B !important;
+  cursor: pointer !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  transition: all 0.15s ease !important;
+}
+
+.jira-kebab-menu-btn:hover,
+.jira-dots-btn:hover {
+  background: #F1F5F9 !important;
+  color: #0F172A !important;
+  border-color: #E2E8F0 !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
 }
 
 .user-cell-flex {

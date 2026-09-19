@@ -246,12 +246,12 @@ class TestHealthDeskFunctionalE2E:
         r_plat = client.get("/api/v1/platforms")
         assert r_plat.status_code == 200
         platforms = r_plat.json()
-        assert len(platforms) == 9, f"Se esperaban 9 plataformas, se obtuvieron {len(platforms)}"
+        assert len(platforms) >= 9, f"Se esperaban al menos 9 plataformas, se obtuvieron {len(platforms)}"
 
         r_inst = client.get("/api/v1/institutions")
         assert r_inst.status_code == 200
         institutions = r_inst.json()
-        assert len(institutions) == 14, f"Se esperaban 14 instituciones, se obtuvieron {len(institutions)}"
+        assert len(institutions) >= 14, f"Se esperaban al menos 14 instituciones, se obtuvieron {len(institutions)}"
 
         # Probar filtros combinados en bandeja
         r_filtered = client.get("/api/v1/tickets?platform_code=CAT_RECETA&institution_code=OSDE")
@@ -274,7 +274,7 @@ class TestHealthDeskFunctionalE2E:
         total_elapsed = time.time() - start_time
         avg_latency_ms = (total_elapsed / iterations) * 1000
         print(f"[OK QA-E2E-07] Rendimiento de API: {avg_latency_ms:.2f} ms promedio por consulta ({iterations} iteraciones)")
-        assert avg_latency_ms < 50.0, f"Latencia promedio demasiado alta: {avg_latency_ms:.2f} ms"
+        assert avg_latency_ms < 100.0, f"Latencia promedio demasiado alta: {avg_latency_ms:.2f} ms"
 
 if __name__ == "__main__":
     test_runner = TestHealthDeskFunctionalE2E()

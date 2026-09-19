@@ -2,7 +2,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from app.db.seed import run_seed
-from app.api.endpoints import auth, tickets, masters, users, releases, team_leader
 
 app = FastAPI(
     title="Quantux ServiceDesk Enterprise API",
@@ -22,10 +21,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# SEED AUTOMATICO AL INICIAR
+from app.api.endpoints import auth, tickets, masters, users, releases, team_leader, files, ai_assistant
+
+# SEED AUTOMATICO Y MOTOR DE DEMOSTRACION CONTINUA AL INICIAR
+from app.services.live_simulator import start_live_simulator
+from app.services.file_bot import start_file_bot
+
 @app.on_event("startup")
 def on_startup():
     run_seed()
+    start_live_simulator(25)
+    start_file_bot()
 
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
@@ -34,6 +40,8 @@ import os
 # ENRUTADORES
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["Autenticación y Roles"])
 app.include_router(tickets.router, prefix="/api/v1/tickets", tags=["Tickets"])
+app.include_router(ai_assistant.router, prefix="/api/v1/ai", tags=["Asistente IA Cognitivo N3 & Triage"])
+app.include_router(files.router, prefix="/api/v1/files", tags=["Archivos y Bot Gestor"])
 app.include_router(masters.router, prefix="/api/v1", tags=["Tablas Maestras"])
 app.include_router(users.router, prefix="/api/v1/users", tags=["Usuarios"])
 app.include_router(releases.router, prefix="/api/v1/releases", tags=["Software Releases"])
@@ -67,6 +75,13 @@ def serve_cockpit():
     if os.path.exists(f):
         return FileResponse(f, headers={"Cache-Control": "no-cache, no-store, must-revalidate"})
     return {"message": "Quantux ServiceDesk UI no encontrado"}
+
+@app.get("/mockup-mesa-ayuda")
+def serve_mockup_mesa_ayuda():
+    f = os.path.join(frontend_dir, "mockup-mesa-ayuda.html")
+    if os.path.exists(f):
+        return FileResponse(f, headers={"Cache-Control": "no-cache, no-store, must-revalidate"})
+    return {"message": "Mockup Mesa de Ayuda no encontrado"}
 
 @app.get("/scrumban")
 def serve_scrumban():
@@ -120,6 +135,18 @@ def serve_presentacion():
     if os.path.exists(f):
         return FileResponse(f, headers={"Cache-Control": "no-cache, no-store, must-revalidate"})
     return {"message": "Presentación no encontrada"}
+
+@app.get("/presentacion.pptx")
+@app.get("/presentacion/descargar")
+def download_presentacion_pptx():
+    f = os.path.join(docs_dir, "PRESENTACION_EJECUTIVA_QUANTUX_HEALTHDESK.pptx")
+    if os.path.exists(f):
+        return FileResponse(
+            f,
+            filename="PRESENTACION_EJECUTIVA_QUANTUX_HEALTHDESK.pptx",
+            media_type="application/vnd.openxmlformats-officedocument.presentationml.presentation"
+        )
+    return {"message": "Presentación PowerPoint no encontrada"}
 
 @app.get("/api")
 @app.get("/health")

@@ -1,5 +1,9 @@
 version: '3.8'
 
+# =============================================================================
+# HEALTHDESK QUANTUX — DOCKER COMPOSE PRODUCCIÓN (v4.0.0)
+# =============================================================================
+
 services:
   quantux-servicedesk:
     build:
@@ -8,17 +12,29 @@ services:
     container_name: quantux-servicedesk-prod
     restart: always
     ports:
-      - "8000:8000"
+      - "${PORT:-8000}:8000"
     env_file:
       - .env.production
+    environment:
+      - APP_ENV=production
+      - PORT=8000
     volumes:
-      - quantux_prod_data:/app/backend
+      # Persistencia de adjuntos y logs sin sobreescribir el código fuente de la imagen
+      - quantux_prod_uploads:/app/backend/uploads
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
-      timeout: 10s
+      timeout: 5s
       retries: 3
       start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2048M
+        reservations:
+          cpus: '0.5'
+          memory: 512M
     logging:
       driver: "json-file"
       options:
@@ -26,5 +42,5 @@ services:
         max-file: "5"
 
 volumes:
-  quantux_prod_data:
+  quantux_prod_uploads:
     driver: local
