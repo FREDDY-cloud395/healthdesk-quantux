@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlmodel import Session, select
+from sqlmodel import Session, select, delete
 from typing import List, Optional
 from datetime import datetime
 from pydantic import BaseModel
@@ -974,10 +974,9 @@ def delete_article(article_id: int, session: Session = Depends(get_session)):
     if not article:
         raise HTTPException(status_code=404, detail="Artículo no encontrado")
     
-    # Eliminar entradas históricas asociadas
-    histories = session.exec(select(KBArticleHistory).where(KBArticleHistory.article_id == article_id)).all()
-    for h in histories:
-        session.delete(h)
+    # Eliminar entradas históricas asociadas primero para respetar FK
+    session.exec(delete(KBArticleHistory).where(KBArticleHistory.article_id == article_id))
+    session.flush()
         
     session.delete(article)
     session.commit()

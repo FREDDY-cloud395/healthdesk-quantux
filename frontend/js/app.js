@@ -3068,6 +3068,12 @@ function renderDashboard(selectedInst = '') {
   if (kpiJiraCreated) kpiJiraCreated.textContent = allCount;
   if (kpiJiraDue) kpiJiraDue.textContent = overdueCount;
 
+  const elKpiTotal = document.getElementById('kpi-total-tickets');
+  const elKpiP1 = document.getElementById('kpi-p1-tickets');
+  const p1Count = filteredTickets.filter(t => t.priority === 'P1').length;
+  if (elKpiTotal) elKpiTotal.textContent = allCount;
+  if (elKpiP1) elKpiP1.textContent = p1Count;
+
   // 2. Panel 1: Barras Horizontales de Prioridad
   renderPriorityProgressBarsPanel(filteredTickets);
 

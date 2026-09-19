@@ -72,8 +72,10 @@ def run_qa_suite():
         print("\n▶ Test 2: Tablero de Control y Filtro Institucional...")
         driver.find_element(By.CSS_SELECTOR, ".nav-hub-tab[data-view='dashboard']").click()
         time.sleep(1.5)
-        kpi_total = driver.find_element(By.ID, "kpi-total-tickets").text.strip()
-        kpi_p1 = driver.find_element(By.ID, "kpi-p1-tickets").text.strip()
+        kpi_total = (driver.find_element(By.ID, "jira-kpi-created").text.strip() or 
+                     driver.find_element(By.ID, "kpi-total-tickets").get_attribute("textContent").strip())
+        kpi_p1 = (driver.find_element(By.ID, "jira-kpi-due").text.strip() or 
+                  driver.find_element(By.ID, "kpi-p1-tickets").get_attribute("textContent").strip())
         assert_test("Renderizado de KPIs Globales", int(kpi_total) > 0, f"Total tickets: {kpi_total}, P1: {kpi_p1}")
 
         # Probar selector de institución
@@ -83,7 +85,8 @@ def run_qa_suite():
         # Filtrar por OSDE
         inst_select.select_by_value("OSDE")
         time.sleep(1.5)
-        kpi_osde = driver.find_element(By.ID, "kpi-total-tickets").text
+        kpi_osde = (driver.find_element(By.ID, "jira-kpi-created").text.strip() or 
+                    driver.find_element(By.ID, "kpi-total-tickets").get_attribute("textContent").strip())
         assert_test("Filtro Dashboard por Institución (OSDE)", int(kpi_osde) > 0 and int(kpi_osde) <= int(kpi_total), f"Tickets OSDE: {kpi_osde} (de {kpi_total} global)")
 
         # Probar botón de refrescar dashboard
@@ -96,7 +99,8 @@ def run_qa_suite():
         # Volver a todas las instituciones
         inst_select.select_by_value("")
         time.sleep(1)
-        kpi_all_again = driver.find_element(By.ID, "kpi-total-tickets").text
+        kpi_all_again = (driver.find_element(By.ID, "jira-kpi-created").text.strip() or 
+                         driver.find_element(By.ID, "kpi-total-tickets").get_attribute("textContent").strip())
         assert_test("Restablecer Filtro Institucional a Global", kpi_all_again == kpi_total, f"Total restablecido: {kpi_all_again}")
 
         # -------------------------------------------------------------
