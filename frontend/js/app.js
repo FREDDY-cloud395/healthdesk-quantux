@@ -142,10 +142,27 @@ document.addEventListener('DOMContentLoaded', async () => {
  
  updateUserProfileUI();
 
-  // 1. Cargar la vista inicial
-  const initialView = document.querySelector('.app-view.active')?.id.replace('view-', '') || 'tickets';
-  switchView(initialView);
-  if (initialView === 'dashboard') loadDashboardMetrics();
+   // 1. Cargar la vista inicial persistida en localStorage o usar la por defecto
+   let initialView = null;
+   try {
+     initialView = localStorage.getItem('quantux_active_view');
+   } catch (e) {}
+   if (!initialView) {
+     initialView = document.querySelector('.app-view.active')?.id.replace('view-', '') || 'tickets';
+   }
+   switchView(initialView);
+   if (initialView === 'dashboard') loadDashboardMetrics();
+
+   // Si hay un ticket de trabajo activo guardado en localStorage, restaurarlo de inmediato
+   try {
+     const savedTicketId = localStorage.getItem('quantux_active_ticket_id');
+     if (savedTicketId) {
+       console.log('F5: Restaurando ticket de trabajo activo:', savedTicketId);
+       openAgentWorkspace(savedTicketId).catch(err => {
+         console.warn('No se pudo reabrir el ticket persistido:', err);
+       });
+     }
+   } catch (e) {}
 
  // 2. Cargar maestros y métricas en background sin bloquear la tabla
  (async () => {
@@ -373,6 +390,9 @@ function switchMobileCockpitTab(colId) {
 
 function switchView(viewName) {
  AppState.currentView = viewName;
+ try {
+ localStorage.setItem('quantux_active_view', viewName);
+ } catch (e) {}
 
  // Actualizar Título y Subtítulo Dinámicos del Topbar
  const titleContainer = document.getElementById('top-view-title');
@@ -2815,9 +2835,25 @@ window.sendRequesterChatMessage = sendRequesterChatMessage;
 window.sendRequesterQuickPrompt = sendRequesterQuickPrompt;
 window.transferAiChatToTicket = transferAiChatToTicket;
 window.resolveRequesterAiChat = resolveRequesterAiChat;
+
+function setRequesterViewMode(mode) {
+  console.log('setRequesterViewMode legacy stub:', mode);
+}
 window.setRequesterViewMode = setRequesterViewMode;
+
+function filterRequesterByPlatform(platform) {
+  console.log('filterRequesterByPlatform legacy stub:', platform);
+}
 window.filterRequesterByPlatform = filterRequesterByPlatform;
+
+function onRequesterSearchInput(evt) {
+  console.log('onRequesterSearchInput legacy stub:', evt);
+}
 window.onRequesterSearchInput = onRequesterSearchInput;
+
+function changeRequesterCardsPage(page) {
+  console.log('changeRequesterCardsPage legacy stub:', page);
+}
 window.changeRequesterCardsPage = changeRequesterCardsPage;
 window.renderRequesterCards = renderRequesterCards;
 window.setKbViewMode = setKbViewMode;
@@ -3501,11 +3537,19 @@ async function loadTickets(params = {}) {
  // a menos que el usuario los solicite explícitamente vía filtro o preset
  let filteredTickets = rawTickets;
  
- if (params.pending_only) {
- filteredTickets = rawTickets.filter(t => ['NUEVO', 'ASIGNADO', 'EN_CURSO'].includes(t.status));
- } else if (!params.status && !params.include_all && !params.include_resolved) {
- filteredTickets = rawTickets.filter(t => t.status !== 'RESUELTO' && t.status !== 'CERRADO');
- }
+  if (params.pending_only) {
+    filteredTickets = rawTickets.filter(t => ['NUEVO', 'ASIGNADO', 'EN_CURSO'].includes(t.status));
+  } else if (!params.status && !params.include_all && !params.include_resolved) {
+    filteredTickets = rawTickets.filter(t => t.status !== 'RESUELTO' && t.status !== 'CERRADO');
+  } else if (!params.status) {
+    // Si include_all es true (como para el solicitante), de todos modos ocultamos CERRADO
+    // si no hay una búsqueda de texto activa en el buscador.
+    const searchInput = document.getElementById('jira-ticket-search-input');
+    const hasSearchQuery = searchInput && searchInput.value.trim().length > 0;
+    if (!hasSearchQuery) {
+      filteredTickets = rawTickets.filter(t => t.status !== 'CERRADO');
+    }
+  }
  
  AppState.tickets = filteredTickets;
  renderTicketList();
@@ -4257,34 +4301,43 @@ window.sortTicketsBy = function(criterion) {
 };
 
 window.applyJiraQueueFilters = function() {
- const searchInput = document.getElementById('jira-ticket-search-input');
- const typeSelect = document.getElementById('jira-filter-type');
- const query = (searchInput ? searchInput.value : '').toLowerCase().trim();
- const selectedType = (typeSelect ? typeSelect.value : 'ALL').toUpperCase();
+  const searchInput = document.getElementById('jira-ticket-search-input');
+  const typeSelect = document.getElementById('jira-filter-type');
+  const query = (searchInput ? searchInput.value : '').toLowerCase().trim();
+  const selectedType = (typeSelect ? typeSelect.value : 'ALL').toUpperCase();
 
- if (!AppState.allTicketsUnfiltered && AppState.tickets) {
- AppState.allTicketsUnfiltered = [...AppState.tickets];
- }
+  // El origen de la búsqueda debe ser la lista completa del usuario (AppState.allTicketsRaw)
+  // para poder recuperar los tickets CERRADOS que están ocultos por defecto.
+  const source = AppState.allTicketsRaw || AppState.allTicketsUnfiltered || AppState.tickets || [];
 
- const source = AppState.allTicketsUnfiltered || AppState.tickets || [];
- AppState.tickets = source.filter(t => {
- // 1. Filtro por Tipo de Ticket (Discreto Jira)
- if (selectedType && selectedType !== 'ALL') {
- const rawType = (t.ticket_type || 'INCIDENTE').toUpperCase();
- if (!rawType.includes(selectedType)) return false;
- }
- // 2. Filtro por Buscador de Texto
- if (query) {
- const match = (t.id && String(t.id).toLowerCase().includes(query)) ||
- (t.title && t.title.toLowerCase().includes(query)) ||
- (t.requester_name && t.requester_name.toLowerCase().includes(query)) ||
- (t.assignee_name && t.assignee_name.toLowerCase().includes(query)) ||
- (t.institution_code && t.institution_code.toLowerCase().includes(query)) ||
- (t.platform_code && t.platform_code.toLowerCase().includes(query));
- if (!match) return false;
- }
- return true;
- });
+  if (!AppState.allTicketsUnfiltered && AppState.tickets) {
+    AppState.allTicketsUnfiltered = [...AppState.tickets];
+  }
+
+  AppState.tickets = source.filter(t => {
+    // 1. Filtro por Tipo de Ticket (Discreto Jira)
+    if (selectedType && selectedType !== 'ALL') {
+      const rawType = (t.ticket_type || 'INCIDENTE').toUpperCase();
+      if (!rawType.includes(selectedType)) return false;
+    }
+    
+    // 2. Si NO hay una consulta de búsqueda, ocultamos los tickets en estado CERRADO por defecto.
+    if (!query && t.status === 'CERRADO') {
+      return false;
+    }
+
+    // 3. Filtro por Buscador de Texto
+    if (query) {
+      const match = (t.id && String(t.id).toLowerCase().includes(query)) ||
+                    (t.title && t.title.toLowerCase().includes(query)) ||
+                    (t.requester_name && t.requester_name.toLowerCase().includes(query)) ||
+                    (t.assignee_name && t.assignee_name.toLowerCase().includes(query)) ||
+                    (t.institution_code && t.institution_code.toLowerCase().includes(query)) ||
+                    (t.platform_code && t.platform_code.toLowerCase().includes(query));
+      if (!match) return false;
+    }
+    return true;
+  });
 
  const searchCountBadge = document.getElementById('jira-search-count-badge');
  const footerCount = document.getElementById('invgate-footer-count-num');
@@ -9937,6 +9990,9 @@ function debounce(fn, delay) {
 
 async function openAgentWorkspace(ticketId) {
  try {
+ localStorage.setItem('quantux_active_ticket_id', ticketId);
+ } catch (e) {}
+ try {
  const ticket = await API.getTicket(ticketId);
  AppState.selectedTicket = ticket;
  
@@ -10029,6 +10085,9 @@ async function openAgentWorkspace(ticketId) {
 function closeAgentWorkspace() {
  const modal = document.getElementById('modal-agent-workspace');
  if (modal) modal.classList.remove('active');
+ try {
+ localStorage.removeItem('quantux_active_ticket_id');
+ } catch (e) {}
 }
 
 function switchWsTab(tab) {
@@ -10335,8 +10394,8 @@ function renderWsTimeline(ticket) {
  });
  }
 
- // Ordenar cronológicamente (más antiguo primero)
- items.sort((a, b) => new Date(a.date) - new Date(b.date));
+ // Ordenar cronológicamente (más reciente primero)
+ items.sort((a, b) => new Date(b.date) - new Date(a.date));
 
  if (items.length === 0) {
  container.innerHTML = `
@@ -10499,13 +10558,94 @@ function renderWsParticipants(ticket) {
   `;
 }
 
+function openParticipantsModal() {
+  const modal = document.getElementById('modal-participants-details');
+  if (!modal) return;
+
+  const ticket = AppState.selectedTicket;
+  if (!ticket) return;
+
+  const reqName = ticket.requester_name || (ticket.requester_username ? formatUserName(ticket.requester_username) : 'Solicitante Asistencial');
+  const instName = formatInstitutionName(ticket.institution_code);
+
+  const agentName = ticket.assignee_name || (ticket.assignee_username ? formatUserName(ticket.assignee_username) : 'Sin Asignar');
+  const level = ticket.support_level || 'N1';
+  const platName = formatPlatformName(ticket.platform_code);
+
+  const body = document.getElementById('participants-modal-body');
+  if (body) {
+    body.innerHTML = `
+      <!-- Médico Solicitante -->
+      <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 16px; display: flex; align-items: flex-start; gap: 14px; text-align: left;">
+        <div style="width: 44px; height: 44px; border-radius: 50%; background: #00A896; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; flex-shrink: 0; box-shadow: 0 2px 4px rgba(0, 168, 150, 0.2);">
+          ${getInitials(reqName)}
+        </div>
+        <div style="flex: 1; min-width: 0;">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
+            <span style="font-size: 14px; font-weight: 800; color: #0F172A; text-align: left;">${escapeHtml(reqName)}</span>
+            <span style="font-size: 10px; font-weight: 700; color: #00A896; background: #F0FDFA; padding: 2px 8px; border-radius: 12px; border: 1px solid #00A896; flex-shrink: 0;">SOLICITANTE</span>
+          </div>
+          <div style="font-size: 11.5px; color: #475569; font-weight: 600; margin-top: 4px; text-align: left;">Médico de Guardia de la Institución</div>
+          <div style="display: grid; grid-template-columns: 1fr; gap: 4px; margin-top: 10px; border-top: 1px solid #F1F5F9; padding-top: 10px; text-align: left;">
+            <div style="font-size: 11.5px; color: #64748B;"><strong style="color: #334155;">Institución:</strong> ${escapeHtml(instName)} (Código: ${escapeHtml(ticket.institution_code || '---')})</div>
+            <div style="font-size: 11.5px; color: #64748B;"><strong style="color: #334155;">Usuario Clínico:</strong> @${escapeHtml(ticket.requester_username || '---')}</div>
+            <div style="font-size: 11.5px; color: #64748B;"><strong style="color: #334155;">Canal de Ingreso:</strong> Web / Portal Médico</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Agente de Soporte Asignado -->
+      <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 16px; display: flex; align-items: flex-start; gap: 14px; text-align: left; ${!ticket.assignee_username ? 'border-style: dashed; background: #FAFBFC;' : ''}">
+        <div style="width: 44px; height: 44px; border-radius: 50%; background: #6554C0; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; flex-shrink: 0; box-shadow: 0 2px 4px rgba(101, 84, 192, 0.2);">
+          ${ticket.assignee_username ? getInitials(agentName) : '?' }
+        </div>
+        <div style="flex: 1; min-width: 0;">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
+            <span style="font-size: 14px; font-weight: 800; color: #0F172A; text-align: left;">${escapeHtml(agentName)}</span>
+            <span style="font-size: 10px; font-weight: 700; color: #6554C0; background: #EAE6FF; padding: 2px 8px; border-radius: 12px; border: 1px solid #6554C0; flex-shrink: 0;">ESPECIALISTA</span>
+          </div>
+          <div style="font-size: 11.5px; color: #475569; font-weight: 600; margin-top: 4px; text-align: left;">Agente Asignado en la Guardia de Soporte</div>
+          <div style="display: grid; grid-template-columns: 1fr; gap: 4px; margin-top: 10px; border-top: 1px solid #F1F5F9; padding-top: 10px; text-align: left;">
+            <div style="font-size: 11.5px; color: #64748B;"><strong style="color: #334155;">Nivel de Soporte:</strong> Nivel ${escapeHtml(level)} ITIL</div>
+            <div style="font-size: 11.5px; color: #64748B;"><strong style="color: #334155;">Usuario de Red:</strong> @${escapeHtml(ticket.assignee_username || 'Ninguno')}</div>
+            <div style="font-size: 11.5px; color: #64748B;"><strong style="color: #334155;">Estado Operativo:</strong> Asignado Directo</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Soporte Plataforma -->
+      <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 16px; display: flex; align-items: flex-start; gap: 14px; text-align: left;">
+        <div style="width: 44px; height: 44px; border-radius: 50%; background: #0A1C3E; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; flex-shrink: 0; box-shadow: 0 2px 4px rgba(10, 28, 62, 0.2);">
+          SP
+        </div>
+        <div style="flex: 1; min-width: 0;">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
+            <span style="font-size: 14px; font-weight: 800; color: #0F172A; text-align: left;">Soporte de Plataforma</span>
+            <span style="font-size: 10px; font-weight: 700; color: #3b82f6; background: #eff6ff; padding: 2px 8px; border-radius: 12px; border: 1px solid #3b82f6; flex-shrink: 0;">MESA DE AYUDA</span>
+          </div>
+          <div style="font-size: 11.5px; color: #475569; font-weight: 600; margin-top: 4px; text-align: left;">Mesa de Soporte de la Solución de Software</div>
+          <div style="display: grid; grid-template-columns: 1fr; gap: 4px; margin-top: 10px; border-top: 1px solid #F1F5F9; padding-top: 10px; text-align: left;">
+            <div style="font-size: 11.5px; color: #64748B;"><strong style="color: #334155;">Módulo de Software:</strong> ${escapeHtml(platName)}</div>
+            <div style="font-size: 11.5px; color: #64748B;"><strong style="color: #334155;">Código de Plataforma:</strong> ${escapeHtml(ticket.platform_code || '---')}</div>
+            <div style="font-size: 11.5px; color: #64748B;"><strong style="color: #334155;">Estado de Monitoreo:</strong> Monitoreo Automático Activo</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  modal.classList.add('active');
+}
+window.openParticipantsModal = openParticipantsModal;
+
+function closeParticipantsModal() {
+  const modal = document.getElementById('modal-participants-details');
+  if (modal) modal.classList.remove('active');
+}
+window.closeParticipantsModal = closeParticipantsModal;
+
 function toggleWsParticipants() {
-  const list = document.getElementById('ws-participants-list');
-  const icon = document.getElementById('ws-participants-toggle-icon');
-  if (!list) return;
-  const isHidden = (list.style.display === 'none' || !list.style.display);
-  list.style.display = isHidden ? 'block' : 'none';
-  if (icon) icon.textContent = isHidden ? '▼' : '▶';
+  openParticipantsModal();
 }
 window.toggleWsParticipants = toggleWsParticipants;
 
@@ -10595,10 +10735,25 @@ function renderWsWorkflowActions(ticket) {
       `;
     }
 
+    const isAssignedToMe = AppState.currentUser && (ticket.assignee_username === AppState.currentUser.username);
+    const selfAssignBtn = isAssignedToMe
+      ? `<button type="button" disabled style="width: 100%; padding: 7px 10px; font-weight: 700; font-size: 11.5px; border-radius: 6px; background: #E6F4EA; color: #137333; border: 1px solid #A3E2C9; cursor: not-allowed; display: flex; align-items: center; justify-content: center; gap: 4px;">
+           <span>✓ Asignado a mí</span>
+         </button>`
+      : `<button type="button" onclick="quickSelfAssign('${ticketId}')" style="width: 100%; padding: 7px 10px; font-weight: 700; font-size: 11.5px; border-radius: 6px; background: #F0FDFA; color: #00A896; border: 1px solid #00A896; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;">
+           <span>🙋 Autoasignar (A mí)</span>
+         </button>`;
+
     actionsHtml += `
         <button type="button" onclick="openResolveModal('${ticketId}')" style="width: 100%; padding: 7px 10px; font-weight: 600; font-size: 11.5px; border-radius: 6px; background: #FAFBFC; color: #172B4D; border: 1px solid #DFE1E6; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;">
           <span>📝 Registrar Notas de Solución...</span>
         </button>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 4px;">
+          ${selfAssignBtn}
+          <button type="button" onclick="openReassignModal('${ticketId}')" style="width: 100%; padding: 7px 10px; font-weight: 700; font-size: 11.5px; border-radius: 6px; background: #FAFBFC; color: #475569; border: 1px solid #DFE1E6; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;">
+            <span>👥 Asignar a...</span>
+          </button>
+        </div>
       </div>
     `;
   }
@@ -11809,53 +11964,109 @@ async function loadTeamLeaderData(institutionCode = null) {
 }
 
 function renderTeamLeaderAnalysts(analysts) {
- const tbody = document.getElementById('tl-analysts-table-body');
- if (!tbody) return;
+  const tbody = document.getElementById('tl-analysts-table-body');
+  if (!tbody) return;
 
- if (!analysts || analysts.length === 0) {
- tbody.innerHTML = `<tr><td colspan="6" style="padding: 24px; text-align: center; color: #94A3B8;">No hay analistas registrados en la guardia activa.</td></tr>`;
- return;
- }
+  const rawAnalysts = analysts || [];
+  window._lastRawAnalysts = rawAnalysts;
 
- tbody.innerHTML = analysts.map(a => {
- const activeCount = a.active_tickets_count ?? a.active_count ?? 0;
- const resolvedCount = a.resolved_today_count ?? a.resolved_count ?? 0;
- const level = a.support_level || a.level || 'N2';
+  // 1. Calcular y actualizar dinámicamente los contadores en las píldoras de filtro
+  const countAll = rawAnalysts.length;
+  const countN1 = rawAnalysts.filter(a => (a.support_level || a.level || 'N2') === 'N1').length;
+  const countN2 = rawAnalysts.filter(a => (a.support_level || a.level || 'N2') === 'N2').length;
+  const countN3 = rawAnalysts.filter(a => (a.support_level || a.level || 'N2') === 'N3').length;
 
- let loadBadge = `<span style="background: #DCFCE7; color: #166534; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 6px;">Óptima (${activeCount} casos)</span>`;
- if (activeCount>= 6) {
- loadBadge = `<span style="background: #FEE2E2; color: #991B1B; font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 6px;"> Sobrecarga (${activeCount} casos)</span>`;
- } else if (activeCount>= 3) {
- loadBadge = `<span style="background: #FEF3C7; color: #92400E; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 6px;">Moderada (${activeCount} casos)</span>`;
- }
+  const btnAll = document.getElementById('tl-btn-level-all');
+  const btnN1 = document.getElementById('tl-btn-level-N1');
+  const btnN2 = document.getElementById('tl-btn-level-N2');
+  const btnN3 = document.getElementById('tl-btn-level-N3');
 
- return `
- <tr style="border-bottom: 1px solid #F1F5F9; transition: background 0.15s ease;" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background='transparent'">
- <td style="padding: 10px 14px; font-weight: 700; color: #0F172A; display: flex; align-items: center; gap: 8px;">
- ${getUserAvatarHtml(a.username, a.full_name, 26)}
-            <div style="font-weight: 700; color: #0F172A; font-size: 12.5px;">${a.full_name}</div>
+  if (btnAll) btnAll.textContent = `Todos (${countAll})`;
+  if (btnN1) btnN1.textContent = `N1 (${countN1})`;
+  if (btnN2) btnN2.textContent = `N2 (${countN2})`;
+  if (btnN3) btnN3.textContent = `N3 (${countN3})`;
+
+  // [PROPUESTA 2] Calcular desbalance crítico para el Smart Alert Strip
+  const alertEl = document.getElementById('tl-smart-balance-alert');
+  const alertDescEl = document.getElementById('tl-smart-balance-desc');
+  if (alertEl) {
+    const activeCounts = rawAnalysts.map(a => a.active_tickets_count ?? a.active_count ?? 0);
+    const maxLoad = Math.max(...activeCounts, 0);
+    const minLoad = Math.min(...activeCounts, 0);
+    const overLoaded = rawAnalysts.filter(a => (a.active_tickets_count ?? a.active_count ?? 0) >= 6);
+    const underLoaded = rawAnalysts.filter(a => (a.active_tickets_count ?? a.active_count ?? 0) === 0);
+
+    if (maxLoad >= 6 && overLoaded.length > 0 && underLoaded.length > 0) {
+      const overNames = overLoaded.slice(0, 2).map(a => a.full_name.split(' ')[0]).join(' y ');
+      if (alertDescEl) {
+        alertDescEl.textContent = `Analistas como ${overNames} están sobrecargados mientras que otros colaboradores tienen 0 casos activos.`;
+      }
+      alertEl.style.display = 'flex';
+    } else {
+      alertEl.style.display = 'none';
+    }
+  }
+
+  // 2. Aplicar filtro reactivo según la píldora activa
+  const currentFilter = window.tlActiveLevelFilter || 'all';
+  const filteredAnalysts = currentFilter === 'all'
+    ? rawAnalysts
+    : rawAnalysts.filter(a => (a.support_level || a.level || 'N2') === currentFilter);
+
+  if (!filteredAnalysts || filteredAnalysts.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="6" style="padding: 32px; text-align: center; color: #94A3B8; font-weight: 600;">No hay analistas del nivel ${currentFilter} registrados en la guardia activa.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = filteredAnalysts.map(a => {
+    const activeCount = a.active_tickets_count ?? a.active_count ?? 0;
+    const resolvedCount = a.resolved_today_count ?? a.resolved_count ?? 0;
+    const level = a.support_level || a.level || 'N2';
+    const analystUsername = a.username || a.agent_username;
+
+    // [PROPUESTA 1] Calcular incidentes P1 activos asignados a este analista
+    const analystP1s = (AppState.tickets || []).filter(t => 
+      (t.assigned_to_username === analystUsername || t.assignee_username === analystUsername) &&
+      t.priority === 'P1' &&
+      ['NUEVO', 'ASIGNADO', 'EN_CURSO'].includes((t.status || '').toUpperCase())
+    ).length;
+
+    let loadBadge = `<span style="background: #DCFCE7; color: #166534; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 6px;">Óptima (${activeCount} casos)</span>`;
+    if (activeCount >= 6) {
+      loadBadge = `<span style="background: #FEE2E2; color: #991B1B; font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 6px;">Sobrecarga (${activeCount} casos)</span>`;
+    } else if (activeCount >= 3) {
+      loadBadge = `<span style="background: #FEF3C7; color: #92400E; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 6px;">Moderada (${activeCount} casos)</span>`;
+    }
+
+    return `
+      <tr style="border-bottom: 1px solid #F1F5F9; transition: background 0.15s ease;" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background='transparent'">
+        <td style="padding: 10px 14px; font-weight: 700; color: #0F172A; display: flex; align-items: center; gap: 8px;">
+          ${getUserAvatarHtml(a.username, a.full_name, 26)}
+          <div style="font-weight: 700; color: #0F172A; font-size: 12.5px;">${a.full_name}</div>
+        </td>
+        <td style="padding: 10px 14px;">
+          <span style="font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 4px; background: #E0E7FF; color: #3730A3;">${level}</span>
+        </td>
+        <td style="padding: 10px 14px; text-align: center; font-weight: 800; font-size: 13px; color: #0F172A;">
+          <div style="display: inline-flex; align-items: center; gap: 5px; justify-content: center;">
+            <span>${activeCount}</span>
+            ${analystP1s > 0 ? `<span style="background: #EF4444; color: #FFFFFF; font-size: 8.5px; font-weight: 900; padding: 1px 4.5px; border-radius: 9999px; display: inline-block; vertical-align: middle; line-height: 1.15; cursor: help;" title="${analystP1s} emergencias críticas P1">${analystP1s} P1</span>` : ''}
           </div>
         </td>
- <td style="padding: 10px 14px;">
- <span style="font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 4px; background: #E0E7FF; color: #3730A3;">${level}</span>
- </td>
- <td style="padding: 10px 14px; text-align: center; font-weight: 800; font-size: 13px; color: #0F172A;">
- ${activeCount}
- </td>
- <td style="padding: 10px 14px; text-align: center; font-weight: 700; color: #00A896;">
- ${resolvedCount}
- </td>
- <td style="padding: 10px 14px;">
- ${loadBadge}
- </td>
- <td style="padding: 10px 14px; text-align: right;">
- <button type="button" class="btn-sec btn-sm" onclick="openQuickReassignModal(null, '${a.username}')" style="font-size: 10.5px; padding: 3px 8px; border-radius: 5px; font-weight: 600;">
- Reasignar
- </button>
- </td>
- </tr>
- `;
- }).join('');
+        <td style="padding: 10px 14px; text-align: center; font-weight: 700; color: #00A896;">
+          ${resolvedCount}
+        </td>
+        <td style="padding: 10px 14px;">
+          ${loadBadge}
+        </td>
+        <td style="padding: 10px 14px; text-align: right;">
+          <button type="button" class="btn-sec btn-sm" onclick="openQuickReassignModal(null, '${a.username}')" style="font-size: 10.5px; padding: 3px 8px; border-radius: 5px; font-weight: 600;">
+            Reasignar
+          </button>
+        </td>
+      </tr>
+    `;
+  }).join('');
 }
 
 function renderTeamLeaderRescueDesk(cases) {
@@ -11891,19 +12102,31 @@ function renderTeamLeaderRescueDesk(cases) {
  </span>
  </div>
 
- ${c.rating_feedback ? `
- <div style="background: #FFFBEB; border-left: 3px solid #F59E0B; padding: 6px 10px; border-radius: 4px; font-size: 11.5px; color: #78350F; margin: 6px 0;">
- "${c.rating_feedback}"
- </div>
- ` : ''}
+  ${c.rating_feedback ? `
+  <div style="background: #FFFBEB; border-left: 3px solid #F59E0B; padding: 6px 10px; border-radius: 4px; font-size: 11.5px; color: #78350F; margin: 6px 0;">
+  "${c.rating_feedback}"
+  </div>
+  ` : ''}
 
- <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px; border-top: 1px solid #F1F5F9; padding-top: 8px;">
- <button type="button" class="btn-clean-action" onclick="openAgentWorkspace('${c.id}')" style="font-size: 11px; font-weight: 700; color: #2563EB;">
- Ver Ticket Completo
- </button>
- <button type="button" class="btn-pri" onclick="openRescueModal('${c.id}', '${c.title ? c.title.replace(/'/g, "\\'") : ''}', '${c.requester_name ? c.requester_name.replace(/'/g, "\\'") : ''}', ${c.rating_stars || 1})" style="background: #00A896; border-color: #00A896; font-size: 11px; padding: 4px 10px; border-radius: 6px; font-weight: 800; color: #FFF;">
- Registrar Rescate
- </button>
+  <!-- Atajos de Contacto Omnicanal (Propuesta 4) -->
+  <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 10px; border-top: 1px solid #F1F5F9; padding-top: 8px;">
+    <div style="display: flex; align-items: center; justify-content: space-between; font-size: 11px;">
+      <span style="font-weight: 700; color: #64748B; font-size: 10px; text-transform: uppercase;">Atajos Express:</span>
+      <div style="display: flex; gap: 5px;">
+        <button type="button" onclick="window.simulateRescueContact('📞 VoIP/Teams', '${c.id}')" style="background: #EFF6FF; border: 1px solid #BFDBFE; color: #1E40AF; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; cursor: pointer; transition: all 0.1s;" onmouseover="this.style.background='#DBEAFE'" onmouseout="this.style.background='#EFF6FF'">📞 Llamar</button>
+        <button type="button" onclick="window.simulateRescueContact('💬 WhatsApp Directo', '${c.id}')" style="background: #ECFDF5; border: 1px solid #A7F3D0; color: #065F46; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; cursor: pointer; transition: all 0.1s;" onmouseover="this.style.background='#D1FAE5'" onmouseout="this.style.background='#ECFDF5'">💬 WA</button>
+        <button type="button" onclick="window.simulateRescueContact('✉️ Redactar Email', '${c.id}')" style="background: #F3E8FF; border: 1px solid #E9D5FF; color: #6B21A8; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; cursor: pointer; transition: all 0.1s;" onmouseover="this.style.background='#E9D5FF'" onmouseout="this.style.background='#F3E8FF'">✉️ Email</button>
+      </div>
+    </div>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+      <button type="button" class="btn-clean-action" onclick="openAgentWorkspace('${c.id}')" style="font-size: 11px; font-weight: 700; color: #2563EB; background: none; border: none; cursor: pointer; padding: 0;">
+        Ver Ticket Completo
+      </button>
+      <button type="button" class="btn-pri" onclick="openRescueModal('${c.id}', '${c.title ? c.title.replace(/'/g, "\\'") : ''}', '${c.requester_name ? c.requester_name.replace(/'/g, "\\'") : ''}', ${c.rating_stars || 1})" style="background: #00A896; border-color: #00A896; font-size: 11px; padding: 4px 12px; border-radius: 6px; font-weight: 800; color: #FFF; cursor: pointer; box-shadow: 0 2px 4px rgba(0,168,150,0.2);">
+        Registrar Rescate
+      </button>
+    </div>
+  </div></button>
  </div>
  </div>
  `;
@@ -11988,6 +12211,11 @@ function openQuickReassignModal(ticketId = null, defaultAssignee = null) {
   const userSelect = document.getElementById('tl-reassign-user-select');
   if (!modal || !ticketSelect || !userSelect) return;
 
+  // Forzar inicio en pestaña de caso individual
+  if (window.switchTLReassignTab) {
+    window.switchTLReassignTab('single');
+  }
+
   const allActive = (AppState.tickets || []).filter(t => ['NUEVO', 'ASIGNADO', 'EN_CURSO'].includes((t.status || '').toUpperCase()));
   
   // Priorizar los tickets del analista si fue seleccionado desde la fila
@@ -12020,6 +12248,35 @@ function openQuickReassignModal(ticketId = null, defaultAssignee = null) {
     </option>
   `).join('');
 
+  // 1. Poblado dinámico del checklist de colaboradores en el balanceador masivo
+  const rebalanceList = document.getElementById('tl-rebalance-analysts-list');
+  if (rebalanceList) {
+    rebalanceList.innerHTML = analysts.map(u => {
+      const username = u.username || u.agent_username;
+      const fullName = u.full_name || u.agent_name || username;
+      const activeCount = u.active_tickets_count ?? u.active_count ?? 0;
+      return `
+        <label style="display: flex; align-items: center; gap: 8px; font-size: 11.5px; font-weight: 600; color: #334155; cursor: pointer; background: #FFFFFF; border: 1px solid #E2E8F0; padding: 6px 10px; border-radius: 6px; user-select: none; margin: 2px;">
+          <input type="checkbox" name="tl-rebalance-analyst" value="${username}" checked style="width: 14px; height: 14px; cursor: pointer; margin: 0;">
+          <div style="flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+            ${fullName} <span style="color: #64748B; font-size: 10.5px;">(@${username} • ${activeCount} casos)</span>
+          </div>
+        </label>
+      `;
+    }).join('') || '<div style="color: #94A3B8; font-size: 12px; padding: 8px;">No hay analistas activos para seleccionar</div>';
+  }
+
+  // 2. Poblado dinámico del selector de instituciones para filtros del balanceador
+  const rebalanceInstSelect = document.getElementById('tl-rebalance-institution');
+  if (rebalanceInstSelect) {
+    const institutions = AppState.institutions || [];
+    let optHtml = '<option value="all">Todas las instituciones</option>';
+    institutions.forEach(inst => {
+      optHtml += `<option value="${inst.code}">${inst.name} (${inst.code})</option>`;
+    });
+    rebalanceInstSelect.innerHTML = optHtml;
+  }
+
   modal.style.display = 'flex';
   modal.classList.add('active');
 }
@@ -12031,6 +12288,104 @@ function closeQuickReassignModal() {
     modal.style.display = 'none';
   }
 }
+
+// 1. Cambio de Pestañas del Modal de Rebalanceo de Carga
+function switchTLReassignTab(tab) {
+  const tabSingle = document.getElementById('tl-tab-single');
+  const tabBulk = document.getElementById('tl-tab-bulk');
+  const paneSingle = document.getElementById('tl-reassign-single-pane');
+  const paneBulk = document.getElementById('tl-reassign-bulk-pane');
+
+  if (!tabSingle || !tabBulk || !paneSingle || !paneBulk) return;
+
+  if (tab === 'single') {
+    tabSingle.style.background = '#00A896';
+    tabSingle.style.color = '#FFFFFF';
+    tabSingle.style.fontWeight = '800';
+
+    tabBulk.style.background = '#F1F5F9';
+    tabBulk.style.color = '#475569';
+    tabBulk.style.fontWeight = '700';
+
+    paneSingle.style.display = 'block';
+    paneBulk.style.display = 'none';
+  } else {
+    tabBulk.style.background = '#00A896';
+    tabBulk.style.color = '#FFFFFF';
+    tabBulk.style.fontWeight = '800';
+
+    tabSingle.style.background = '#F1F5F9';
+    tabSingle.style.color = '#475569';
+    tabSingle.style.fontWeight = '700';
+
+    paneSingle.style.display = 'none';
+    paneBulk.style.display = 'block';
+  }
+}
+window.switchTLReassignTab = switchTLReassignTab;
+
+// 2. Ejecutar Rebalanceo de Carga Masiva (Algorítmico)
+async function submitBulkRebalance() {
+  const checkedBoxes = document.querySelectorAll('input[name="tl-rebalance-analyst"]:checked');
+  const selectedUsernames = Array.from(checkedBoxes).map(cb => cb.value);
+
+  if (selectedUsernames.length === 0) {
+    showToast('Seleccione al menos un colaborador para el balanceo', 'warning');
+    return;
+  }
+
+  const strategy = document.getElementById('tl-rebalance-strategy')?.value || 'even';
+  const instCode = document.getElementById('tl-rebalance-institution')?.value || 'all';
+
+  const submitBtn = document.querySelector('button[onclick="submitBulkRebalance()"]');
+  const originalText = submitBtn ? submitBtn.innerHTML : '⚡ Ejecutar Balanceo por Carga';
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span style="display:flex; align-items:center; gap:8px;">⚖️ Balanceando...</span>';
+  }
+
+  try {
+    const res = await API.rebalanceWorkload(selectedUsernames, strategy, instCode);
+    showToast(res.message || 'Balanceo por carga ejecutado con éxito', 'success');
+    closeQuickReassignModal();
+    if (typeof loadTeamLeaderData === 'function') {
+      await loadTeamLeaderData();
+    }
+  } catch (err) {
+    console.error('Error al ejecutar balanceo por carga:', err);
+    showToast(err.detail || 'Ocurrió un error al balancear la carga', 'error');
+  } finally {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalText;
+    }
+  }
+}
+window.submitBulkRebalance = submitBulkRebalance;
+
+// 3. Filtrar Analistas de Torre de Control por Nivel de Soporte
+window.tlActiveLevelFilter = 'all';
+function filterTLAnalystsByLevel(level) {
+  window.tlActiveLevelFilter = level;
+  
+  ['all', 'N1', 'N2', 'N3'].forEach(l => {
+    const btn = document.getElementById(`tl-btn-level-${l}`);
+    if (btn) {
+      if (l === level) {
+        btn.style.background = '#0F172A';
+        btn.style.color = '#FFFFFF';
+      } else {
+        btn.style.background = '#F1F5F9';
+        btn.style.color = '#475569';
+      }
+    }
+  });
+
+  if (window._lastRawAnalysts && typeof renderTeamLeaderAnalysts === 'function') {
+    renderTeamLeaderAnalysts(window._lastRawAnalysts);
+  }
+}
+window.filterTLAnalystsByLevel = filterTLAnalystsByLevel;
 
 window.autoBalanceWorkload = () => {
   const originSelect = document.getElementById('tl-reassign-origin-user');
@@ -12132,6 +12487,131 @@ window.submitQuickReassign = submitQuickReassign;
 window.autoRebalanceWorkload = autoRebalanceWorkload;
 window.openRescueModal = openRescueModal;
 window.closeRescueModal = closeRescueModal;
+
+// =============================================================================
+// [PROPUESTA 3] LÓGICA DE CONTROL DE TRIAGE DRAWER Y ASIGNACIÓN EXPRESS ⚡
+// =============================================================================
+function toggleTLTriageDrawer(open) {
+  const drawer = document.getElementById('tl-triage-drawer');
+  if (!drawer) return;
+  if (open) {
+    drawer.style.transform = 'translateX(0)';
+    renderTLTriageList();
+  } else {
+    drawer.style.transform = 'translateX(100%)';
+  }
+}
+
+function renderTLTriageList() {
+  const container = document.getElementById('tl-triage-list-container');
+  const countBadge = document.getElementById('tl-triage-badge-count');
+  const kpiBadge = document.getElementById('tl-kpi-unassigned');
+  if (!container) return;
+
+  // Filtrar tickets en estado NUEVO sin analista asignado
+  const unassigned = (AppState.tickets || []).filter(t => 
+    !t.assigned_to_username && !t.assignee_username &&
+    ['NUEVO', 'ASIGNADO'].includes((t.status || '').toUpperCase())
+  );
+
+  if (countBadge) countBadge.textContent = unassigned.length;
+  if (kpiBadge) kpiBadge.textContent = unassigned.length;
+
+  if (unassigned.length === 0) {
+    container.innerHTML = `
+      <div style="padding: 40px 10px; text-align: center;">
+        <span style="font-size: 32px; display: block; margin-bottom: 10px;">🎉</span>
+        <div style="font-size: 12px; font-weight: 800; color: #10B981;">Guardia sin Pendientes</div>
+        <div style="font-size: 10.5px; color: #64748B; margin-top: 4px;">Todos los incidentes activos de la guardia cuentan con analistas de soporte asignados.</div>
+      </div>
+    `;
+    return;
+  }
+
+  // Generar opciones para el selector de analistas activos
+  const activeAnalysts = window._lastRawAnalysts || [];
+  const optionsHtml = activeAnalysts.map(a => 
+    `<option value="${a.username}">${a.full_name} (${a.support_level || 'N1'})</option>`
+  ).join('');
+
+  container.innerHTML = unassigned.map(t => {
+    let pBadge = '';
+    if (t.priority === 'P1') {
+      pBadge = `<span style="background: #FEE2E2; color: #DC2626; font-size: 8.5px; font-weight: 900; padding: 1px 4px; border-radius: 4px;">P1 CRÍTICO</span>`;
+    } else {
+      pBadge = `<span style="background: #EFF6FF; color: #1E40AF; font-size: 8.5px; font-weight: 800; padding: 1px 4px; border-radius: 4px;">${t.priority || 'P2'}</span>`;
+    }
+
+    return `
+      <div class="triage-express-card" data-ticket-id="${t.id}" style="background: #F8FAFC; border: 1.5px solid #E2E8F0; border-radius: 10px; padding: 10px 12px; display: flex; flex-direction: column; gap: 8px; transition: all 0.15s ease;" onmouseover="this.style.borderColor='#CBD5E1'; this.style.background='#FFFFFF';" onmouseout="this.style.borderColor='#E2E8F0'; this.style.background='#F8FAFC';">
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
+          <span style="font-family: monospace; font-size: 11px; font-weight: 800; color: #64748B;">#${t.id}</span>
+          ${pBadge}
+        </div>
+        <div style="font-size: 11.5px; font-weight: 800; color: #1F2937; line-height: 1.35; max-height: 34px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
+          ${t.title || 'Solicitud sin título'}
+        </div>
+        <div style="font-size: 10.5px; color: #4B5563; font-weight: 600;">
+          🏥 ${t.institution_name || t.institution_code || 'Clínica Asociada'}
+        </div>
+        <div style="margin-top: 4px;">
+          <label style="display: block; font-size: 9.5px; font-weight: 800; color: #475569; text-transform: uppercase; margin-bottom: 4px;">Asignar Express a:</label>
+          <select class="triage-analyst-select" style="width: 100%; border: 1px solid #CBD5E1; border-radius: 6px; font-size: 11px; padding: 4px 8px; background: #FFFFFF; font-weight: 700; color: #0F172A; height: 28px;">
+            <option value="">-- Sin Asignar --</option>
+            ${optionsHtml}
+          </select>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+async function submitTLTriageExpress() {
+  const container = document.getElementById('tl-triage-list-container');
+  if (!container) return;
+
+  const cards = container.querySelectorAll('.triage-express-card');
+  let assignedCount = 0;
+  let errorCount = 0;
+
+  showToast('Iniciando asignaciones de lote express...', 'info');
+
+  for (const card of cards) {
+    const ticketId = card.getAttribute('data-ticket-id');
+    const select = card.querySelector('.triage-analyst-select');
+    if (!select) continue;
+
+    const username = select.value;
+    if (username) {
+      try {
+        await API.reassignTicket(ticketId, username, 'Asignación Express por Triage Torre de Control');
+        assignedCount++;
+      } catch (err) {
+        console.error(`Error asignando ticket ${ticketId}:`, err);
+        errorCount++;
+      }
+    }
+  }
+
+  if (assignedCount > 0) {
+    showToast(`⚡ Se asignaron ${assignedCount} incidentes con éxito`, 'success');
+    toggleTLTriageDrawer(false);
+    await loadTeamLeaderData();
+    await loadTickets();
+  } else {
+    showToast('No seleccionó ningún analista para asignar', 'warning');
+  }
+}
+
+// [PROPUESTA 4] Atajo de simulación ágil de contacto omnicanal
+function simulateRescueContact(channel, ticketId) {
+  showToast(`${channel} abierto para el ticket #${ticketId}. Iniciando contacto de inmediato...`, 'info');
+}
+
+window.toggleTLTriageDrawer = toggleTLTriageDrawer;
+window.renderTLTriageList = renderTLTriageList;
+window.submitTLTriageExpress = submitTLTriageExpress;
+window.simulateRescueContact = simulateRescueContact;
 
 async function submitRescueResolution() {
  const inputHidden = document.getElementById('tl-rescue-target-ticket-id');
@@ -12360,7 +12840,19 @@ function renderKanbanBoard(releases) {
         <div style="font-size: 12.5px; font-weight: 700; color: #0F172A; line-height: 1.3;">${rel.name}</div>
         ${rel.notes ? `<div style="font-size: 11px; color: #64748B; line-height: 1.3;">${rel.notes}</div>` : ''}
         ${ticketsHtml}
-        <div style="margin-top: 6px;">
+        
+        <!-- Selector Manual de Estado (Estilo Quantux) -->
+        <div style="margin-top: 4px; border-top: 1px solid #F1F5F9; padding-top: 6px; display: flex; flex-direction: column; gap: 3px;">
+          <label style="font-size: 9px; font-weight: 800; color: #475569; letter-spacing: 0.2px;">ESTADO OPERATIVO:</label>
+          <select onchange="onKanbanStatusChange('${rel.tag}', this.value)" style="font-size: 11.5px; padding: 4px 6px; border-radius: 6px; border: 1.5px solid #CBD5E1; height: 30px; width: 100%; font-weight: 700; cursor: pointer; background: #FFF; color: #334155; outline: none;">
+            <option value="PLANIFICADA" ${status === 'PLANIFICADA' ? 'selected' : ''}>PLANIFICADAS</option>
+            <option value="EN_DESARROLLO" ${status === 'EN_DESARROLLO' ? 'selected' : ''}>EN DESARROLLO (N3)</option>
+            <option value="STAGING" ${status === 'STAGING' ? 'selected' : ''}>STAGING / PRUEBAS</option>
+            <option value="DESPLEGADA" ${status === 'DESPLEGADA' ? 'selected' : ''}>DESPLEGADAS (PROD)</option>
+          </select>
+        </div>
+
+        <div style="margin-top: 4px;">
           ${actionButtonsHtml}
         </div>
       </div>
@@ -12444,9 +12936,9 @@ function closeNewReleaseModal() {
 
 async function submitNewRelease(e) {
   if (e) e.preventDefault();
-  const tag = document.getElementById('new-rel-tag')?.value.trim();
-  const name = document.getElementById('new-rel-name')?.value.trim();
-  const notes = document.getElementById('new-rel-notes')?.value.trim();
+  const tag = document.getElementById('kanban-new-rel-tag')?.value.trim();
+  const name = document.getElementById('kanban-new-rel-name')?.value.trim();
+  const notes = document.getElementById('kanban-new-rel-notes')?.value.trim();
 
   if (!tag || !name) {
     showToast('Complete la etiqueta y el nombre del release', 'warning');
@@ -12549,6 +13041,19 @@ async function submitEscalateN3() {
   }
 }
 
+async function onKanbanStatusChange(tag, newStatus) {
+  try {
+    if (newStatus === 'DESPLEGADA') {
+      await deployReleaseFromKanban(tag);
+    } else {
+      await advanceReleaseStatus(tag, newStatus);
+    }
+  } catch (err) {
+    console.error('Error al cambiar status de release:', err);
+    showToast('Error al cambiar estado', 'error');
+  }
+}
+
 window.loadKanbanBoard = loadKanbanBoard;
 window.advanceReleaseStatus = advanceReleaseStatus;
 window.deployReleaseFromKanban = deployReleaseFromKanban;
@@ -12558,6 +13063,7 @@ window.submitNewRelease = submitNewRelease;
 window.openEscalateN3Modal = openEscalateN3Modal;
 window.closeEscalateN3Modal = closeEscalateN3Modal;
 window.submitEscalateN3 = submitEscalateN3;
+window.onKanbanStatusChange = onKanbanStatusChange;
 
 // =============================================================================
 // MÓDULO 10: CALIFICACIÓN Y CIERRE CSAT "BUENA ONDA"
@@ -12565,60 +13071,100 @@ window.submitEscalateN3 = submitEscalateN3;
 let _csatTargetTicketId = null;
 
 function openCsatModal(ticketId) {
- _csatTargetTicketId = ticketId;
- const modal = document.getElementById('modal-csat-rate');
- const tktLabel = document.getElementById('csat-ticket-id-label');
- const feedbackInput = document.getElementById('csat-feedback-text');
- const kudosInput = document.getElementById('csat-selected-kudos');
+  console.log('openCsatModal() disparado para el ticket ID:', ticketId);
+  try {
+    _csatTargetTicketId = ticketId;
+    const modal = document.getElementById('modal-csat-rate');
+    if (!modal) {
+      console.error('ERROR: No se encontró el elemento con ID "modal-csat-rate" en el DOM.');
+      return;
+    }
 
- if (!modal) return;
- if (tktLabel) tktLabel.textContent = `#${ticketId}`;
- if (feedbackInput) feedbackInput.value = '';
- if (kudosInput) kudosInput.value = '';
+    const tktLabel = document.getElementById('csat-ticket-id-label');
+    const feedbackInput = document.getElementById('csat-feedback-text');
+    const kudosInput = document.getElementById('csat-selected-kudos');
 
- document.querySelectorAll('.btn-kudo-chip').forEach(btn => {
- btn.style.background = '#FFFFFF';
- btn.style.borderColor = '#CBD5E1';
- btn.style.color = '#334155';
- btn.classList.remove('active');
- });
+    if (tktLabel) {
+      tktLabel.textContent = '#' + ticketId;
+    }
+    if (feedbackInput) {
+      feedbackInput.value = '';
+    }
+    if (kudosInput) {
+      kudosInput.value = '';
+    }
 
- selectCsatRating(5);
- modal.style.display = 'flex';
+    document.querySelectorAll('.btn-kudo-chip').forEach(btn => {
+      if (btn) {
+        btn.style.background = '#FFFFFF';
+        btn.style.borderColor = '#CBD5E1';
+        btn.style.color = '#334155';
+        btn.classList.remove('active');
+      }
+    });
+
+    selectCsatRating(5);
+
+    // Forzar visualización de forma ultra-robusta
+    modal.style.setProperty('display', 'flex', 'important');
+    modal.classList.add('active');
+    console.log('modal-csat-rate mostrado correctamente con display: flex.');
+  } catch (err) {
+    console.error('EXCEPCIÓN en openCsatModal():', err);
+  }
 }
 
 function closeCsatModal() {
- const modal = document.getElementById('modal-csat-rate');
- if (modal) modal.style.display = 'none';
- _csatTargetTicketId = null;
+  console.log('closeCsatModal() disparado.');
+  try {
+    const modal = document.getElementById('modal-csat-rate');
+    if (modal) {
+      modal.style.setProperty('display', 'none', 'important');
+      modal.classList.remove('active');
+    }
+    _csatTargetTicketId = null;
+  } catch (err) {
+    console.error('EXCEPCIÓN en closeCsatModal():', err);
+  }
 }
 
 function selectCsatRating(stars) {
- const hiddenInput = document.getElementById('csat-selected-stars');
- if (hiddenInput) hiddenInput.value = stars;
+  console.log('selectCsatRating() disparado con valor:', stars);
+  try {
+    const hiddenInput = document.getElementById('csat-selected-stars');
+    if (hiddenInput) {
+      hiddenInput.value = stars;
+    }
 
- const alertBox = document.getElementById('csat-low-score-alert');
- const kudosSection = document.getElementById('csat-kudos-section');
+    const alertBox = document.getElementById('csat-low-score-alert');
+    const kudosSection = document.getElementById('csat-kudos-section');
 
- if (stars <= 2) {
- if (alertBox) alertBox.style.display = 'block';
- if (kudosSection) kudosSection.style.display = 'none';
- } else {
- if (alertBox) alertBox.style.display = 'none';
- if (kudosSection) kudosSection.style.display = 'block';
- }
+    if (stars <= 2) {
+      if (alertBox) alertBox.style.display = 'block';
+      if (kudosSection) kudosSection.style.display = 'none';
+    } else {
+      if (alertBox) alertBox.style.display = 'none';
+      if (kudosSection) kudosSection.style.display = 'block';
+    }
 
- const buttons = document.querySelectorAll('.csat-star-btn');
- buttons.forEach(btn => {
- const s = parseInt(btn.dataset.stars, 10);
- if (s === stars) {
- btn.style.borderColor = s <= 2 ? '#EF4444' : (s === 3 ? '#F59E0B' : '#22C55E');
- btn.style.background = s <= 2 ? '#FEF2F2' : (s === 3 ? '#FFFBEB' : '#F0FDF4');
- } else {
- btn.style.borderColor = '#E2E8F0';
- btn.style.background = '#F8FAFC';
- }
- });
+    const buttons = document.querySelectorAll('.csat-star-btn');
+    buttons.forEach(btn => {
+      if (btn) {
+        const s = parseInt(btn.dataset.stars, 10);
+        if (!isNaN(s)) {
+          if (s === stars) {
+            btn.style.borderColor = s <= 2 ? '#EF4444' : (s === 3 ? '#F59E0B' : '#22C55E');
+            btn.style.background = s <= 2 ? '#FEF2F2' : (s === 3 ? '#FFFBEB' : '#F0FDF4');
+          } else {
+            btn.style.borderColor = '#E2E8F0';
+            btn.style.background = '#F8FAFC';
+          }
+        }
+      }
+    });
+  } catch (err) {
+    console.error('EXCEPCIÓN en selectCsatRating():', err);
+  }
 }
 
 function toggleCsatKudo(btn, kudoText) {
@@ -12681,6 +13227,12 @@ async function submitCsatClosure() {
  showToast('Error al cerrar la solicitud', 'error');
  }
 }
+
+window.openCsatModal = openCsatModal;
+window.closeCsatModal = closeCsatModal;
+window.selectCsatRating = selectCsatRating;
+window.toggleCsatKudo = toggleCsatKudo;
+window.submitCsatClosure = submitCsatClosure;
 
 // =============================================================================
 // 14. GESTIÓN DE INCIDENTES MASIVOS Y TICKETS HIJOS (MÓDULO 1)
@@ -13446,3 +13998,36 @@ function resetZdMainOrg() {
   }
 }
 window.resetZdMainOrg = resetZdMainOrg;
+
+// =========================================================================
+// AUTO-REFRESCO DE SEGUNDO PLANO EN VIVO (INTEGRACION REACTIVA DE ESTADO)
+// =========================================================================
+if (!window._ticketsAutoRefreshInterval) {
+  window._ticketsAutoRefreshInterval = setInterval(async () => {
+    try {
+      // Sincronizar de forma reactiva únicamente si la pestaña del navegador está visible
+      if (document.visibilityState === 'visible') {
+        const searchInput = document.getElementById('jira-ticket-search-input');
+        const hasSearchQuery = searchInput && searchInput.value.trim().length > 0;
+        
+        // Cargar los tickets frescos del servidor
+        await loadTickets();
+        
+        // Si hay una búsqueda de texto activa, volver a aplicar los filtros de búsqueda
+        if (hasSearchQuery) {
+          applyJiraQueueFilters();
+        }
+
+        // Si el usuario tiene seleccionado un ticket en pantalla, refrescar sus detalles en vivo
+        if (AppState.selectedTicket && AppState.selectedTicket.id) {
+          const freshTicket = await API.getTicket(AppState.selectedTicket.id);
+          AppState.selectedTicket = freshTicket;
+          renderTicketDetail(freshTicket);
+          renderWsTimeline(freshTicket);
+        }
+      }
+    } catch (err) {
+      console.warn('[AutoRefresh] Error durante la sincronización reactiva en segundo plano:', err);
+    }
+  }, 10000); // Sincronización continua cada 10 segundos
+}

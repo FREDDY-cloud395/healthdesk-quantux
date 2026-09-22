@@ -20,6 +20,8 @@ backend/uploads/
 backend/quantux.db
 backend/quantux_tickets.db
 backend/quantux_v4.db
+healthdesk.db
+quantux_tickets.db
 
 # Screenshots & Local Test Dumps
 *.png

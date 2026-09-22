@@ -5,8 +5,8 @@ from app.db.seed import run_seed
 
 app = FastAPI(
     title="Quantux ServiceDesk Enterprise API",
-    description="Backend centralizado de Quantux ServiceDesk Enterprise (Ambiente de Desarrollo en la Nube v4.0.0-DEV)",
-    version="4.0.0-DEV"
+    description="Backend centralizado de Quantux ServiceDesk Enterprise (Ambiente de Desarrollo en la Nube v4.1.0-DEV)",
+    version="4.1.0-DEV"
 )
 
 # GZIP para aceleración de transferencia en redes móviles y tablets (90% reducción de payload)
@@ -155,9 +155,9 @@ def api_status():
         "system": "Quantux ServiceDesk Enterprise",
         "organization": "Quantux Global Enterprise",
         "status": "ONLINE",
-        "environment": "Cloud Development (v4.0.0-DEV)",
-        "version": "4.0.0-DEV",
-        "release": "Ambiente de Desarrollo en la Nube (v4.0.0-DEV)",
+        "environment": "Cloud Development (v4.1.0-DEV)",
+        "version": "4.1.0-DEV",
+        "release": "Ambiente de Desarrollo en la Nube (v4.1.0-DEV)",
         "cockpit_url": "/cockpit",
         "scrumban_url": "/scrumban",
         "manual_url": "/manual",

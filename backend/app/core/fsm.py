@@ -29,7 +29,7 @@ ALLOWED_TRANSITIONS = {
     TicketStatus.EN_CURSO: [TicketStatus.RESUELTO, TicketStatus.EN_CURSO, TicketStatus.EN_ESPERA],
     TicketStatus.EN_ESPERA: [TicketStatus.EN_CURSO, TicketStatus.RESUELTO, TicketStatus.EN_ESPERA],
     TicketStatus.RESUELTO: [TicketStatus.CERRADO, TicketStatus.EN_CURSO],
-    TicketStatus.CERRADO: []  # Estado final inmutable
+    TicketStatus.CERRADO: [TicketStatus.EN_CURSO]  # Permitir reapertura a en curso
 }
 
 def validate_status_transition(current_status: TicketStatus, target_status: TicketStatus) -> bool:

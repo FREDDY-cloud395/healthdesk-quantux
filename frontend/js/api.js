@@ -142,6 +142,16 @@ const API = {
     return res.json();
   },
 
+  async createIaResolvedTicket(payload) {
+    const res = await fetch(`${API_BASE}/api/v1/tickets/ia-resolved`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw await res.json();
+    return res.json();
+  },
+
   // EDICION DE TICKET EN ESTADO NUEVO (UH-11)
   async updateTicket(ticketId, payload) {
     const res = await fetch(`${API_BASE}/api/v1/tickets/${ticketId}`, {
@@ -393,6 +403,21 @@ const API = {
     return res.json();
   },
 
+  async rebalanceWorkload(analystUsernames, strategy = "even", institutionCode = "all", teamLeaderUsername = "cdaneri") {
+    const res = await fetch(`${API_BASE}/api/v1/team-leader/custom-rebalance`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        analyst_usernames: analystUsernames,
+        strategy: strategy,
+        institution_code: institutionCode,
+        team_leader_username: teamLeaderUsername
+      })
+    });
+    if (!res.ok) throw await res.json();
+    return res.json();
+  },
+
   async rescueClient(ticketId, payload) {
     const res = await fetch(`${API_BASE}/api/v1/team-leader/rescue/${ticketId}`, {
       method: 'POST',
@@ -430,6 +455,16 @@ const API = {
     return res.json();
   },
 
+  async updateReleaseStatus(tag, status, updatedBy = 'admin') {
+    const res = await fetch(`${API_BASE}/api/v1/releases/${encodeURIComponent(tag)}/status`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status })
+    });
+    if (!res.ok) throw await res.json();
+    return res.json();
+  },
+
   // 9. V4.0.0 INCIDENTES MAYORES (MAJOR INCIDENT)
   async declareMajorIncident(ticketId, isMajor = true) {
     const res = await fetch(`${API_BASE}/api/v1/tickets/${ticketId}/major-incident?is_major=${Boolean(isMajor)}`, {
@@ -442,6 +477,12 @@ const API = {
 
   async setMajorIncident(ticketId, isMajor = true) {
     return this.declareMajorIncident(ticketId, isMajor);
+  },
+
+  async getActiveMajorIncident() {
+    const res = await fetch(`${API_BASE}/api/v1/tickets/major-incidents/active`);
+    if (!res.ok) throw await res.json();
+    return res.json();
   },
 
   async linkChildrenTickets(ticketId, childIds, linkedBy = 'soporte') {

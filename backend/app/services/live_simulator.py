@@ -35,11 +35,69 @@ TITLES = [
 OPERATORS = ["soporte", "cpaez", "dnavarro"]
 DOCTORS = ["dra_martinez", "dr_lopez", "solicitante", "dr_fernandez", "dra_gomez"]
 
+_last_major_incident_time = None
+
 def run_simulation_cycle():
     """Ejecuta una iteración del simulador de actividad continua."""
+    global _last_major_incident_time
     try:
         with Session(engine) as session:
             now = datetime.utcnow()
+            
+            # Inyectar incidente masivo cada 5 minutos (300 segundos)
+            if _last_major_incident_time is None or (now - _last_major_incident_time).total_seconds() >= 300:
+                _last_major_incident_time = now
+                try:
+                    from app.services.major_incident_bot import MajorIncidentBot
+                    platform = "CAT_RECETA"  # Receta Electrónica es la plataforma crítica por defecto
+                    institution = random.choice(INSTITUTIONS)
+                    doctor = random.choice(DOCTORS)
+                    print(f"[LiveDemoSimulator] INICIANDO SIMULACION DE INCIDENTE MASIVO en plataforma {platform}...")
+                    
+                    for i in range(3):
+                        prefix = f"TICK-{now.strftime('%Y%m')}"
+                        existing_ids = session.exec(select(Ticket.id).where(Ticket.id.startswith(prefix))).all()
+                        next_seq = len(existing_ids) + 1
+                        t_id = f"{prefix}-{next_seq:04d}"
+                        
+                        title = f"Falla masiva de acceso concurrente en modulo {platform} - Lote #{i+1}"
+                        new_tkt = Ticket(
+                            id=t_id,
+                            title=title,
+                            description=f"Incidencia masiva critica simulada en la guardia de {institution}. Corte total del servicio {platform}. Se reportan errores 500 continuos en las terminales medicas.",
+                            platform_code=platform,
+                            institution_code=institution,
+                            ticket_type=TicketType.INCIDENTE,
+                            impact=ImpactLevel.CRITICO,
+                            urgency=UrgencyLevel.CRITICA,
+                            priority=PriorityLevel.P1,
+                            status=TicketStatus.NUEVO,
+                            requester_username=doctor,
+                            assignee_username=None,
+                            created_at=now,
+                            updated_at=now
+                        )
+                        session.add(new_tkt)
+                        
+                        audit = TicketAuditLog(
+                            ticket_id=t_id,
+                            changed_by_username=doctor,
+                            field_changed="status",
+                            old_value="",
+                            new_value="NUEVO",
+                            change_reason="Creacion automatica de reporte critico de guardia.",
+                            created_at=now
+                        )
+                        session.add(audit)
+                        session.flush()  # Sincronizar para que la consulta del bot pericial encuentre el ticket
+                        
+                        # Disparar evaluacion del bot pericial ITIL
+                        MajorIncidentBot.evaluate_and_associate(session, new_tkt)
+                    
+                    session.commit()
+                    print("[LiveDemoSimulator] Incidente Masivo P1 creado con exito.")
+                except Exception as e:
+                    print(f"[LiveDemoSimulator ERROR al declarar incidente masivo]: {e}")
             
             # 1. Asegurar tickets con fechas de HOY y fechas distribuidas
             total_tickets = session.exec(select(Ticket)).all()

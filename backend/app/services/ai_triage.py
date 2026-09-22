@@ -72,7 +72,7 @@ class N3CognitiveTriageEngine:
                     break
 
         # 3. Razonamiento Pericial y Deducción de Causa Raíz N3
-        subsystem = "Consultorio Digital 2 (CD2)"
+        subsystem = "Consultorio Digital"
         root_cause = "Consulta asistencial estándar en plataforma clínica"
         recommended_action = "Aplicar procedimiento estándar de soporte"
         escalation_circuit = "Mesa de Ayuda N1"
@@ -80,132 +80,181 @@ class N3CognitiveTriageEngine:
         solution_steps = []
         requires_pau = False
 
+        # Definición de variables para la resolución unificada de 3 líneas
+        resolution_text = ""
+
+        # Reglas Heurísticas Especiales de Fallback (Evaluadas primero para máxima precisión y cero mezcla de temas)
+        # Regla Heurística Especial: OSDEPYM
+        if "osdepym" in query_lower:
+            subsystem = "Nomenclador de Obras Sociales (OSDEPYM)"
+            root_cause = "Búsqueda por sigla de obra social bajo nueva razón social."
+            resolution_text = "El nomenclador permite buscar por la sigla 'OSDEPYM' o 'Obra Social de Empresarios, Profesionales y Monotributistas de Argentina'."
+            escalation_circuit = "Mesa de Ayuda N1"
+            recommended_action = "Actualizar padrón de obras sociales en la base de datos de la plataforma."
+
+        # Regla Heurística Especial: Nutrición
+        elif any(k in query_lower for k in ["nutricion", "nutrición", "190173", "420296"]):
+            subsystem = "Módulo de Nutrición y Coberturas"
+            root_cause = "Rechazo de prestación activa 190173 en atenciones de nutrición virtual."
+            resolution_text = "Recargue la pantalla (F5) para aplicar el fix de validación o registre la prestación '420296' por fuera del sistema."
+            escalation_circuit = "Mesa de Ayuda N1"
+            recommended_action = "Revisar logs de rechazo de prestación de nutrición y aplicar reintento en base de datos."
+
+        # Regla Heurística Especial: Cambiar datos o mail del paciente (El médico no lo puede solucionar)
+        elif any(p in query_lower for p in ["paciente"]) and any(k in query_lower for k in ["mail", "email", "correo", "teléfono", "telefono", "celular", "modificar", "cambiar", "datos"]):
+            subsystem = "Servicio de Datos Maestros de Pacientes"
+            root_cause = "Modificación de datos de contacto del paciente."
+            resolution_text = "Por motivos de seguridad, los profesionales no poseen permisos para editar los datos de contacto del paciente."
+            escalation_circuit = "Soporte Técnico N1 -> Gestión de Afiliados / Pacientes"
+            recommended_action = "Actualizar datos de contacto del paciente en el maestro de afiliados bajo solicitud formal validada."
+
         # Regla Heurística 1: Matrículas SISA / CRM
-        if any(k in query_lower for k in ["matrícula", "matricula", "sisa", "crm", "bloquead"]):
+        elif any(k in query_lower for k in ["matrícula", "matricula", "sisa", "crm", "bloquead"]):
             subsystem = "Gestión de Matrículas (SISA / CRM)"
-            root_cause = "Discrepancia entre matrícula configurada por defecto e inhabilitada frente a matrículas activas registradas en SISA, o inconsistencia en CRM por ICs duplicados."
-            solution_steps = [
-                "1. **Verificación en Pantalla:** El sistema compara automáticamente su matrícula por defecto. Si posee otra matrícula habilitada en diferente jurisdicción o especialidad, el menú desplegable de matrícula se desbloqueará para su selección manual.",
-                "2. **Estado en SISA:** Compruebe que la matrícula figure con estado 'Habilitada' en el Registro Federal de Profesionales de Salud (REFEPS/SISA).",
-                "3. **Contingencia N3:** Si persiste bloqueada, un analista de soporte aplicará la replicación de matrícula activa hacia defaultMatricula o gestionará la unificación de Identificador Comercial (IC)."
-            ]
+            root_cause = "Discrepancia de matrícula configurada frente a registros activos en SISA."
+            resolution_text = "Ingrese su matrícula en el menú de HCE para desbloquear el selector o corrobore su estado habilitado en SISA."
             escalation_circuit = "MDA-Aplicaciones N1 -> Especialistas N2 CRM/SISA"
             recommended_action = "Verificar estado REFEPS y aplicar query de contingencia en defaultMatricula si hay prescripción pendiente."
 
         # Regla Heurística 2: Videoconsulta / Jitsi / Permisos / Conectividad
         elif any(k in query_lower for k in ["video", "cámara", "camara", "micrófono", "microfono", "jitsi", "llamada", "spinner", "jointimeout", "conectar"]):
             subsystem = "Motor WebRTC de Videoconsulta (Jitsi Core)"
-            root_cause = "Tiempo de espera de sincronización WebRTC agotado (joinTimeout) o permisos de periféricos multimedia bloqueados en el navegador local."
-            solution_steps = [
-                "1. **Permisos del Navegador:** Haga clic en el ícono de candado junto a la URL del navegador y asegúrese de que Cámara y Micrófono estén en 'Permitir'.",
-                "2. **Reconexión Automática:** La plataforma ejecuta 5 reintentos transparentes cada 20 segundos. Si observa el indicador de carga por más de 1 minuto, refresque la página (F5).",
-                "3. **Protección de Sesión:** Evite cerrar la pestaña sin confirmar en el cuadro de diálogo para no desconectar involuntariamente al paciente en espera."
-            ]
+            root_cause = "Permisos de periféricos multimedia bloqueados o tiempo de sincronización WebRTC agotado."
+            resolution_text = "Permita el acceso a Cámara/Micrófono desde el candado de la URL o refresque la pantalla (F5) si el spinner no carga."
             escalation_circuit = "Soporte N1 Comunicaciones WebRTC"
             recommended_action = "Validar telemetría de socket WebRTC y verificar ancho de banda del prestador."
 
         # Regla Heurística 3: SNOMED CT / Laboratorios
         elif any(k in query_lower for k in ["laboratorio", "snomed", "estudio", "hepatograma", "hiv", "analisis", "análisis", "orina"]):
             subsystem = "Nomenclador Semántico de Estudios (SNOMED CT)"
-            root_cause = "Búsqueda por término coloquial no indexado textualmente en la descripción canónica de SNOMED CT."
-            solution_steps = [
-                "1. **Búsqueda por Raíz:** Ingrese únicamente las primeras 4 letras de la práctica (por ejemplo, 'hepa' para Pruebas de Función Hepática, o 'inmuno' para HIV).",
-                "2. **Sinónimos Homologados:** Se han incorporado las descripciones cotidianas entre paréntesis para facilitar la prescripción ambulatoria.",
-                "3. **Solicitud de Incorporación:** Si requiere un panel específico no listado, indíquelo al soporte para incorporar el código SNOMED en la próxima versión."
-            ]
+            root_cause = "Búsqueda por término coloquial no indexado en la descripción canónica de SNOMED CT."
+            resolution_text = "Ingrese únicamente las primeras 4 letras de la práctica o use sinónimos comunes entre paréntesis."
             escalation_circuit = "Analista Funcional N3 - Terminología Médica"
             recommended_action = "Mapear término coloquial al código de concepto SNOMED correspondiente en el catálogo local."
 
         # Regla Heurística 4: PDFs / Documentos 404 / 400
         elif any(k in query_lower for k in ["pdf", "descarga", "404", "400", "vencido", "archivo", "adjunto", "hash"]):
             subsystem = "Servicio Criptográfico de Almacenamiento Seguro (Bucket)"
-            root_cause = "Expiración de la política de retención de 6 meses en bucket de almacenamiento (Error 404) o truncamiento de la cadena del hash en la URL (Error 400)."
-            solution_steps = [
-                "1. **Si el error es 404:** Los documentos con más de 6 meses de emisión son depurados por política de retención. Debe solicitarse una nueva prescripción digital actualizada.",
-                "2. **Si el error es 400:** No copie y pegue la dirección web manualmente; haga clic directo en el enlace del correo para evitar cortar el hash de seguridad.",
-                "3. **Regeneración:** El equipo de soporte puede emitir un nuevo enlace firmado temporal con hash validado."
-            ]
+            root_cause = "Expiración de la retención de documentos (404) o truncamiento del hash de URL (400)."
+            resolution_text = "Los documentos expiran a los 6 meses (Error 404). Haga clic directo en el enlace del correo para evitar cortar el hash (Error 400)."
             escalation_circuit = "Mesa de Ayuda N1 - Plataforma de Almacenamiento"
             recommended_action = "Regenerar token temporal presignado con hash SHA-256 verificado."
 
         # Regla Heurística 5: Datos Maestros / Nombres / SAP / IAM / Turnos
         elif any(k in query_lower for k in ["nombre", "apellido", "iam", "videoconsulta nombre", "cartilla", "prefijo", "dr", "lic", "contrato"]):
             subsystem = "Matriz de Interoperabilidad (IAM / Turnos / CRM Contratos)"
-            root_cause = "Desalineación entre la fuente maestra de identidad (IAM en web) versus la tabla transaccional de Turnos/CRM (en videollamada)."
-            solution_steps = [
-                "1. **En la Web de CD2:** Su nombre proviene del sistema central de identidades (IAM). Si contiene un error, se genera un ticket para corrección en IAM.",
-                "2. **En la Videoconsulta:** El nombre se toma del servicio de Turnos/CRM. La actualización se solicita formalmente al equipo de Contratos y CRM.",
-                "3. **Prefijo (Dr./Lic.):** Está regulado para respetar campos vacíos y evitar valores forzados; su actualización se gestiona en Cartilla Médica."
-            ]
+            root_cause = "Desalineación entre la fuente maestra de identidad (IAM) y la tabla transaccional de turnos."
+            resolution_text = "Su nombre proviene de IAM para la web, o de Cartilla Médica para la videollamada; errores requieren ticket de corrección."
             escalation_circuit = "MDA-Aplicaciones N1 -> Derivación a IAM / CRM"
             recommended_action = "Abrir ticket de corrección de identidad hacia IAM adjuntando comprobante de matrícula y DNI."
 
-        # Regla Heurística 6: Turnos, Mails de Notificación, Prestador y Consultorio
-        elif any(k in query_lower for k in ["mail", "email", "correo", "teléfono", "telefono", "notificacion", "notificación", "turno", "consultorio", "sede"]):
-            subsystem = "Servicio de Notificaciones y Configuración de Consultorio (SAP / Cartilla / CD2)"
-            root_cause = "Reglas de mensajería y configuración del prestador: el correo del profesional no se actualiza de forma automática en los turnos agendados; toma la dirección registrada en el JSON o en la casilla principal de Cartilla Médica."
-            solution_steps = [
-                "1. **Email del Consultorio / Prestador (Mensajería):** El correo del médico no se actualiza automáticamente desde el turno; toma el mail del JSON original. El prestador lo modifica directamente en Extranet/Mis Datos. Las notificaciones se despachan a 1 sola casilla: la configurada como principal en Cartilla Médica.",
-                "2. **Email y Teléfono del Paciente:** Se crean con el primer turno. Al confirmar turnos posteriores, el sistema adopta el mail y teléfono específicos cargados para esa cita.",
-                "3. **Baja o Modificación de Consultorio:** La baja de consultorio es una acción administrativa que requiere aplicar la bandera lógica `isDeleted = true` en la base de datos de CD2.",
-                "4. **Dirección y Teléfono del Consultorio:** Para actualización, solicitar ticket PAU a Mesa de Ayuda para validación y ejecución pericial en BD."
-            ]
-            escalation_circuit = "Soporte Operativo N1 -> Especialistas Cartilla / BD CD2"
-            recommended_action = "Verificar casilla principal en Cartilla Médica y validar JSON de confirmación del turno o aplicar isDeleted en BD si es baja."
+        # Regla Heurística Especial: Baja o Modificación de Consultorio/Sede
+        elif any(k in query_lower for k in ["consultorio", "sede", "baja"]):
+            subsystem = "Configuración de Consultorios y Sedes"
+            root_cause = "Solicitud de baja lógica o modificación de sede activa."
+            resolution_text = "La baja de un consultorio requiere aplicar isDeleted = true y cambios de dirección requieren actualización en base de datos."
+            escalation_circuit = "Soporte Operativo N1 -> Especialistas Cartilla"
+            recommended_action = "Aplicar baja lógica (isDeleted) o modificar datos de sede en la base de datos."
 
-        # Regla Heurística 7: Cierre de Atención y Formularios
-        elif any(k in query_lower for k in ["cerrar", "finalizar", "diagnóstico", "diagnostico", "certificado", "evolución", "evolucion"]):
-            subsystem = "Motor de Validaciones Clínicas y Cierre de Consulta"
-            root_cause = "Omisión del campo mandatorio de Diagnóstico codificado o ingreso de valor '0' en certificados de reposo."
-            solution_steps = [
-                "1. **Diagnóstico Mandatorio:** La normativa legal exige seleccionar un Diagnóstico Principal (CIE-10/SNOMED) para habilitar el botón 'Finalizar Atención'. Completar la evolución escrita no reemplaza este requisito.",
-                "2. **Certificados Médicos:** En certificados que no indican días de reposo, deje el campo numérico vacío o desmarque la opción de reposo para evitar rechazo de validación."
-            ]
+        # Regla Heurística Especial: Mail del profesional y Notificaciones
+        elif any(k in query_lower for k in ["mail", "email", "correo", "notificacion", "notificación"]):
+            subsystem = "Servicio de Notificaciones del Profesional"
+            root_cause = "Casilla de correo del profesional desactualizada o notificaciones no recibidas."
+            resolution_text = "Modifique su correo de mensajería ingresando directamente a la Extranet de Prestadores (Mis Datos)."
+            escalation_circuit = "Soporte Operativo N1 -> Especialistas Cartilla"
+            recommended_action = "Verificar casilla principal en Cartilla Médica y validar despacho de notificaciones."
+
+        # Regla Heurística Especial: Extranet
+        elif "extranet" in query_lower:
+            subsystem = "Autenticación de Extranet de Prestadores (IAM)"
+            root_cause = "Credenciales incorrectas, bloqueo de usuario o falta de sincronización en el portal."
+            resolution_text = "Intente ingresar usando modo incógnito, verifique que su usuario esté activo o use la opción de recuperar contraseña."
             escalation_circuit = "Mesa de Ayuda N1"
-            recommended_action = "Instruir al profesional sobre la obligatoriedad del diagnóstico codificado para la firma electrónica."
+            recommended_action = "Validar estado del usuario en IAM y blanquear contraseña si es necesario."
 
-        # Si no coincidió con ninguna regla estricta, recuperar directamente desde el artículo más afín de la KB
+        # Regla Heurística Especial: Saludos / Mensajes de cortesía
+        elif any(k == query_lower.strip() or query_lower.strip().startswith(k + " ") for k in ["hola", "buenos dias", "buenos días", "buenas tardes", "buenas noches", "saludos", "buen dia", "buen día"]):
+            subsystem = "Asistente de Consulta"
+            root_cause = "Saludo de cortesía o consulta general de bienvenida."
+            resolution_text = "¡Hola! Por favor indique su consulta de soporte o seleccione una de las opciones de ejemplo sugeridas."
+            escalation_circuit = "Mesa de Ayuda N1"
+            recommended_action = "Guiar al profesional para que formule su consulta específica de soporte técnico."
+
+        # Regla Heurística Especial: Diagnóstico
+        elif any(k in query_lower for k in ["diagnóstico", "diagnostico"]):
+            subsystem = "Motor de Validaciones Clínicas"
+            root_cause = "Omisión o error en la codificación del Diagnóstico Principal CIE-10 / SNOMED CT."
+            resolution_text = "Seleccione un diagnóstico principal codificado del listado desplegable para habilitar el botón 'Finalizar Atención'."
+            escalation_circuit = "Mesa de Ayuda N1"
+            recommended_action = "Instruir al profesional sobre la carga obligatoria del diagnóstico codificado para habilitar firma."
+
+        # Regla Heurística Especial: Certificados Médicos
+        elif "certificado" in query_lower:
+            subsystem = "Módulo de Certificados Médicos"
+            root_cause = "Validación de campo numérico de días de reposo o firma de certificado."
+            resolution_text = "En certificados que no indican días de reposo, deje el campo numérico completamente vacío para evitar errores."
+            escalation_circuit = "Mesa de Ayuda N1"
+            recommended_action = "Instruir al profesional sobre dejar vacíos los días de reposo en certificados sin licencia."
+
+        # Regla Heurística Especial: Cierre de Consulta
+        elif any(k in query_lower for k in ["cerrar", "finalizar", "evolución", "evolucion"]):
+            subsystem = "Cierre de Consulta y Guardado de Evolución"
+            root_cause = "Omisión de campos mandatorios (evolución escrita o diagnóstico principal) para la firma de la consulta."
+            resolution_text = "Asegúrese de haber completado tanto la evolución escrita como el diagnóstico principal sin alertas rojas en el formulario."
+            escalation_circuit = "Mesa de Ayuda N1"
+            recommended_action = "Validar integridad del formulario de consulta y destrabar guardado lógico si es necesario."
+
+        # Si no coincidió con ninguna regla heurística, consultar la Base de Conocimiento (KBArticle) si la coincidencia es fuerte (score >= 2)
         else:
-            if top_articles:
-                top_art = top_articles[0]
-                subsystem = top_art.category or "Consultorio Digital 2 (CD2)"
-                root_cause = f"Guía pericial identificada en base de conocimiento: '{top_art.title}'"
+            best_match = matched_articles[0] if matched_articles else None
+            if best_match and best_match[0] >= 2:
+                top_art = best_match[1]
+                subsystem = top_art.category or "Consultorio Digital"
+                if subsystem.endswith(" (CD2)"):
+                    subsystem = subsystem[:-6]
+                root_cause = f"Guía homologada: '{top_art.title}'"
                 
-                # Extraer pasos o recomendaciones útiles del contenido
+                # Extraer pasos del contenido del artículo
                 content_snippets = [
                     line.strip() for line in top_art.content.split("\n")
-                    if line.strip() and not line.strip().startswith("#") and len(line.strip()) > 15
+                    if line.strip() and not line.strip().startswith("#") and not line.strip().startswith("|") and len(line.strip()) > 15
                 ]
                 if content_snippets:
-                    solution_steps = content_snippets[:3]
+                    resolution_text = " ".join(content_snippets[:2])
                 else:
-                    solution_steps = [
-                        f"1. **Procedimiento Validado:** Aplicar el estándar documentado en '{top_art.title}'.",
-                        "2. **Acción Asistencial:** Seguir las instrucciones homologadas de la base de conocimiento para evitar demoras de atención.",
-                        "3. **Derivación:** Si el caso persiste o requiere intervención en base de datos, genere el ticket en 1 clic."
-                    ]
+                    resolution_text = f"Siga el procedimiento estándar documentado en la guía de asistencia '{top_art.title}'."
                 escalation_circuit = "Mesa de Ayuda N1"
                 recommended_action = f"Aplicar procedimiento homologado según guía N3: {top_art.title}"
             else:
-                subsystem = "Plataforma Asistencial Integral (CD2)"
-                root_cause = "Incidencia operativa o de usabilidad asistencial en proceso de atención"
-                solution_steps = [
-                    f"1. **Revisión de Parámetros:** Para consultas sobre '{query_text[:50]}...', compruebe que su sesión clínica esté activa y que cuente con conectividad estable al efector.",
-                    "2. **Procedimiento Recomendado:** Reinicie la vista del módulo pulsando F5 o cierre la sesión desde la barra superior y vuelva a ingresar para refrescar credenciales de seguridad.",
-                    "3. **Asistencia Especializada:** Si el síntoma persiste, el equipo de soporte N1/N2 tomará el caso de forma inmediata con el dictamen técnico precargado."
-                ]
-                escalation_circuit = "Mesa de Ayuda N1"
-                recommended_action = "Analizar traza de logs de frontend y evaluar si requiere intervención de infraestructura o desarrollo."
+                if top_articles:
+                    top_art = top_articles[0]
+                    subsystem = top_art.category or "Consultorio Digital"
+                    if subsystem.endswith(" (CD2)"):
+                        subsystem = subsystem[:-6]
+                    root_cause = f"Guía pericial identificada: '{top_art.title}'"
+                    
+                    content_snippets = [
+                        line.strip() for line in top_art.content.split("\n")
+                        if line.strip() and not line.strip().startswith("#") and not line.strip().startswith("|") and len(line.strip()) > 15
+                    ]
+                    if content_snippets:
+                        resolution_text = " ".join(content_snippets[:2])
+                    else:
+                        resolution_text = f"Siga el procedimiento estándar documentado en la guía de asistencia '{top_art.title}'."
+                    escalation_circuit = "Mesa de Ayuda N1"
+                    recommended_action = f"Aplicar procedimiento homologado según guía N3: {top_art.title}"
+                else:
+                    subsystem = "Soporte Técnico General"
+                    root_cause = "Consulta fuera de las casuísticas conocidas por el motor."
+                    resolution_text = "No dispongo de información sobre esta consulta específica. Por favor, contacte a nuestro equipo de soporte."
+                    escalation_circuit = "Mesa de Ayuda N1"
+                    recommended_action = "Derivar a soporte técnico general para su análisis y resolución personalizada."
 
-        # Construcción de la respuesta fluida, empática y pericial (sin plantilla rígida)
-        formatted_response = (
-            f"Estimado/a {user_fullname},\n\n"
-            f"He realizado un **análisis funcional de su consulta** sobre **{subsystem}**:\n\n"
-            f"**Causa Raíz Identificada:** {root_cause}\n\n"
-            f"**Procedimiento Operativo de Solución:**\n" +
-            "\n".join(solution_steps) + "\n\n"
-            f"¿Esta indicación resolvió su problema?"
-        )
+        # Construcción de la respuesta fluida, empática y pericial (Estrictamente de 3 líneas exactas de texto para cumplir con la norma de soporte)
+        line1 = f"**Diagnóstico:** {root_cause}"
+        line2 = f"**Resolución:** {resolution_text}"
+        line3 = "**Soporte:** Si la dificultad persiste, contacte a soporte técnico para asistencia personalizada."
+        formatted_response = f"{line1}\n{line2}\n{line3}"
 
         # Generación del Dictamen Técnico Forense N3 para el Ticket
         forensic_report = (

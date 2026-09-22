@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Quantux ServiceDesk Enterprise — v4.0.0-DEV</title>
-  <link rel="stylesheet" href="/css/styles.css?v=4.0.0_final_tqm">
+  <link rel="stylesheet" href="/css/styles.css?v=4.1.2_fixed_toasts_contrast">
   <style>
     /* Inlined Critical Grid & Senior UX UI Styles */
     .cockpit-container {
@@ -1019,19 +1019,17 @@
                 <div style="font-size: 11px; color: #DC2626; font-weight: 600;">Atención inmediata requerida</div>
               </div>
 
-              <div style="background: #FFFFFF; border: 1px solid #FED7AA; border-radius: 12px; padding: 14px 18px; box-shadow: 0 1px 3px rgba(217,119,6,0.05);">
-                <div style="font-size: 11px; font-weight: 700; color: #D97706; text-transform: uppercase;">Tickets Sin Asignar</div>
-                <div style="font-size: 26px; font-weight: 900; color: #D97706; margin: 4px 0;" id="tl-kpi-unassigned">0</div>
-                <div style="font-size: 11px; color: #D97706; font-weight: 600;">En cola de espera de triage</div>
-              </div>
-
-              <div style="background: #FFFBEB; border: 1px solid #FCD34D; border-radius: 12px; padding: 14px 18px; box-shadow: 0 2px 6px rgba(245,158,11,0.1);">
-                <div style="font-size: 11px; font-weight: 700; color: #92400E; text-transform: uppercase; display: flex; align-items: center; justify-content: space-between;">
-                  <span>Mesa de Rescate CSAT</span>
-                  <span id="tl-rescue-pulse" class="subnav-dot dot-red pulsing" style="display: none;"></span>
+              <!-- KPI 3: INTERACTIVO (Propuesta 3: Triage Drawer) -->
+              <div onclick="toggleTLTriageDrawer(true)" style="background: #FFFFFF; border: 2px dashed #F97316; border-radius: 12px; padding: 14px 18px; box-shadow: 0 2px 4px rgba(217,119,6,0.05); cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.borderColor='#EA580C'; this.style.background='#FFF7ED'" onmouseout="this.style.borderColor='#F97316'; this.style.background='#FFFFFF'">
+                <div style="font-size: 11px; font-weight: 800; color: #D97706; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center;">
+                  <span>Tickets Sin Asignar</span>
+                  <span style="width: 6px; height: 6px; background: #EA580C; border-radius: 50%; display: inline-block;"></span>
                 </div>
-                <div style="font-size: 26px; font-weight: 900; color: #B45309; margin: 4px 0;" id="tl-kpi-rescue">0</div>
-                <div style="font-size: 11px; color: #92400E; font-weight: 600;">Usuarios disconformes (1-2★)</div>
+                <div style="font-size: 26px; font-weight: 900; color: #D97706; margin: 4px 0; display: flex; align-items: baseline; gap: 6px;">
+                  <span id="tl-kpi-unassigned">0</span>
+                  <span style="font-size: 10px; font-weight: 800; text-decoration: underline; color: #EA580C; margin-left: auto;">Triage Express ⚡</span>
+                </div>
+                <div style="font-size: 11px; color: #D97706; font-weight: 600;">En cola de espera de triage</div>
               </div>
             </div>
 
@@ -1045,12 +1043,43 @@
                     <span>⚖️ Balance de Carga del Turno</span>
                     <span style="font-size: 10.5px; font-weight: 600; color: #64748B;">Analistas de Soporte</span>
                   </div>
-                  <button type="button" class="btn-pri" onclick="openQuickReassignModal()" style="font-size: 11px; padding: 5px 12px; border-radius: 6px; font-weight: 700; background: #0F172A; border-color: #0F172A;">
-                    <span>🔄 Rebalancear Caso</span>
+                  <button type="button" class="btn-pri" onclick="openQuickReassignModal()" style="font-size: 11px; padding: 6px 14px; border-radius: 6px; font-weight: 800; background: #00A896; border: none; color: #FFFFFF; cursor: pointer; box-shadow: 0 2px 4px rgba(0,168,150,0.25); transition: all 0.15s ease;" onmouseover="this.style.background='#009684'" onmouseout="this.style.background='#00A896'">
+                    <span>⚖️ Balancear Carga</span>
                   </button>
                 </div>
 
-                <div style="overflow-x: auto;">
+                <!-- Alerta de Desbalance Inteligente (Propuesta 2) -->
+                <div id="tl-smart-balance-alert" style="display: none; padding: 10px 18px; background: linear-gradient(135deg, #FFF7ED, #FFEDD5); border-bottom: 1px solid #FFD8A8; border-left: 4px solid #F97316; align-items: center; justify-content: space-between; gap: 12px; transition: all 0.3s ease;">
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 16px;">⚠️</span>
+                    <div>
+                      <div style="font-size: 11px; font-weight: 800; color: #7C2D12;">Desbalance Crítico de Guardia Detectado</div>
+                      <div id="tl-smart-balance-desc" style="font-size: 10px; color: #9A3412; font-weight: 600;">Algunos analistas acumulan la gran mayoría de la carga de este turno.</div>
+                    </div>
+                  </div>
+                  <button type="button" onclick="openQuickReassignModal()" style="border: none; background: #EA580C; color: #FFFFFF; font-size: 10px; font-weight: 800; padding: 5px 12px; border-radius: 6px; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.background='#C2410C'" onmouseout="this.style.background='#EA580C'">
+                    ⚡ Nivelar 1-Clic
+                  </button>
+                </div>
+
+                <!-- Píldoras de Filtro Rápido por Nivel ITIL -->
+                <div id="tl-analyst-level-filters" style="padding: 10px 18px; background: #FFFFFF; border-bottom: 1px solid #F1F5F9; display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                  <span style="font-size: 11px; font-weight: 700; color: #64748B; margin-right: 4px;">Filtro Nivel:</span>
+                  <button type="button" onclick="filterTLAnalystsByLevel('all')" id="tl-btn-level-all" style="border: none; background: #0F172A; color: #FFFFFF; font-size: 10.5px; font-weight: 700; padding: 4px 10px; border-radius: 20px; cursor: pointer; transition: all 0.15s ease;">
+                    Todos
+                  </button>
+                  <button type="button" onclick="filterTLAnalystsByLevel('N1')" id="tl-btn-level-N1" style="border: none; background: #F1F5F9; color: #475569; font-size: 10.5px; font-weight: 700; padding: 4px 10px; border-radius: 20px; cursor: pointer; transition: all 0.15s ease;">
+                    N1
+                  </button>
+                  <button type="button" onclick="filterTLAnalystsByLevel('N2')" id="tl-btn-level-N2" style="border: none; background: #F1F5F9; color: #475569; font-size: 10.5px; font-weight: 700; padding: 4px 10px; border-radius: 20px; cursor: pointer; transition: all 0.15s ease;">
+                    N2
+                  </button>
+                  <button type="button" onclick="filterTLAnalystsByLevel('N3')" id="tl-btn-level-N3" style="border: none; background: #F1F5F9; color: #475569; font-size: 10.5px; font-weight: 700; padding: 4px 10px; border-radius: 20px; cursor: pointer; transition: all 0.15s ease;">
+                    N3
+                  </button>
+                </div>
+
+                <div style="max-height: 380px; overflow-y: auto; overflow-x: auto;">
                   <table style="width: 100%; border-collapse: collapse; font-size: 12px; text-align: left;">
                     <thead>
                       <tr style="background: #F8FAFC; border-bottom: 1px solid #E2E8F0; color: #475569; font-weight: 700; font-size: 11px;">
@@ -1079,7 +1108,7 @@
                   <span style="font-size: 11px; color: #B45309; font-weight: 600;">Intervención Directa</span>
                 </div>
 
-                <div id="tl-rescue-container" style="padding: 14px; max-height: 520px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;">
+                <div id="tl-rescue-container" style="padding: 14px; max-height: 280px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;">
                   <!-- Renderizado dinámico de tarjetas de rescate -->
                 </div>
               </div>
@@ -3033,23 +3062,23 @@
             </div>
           </div>
 
-          <!-- SECCIÓN 3: PARTICIPANTES (COLAPSABLE POR DEFECTO PARA NO OCUPAR ESPACIO VERTICAL) -->
+          <!-- SECCIÓN 3: PARTICIPANTES (EMERGENTE MODAL CON DETALLE COMPLETO) -->
           <div class="ws-side-section" style="border: 1px solid #E2E8F0; border-radius: 8px; overflow: hidden;">
-            <div class="ws-side-section-header" onclick="toggleWsParticipants()" style="cursor: pointer; user-select: none; padding: 10px 12px; background: #F8FAFC; margin-bottom: 0;" title="Clic para expandir/colapsar participantes">
+            <div class="ws-side-section-header" onclick="openParticipantsModal()" style="cursor: pointer; user-select: none; padding: 10px 12px; background: #F8FAFC; margin-bottom: 0;" title="Clic para ver detalle de participantes">
               <div style="display: flex; align-items: center; gap: 6px;">
-                <span class="ws-count-bubble" id="ws-participants-count">2</span>
+                <span class="ws-count-bubble" id="ws-participants-count" style="background: #00A896; color: #FFF;">2</span>
                 <span style="font-weight: 800; font-size: 12px; color: #334155;">Participantes</span>
               </div>
               <div style="display: flex; align-items: center; gap: 6px;">
                 <button type="button" class="ws-btn-add-part" title="Reasignar o invitar participante" onclick="event.stopPropagation(); reassignFromWorkspace()">
                   +
                 </button>
-                <span id="ws-participants-toggle-icon" style="font-size: 11px; color: #64748B; font-weight: 700;">▶</span>
+                <span id="ws-participants-toggle-icon" style="font-size: 11px; color: #64748B; font-weight: 700;">▼</span>
               </div>
             </div>
 
             <div class="ws-participants-list" id="ws-participants-list" style="display: none; padding: 10px 12px;">
-              <!-- Renderizado dinámico: Solicitante, Agente Asignado, Mesa de Ayuda -->
+              <!-- Renderizado dinámico legacy colapsable (omitido en favor de modal) -->
             </div>
           </div>
 
@@ -3057,6 +3086,30 @@
 
       </div>
 
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       6.B. MODAL POPUP: DETALLE DE PARTICIPANTES DE LA SOLICITUD (V7.0)
+       ========================================================================= -->
+  <div class="modal-overlay" id="modal-participants-details">
+    <div class="modal-box modal-box-senior" style="max-width: 600px; padding: 24px; border-radius: 16px; background: #FFFFFF; border: none; box-shadow: 0 10px 30px rgba(10,28,62,0.15);">
+      <div class="modal-header modal-header-senior" style="display: flex; justify-content: space-between; align-items: center; background: #0A1C3E; margin: -24px -24px 0 -24px; padding: 20px 24px; border-top-left-radius: 16px; border-top-right-radius: 16px; border-bottom: 1px solid rgba(255,255,255,0.08);">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="width: 38px; height: 38px; border-radius: 10px; background: #00A896; display: flex; align-items: center; justify-content: center; color: #FFFFFF; box-shadow: 0 2px 6px rgba(0,168,150,0.3);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 18px; height: 18px;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          </div>
+          <div style="text-align: left;">
+            <h3 style="margin: 0; font-size: 15.5px; font-weight: 800; color: #FFFFFF; letter-spacing: 0.3px;">Participantes Involucrados</h3>
+            <p style="margin: 3px 0 0 0; font-size: 11.5px; color: #94A3B8;">Personal clínico y de soporte asignado al caso.</p>
+          </div>
+        </div>
+        <button type="button" class="modal-close-btn" onclick="closeParticipantsModal()" style="color: #FFFFFF; background: none; border: none; font-size: 26px; cursor: pointer; opacity: 0.8; transition: opacity 0.15s ease; line-height: 1; padding: 4px; margin-right: -4px;">&times;</button>
+      </div>
+
+      <div class="modal-body modal-body-senior" id="participants-modal-body" style="padding: 20px 0 0 0; display: flex; flex-direction: column; gap: 14px; max-height: 420px; overflow-y: auto;">
+        <!-- Se rellena dinámicamente con las tarjetas de información completa -->
+      </div>
     </div>
   </div>
 
@@ -4069,61 +4122,114 @@
       <!-- Cuerpo del Modal -->
       <div style="padding: 22px 24px; max-height: calc(85vh - 140px); overflow-y: auto;">
         
-        <!-- Indicador de Sobrecarga Detectada en el Turno -->
-        <div style="background: #FFFBEB; border: 1px solid #FDE68A; border-radius: 10px; padding: 12px 16px; margin-bottom: 20px; display: flex; align-items: center; gap: 12px;">
-          <span style="font-size: 22px;">⚠️</span>
-          <div style="flex: 1;">
-            <div style="font-size: 12.5px; font-weight: 700; color: #92400E;">Desbalance Operativo Activo</div>
-            <div style="font-size: 11.5px; color: #B45309;">Se detectó saturación en <strong>Carlos Páez (74 casos)</strong> y <strong>Laura Benítez (82 casos)</strong> mientras otros analistas tienen capacidad inmediata disponible.</div>
-          </div>
-          <button type="button" onclick="autoBalanceWorkload()" style="background: #00A896; color: #FFFFFF; border: none; padding: 6px 14px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,168,150,0.25);">
-            ⚡ Sugerencia IA
+        <!-- Pestañas (Tabs) Estilo Moderno -->
+        <div style="display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 2px solid #E2E8F0; padding-bottom: 8px;">
+          <button type="button" id="tl-tab-single" onclick="switchTLReassignTab('single')" style="flex: 1; padding: 10px; border: none; background: #00A896; color: #FFFFFF; font-weight: 800; font-size: 12.5px; border-radius: 8px; cursor: pointer; transition: all 0.15s ease;">
+            🔍 Reasignar Caso Individual
+          </button>
+          <button type="button" id="tl-tab-bulk" onclick="switchTLReassignTab('bulk')" style="flex: 1; padding: 10px; border: none; background: #F1F5F9; color: #475569; font-weight: 700; font-size: 12.5px; border-radius: 8px; cursor: pointer; transition: all 0.15s ease;">
+            ⚖️ Rebalancear Carga del Turno
           </button>
         </div>
 
-        <!-- Formulario de Rebalanceo Ejecutivo -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
-          
-          <div>
-            <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px;">Analista Origen (Sobrecargado):</label>
-            <select id="tl-reassign-origin-user" class="form-control" style="font-size: 12.5px; border-radius: 8px; border: 1px solid #CBD5E1; padding: 8px 12px; height: 38px;" onchange="onRebalanceOriginChanged()">
-              <option value="cpaez">Carlos Páez (N1 • 74 casos activos)</option>
-              <option value="lbenitez">Laura Benítez (N2 • 82 casos activos)</option>
+        <!-- PANEL 1: REASIGNACIÓN INDIVIDUAL -->
+        <div id="tl-reassign-single-pane">
+          <!-- Indicador de Sobrecarga Detectada en el Turno -->
+          <div style="background: #FFFBEB; border: 1px solid #FDE68A; border-radius: 10px; padding: 12px 16px; margin-bottom: 20px; display: flex; align-items: center; gap: 12px;">
+            <span style="font-size: 22px;">⚠️</span>
+            <div style="flex: 1;">
+              <div style="font-size: 12.5px; font-weight: 700; color: #92400E;">Desbalance Operativo Activo</div>
+              <div style="font-size: 11.5px; color: #B45309;">Se detectó saturación en <strong>Carlos Páez (74 casos)</strong> y <strong>Laura Benítez (82 casos)</strong> mientras otros analistas tienen capacidad inmediata disponible.</div>
+            </div>
+            <button type="button" onclick="autoBalanceWorkload()" style="background: #00A896; color: #FFFFFF; border: none; padding: 6px 14px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,168,150,0.25);">
+              ⚡ Sugerencia IA
+            </button>
+          </div>
+
+          <!-- Formulario de Rebalanceo Ejecutivo -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+            <div>
+              <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px;">Analista Origen (Sobrecargado):</label>
+              <select id="tl-reassign-origin-user" class="form-control" style="font-size: 12.5px; border-radius: 8px; border: 1px solid #CBD5E1; padding: 8px 12px; height: 38px; width: 100%;" onchange="onRebalanceOriginChanged()">
+                <option value="cpaez">Carlos Páez (N1 • 74 casos activos)</option>
+                <option value="lbenitez">Laura Benítez (N2 • 82 casos activos)</option>
+              </select>
+            </div>
+
+            <div>
+              <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px;">Analista Receptor (Capacidad Disponible):</label>
+              <select id="tl-reassign-user-select" class="form-control" style="font-size: 12.5px; border-radius: 8px; border: 1px solid #CBD5E1; padding: 8px 12px; height: 38px; width: 100%;">
+                <option value="svaldez">Sofía Valdez (N1 • Capacidad 100% libre)</option>
+                <option value="mflores">Marcos Flores (N1 • Capacidad 100% libre)</option>
+                <option value="gfernandez">Gonzalo Fernández (N2 • Capacidad 100% libre)</option>
+                <option value="admin">Freddy Cortés (N3 • Líder Técnico)</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 16px;">
+            <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px;">Ticket Específico o Lote de Carga:</label>
+            <select id="tl-reassign-ticket-select" class="form-control" style="font-size: 12.5px; border-radius: 8px; border: 1px solid #CBD5E1; padding: 8px 12px; height: 38px; width: 100%;">
+              <!-- Opciones dinámicas -->
             </select>
           </div>
 
-          <div>
-            <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px;">Analista Receptor (Capacidad Disponible):</label>
-            <select id="tl-reassign-user-select" class="form-control" style="font-size: 12.5px; border-radius: 8px; border: 1px solid #CBD5E1; padding: 8px 12px; height: 38px;">
-              <option value="svaldez">Sofía Valdez (N1 • Capacidad 100% libre)</option>
-              <option value="mflores">Marcos Flores (N1 • Capacidad 100% libre)</option>
-              <option value="gfernandez">Gonzalo Fernández (N2 • Capacidad 100% libre)</option>
-              <option value="admin">Freddy Cortés (N3 • Líder Técnico)</option>
-            </select>
+          <div style="margin-bottom: 22px;">
+            <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px;">Motivo Operativo del Rebalanceo:</label>
+            <input type="text" id="tl-reassign-reason" class="form-control" value="Rebalanceo dinámico de guardia por optimización de SLA y nivelación de carga" style="font-size: 12.5px; border-radius: 8px; border: 1px solid #CBD5E1; padding: 8px 12px; height: 38px; width: 100%;">
           </div>
 
+          <!-- Footer de Acciones de Caso Único -->
+          <div style="display: flex; justify-content: flex-end; align-items: center; gap: 12px; border-top: 1px solid #F1F5F9; padding-top: 16px;">
+            <button type="button" onclick="closeQuickReassignModal()" style="background: #F1F5F9; border: 1px solid #CBD5E1; color: #475569; font-weight: 600; font-size: 12.5px; padding: 8px 18px; border-radius: 8px; cursor: pointer;">
+              Cancelar
+            </button>
+            <button type="button" class="btn-pri" onclick="submitQuickReassign()" style="background: #00A896; border: none; font-weight: 800; font-size: 12.5px; color: #FFFFFF; padding: 8px 22px; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 6px rgba(0, 168, 150, 0.3);">
+              ✓ Confirmar Rereasignación Quirúrgica
+            </button>
+          </div>
         </div>
 
-        <div style="margin-bottom: 16px;">
-          <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px;">Ticket Específico o Lote de Carga:</label>
-          <select id="tl-reassign-ticket-select" class="form-control" style="font-size: 12.5px; border-radius: 8px; border: 1px solid #CBD5E1; padding: 8px 12px; height: 38px;">
-            <!-- Opciones dinámicas -->
-          </select>
-        </div>
+        <!-- PANEL 2: REBALANCEO POR CARGA GRUPAL -->
+        <div id="tl-reassign-bulk-pane" style="display: none;">
+          <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 16px; margin-bottom: 20px;">
+            <div style="font-size: 12px; font-weight: 800; color: #0F172A; margin-bottom: 8px; display: flex; justify-content: justify-content; align-items: center; gap: 6px;">
+              <span>👥 Colaboradores del Turno a Nivelar:</span>
+              <span style="font-size: 10.5px; font-weight: 600; color: #64748B;">(Selecciona quiénes participarán en el balanceo)</span>
+            </div>
+            <div id="tl-rebalance-analysts-list" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-height: 180px; overflow-y: auto; padding: 4px; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 8px;">
+              <!-- Se puebla dinámicamente con checkboxes de analistas de soporte -->
+            </div>
+          </div>
 
-        <div style="margin-bottom: 22px;">
-          <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px;">Motivo Operativo del Rebalanceo:</label>
-          <input type="text" id="tl-reassign-reason" class="form-control" value="Rebalanceo dinámico de guardia por optimización de SLA y nivelación de carga" style="font-size: 12.5px; border-radius: 8px; border: 1px solid #CBD5E1; padding: 8px 12px; height: 38px;">
-        </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+            <div>
+              <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px;">Estrategia de Balanceo:</label>
+              <select id="tl-rebalance-strategy" class="form-control" style="font-size: 12.5px; border-radius: 8px; border: 1px solid #CBD5E1; padding: 8px 12px; height: 38px; width: 100%;">
+                <option value="even">Nivelación de Varianza Mínima (Algoritmo IA)</option>
+              </select>
+            </div>
+            <div>
+              <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px;">Filtro de Institución / Cliente:</label>
+              <select id="tl-rebalance-institution" class="form-control" style="font-size: 12.5px; border-radius: 8px; border: 1px solid #CBD5E1; padding: 8px 12px; height: 38px; width: 100%;">
+                <option value="all">Todas las instituciones</option>
+              </select>
+            </div>
+          </div>
 
-        <!-- Footer de Acciones del Modal -->
-        <div style="display: flex; justify-content: flex-end; align-items: center; gap: 12px; border-top: 1px solid #F1F5F9; padding-top: 16px;">
-          <button type="button" onclick="closeQuickReassignModal()" style="background: #F1F5F9; border: 1px solid #CBD5E1; color: #475569; font-weight: 600; font-size: 12.5px; padding: 8px 18px; border-radius: 8px; cursor: pointer;">
-            Cancelar
-          </button>
-          <button type="button" class="btn-pri" onclick="submitQuickReassign()" style="background: #00A896; border: none; font-weight: 800; font-size: 12.5px; color: #FFFFFF; padding: 8px 22px; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 6px rgba(0, 168, 150, 0.3);">
-            ✓ Confirmar Rebalanceo Inmediato
-          </button>
+          <div style="background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 10px; padding: 12px 16px; margin-bottom: 20px; font-size: 11.5px; color: #1E40AF; line-height: 1.45;">
+            ℹ️ <strong>¿Cómo funciona el Rebalanceo por Carga?</strong> El sistema recopilará de forma automática las solicitudes activas (NUEVO, ASIGNADO, EN_CURSO) asociadas a los colaboradores que tengas marcados en la lista de arriba. Reasignará en bloque las solicitudes necesarias para que la diferencia de casos activos entre cualquiera de los colaboradores elegidos sea de **máximo 1 caso**, nivelando la capacidad de la guardia al instante de forma totalmente automática.
+          </div>
+
+          <!-- Footer de Acciones de Lote -->
+          <div style="display: flex; justify-content: flex-end; align-items: center; gap: 12px; border-top: 1px solid #F1F5F9; padding-top: 16px;">
+            <button type="button" onclick="closeQuickReassignModal()" style="background: #F1F5F9; border: 1px solid #CBD5E1; color: #475569; font-weight: 600; font-size: 12.5px; padding: 8px 18px; border-radius: 8px; cursor: pointer;">
+              Cancelar
+            </button>
+            <button type="button" class="btn-pri" onclick="submitBulkRebalance()" style="background: #00A896; border: none; font-weight: 800; font-size: 12.5px; color: #FFFFFF; padding: 8px 22px; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 6px rgba(0, 168, 150, 0.3);">
+              ⚡ Ejecutar Balanceo por Carga
+            </button>
+          </div>
         </div>
 
       </div>
@@ -4166,6 +4272,8 @@
           </button>
         </div>
       </div>
+    </div>
+  </div>
   <!-- MODAL VINCULACIÓN DE TICKETS HIJOS (Módulo 1: Incidentes Masivos) -->
   <div class="modal" id="modal-link-children" style="z-index: 1050;">
     <div class="modal-content" style="max-width: 620px; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.25);">
@@ -4356,8 +4464,8 @@ Muchas gracias.</textarea>
 
   <!-- SCRIPTS (LOCAL CHART.JS BUNDLE & APP CODE) -->
   <script src="/js/chart.umd.min.js"></script>
-  <script src="/js/api.js?v=4.0.0_final_tqm"></script>
-  <script src="/js/app.js?v=4.0.0_final_tqm"></script>
+  <script src="/js/api.js?v=4.1.6_integrated_cockpit_pro"></script>
+  <script src="/js/app.js?v=4.1.6_integrated_cockpit_pro"></script>
   <script>
     (function initMobileSidebar() {
       const toggleBtn = document.getElementById('btn-sidebar-toggle');
@@ -4415,15 +4523,15 @@ Muchas gracias.</textarea>
       <form id="form-new-release" onsubmit="submitNewRelease(event)" style="padding: 20px; display: flex; flex-direction: column; gap: 14px;">
         <div>
           <label style="display: block; font-size: 11.5px; font-weight: 700; color: #334155; margin-bottom: 4px;">Etiqueta / Tag (SemVer):</label>
-          <input type="text" id="new-rel-tag" placeholder="Ej: v4.1.0 o hotfix-202609-01" required style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1.5px solid #CBD5E1; font-size: 12.5px; font-family: monospace;">
+          <input type="text" id="kanban-new-rel-tag" placeholder="Ej: v4.1.0 o hotfix-202609-01" required style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1.5px solid #CBD5E1; font-size: 12.5px; font-family: monospace;">
         </div>
         <div>
           <label style="display: block; font-size: 11.5px; font-weight: 700; color: #334155; margin-bottom: 4px;">Nombre del Release / Objetivo:</label>
-          <input type="text" id="new-rel-name" placeholder="Ej: Fix masivo pasarela de pagos e interoperabilidad" required style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1.5px solid #CBD5E1; font-size: 12.5px;">
+          <input type="text" id="kanban-new-rel-name" placeholder="Ej: Fix masivo pasarela de pagos e interoperabilidad" required style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1.5px solid #CBD5E1; font-size: 12.5px;">
         </div>
         <div>
           <label style="display: block; font-size: 11.5px; font-weight: 700; color: #334155; margin-bottom: 4px;">Notas Técnicas / Alcance (Opcional):</label>
-          <textarea id="new-rel-notes" rows="3" placeholder="Detalles del despliegue, ramas o componentes afectados..." style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1.5px solid #CBD5E1; font-size: 12px;"></textarea>
+          <textarea id="kanban-new-rel-notes" rows="3" placeholder="Detalles del despliegue, ramas o componentes afectados..." style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1.5px solid #CBD5E1; font-size: 12px;"></textarea>
         </div>
         <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 6px;">
           <button type="button" onclick="closeNewReleaseModal()" style="padding: 8px 14px; border-radius: 6px; border: 1px solid #CBD5E1; background: #FFFFFF; font-size: 12px; font-weight: 700; cursor: pointer;">Cancelar</button>
@@ -4461,6 +4569,27 @@ Muchas gracias.</textarea>
           <button type="button" onclick="submitEscalateN3()" style="padding: 8px 16px; border-radius: 6px; border: none; background: #16A34A; color: #FFFFFF; font-size: 12px; font-weight: 700; cursor: pointer;">Vincular y Escalar a N3</button>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- =============================================================================
+       [PROPUESTA 3] DRAWER LATERAL: TRIAGE RÁPIDO DE TICKETS SIN ASIGNAR
+       ============================================================================= -->
+  <div id="tl-triage-drawer" style="position: fixed; top: 0; right: 0; bottom: 0; width: 360px; background: #FFFFFF; border-left: 1px solid #E2E8F0; box-shadow: -10px 0 25px rgba(0,0,0,0.1); z-index: 10000; transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; justify-content: space-between; font-family: sans-serif;">
+    <div style="padding: 20px; display: flex; flex-direction: column; height: 100%; justify-content: space-between; overflow: hidden;">
+      <div style="display: flex; flex-direction: column; height: 100%; overflow: hidden;">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #F1F5F9; padding-bottom: 12px; margin-bottom: 16px; flex-shrink: 0;">
+          <h3 style="margin: 0; font-size: 14px; font-weight: 800; color: #0F172A; display: flex; align-items: center; gap: 6px;">📥 Triage Express <span class="badge-status st-nuevo" id="tl-triage-badge-count" style="font-size: 10.5px; padding: 2px 6px; border-radius: 4px; background: #FFF7ED; color: #C2410C;">0</span></h3>
+          <button type="button" onclick="toggleTLTriageDrawer(false)" style="background: none; border: none; font-size: 24px; color: #94A3B8; cursor: pointer; padding: 0 4px; line-height: 1;">&times;</button>
+        </div>
+        <p style="font-size: 11px; color: #64748B; margin-bottom: 14px; font-weight: 600; flex-shrink: 0;">Asigna de forma inmediata cada caso a un analista de guardia para sacarlo de la cola de espera de triage.</p>
+        <div id="tl-triage-list-container" style="display: flex; flex-direction: column; gap: 12px; overflow-y: auto; padding-right: 4px; flex-grow: 1; margin-bottom: 16px;">
+          <!-- Poblado dinámicamente en app.js -->
+        </div>
+      </div>
+      <button type="button" onclick="submitTLTriageExpress()" style="width: 100%; background: #00A896; color: #FFFFFF; border: none; border-radius: 8px; font-size: 12px; font-weight: 800; padding: 12px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,168,150,0.2); transition: background 0.15s ease; flex-shrink: 0;" onmouseover="this.style.background='#009684'" onmouseout="this.style.background='#00A896'">
+        Guardar y Asignar Express ⚡
+      </button>
     </div>
   </div>
 

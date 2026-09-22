@@ -233,6 +233,7 @@ def list_tickets(
         except Exception:
             pass
     
+    query = query.order_by(Ticket.created_at.desc())
     results = session.exec(query).all()
     
     if search and search.strip():
@@ -478,6 +479,37 @@ def export_audit_csv(session: Session = Depends(get_session)):
         headers={"Content-Disposition": "attachment; filename=HealthDesk_Auditoria_Forense.csv"}
     )
 
+# 2.0 ENDPOINTS DE INCIDENCIAS MASIVAS (MAJOR INCIDENT PROTOCOL)
+@router.get("/major-incidents/active")
+def get_active_major_incident_endpoint(session: Session = Depends(get_session)):
+    from app.services.major_incident_bot import MajorIncidentBot
+    result = MajorIncidentBot.get_active_major_incident(session)
+    return result or {
+        "has_active_major_incident": False,
+        "parent_ticket": None,
+        "child_tickets": [],
+        "child_ticket_ids": []
+    }
+
+class DeclareMajorIncidentRequest(BaseModel):
+    title: str
+    description: str
+    platform_code: str
+    institution_code: Optional[str] = "OSDE"
+    declared_by: Optional[str] = "admin"
+
+@router.post("/major-incidents/declare")
+def declare_major_incident_endpoint(req: DeclareMajorIncidentRequest, session: Session = Depends(get_session)):
+    from app.services.major_incident_bot import MajorIncidentBot
+    return MajorIncidentBot.declare_major_incident(
+        session=session,
+        title=req.title,
+        description=req.description,
+        platform_code=req.platform_code,
+        institution_code=req.institution_code or "OSDE",
+        declared_by=req.declared_by or "admin"
+    )
+
 # 2. OBTENER DETALLE DE TICKET
 @router.get("/{ticket_id}", response_model=TicketDetailResponse)
 def get_ticket_detail(ticket_id: str, session: Session = Depends(get_session)):
@@ -545,6 +577,14 @@ def create_ticket(req: TicketCreateRequest, background_tasks: BackgroundTasks, s
     session.commit()
     session.refresh(new_ticket)
     
+    # 3.0 Evaluación ITIL de Incidencia Masiva (Major Incident Bot)
+    try:
+        from app.services.major_incident_bot import MajorIncidentBot
+        MajorIncidentBot.evaluate_and_associate(session, new_ticket)
+        session.refresh(new_ticket)
+    except Exception as e:
+        print(f"[WARN] Error en evaluación de incidencia masiva: {e}")
+
     # Disparo asincrono de notificaciones por email (UH-35)
     background_tasks.add_task(notify_ticket_created, new_ticket)
     
@@ -903,6 +943,22 @@ def close_ticket(ticket_id: str, req: TicketCloseRequest, background_tasks: Back
     if not ticket:
         raise HTTPException(status_code=404, detail="Ticket no encontrado.")
     
+    if ticket.status == TicketStatus.CERRADO:
+        # Para evitar condiciones de carrera con el simulador continuo, hacemos la llamada idempotente:
+        # actualizamos las calificaciones CSAT recibidas en la base de datos y retornamos éxito.
+        if req.rating_stars is not None:
+            ticket.rating_stars = req.rating_stars
+            if req.rating_stars <= 2:
+                ticket.requires_service_recovery = True
+        if req.rating_kudos:
+            ticket.rating_kudos = req.rating_kudos
+        if req.rating_feedback or req.feedback:
+            ticket.rating_feedback = req.rating_feedback or req.feedback
+        session.add(ticket)
+        session.commit()
+        session.refresh(ticket)
+        return ticket
+
     if ticket.status != TicketStatus.RESUELTO:
         raise HTTPException(status_code=400, detail="Solo se pueden cerrar tickets que hayan alcanzado el estado RESUELTO por el equipo de soporte.")
     
