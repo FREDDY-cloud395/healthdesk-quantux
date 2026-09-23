@@ -22,6 +22,8 @@ backend/quantux_tickets.db
 backend/quantux_v4.db
 healthdesk.db
 quantux_tickets.db
+backups/*.zip
+backups/*.db
 
 # Screenshots & Local Test Dumps
 *.png
