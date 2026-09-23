@@ -400,7 +400,7 @@ function handleRequesterTypeahead(val) {
 
   let html = `
     <div style="padding: 6px 12px; background: #F8FAFC; border-bottom: 1px solid #E2E8F0; font-size: 11px; font-weight: 800; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px;">
-      💡 Temas Oficiales Homologados de Consultorio Digital 2:
+      Temas Oficiales Homologados de Consultorio Digital 2:
     </div>
   `;
 
@@ -453,7 +453,7 @@ function handleKbTypeahead(val) {
 
   let html = `
     <div style="padding: 6px 12px; background: #F8FAFC; border-bottom: 1px solid #E2E8F0; font-size: 11px; font-weight: 800; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px;">
-      💡 Temas Oficiales Homologados de Consultorio Digital 2:
+      Temas Oficiales Homologados de Consultorio Digital 2:
     </div>
   `;
 

@@ -324,8 +324,8 @@
 
         <!-- Enlaces de Navegación del Menú Izquierdo (Patrón Unificado de Iconos Outline) -->
         <nav class="sidebar-nav win11-sidebar-nav">
-          <!-- Centro de Ayuda (Portal Solicitante con Chat de IA y Voz) -->
-          <div class="nav-link-item nav-hub-tab" data-view="requester-portal" id="tab-requester-portal" title="Centro de Ayuda • Asistente IA de Soporte" data-tooltip="Centro de Ayuda" style="display: none;">
+          <!-- Centro de Ayuda (Portal Solicitante con Chat de IA y Asistencia) -->
+          <div class="nav-link-item nav-hub-tab" data-view="requester-portal" id="tab-requester-portal" title="Centro de Ayuda • Asistente IA de Soporte" data-tooltip="Centro de Ayuda">
             <div class="nav-indicator-pill"></div>
             <div class="nav-link-left">
               <svg class="nav-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
@@ -464,12 +464,33 @@
             <input type="text" id="top-global-search-input" placeholder="Buscar por número de ticket, paciente o médico..." style="border: none; background: transparent; outline: none; font-size: 12px; width: 100%; color: #0F172A;" oninput="onGlobalOmniSearch(this.value)" onkeydown="if(event.key === 'Escape') { this.value = ''; onGlobalOmniSearch(''); }">
           </div>
 
-          <!-- Botón Mis Solicitudes para el Rol Solicitante -->
-          <button type="button" id="btn-top-requester-my-requests" onclick="openRequesterHistoryModal()" style="display: none; align-items: center; gap: 8px; background: #FFFFFF; border: 1.5px solid #CBD5E1; color: #0A1C3E; padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; box-shadow: 0 1px 3px rgba(10, 28, 62, 0.04); transition: all 0.15s ease;" onmouseover="this.style.borderColor='#00A896'; this.style.color='#00A896';" onmouseout="this.style.borderColor='#CBD5E1'; this.style.color='#0A1C3E';" title="Ver mis tickets y estado de atención">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#00A896" stroke-width="2.2" style="width: 15px; height: 15px;"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
-            <span>Mis Solicitudes</span>
-            <span id="req-history-badge" style="background: #00A896; color: #FFFFFF; font-size: 10px; font-weight: 800; padding: 2px 7px; border-radius: 9999px;">0</span>
-          </button>
+          <!-- Componente Oficial de Cabecera Solicitante / Prestador (Alineado al Mockup) -->
+          <div id="requester-top-header-suite" style="display: none; align-items: center; gap: 10px;">
+            <!-- Botón Crear Solicitud Directo (Cero Iconos / Regla de Oro) -->
+            <button type="button" id="btn-top-requester-create-ticket" onclick="openCreateTicketModal(true)" style="display: inline-flex; align-items: center; background: #00A896; color: #FFFFFF; border: none; padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; box-shadow: 0 1px 3px rgba(0, 168, 150, 0.25); transition: all 0.15s ease;" onmouseover="this.style.background='#008F80'" onmouseout="this.style.background='#00A896'" title="Crear nueva solicitud formal">
+              <span>+ Crear Solicitud</span>
+            </button>
+
+            <!-- Botón Mis Solicitudes (Cero Iconos / Regla de Oro) -->
+            <button type="button" id="btn-top-requester-my-requests" onclick="openRequesterHistoryModal()" style="display: inline-flex; align-items: center; gap: 8px; background: #F1F5F9; border: 1.5px solid #CBD5E1; color: #0A1C3E; padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; box-shadow: 0 1px 3px rgba(10, 28, 62, 0.04); transition: all 0.15s ease;" onmouseover="this.style.borderColor='#00A896'; this.style.color='#00A896';" onmouseout="this.style.borderColor='#CBD5E1'; this.style.color='#0A1C3E';" title="Ver mis tickets y estado de atención">
+              <span>Mis Solicitudes</span>
+              <span id="req-history-badge" style="background: #00A896; color: #FFFFFF; font-size: 10px; font-weight: 800; padding: 2px 7px; border-radius: 9999px;">0</span>
+            </button>
+
+            <!-- Separador Vertical -->
+            <div style="height: 24px; width: 1px; background: #CBD5E1;"></div>
+
+            <!-- Chip Perfil Médico Homologado -->
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <div style="width: 32px; height: 32px; border-radius: 50%; background: #0A1C3E; color: #FFFFFF; font-weight: 800; display: flex; align-items: center; justify-content: center; font-size: 11px; font-family: 'Outfit', sans-serif;">
+                MG
+              </div>
+              <div style="text-align: left; font-size: 11px; line-height: 1.2;">
+                <div style="font-weight: 700; color: #1E293B; font-family: 'Inter', sans-serif;">Dr. Martín Gómez</div>
+                <div style="font-size: 10px; color: #64748B;">MN 142.859 &bull; OSDE</div>
+              </div>
+            </div>
+          </div>
 
           <!-- Botón Primario: Crear Ticket (Agentes de Soporte N1/N2/Admin) -->
           <button type="button" class="btn-create-ticket-top" id="jira-btn-add-ticket" onclick="openCreateTicketModal()" style="display: inline-flex; align-items: center; gap: 6px; background: #00A896; color: #FFFFFF; border: none; padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; box-shadow: 0 1px 2px rgba(0, 168, 150, 0.25); transition: all 0.15s ease;" onmouseover="this.style.background='#008F80'" onmouseout="this.style.background='#00A896'" title="Crear nueva solicitud en la cola de guardia">
@@ -477,17 +498,7 @@
             <span id="jira-btn-add-ticket-text">Crear ticket</span>
           </button>
 
-          <!-- Suite Asistencial Médica Exclusiva Solicitantes (Módulo 14) -->
-          <div id="doctor-emergency-suite" style="display: none; align-items: center; gap: 8px;">
-            <button type="button" class="btn-doctor-emergency" id="btn-doctor-emergency" onclick="openDoctorEmergencyModal()" title="Emergencia Asistencial Inmediata: Paciente en Box / Consulta Bloqueada">
-              <span class="pulsing-beacon"></span>
-              <span style="font-weight: 800; font-size: 11.5px; letter-spacing: 0.3px;">🚨 Paciente en Box</span>
-            </button>
-            <button type="button" class="btn-doctor-contingency" id="btn-doctor-contingency" onclick="openDoctorContingencyModal()" title="Protocolos y Recetarios de Contingencia Offline">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 13px; height: 13px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-              <span>Plan B Contingencia</span>
-            </button>
-          </div>
+          <!-- Fin de Acciones de Cabecera -->
 
         </div>
       </header>
@@ -783,19 +794,36 @@
              VISTA 1.5: CENTRO DE ASISTENCIA (EXCLUSIVA ROL SOLICITANTE)
              =================================================================== -->
         <section class="app-view" id="view-requester-portal">
-          <div class="users-board-wrapper" id="requester-clinical-portal" style="width: 100% !important; max-width: 100% !important; min-height: calc(100vh - 75px) !important; height: calc(100vh - 75px) !important; margin: 0 auto !important; padding: 24px !important; display: flex !important; flex-direction: column !important; justify-content: center !important; align-items: center !important; box-sizing: border-box !important; position: relative !important; background: #F8FAFC !important;">
+          <div id="requester-clinical-portal" style="width: 100% !important; height: 100% !important; min-height: 100% !important; flex: 1 1 0% !important; display: flex !important; flex-direction: column !important; justify-content: center !important; align-items: center !important; padding: 24px !important; box-sizing: border-box !important; position: relative !important; background: #F8FAFC !important;">
 
             <!-- STREAM DE MENSAJES: OCULTO INICIALMENTE PARA CENTRADO ABSOLUTO (CRUCE DE DIAGONALES 50%-50%) -->
             <div id="requester-inline-chat-stream" style="display: none; width: 100% !important; max-width: 860px !important; max-height: calc(100vh - 220px) !important; overflow-y: auto !important; padding: 18px 22px !important; flex-direction: column !important; gap: 14px !important; scroll-behavior: smooth !important; background: #FFFFFF !important; border: 1.5px solid #E2E8F0 !important; border-radius: 16px !important; box-shadow: 0 4px 20px rgba(10, 28, 62, 0.05) !important; margin-bottom: 16px !important;">
             </div>
 
             <!-- CAJA INTERACTIVA DEL CHAT: EN EL CRUCE EXACTO DE LAS DIAGONALES (X=50%, Y=50%) -->
-            <div id="requester-chat-center-box" style="width: 100% !important; max-width: 860px !important; position: relative !important;">
+            <div id="requester-chat-center-box" style="width: 100% !important; max-width: 860px !important; margin: 0 auto !important; position: relative !important;">
               
               <!-- HERO DE IDENTIDAD QUANTUX (VISIBLE EN ESTADO DE REPOSO / CENTRADO) -->
               <div id="requester-chat-hero" style="text-align: center; margin-bottom: 24px; animation: fadeIn 0.2s ease;">
-                <div style="width: 54px; height: 54px; border-radius: 14px; background: linear-gradient(135deg, #0A1C3E 0%, #00A896 100%); color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-family: 'Outfit', sans-serif; font-size: 28px; font-weight: 900; box-shadow: 0 8px 20px rgba(0, 168, 150, 0.25); margin-bottom: 14px; letter-spacing: -0.5px;">
-                  Q
+                <!-- Isotipo Propuesta 3: Alianza de Respaldo (Soporte y Colaboración Asistencial - Cero letra Q) -->
+                <div style="display: inline-flex; align-items: center; justify-content: center; margin-bottom: 16px; position: relative;">
+                  <div style="width: 68px; height: 68px; border-radius: 20px; background: #FFFFFF; border: 1.5px solid #E2E8F0; box-shadow: 0 8px 24px rgba(0, 168, 150, 0.14), 0 2px 6px rgba(10, 28, 62, 0.04); display: flex; align-items: center; justify-content: center;">
+                    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <defs>
+                        <radialGradient id="allianceGlow" cx="50%" cy="50%" r="50%">
+                          <stop offset="0%" stop-color="#00C9B7" stop-opacity="0.85"/>
+                          <stop offset="100%" stop-color="#00A896" stop-opacity="0.25"/>
+                        </radialGradient>
+                      </defs>
+                      <!-- Anillo Colaborativo Médico (Azul Asistencial) -->
+                      <circle cx="19" cy="24" r="11" stroke="#0284C7" stroke-width="3.5" stroke-opacity="0.85" />
+                      <!-- Anillo Soporte Resolutivo (Teal Quantux) -->
+                      <circle cx="29" cy="24" r="11" stroke="#00A896" stroke-width="3.5" stroke-opacity="0.85" />
+                      <!-- Intersección de Alianza y Cuidado (Núcleo Luminoso de Solución) -->
+                      <ellipse cx="24" cy="24" rx="4.8" ry="7.2" fill="url(#allianceGlow)" />
+                      <circle cx="24" cy="24" r="2.5" fill="#FFFFFF" />
+                    </svg>
+                  </div>
                 </div>
                 <h1 style="font-family: 'Outfit', sans-serif; font-size: 24px; font-weight: 800; color: #0A1C3E; margin: 0 0 6px 0; letter-spacing: -0.3px;">
                   ¿En qué podemos asistirte hoy?
@@ -813,30 +841,15 @@
               <div style="display: flex; align-items: center; gap: 10px; background: #FFFFFF; border: 2px solid #CBD5E1; border-radius: 28px; padding: 8px 12px 8px 20px; box-shadow: 0 6px 24px rgba(10, 28, 62, 0.06); transition: all 0.2s ease;" id="requester-input-container">
                 <input type="text" id="requester-chat-input" placeholder="Escribe tu consulta o síntoma médico (ej: matrícula provincial, error en receta, cambio de cuit)..." oninput="handleRequesterTypeahead(this.value)" onkeydown="handleRequesterChatKey(event)" style="flex: 1; border: none; outline: none; font-size: 14px; color: #0F172A; background: transparent; padding: 6px 0; font-family: 'Inter', sans-serif;">
                 
-                <!-- Botón Enviar Consulta (Quantux Primary Teal) -->
-                <button type="button" id="btn-requester-send" onclick="sendRequesterChatMessage()" title="Enviar mensaje" aria-label="Enviar" style="width: 40px; height: 40px; border-radius: 50%; background: #00A896; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #FFFFFF; transition: all 0.15s ease; box-shadow: 0 2px 8px rgba(0, 168, 150, 0.35);" onmouseover="this.style.background='#008F80'; this.style.transform='scale(1.04)';" onmouseout="this.style.background='#00A896'; this.style.transform='scale(1)';">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 17px; height: 17px;"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                <!-- Botón Enviar Consulta (Quantux Primary Teal - Tipográfico Puro / Cero Iconos) -->
+                <button type="button" id="btn-requester-send" onclick="sendRequesterChatMessage()" title="Enviar mensaje" aria-label="Enviar" style="background: #00A896; border: none; padding: 8px 18px; border-radius: 20px; color: #FFFFFF; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.15s ease; box-shadow: 0 2px 8px rgba(0, 168, 150, 0.35); font-family: 'Inter', sans-serif;" onmouseover="this.style.background='#008F80';" onmouseout="this.style.background='#00A896';">
+                  Enviar
                 </button>
               </div>
 
-              <!-- ACCIONES RÁPIDAS / CHIPS ASISTENCIALES RECOMENDADOS -->
-              <div id="requester-quick-pills" style="display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; margin-top: 14px;">
-                <span style="font-size: 11px; color: #94A3B8; font-weight: 600;">Sugerencias frecuentes:</span>
-                <button type="button" onclick="setRequesterPrompt('No puedo prescribir con mi matrícula provincial en SISA')" style="background: #FFFFFF; border: 1px solid #E2E8F0; color: #334155; padding: 4px 12px; border-radius: 9999px; font-size: 11.5px; font-weight: 600; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.borderColor='#00A896'; this.style.color='#00A896'; this.style.background='#F0FDF4';" onmouseout="this.style.borderColor='#E2E8F0'; this.style.color='#334155'; this.style.background='#FFFFFF';">
-                  🩺 Matrícula SISA
-                </button>
-                <button type="button" onclick="setRequesterPrompt('Paciente no socio en primera consulta')" style="background: #FFFFFF; border: 1px solid #E2E8F0; color: #334155; padding: 4px 12px; border-radius: 9999px; font-size: 11.5px; font-weight: 600; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.borderColor='#00A896'; this.style.color='#00A896'; this.style.background='#F0FDF4';" onmouseout="this.style.borderColor='#E2E8F0'; this.style.color='#334155'; this.style.background='#FFFFFF';">
-                  👥 Atención No Socios
-                </button>
-                <button type="button" onclick="setRequesterPrompt('Error al emitir receta de medicamentos')" style="background: #FFFFFF; border: 1px solid #E2E8F0; color: #334155; padding: 4px 12px; border-radius: 9999px; font-size: 11.5px; font-weight: 600; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.borderColor='#00A896'; this.style.color='#00A896'; this.style.background='#F0FDF4';" onmouseout="this.style.borderColor='#E2E8F0'; this.style.color='#334155'; this.style.background='#FFFFFF';">
-                  💊 Receta Digital
-                </button>
-              </div>
-
-              <!-- BARRA DE PIE LIMPIA (SIN ACCIONES DUPLICADAS) -->
-              <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #94A3B8; margin-top: 10px; padding: 0 12px;">
-                <span>Presiona <strong>Enter</strong> para enviar &bull; Búsqueda predictiva oficial CD2</span>
-                <button type="button" onclick="clearRequesterChat()" id="btn-clear-req-chat" style="display: none; background: none; border: none; color: #00A896; cursor: pointer; font-weight: 700; font-size: 11px; text-decoration: underline;">+ Nueva consulta</button>
+              <!-- BOTÓN CONTEXTUAL NUEVA CONSULTA (ACTIVO SOLO DURANTE CONVERSACIÓN, SIN ICONO) -->
+              <div style="display: flex; justify-content: flex-end; align-items: center; margin-top: 10px; padding: 0 12px;">
+                <button type="button" onclick="clearRequesterChat()" id="btn-clear-req-chat" style="display: none; background: none; border: none; color: #00A896; cursor: pointer; font-weight: 700; font-size: 11.5px; text-decoration: underline;">Nueva consulta</button>
               </div>
             </div>
 
@@ -1885,113 +1898,95 @@
        ========================================================================= -->
 
   <div class="modal-overlay" id="modal-ticket">
-    <div class="modal-box-senior" style="max-width: 680px; width: 94%; border-radius: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.22); overflow: hidden; background: #FFFFFF;">
-      <!-- HEADER QUANTUX HEALTH SERVICE DESK -->
-      <div style="background: linear-gradient(135deg, #0A1C3E 0%, #1E293B 100%); color: #FFFFFF; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--q-teal, #00C9B7);">
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <div style="width: 28px; height: 28px; border-radius: 7px; background: var(--q-primary, #00A896); display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 14px; color: #FFFFFF; box-shadow: 0 2px 6px rgba(0,168,150,0.4);">
+    <div class="modal-box-senior" style="max-width: 620px; width: 94%; border-radius: 12px; box-shadow: 0 20px 45px rgba(10, 28, 62, 0.25); overflow: hidden; background: #FFFFFF;">
+      <!-- HEADER QUANTUX HEALTH SERVICE DESK (media_1790176353900.png) -->
+      <div style="background: #0A1C3E; color: #FFFFFF; padding: 16px 22px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2.5px solid #00A896;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="width: 34px; height: 34px; border-radius: 8px; background: #00A896; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 16px; color: #FFFFFF; font-family: 'Outfit', sans-serif; box-shadow: 0 2px 6px rgba(0,168,150,0.35);">
             Q
           </div>
           <div>
-            <h3 style="font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 800; margin: 0; color: #FFFFFF;">Crear Solicitud</h3>
-            <p style="margin: 0; font-size: 11px; color: #94A3B8;">Quantux Health Service Desk • ITIL v4</p>
+            <h3 style="font-family: 'Outfit', sans-serif; font-size: 16px; font-weight: 800; margin: 0; color: #FFFFFF; letter-spacing: -0.2px;">Crear Solicitud</h3>
+            <p style="margin: 2px 0 0 0; font-size: 11px; color: #94A3B8; font-family: 'Inter', sans-serif;">Quantux Health Service Desk • ITIL v4</p>
           </div>
         </div>
-        <button type="button" class="modal-close-btn" id="modal-close" onclick="closeTicketModal()" style="color: #94A3B8; font-size: 22px; background: none; border: none; cursor: pointer; line-height: 1; transition: color 0.15s;" onmouseover="this.style.color='#FFFFFF'" onmouseout="this.style.color='#94A3B8'" title="Cerrar">&times;</button>
+        <button type="button" class="modal-close-btn" id="modal-close" onclick="closeTicketModal()" style="color: #94A3B8; font-size: 24px; background: none; border: none; cursor: pointer; line-height: 1; transition: color 0.15s;" onmouseover="this.style.color='#FFFFFF'" onmouseout="this.style.color='#94A3B8'" title="Cerrar">&times;</button>
       </div>
 
       <form id="form-new-ticket" novalidate>
-        <div style="padding: 16px 22px; background: #FFFFFF; display: flex; flex-direction: column; gap: 12px;">
-          <!-- Fila 1: Organización Solicitante y Plataforma Afectada (Compacto) -->
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-            <div>
-              <label for="modal-institution" style="display: block; font-size: 11.5px; font-weight: 700; color: #172B4D; margin-bottom: 4px;">Organización Solicitante <span style="color: #DE350B;">*</span></label>
-              <select id="modal-institution" name="institution_code" class="form-control" required style="font-size: 12px; height: 34px; border-radius: 6px; border: 1.5px solid #DFE1E6; width: 100%; background: #FAFBFC; color: #172B4D;">
-                <option value="">Seleccione Organización...</option>
-              </select>
-            </div>
-            <div>
-              <label for="modal-platform" style="display: block; font-size: 11.5px; font-weight: 700; color: #172B4D; margin-bottom: 4px;">Plataforma Afectada <span style="color: #DE350B;">*</span></label>
-              <select id="modal-platform" name="platform" class="form-control" required style="font-size: 12px; height: 34px; border-radius: 6px; border: 1.5px solid #DFE1E6; width: 100%; background: #FAFBFC; color: #172B4D;">
-                <option value="CAT_RECETA">Receta Electrónica</option>
-                <option value="CAT_TELEMEDICINA">Telemedicina</option>
-                <option value="CAT_CONSULTORIO_DIGITAL">Consultorio Digital (HCE)</option>
-                <option value="CAT_REGISTRO_INTEROP">Interoperabilidad & HL7/FHIR</option>
-                <option value="CAT_RPM_MONITOREO">Monitoreo Remoto (RPM)</option>
-                <option value="CAT_AFILIADOS_PORTAL">Portal Paciente</option>
-                <option value="CAT_COPAGOS_PAGOS">Copagos & Financiadores</option>
-                <option value="CAT_INTERNACION_DOM">Internación Domiciliaria</option>
-                <option value="CAT_CARTILLA_TURNOS">Servicios & Turnos</option>
-              </select>
-            </div>
+        <div style="padding: 20px 24px; background: #FFFFFF; display: flex; flex-direction: column; gap: 14px;">
+          <!-- Campo 1: Organización Solicitante -->
+          <div>
+            <label for="modal-institution" style="display: block; font-size: 12px; font-weight: 700; color: #1E293B; margin-bottom: 5px; font-family: 'Inter', sans-serif;">Organizacion Solicitante</label>
+            <select id="modal-institution" name="institution_code" class="form-control" required style="font-size: 12.5px; height: 38px; border-radius: 6px; border: 1.5px solid #CBD5E1; width: 100%; background: #FFFFFF; color: #1E293B; padding: 0 12px; font-family: 'Inter', sans-serif;">
+              <option value="">Organizacion Solicitante</option>
+              <option value="OSDE" selected>OSDE</option>
+              <option value="SWISS_MEDICAL">Swiss Medical</option>
+              <option value="GALENO">Galeno</option>
+              <option value="MEDICUS">Medicus</option>
+              <option value="HOSP_ITALIANO">Hospital Italiano</option>
+              <option value="PAMI">PAMI</option>
+            </select>
           </div>
 
-          <!-- Fila 2: Resumen / Título -->
+          <!-- Campo 2: Plataforma Afectada -->
           <div>
-            <label for="modal-title" style="display: block; font-size: 11.5px; font-weight: 700; color: #172B4D; margin-bottom: 4px;">Resumen / Asunto de la Solicitud <span style="color: #DE350B;">*</span></label>
-            <input type="text" id="modal-title" name="title" class="form-control" required placeholder="Ej: Error al emitir receta digital / Bloqueo de sistema" style="font-size: 12.5px; height: 34px; border-radius: 6px; border: 1.5px solid #DFE1E6; width: 100%; padding: 0 12px; color: #172B4D;">
+            <label for="modal-platform" style="display: block; font-size: 12px; font-weight: 700; color: #1E293B; margin-bottom: 5px; font-family: 'Inter', sans-serif;">Plataforma Afectada</label>
+            <select id="modal-platform" name="platform" class="form-control" required style="font-size: 12.5px; height: 38px; border-radius: 6px; border: 1.5px solid #CBD5E1; width: 100%; background: #FFFFFF; color: #1E293B; padding: 0 12px; font-family: 'Inter', sans-serif;">
+              <option value="">Plataforma Afectada</option>
+              <option value="CAT_RECETA" selected>Receta Electrónica</option>
+              <option value="CAT_TELEMEDICINA">Telemedicina</option>
+              <option value="CAT_CONSULTORIO_DIGITAL">Consultorio Digital (HCE)</option>
+              <option value="CAT_REGISTRO_INTEROP">Interoperabilidad & HL7/FHIR</option>
+              <option value="CAT_RPM_MONITOREO">Monitoreo Remoto (RPM)</option>
+              <option value="CAT_AFILIADOS_PORTAL">Portal Paciente</option>
+              <option value="CAT_COPAGOS_PAGOS">Copagos & Financiadores</option>
+              <option value="CAT_INTERNACION_DOM">Internación Domiciliaria</option>
+              <option value="CAT_CARTILLA_TURNOS">Servicios & Turnos</option>
+            </select>
           </div>
 
-          <!-- Fila 3: Descripción del Caso (Compacto 3 líneas) -->
+          <!-- Campo 3: Resumen / Asunto de la Solicitud -->
           <div>
-            <label for="modal-description" style="display: block; font-size: 11.5px; font-weight: 700; color: #172B4D; margin-bottom: 4px;">Descripción del Problema o Solicitud <span style="color: #DE350B;">*</span></label>
-            <textarea id="modal-description" name="description" class="form-control" rows="3" required placeholder="Describa brevemente qué ocurrió o qué necesita asistencia..." style="font-size: 12px; border-radius: 6px; border: 1.5px solid #DFE1E6; width: 100%; padding: 8px 12px; color: #172B4D; resize: vertical; min-height: 64px;"></textarea>
+            <label for="modal-title" style="display: block; font-size: 12px; font-weight: 700; color: #1E293B; margin-bottom: 5px; font-family: 'Inter', sans-serif;">Resumen / Asunto de la Solicitud</label>
+            <input type="text" id="modal-title" name="title" class="form-control" required placeholder="" style="font-size: 12.5px; height: 38px; border-radius: 6px; border: 1.5px solid #CBD5E1; width: 100%; padding: 0 12px; color: #1E293B; background: #FFFFFF; font-family: 'Inter', sans-serif;">
           </div>
 
-          <!-- Fila 4: Adjuntar Archivos Directamente (Sin necesidad de scrollear) -->
+          <!-- Campo 4: Descripcion -->
           <div>
-            <div id="jira-drag-drop-zone" onclick="document.getElementById('modal-file-upload-input').click()" style="display: flex; align-items: center; justify-content: space-between; gap: 10px; background: #F8FAFC; border: 1.5px dashed var(--q-primary, #00A896); border-radius: 8px; padding: 7px 12px; cursor: pointer; transition: all 0.2s ease;">
-              <div style="display: flex; align-items: center; gap: 8px; min-width: 0;">
-                <span style="font-size: 16px;">📎</span>
-                <span id="jira-drag-title" style="font-size: 11.5px; font-weight: 600; color: #172B4D;">Haga clic para adjuntar archivo, imagen o captura</span>
-                <div id="jira-attached-file-badge" style="display: none; align-items: center; gap: 6px; background: #E6FBF9; color: #008F80; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700;">
-                  <span id="jira-attached-file-name"></span>
-                  <span id="jira-attached-file-size" style="opacity: 0.8;"></span>
-                  <button type="button" onclick="clearModalUploadedFile(event)" style="background: none; border: none; color: #DE350B; font-weight: 800; cursor: pointer; padding: 0 2px;" title="Quitar adjunto">&times;</button>
-                </div>
+            <label for="modal-description" style="display: block; font-size: 12px; font-weight: 700; color: #1E293B; margin-bottom: 5px; font-family: 'Inter', sans-serif;">Descripcion</label>
+            <textarea id="modal-description" name="description" class="form-control" rows="4" required placeholder="" style="font-size: 12.5px; border-radius: 6px; border: 1.5px solid #CBD5E1; width: 100%; padding: 10px 12px; color: #1E293B; background: #FFFFFF; resize: vertical; min-height: 80px; font-family: 'Inter', sans-serif;"></textarea>
+          </div>
+
+          <!-- Campo 5: Arrastra y suelta archivos aquí o haz clic para seleccionar (Dashed Teal Box) -->
+          <div>
+            <div id="jira-drag-drop-zone" onclick="document.getElementById('modal-file-upload-input').click()" style="display: flex; align-items: center; justify-content: center; gap: 8px; background: #FFFFFF; border: 1.5px dashed #00A896; border-radius: 6px; padding: 12px 16px; cursor: pointer; transition: all 0.2s ease;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#00A896" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 17px; height: 17px; flex-shrink: 0;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+              <span id="jira-drag-title" style="font-size: 12px; font-weight: 600; color: #00A896; font-family: 'Inter', sans-serif;">Arrastra y suelta archivos aquí o haz clic para seleccionar</span>
+              <div id="jira-attached-file-badge" style="display: none; align-items: center; gap: 6px; background: #E6FBF9; color: #008F80; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700;">
+                <span id="jira-attached-file-name"></span>
+                <span id="jira-attached-file-size" style="opacity: 0.8;"></span>
+                <button type="button" onclick="clearModalUploadedFile(event)" style="background: none; border: none; color: #DE350B; font-weight: 800; cursor: pointer; padding: 0 2px;" title="Quitar adjunto">&times;</button>
               </div>
-              <button type="button" class="btn-sec" style="font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 5px; white-space: nowrap; background: #FFFFFF; border: 1px solid #DFE1E6; color: var(--q-primary, #00A896); pointer-events: none;">
-                Examinar...
-              </button>
             </div>
             <input type="file" id="modal-file-upload-input" style="display: none;" onchange="handleModalFileUpload(this)">
             <input type="hidden" id="modal-attachment-url" name="attachment_url">
           </div>
 
-          <!-- Fila 5: Opciones Técnicas Avanzadas Colapsadas (Cero impacto de altura) -->
-          <details style="font-size: 11px; color: #6B778C;">
-            <summary style="cursor: pointer; font-weight: 700; color: var(--q-primary, #00A896); outline: none;">⚙️ Opciones avanzadas (Prioridad, Impacto, Urgencia)</summary>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; padding: 8px; background: #FAFBFC; border: 1px solid #DFE1E6; border-radius: 6px;">
-              <div>
-                <label for="modal-calculated-priority" style="display: block; font-size: 10.5px; font-weight: 600; margin-bottom: 2px;">Prioridad ITIL</label>
-                <select id="modal-calculated-priority" name="priority" class="form-control" style="font-size: 11px; height: 28px; width: 100%;">
-                  <option value="P1">🔴 P1 • Crítica (Resolución &lt; 2h)</option>
-                  <option value="P2">🟠 P2 • Alta (Resolución &lt; 8h)</option>
-                  <option value="P3" selected>🟡 P3 • Media (Resolución &lt; 24h)</option>
-                  <option value="P4">🟢 P4 • Baja (Resolución &lt; 48h)</option>
-                </select>
-              </div>
-              <div>
-                <label for="modal-type" style="display: block; font-size: 10.5px; font-weight: 600; margin-bottom: 2px;">Tipo de Solicitud</label>
-                <select id="modal-type" name="ticket_type" class="form-control" style="font-size: 11px; height: 28px; width: 100%;">
-                  <option value="INCIDENTE">🚨 Incidente en Producción</option>
-                  <option value="REQUERIMIENTO">🛠️ Solicitud de Servicio</option>
-                  <option value="CONSULTA">❓ Consulta Operativa</option>
-                </select>
-              </div>
-            </div>
-            <input type="hidden" id="modal-impact" name="impact" value="MEDIO">
-            <input type="hidden" id="modal-urgency" name="urgency" value="MEDIO">
-            <input type="hidden" id="modal-is-major" name="is_major_incident" value="0">
-            <input type="hidden" id="modal-parent-id" name="parent_id" value="">
-            <input type="hidden" id="modal-release-tag" name="release_tag" value="">
-          </details>
+          <!-- Campos Ocultos de Compatibilidad ITIL v4 -->
+          <input type="hidden" id="modal-impact" name="impact" value="MEDIO">
+          <input type="hidden" id="modal-urgency" name="urgency" value="MEDIO">
+          <input type="hidden" id="modal-type" name="ticket_type" value="INCIDENTE">
+          <input type="hidden" id="modal-calculated-priority" name="priority" value="P2">
+          <input type="hidden" id="modal-is-major" name="is_major_incident" value="0">
+          <input type="hidden" id="modal-parent-id" name="parent_id" value="">
+          <input type="hidden" id="modal-release-tag" name="release_tag" value="">
         </div>
 
-        <!-- FOOTER QUANTUX HEALTH SERVICE DESK -->
-        <div style="padding: 12px 22px; background: #F8FAFC; border-top: 1px solid #DFE1E6; display: flex; justify-content: flex-end; align-items: center; gap: 10px;">
-          <button type="button" class="btn-sec" id="btn-cancel-modal" onclick="closeTicketModal()" style="padding: 7px 16px; font-size: 12px; font-weight: 600; border-radius: 6px; border: 1px solid #CBD5E1; background: #FFFFFF; color: #475569; cursor: pointer; transition: background 0.15s;">Cancelar</button>
-          <button type="submit" class="btn-pri" id="btn-submit-ticket" style="padding: 7px 22px; font-size: 12.5px; font-weight: 800; border-radius: 6px; border: none; background: var(--q-primary, #00A896); color: #FFFFFF; cursor: pointer; box-shadow: 0 2px 6px rgba(0,168,150,0.35); transition: background 0.15s;">Crear</button>
+        <!-- FOOTER (media_1790176353900.png) -->
+        <div style="padding: 14px 24px; background: #F8FAFC; border-top: 1px solid #E2E8F0; display: flex; justify-content: flex-end; align-items: center; gap: 10px;">
+          <button type="button" class="btn-sec" id="btn-cancel-modal" onclick="closeTicketModal()" style="padding: 8px 18px; font-size: 12px; font-weight: 600; border-radius: 6px; border: 1.5px solid #CBD5E1; background: #FFFFFF; color: #475569; cursor: pointer; transition: all 0.15s; font-family: 'Inter', sans-serif;" onmouseover="this.style.background='#F1F5F9'" onmouseout="this.style.background='#FFFFFF'">Cancelar</button>
+          <button type="submit" class="btn-pri" id="btn-submit-ticket" style="padding: 8px 24px; font-size: 12.5px; font-weight: 700; border-radius: 6px; border: none; background: #00A896; color: #FFFFFF; cursor: pointer; box-shadow: 0 1px 3px rgba(0,168,150,0.3); transition: background 0.15s; font-family: 'Inter', sans-serif;" onmouseover="this.style.background='#008F80'" onmouseout="this.style.background='#00A896'">Crear</button>
         </div>
       </form>
     </div>
@@ -3437,9 +3432,8 @@
           </div>
         </div>
         <div style="display: flex; align-items: center; gap: 12px;">
-          <button type="button" onclick="closeRequesterHistoryModal(); clearRequesterChat();" style="display: inline-flex; align-items: center; gap: 6px; background: #00A896; color: #FFFFFF; border: none; padding: 7px 14px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer; box-shadow: 0 2px 6px rgba(0,168,150,0.3); transition: all 0.15s ease;" onmouseover="this.style.background='#008F80'" onmouseout="this.style.background='#00A896'">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 13px; height: 13px;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-            <span>+ Nueva Consulta</span>
+          <button type="button" onclick="closeRequesterHistoryModal(); openCreateTicketModal(true);" style="display: inline-flex; align-items: center; background: #00A896; color: #FFFFFF; border: none; padding: 7px 16px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer; box-shadow: 0 2px 6px rgba(0,168,150,0.3); transition: all 0.15s ease;" onmouseover="this.style.background='#008F80'" onmouseout="this.style.background='#00A896'">
+            + Crear Solicitud
           </button>
           <button type="button" onclick="closeRequesterHistoryModal()" style="background: transparent; border: none; color: #94A3B8; font-size: 24px; cursor: pointer; line-height: 1;" onmouseover="this.style.color='#FFF'" onmouseout="this.style.color='#94A3B8'">&times;</button>
         </div>
@@ -3472,11 +3466,11 @@
       <!-- Footer -->
       <div style="padding: 12px 20px; background: #F8FAFC; border-top: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
         <span style="font-size: 11.5px; color: #64748B;">
-          🛡️ Guardia Médica 24/7 &bull; SLA garantizado: <strong>&lt; 15 min</strong>
+          Guardia Médica 24/7 &bull; SLA garantizado: <strong>&lt; 15 min</strong>
         </span>
         <div style="display: flex; gap: 8px;">
-          <button type="button" onclick="closeRequesterHistoryModal(); clearRequesterChat();" style="padding: 7px 16px; font-size: 12px; font-weight: 700; background: #00A896; color: #FFFFFF; border: none; border-radius: 6px; cursor: pointer;" onmouseover="this.style.background='#008F80'" onmouseout="this.style.background='#00A896'">
-            + Nueva Consulta
+          <button type="button" onclick="closeRequesterHistoryModal(); openCreateTicketModal(true);" style="padding: 7px 16px; font-size: 12px; font-weight: 700; background: #00A896; color: #FFFFFF; border: none; border-radius: 6px; cursor: pointer;" onmouseover="this.style.background='#008F80'" onmouseout="this.style.background='#00A896'">
+            + Crear Solicitud
           </button>
           <button type="button" onclick="closeRequesterHistoryModal()" style="padding: 7px 16px; font-size: 12px; font-weight: 600; background: #E2E8F0; color: #334155; border: none; border-radius: 6px; cursor: pointer;">
             Cerrar
@@ -3516,10 +3510,10 @@
       <!-- Footer -->
       <div style="padding: 12px 20px; background: #FFFFFF; border-top: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
         <button type="button" onclick="closeRequesterTicketDetailModal(); openRequesterHistoryModal();" style="padding: 7px 16px; font-size: 12px; font-weight: 600; background: #F1F5F9; color: #334155; border: 1px solid #CBD5E1; border-radius: 6px; cursor: pointer;">
-          ← Volver a Mis Solicitudes
+          Volver a Mis Solicitudes
         </button>
         <button type="button" onclick="closeRequesterTicketDetailModal(); clearRequesterChat();" style="padding: 7px 16px; font-size: 12px; font-weight: 700; background: #00A896; color: #FFFFFF; border: none; border-radius: 6px; cursor: pointer;" onmouseover="this.style.background='#008F80'" onmouseout="this.style.background='#00A896'">
-          + Nueva Consulta
+          Nueva Consulta
         </button>
       </div>
     </div>
@@ -3707,211 +3701,6 @@
     </div>
   </div>
 
-  <!-- =======================================================================
-       MODAL 14A: ALERTA ASISTENCIAL (PACIENTE EN BOX - EXCLUSIVO MÉDICOS)
-       ======================================================================= -->
-  <div class="modal-overlay" id="modal-doctor-emergency" style="display: none; align-items: center; justify-content: center; z-index: 10000; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(4px);">
-    <div class="modal-card" style="max-width: 540px; width: 92%; background: #FFFFFF; border-radius: 14px; box-shadow: 0 25px 50px -12px rgba(220, 38, 38, 0.35); border: 2px solid #EF4444; overflow: hidden; animation: modalPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);">
-      
-      <!-- Encabezado de Emergencia -->
-      <div style="background: linear-gradient(135deg, #DC2626 0%, #991B1B 100%); color: #FFFFFF; padding: 18px 24px; display: flex; align-items: center; justify-content: space-between;">
-        <div style="display: flex; align-items: center; gap: 12px;">
-          <div style="background: rgba(255, 255, 255, 0.2); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px;">
-            🚨
-          </div>
-          <div>
-            <h3 style="margin: 0; font-size: 16px; font-weight: 800; letter-spacing: 0.3px;">Alerta Asistencial: Paciente en Espera</h3>
-            <p style="margin: 2px 0 0 0; font-size: 11px; opacity: 0.9; font-weight: 600;">Exclusivo Profesionales de la Salud • SLA Respuesta Inmediata &lt; 3 min</p>
-          </div>
-        </div>
-        <button onclick="closeDoctorEmergencyModal()" style="background: none; border: none; color: #FFFFFF; font-size: 24px; cursor: pointer; line-height: 1;">&times;</button>
-      </div>
-
-      <!-- Cuerpo del Formulario Ultrarrápido (1 solo paso) -->
-      <div id="doctor-emergency-form-body" style="padding: 22px 24px;">
-        <div style="background: #FEF2F2; border-left: 4px solid #DC2626; padding: 10px 14px; border-radius: 6px; margin-bottom: 18px; font-size: 12px; color: #991B1B;">
-          <strong>Profesional:</strong> <span id="doc-modal-prof-name">Dr. Médico</span> • Esta alerta ingresa a la Mesa de Ayuda con <strong>Prioridad Crítica P1</strong> y alarma sonora.
-        </div>
-
-        <!-- 1. Ubicación Asistencial -->
-        <div style="margin-bottom: 16px;">
-          <label style="display: block; font-size: 12px; font-weight: 700; color: #0F172A; margin-bottom: 6px;">
-            📍 Consultorio / Box / Quirófano:
-          </label>
-          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
-            <button type="button" class="btn-box-chip active" onclick="selectEmergencyBox(this, 'Consultorio 1')">Consultorio 1</button>
-            <button type="button" class="btn-box-chip" onclick="selectEmergencyBox(this, 'Consultorio 2')">Consultorio 2</button>
-            <button type="button" class="btn-box-chip" onclick="selectEmergencyBox(this, 'Consultorio 3')">Consultorio 3</button>
-            <button type="button" class="btn-box-chip" onclick="selectEmergencyBox(this, 'Consultorio 4')">Consultorio 4</button>
-            <button type="button" class="btn-box-chip" onclick="selectEmergencyBox(this, 'Guardia - Box 1')">Guardia Box 1</button>
-            <button type="button" class="btn-box-chip" onclick="selectEmergencyBox(this, 'Quirófano / Shock')">Quirófano</button>
-          </div>
-          <input type="hidden" id="doc-emergency-selected-box" value="Consultorio 1">
-        </div>
-
-        <!-- 2. Motivo Clínico Rápido -->
-        <div style="margin-bottom: 16px;">
-          <label style="display: block; font-size: 12px; font-weight: 700; color: #0F172A; margin-bottom: 6px;">
-            ⚡ Falla que bloquea la atención médica:
-          </label>
-          <div style="display: flex; flex-direction: column; gap: 6px;">
-            <button type="button" class="btn-issue-chip active" onclick="selectEmergencyIssue(this, 'Receta Digital Bloqueada / Error de Firma PKI', 'PLAT_RECETA_E')">
-              💊 Receta Digital Bloqueada / Error de Firma PKI
-            </button>
-            <button type="button" class="btn-issue-chip" onclick="selectEmergencyIssue(this, 'Historia Clínica no abre / Bloqueada por concurrencia', 'PLAT_CORE_HIS')">
-              📋 Historia Clínica no abre / Bloqueada
-            </button>
-            <button type="button" class="btn-issue-chip" onclick="selectEmergencyIssue(this, 'Falla Visor DICOM / Rayos e Imágenes PACS', 'PLAT_IMAG_PACS')">
-              🩻 Falla Visor DICOM / Rayos e Imágenes PACS
-            </button>
-            <button type="button" class="btn-issue-chip" onclick="selectEmergencyIssue(this, 'Caída total de conectividad en Consultorio', 'PLAT_TELEMED')">
-              🌐 Caída total de conectividad en Box
-            </button>
-          </div>
-          <input type="hidden" id="doc-emergency-selected-issue" value="Receta Digital Bloqueada / Error de Firma PKI">
-          <input type="hidden" id="doc-emergency-selected-platform" value="PLAT_RECETA_E">
-        </div>
-
-        <!-- 3. Interno Telefónico y Audio Dictado -->
-        <div style="display: grid; grid-template-columns: 140px 1fr; gap: 12px; margin-bottom: 20px;">
-          <div>
-            <label style="display: block; font-size: 12px; font-weight: 700; color: #0F172A; margin-bottom: 6px;">
-              📞 Interno / Anexo:
-            </label>
-            <input type="text" id="doc-emergency-phone" class="form-control" value="204" style="height: 38px; font-size: 13px; font-weight: 800; text-align: center; border-radius: 8px;">
-          </div>
-          <div>
-            <label style="display: block; font-size: 12px; font-weight: 700; color: #0F172A; margin-bottom: 6px;">
-              🎙️ Audio-Ticket con IA (Opcional):
-            </label>
-            <button type="button" id="btn-audio-ticket-rec" onclick="toggleDoctorAudioRecord()" style="height: 38px; width: 100%; border: 1px dashed #CBD5E1; background: #F8FAFC; border-radius: 8px; font-size: 12px; font-weight: 700; color: #475569; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; transition: all 0.2s;">
-              <span id="audio-rec-dot" style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #94A3B8;"></span>
-              <span id="audio-rec-text">Dictar por Voz (10s)</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Botón de Disparo Inmediato -->
-        <button type="button" onclick="submitDoctorEmergency()" style="width: 100%; height: 46px; background: #DC2626; color: #FFFFFF; border: none; border-radius: 10px; font-size: 14px; font-weight: 800; letter-spacing: 0.3px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 14px rgba(220, 38, 38, 0.4); transition: all 0.15s ease;">
-          <span>⚡ DESPACHAR ALERTA A SOPORTE N1</span>
-        </button>
-      </div>
-
-      <!-- Pantalla de Éxito Inmediato + Plan B de Contingencia -->
-      <div id="doctor-emergency-success-body" style="display: none; padding: 24px; text-align: center;">
-        <div style="width: 56px; height: 56px; border-radius: 50%; background: #DCFCE7; color: #16A34A; display: inline-flex; align-items: center; justify-content: center; font-size: 28px; margin-bottom: 12px;">
-          ✓
-        </div>
-        <h3 style="font-size: 18px; font-weight: 800; color: #0F172A; margin: 0 0 6px 0;">¡Alerta Asistencial Despachada!</h3>
-        <p style="font-size: 13px; color: #475569; margin: 0 0 16px 0;">
-          El ticket <strong id="doc-success-ticket-id" style="color: #DC2626;">TICK-...</strong> está sonando en la guardia técnica. El operador N1 se contactará de inmediato a tu interno.
-        </p>
-
-        <!-- Banner de Contingencia para que el médico no frene la consulta -->
-        <div style="background: #F0FDF4; border: 1.5px solid #86EFAC; border-radius: 10px; padding: 14px 16px; text-align: left; margin-bottom: 18px;">
-          <div style="font-size: 12px; font-weight: 800; color: #166534; display: flex; align-items: center; gap: 6px; margin-bottom: 8px;">
-            <span>🛡️ PLAN B DE CONTINGENCIA (CONTINUÁ TU CONSULTA):</span>
-          </div>
-          <p style="font-size: 12px; color: #15803D; margin: 0 0 10px 0; line-height: 1.4;">
-            No hagas esperar a tu paciente. Podés emitir en el recetario de contingencia homologado por la Dirección Médica mientras resolvemos la plataforma:
-          </p>
-          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-            <a href="javascript:void(0)" onclick="downloadEmergencyPrescriptionPDF()" style="display: inline-flex; align-items: center; gap: 5px; background: #16A34A; color: #FFFFFF; font-size: 11.5px; font-weight: 700; padding: 6px 12px; border-radius: 6px; text-decoration: none;">
-              📄 Descargar Recetario Contingencia (PDF)
-            </a>
-            <a href="javascript:void(0)" onclick="openDoctorContingencyModal()" style="display: inline-flex; align-items: center; gap: 5px; background: #FFFFFF; border: 1px solid #86EFAC; color: #166534; font-size: 11.5px; font-weight: 700; padding: 6px 12px; border-radius: 6px; text-decoration: none;">
-              Ver Todos los Protocolos
-            </a>
-          </div>
-        </div>
-
-        <button type="button" onclick="closeDoctorEmergencyModal()" style="background: #F1F5F9; border: 1px solid #CBD5E1; color: #334155; font-size: 12.5px; font-weight: 700; padding: 8px 18px; border-radius: 8px; cursor: pointer;">
-          Entendido, Volver a la Consulta
-        </button>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- =======================================================================
-       MODAL 14B: PROTOCOLOS Y PLAN B DE CONTINGENCIA OFFLINE (EXCLUSIVO MÉDICOS)
-       ======================================================================= -->
-  <div class="modal-overlay" id="modal-doctor-contingency" style="display: none; align-items: center; justify-content: center; z-index: 10000; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(4px);">
-    <div class="modal-card" style="max-width: 620px; width: 92%; background: #FFFFFF; border-radius: 14px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); border: 1px solid #CBD5E1; overflow: hidden; animation: modalPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);">
-      
-      <div style="background: linear-gradient(135deg, #0F766E 0%, #115E59 100%); color: #FFFFFF; padding: 18px 24px; display: flex; align-items: center; justify-content: space-between;">
-        <div style="display: flex; align-items: center; gap: 12px;">
-          <div style="background: rgba(255, 255, 255, 0.2); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px;">
-            🛡️
-          </div>
-          <div>
-            <h3 style="margin: 0; font-size: 16px; font-weight: 800; letter-spacing: 0.3px;">Suite de Contingencia Asistencial Inmediata</h3>
-            <p style="margin: 2px 0 0 0; font-size: 11px; opacity: 0.9; font-weight: 600;">Plan B Oficial Homologado por Dirección Médica • Disponibilidad 100% Offline</p>
-          </div>
-        </div>
-        <button onclick="closeDoctorContingencyModal()" style="background: none; border: none; color: #FFFFFF; font-size: 24px; cursor: pointer; line-height: 1;">&times;</button>
-      </div>
-
-      <div style="padding: 22px 24px;">
-        <p style="font-size: 12.5px; color: #475569; margin: 0 0 16px 0;">
-          Si los sistemas centrales de prescripción o historia clínica presentan demoras o caídas, utilizá los siguientes recursos de respaldo para garantizar la continuidad asistencial:
-        </p>
-
-        <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;">
-          <!-- Item 1: Recetario -->
-          <div style="border: 1px solid #E2E8F0; border-radius: 10px; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; background: #F8FAFC;">
-            <div>
-              <div style="font-size: 13px; font-weight: 800; color: #0F172A; margin-bottom: 2px;">
-                📄 Talonario Digital de Recetas de Contingencia
-              </div>
-              <div style="font-size: 11.5px; color: #64748B;">
-                Formato PDF oficial con campos rellenables y código QR de validación diferida.
-              </div>
-            </div>
-            <button type="button" onclick="downloadEmergencyPrescriptionPDF()" style="background: #00A896; color: #FFFFFF; border: none; font-size: 11.5px; font-weight: 700; padding: 8px 14px; border-radius: 6px; cursor: pointer; white-space: nowrap;">
-              Descargar PDF
-            </button>
-          </div>
-
-          <!-- Item 2: Validador Web Alternativo -->
-          <div style="border: 1px solid #E2E8F0; border-radius: 10px; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; background: #F8FAFC;">
-            <div>
-              <div style="font-size: 13px; font-weight: 800; color: #0F172A; margin-bottom: 2px;">
-                🌐 Validador Web Directo de Obras Sociales (Financiadores)
-              </div>
-              <div style="font-size: 11.5px; color: #64748B;">
-                Portal ligero para consultar padrón de OSDE, Swiss Medical, Galeno y PAMI sin pasar por el Core.
-              </div>
-            </div>
-            <button type="button" onclick="openFinanciadoresFallback()" style="background: #0284C7; color: #FFFFFF; border: none; font-size: 11.5px; font-weight: 700; padding: 8px 14px; border-radius: 6px; cursor: pointer; white-space: nowrap;">
-              Abrir Validador
-            </button>
-          </div>
-
-          <!-- Item 3: Ficha de Evolución Offline -->
-          <div style="border: 1px solid #E2E8F0; border-radius: 10px; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; background: #F8FAFC;">
-            <div>
-              <div style="font-size: 13px; font-weight: 800; color: #0F172A; margin-bottom: 2px;">
-                📋 Plantilla de Evolución Clínica de Resguardo
-              </div>
-              <div style="font-size: 11.5px; color: #64748B;">
-                Plantilla para registrar diagnóstico, signos vitales y tratamiento para posterior volcado a HCE.
-              </div>
-            </div>
-            <button type="button" onclick="downloadEvolutionTemplate()" style="background: #475569; color: #FFFFFF; border: none; font-size: 11.5px; font-weight: 700; padding: 8px 14px; border-radius: 6px; cursor: pointer; white-space: nowrap;">
-              Descargar Ficha
-            </button>
-          </div>
-        </div>
-
-        <div style="background: #FFFBEB; border: 1px solid #FCD34D; border-radius: 8px; padding: 10px 14px; font-size: 11.5px; color: #92400E; display: flex; align-items: center; justify-content: space-between;">
-          <span>📞 <strong>Línea Roja de Rescate Asistencial:</strong> Interno <strong>100</strong> (Guardia IT Activa 24/7)</span>
-          <span style="font-weight: 800; color: #B45309;">Prioridad Médica</span>
-        </div>
-      </div>
-
-    </div>
-  </div>
 
   <!-- =========================================================================
        MODAL: CALIFICACIÓN Y CIERRE DE TICKET CSAT "BUENA ONDA" (MÓDULO 10)
@@ -4378,8 +4167,8 @@ Muchas gracias.</textarea>
   <!-- SCRIPTS (LOCAL CHART.JS BUNDLE & APP CODE) -->
   <script src="/js/chart.umd.min.js"></script>
   <script src="/js/api.js?v=4.1.6_integrated_cockpit_pro"></script>
-  <script src="/js/typeahead.js?v=4.1.7"></script>
-  <script src="/js/app.js?v=4.1.6_integrated_cockpit_pro"></script>
+  <script src="/js/typeahead.js?v=4.2.0_homologacion_estricta"></script>
+  <script src="/js/app.js?v=4.2.0_homologacion_estricta"></script>
   <script>
     (function initMobileSidebar() {
       const toggleBtn = document.getElementById('btn-sidebar-toggle');

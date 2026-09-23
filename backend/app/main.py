@@ -70,6 +70,8 @@ if os.path.exists(docs_dir):
 # Endpoints de Documentación y Cockpit Central
 @app.get("/")
 @app.get("/cockpit")
+@app.get("/cockpit/")
+@app.get("/cockpi")
 def serve_cockpit():
     f = os.path.join(frontend_dir, "index.html")
     if os.path.exists(f):

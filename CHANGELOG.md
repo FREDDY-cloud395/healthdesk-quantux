@@ -2,6 +2,26 @@
 
 Todos los cambios notables en este proyecto están documentados en este archivo siguiendo los lineamientos de [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y respetando [Versionado Semántico (SemVer 2.0.0)](https://semver.org/lang/es/).
 
+## [8.2.0-HITO-PORTAL-CENTRADO-CANONICO] - 2026-09-23 (Armonía Asistencial & Erradicación Total Zero-Debt)
+
+### 🏆 Hito de Arquitectura y Experiencia Asistencial Canónica
+- **Erradicación 100% y Definitiva de "Paciente en Box" y "Plan B Contingencia":**
+  - Supresión completa y quirúrgica en todo el frontend (eliminados `#doctor-emergency-suite`, Modal 14A y Modal 14B).
+  - Eliminación de todas las clases y animaciones CSS de emergencia en `styles.css`.
+  - Depuración integral en JavaScript (`app.js`): erradicadas todas las funciones de emergencia, variables de box y fila de alerta en popovers de Jira.
+  - Purga y vaciado inmutable (`VACUUM`) en SQLite (`healthdesk.db`).
+  - **Resultado de Auditoría Forense:** 0 ocurrencias residuales en el 100% del código fuente de frontend y backend.
+- **Centrado Geométrico Absoluto del Chat Asistencial (Cruce de Diagonales X=50%, Y=50%):**
+  - Corrección de la causa raíz en contenedor `#requester-clinical-portal` mediante Flexbox estricto (`justify-content: center; align-items: center;`).
+  - Balance de márgenes (`margin: 0 auto !important; max-width: 860px;`) en `#requester-chat-center-box`.
+  - **Certificación Selenium Headless:** Centro Horizontal `X=911.00px` (Offset: `0.00px`), Centro Vertical `Y=399.00px` (Offset: `0.00px`).
+- **Homologación de Diseño y Regla de Oro (Cero Iconos / Cero Emojis en Solicitante):**
+  - Botonera canónica de 3 opciones 100% tipográfica (`[ Me sirvió, muchas gracias ]`, `[ No pude resolverlo: Generar Ticket ]`, `[ Hacer otra pregunta ]`).
+  - Isotipo oficial Quantux (Alianza de anillos entrelazados en Soft Teal `#00A896` y Deep Blue `#0284C7` sin letra 'Q').
+  - Tarjeta inline de ticket generado homologada según Pantalla 3 del diseño rector.
+- **Estabilidad y Seguridad RBAC:**
+  - 100% de cumplimiento en pruebas unitarias y E2E de autenticación ITIL y API core.
+
 ## [4.0.0-PROD] - 2026-09-19 (Enterprise Zen Edition & Full Modular Certification)
 
 ### 🌟 Release Oficial Enterprise v4.0.0

@@ -182,6 +182,7 @@ def list_tickets(
     date_from: Optional[str] = None,
     date_to: Optional[str] = None,
     search: Optional[str] = None,
+    order_by: Optional[str] = "date",
     session: Session = Depends(get_session)
 ):
     query = select(Ticket)
@@ -277,8 +278,11 @@ def list_tickets(
                 filtered.append(t)
         results = filtered
     
-    # Ordenar por prioridad P1 -> P5 y luego fecha
-    return sorted(results, key=lambda x: (x.priority.value, x.created_at), reverse=False)
+    # Ordenar solicitudes: por defecto fecha descendente (la más reciente arriba de todo el listado)
+    if order_by == "priority":
+        return sorted(results, key=lambda x: (x.priority.value, -(x.created_at.timestamp() if x.created_at else 0)))
+    else:
+        return sorted(results, key=lambda x: (x.created_at.timestamp() if x.created_at else 0), reverse=True)
 
 # 1.1 METRICAS GLOBALES Y TABLERO DE CONTROL
 @router.get("/metrics/summary")
