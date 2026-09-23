@@ -212,6 +212,65 @@ class N3CognitiveTriageEngine:
                     else:
                         score -= 2000
 
+                # L2.4 IPS: Restricción Taxativa por Especialidad - Exclusión Psicología y Fonoaudiología (CD2-IPS-004)
+                # NOTA: Se evalúa antes de L2.1 y L2.3 para priorizar el descarte si quien consulta es de psicología/fonoaudiología
+                elif (
+                    any(k in query_norm for k in [
+                        "exclusion taxativa", "especialidad excluida", "especialidades excluidas",
+                        "psicologia alergias", "psicologia antropometria", "fonoaudiologia alergias",
+                        "fonoaudiologia antropometria", "no me aparece alergias", "no visualiza cabecera salud",
+                        "305 fonoaudiologia", "especialidad 305", "especialidades 319", "psicologia no ve alergias"
+                    ]) or (
+                        any(x in query_norm for x in ["psicol", "fonoaudiol", "305", "319", "810"])
+                        and any(y in query_norm for y in ["alergia", "alergias", "peso", "estatura", "talla", "antropometria", "imc", "ips", "modulo", "no aparece", "no figura", "no puede", "codigo"])
+                    )
+                ):
+                    if "IPS-004" in code:
+                        score += 8500
+                    else:
+                        score -= 2000
+
+                # L2.1 IPS: Registro de Alergias e Intolerancias SNOMED y Duplicados (CD2-IPS-001)
+                elif (
+                    any(k in query_norm for k in [
+                        "alergia o intolerancia ya cargada", "alergia ya cargada", "alergias e intolerancias",
+                        "catalogo snomed alergia", "carrito de alergia", "carrito de la atencion"
+                    ]) or (
+                        any(x in query_norm for x in ["alergia", "alergias", "intolerancia", "intolerancias"])
+                        and not any(y in query_norm for y in ["russ", "fhir", "allergyintolerance", "register", "psicol", "fonoaudiol", "305"])
+                    )
+                ):
+                    if "IPS-001" in code:
+                        score += 7500
+                    else:
+                        score -= 2000
+
+                # L2.2 IPS: Interoperabilidad RUSS FHIR AllergyIntolerance (CD2-IPS-002)
+                elif any(k in query_norm for k in [
+                    "allergyintolerance", "$register", "russ-facade", "interlocutor comercial",
+                    "envio fhir allergyintolerance", "sincronizacion russ alergia", "russ alergia"
+                ]) or ("russ" in query_norm and any(x in query_norm for x in ["alergia", "alergias", "fhir", "facade", "register"])):
+                    if "IPS-002" in code:
+                        score += 8000
+                    else:
+                        score -= 2000
+
+                # L2.3 IPS: Variables Antropométricas, Peso, Estatura, IMC y Cabecera (CD2-IPS-003)
+                elif (
+                    any(k in query_norm for k in [
+                        "variables antropometricas", "datos antropometricos", "calculo de imc", "calculo imc",
+                        "indice de masa corporal", "peso y estatura", "peso y talla", "estatura cm", "peso kg",
+                        "cabecera colapsada", "cabecera desplegada", "datos de salud colapsada"
+                    ]) or (
+                        any(x in query_norm for x in ["imc", "estatura", "antropometria", "antropometrica"])
+                        and not any(y in query_norm for y in ["psicol", "fonoaudiol", "305", "319"])
+                    )
+                ):
+                    if "IPS-003" in code:
+                        score += 7500
+                    else:
+                        score -= 2000
+
                 # --- DESAMBIGUACIÓN ESPECÍFICA N3 (MÁXIMA PRIORIDAD) ---
                 elif any(k in query_norm for k in ["circuito de agenda", "validacion del circuito de agenda", "alta de prestador y"]):
                     if "INST-001" in code:

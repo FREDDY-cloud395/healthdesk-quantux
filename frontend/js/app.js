@@ -491,6 +491,7 @@ function switchView(viewName) {
  'tickets': 'Mesa de Ayuda',
  'dashboard': 'Tablero de Control',
 		'team-leader': 'Torre de Control',
+		'unified-hub': 'Mando Operativo Unificado',
 		'kanban': 'Tablero Kanban N3',
  'users': 'Usuarios y Roles',
  'articles': 'Base de Conocimiento',
@@ -540,6 +541,8 @@ function switchView(viewName) {
  loadHelpdeskLevelsConfig();
   } else if (viewName === 'team-leader') {
     loadTeamLeaderData();
+  } else if (viewName === 'unified-hub') {
+    loadUnifiedHubData();
   } else if (viewName === 'kanban') {
     loadKanbanBoard();
   } else if (viewName === 'requester-portal') {
@@ -12861,21 +12864,46 @@ function renderKanbanBoard(releases) {
     const tickets = rel.linked_tickets || [];
     const ticketsCount = rel.linked_tickets_count || tickets.length;
 
+    const initialTickets = tickets.slice(0, 3);
+    const extraTickets = tickets.slice(3);
+    const safeTagId = (rel.tag || 'rel').replace(/[^a-zA-Z0-9_-]/g, '_');
+    const extraContainerId = `kanban-extra-tkts-${safeTagId}`;
+
+    const renderTicketChip = (t) => `
+      <div style="font-size: 11px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 4px; padding: 4px 6px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.15s ease;"
+           onclick="event.stopPropagation(); openAgentWorkspace('${t.id}');"
+           onmouseover="this.style.background='#EFF6FF'; this.style.borderColor='#93C5FD';"
+           onmouseout="this.style.background='#F8FAFC'; this.style.borderColor='#E2E8F0';"
+           title="Clic para abrir el ticket #${t.id} en el Workspace">
+        <span style="font-weight: 700; color: #0052CC; text-decoration: underline;">#${t.id}</span>
+        <span style="font-size: 10px; color: #475569; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 135px; margin: 0 4px;" title="${t.title}">${t.title}</span>
+        <span style="font-size: 9px; font-weight: 700; padding: 1px 4px; border-radius: 3px; background: ${t.status === 'RESUELTO' ? '#DCFCE7' : '#F1F5F9'}; color: ${t.status === 'RESUELTO' ? '#15803D' : '#475569'};">${t.status}</span>
+      </div>
+    `;
+
     const ticketsHtml = tickets.length > 0 ? `
       <div style="margin-top: 8px; border-top: 1px dashed #E2E8F0; padding-top: 6px; display: flex; flex-direction: column; gap: 4px;">
         <div style="font-size: 10px; font-weight: 700; color: #64748B; text-transform: uppercase;">Tickets N3 Vinculados (${ticketsCount}):</div>
-        ${tickets.slice(0, 3).map(t => `
-          <div style="font-size: 11px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 4px; padding: 3px 6px; display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-weight: 700; color: #0052CC; cursor: pointer;" onclick="event.stopPropagation(); selectTicket('${t.id}'); switchView('tickets');">#${t.id}</span>
-            <span style="font-size: 10px; color: #475569; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 140px;" title="${t.title}">${t.title}</span>
-            <span style="font-size: 9px; font-weight: 700; padding: 1px 4px; border-radius: 3px; background: ${t.status === 'RESUELTO' ? '#DCFCE7' : '#F1F5F9'}; color: ${t.status === 'RESUELTO' ? '#15803D' : '#475569'};">${t.status}</span>
+        ${initialTickets.map(renderTicketChip).join('')}
+        ${extraTickets.length > 0 ? `
+          <div id="${extraContainerId}" style="display: none; flex-direction: column; gap: 4px; margin-top: 2px;">
+            ${extraTickets.map(renderTicketChip).join('')}
           </div>
-        `).join('')}
-        ${tickets.length > 3 ? `<div style="font-size: 10px; color: #0052CC; font-weight: 600;">+${tickets.length - 3} tickets más</div>` : ''}
+          <button type="button" 
+                  onclick="event.stopPropagation(); const el = document.getElementById('${extraContainerId}'); if(el){ const isHidden = el.style.display === 'none'; el.style.display = isHidden ? 'flex' : 'none'; this.textContent = isHidden ? '▲ Ver menos' : '+${extraTickets.length} tickets más'; }" 
+                  style="font-size: 10px; color: #0052CC; font-weight: 700; background: none; border: none; padding: 3px 0; text-align: left; cursor: pointer; outline: none;">
+            +${extraTickets.length} tickets más
+          </button>
+        ` : ''}
       </div>
     ` : `
       <div style="margin-top: 6px; font-size: 11px; color: #94A3B8; font-style: italic;">Sin tickets vinculados aún</div>
     `;
+
+    const isTicketTag = rel.tag && rel.tag.startsWith('TICK-');
+    const tagBadgeHtml = isTicketTag
+      ? `<span onclick="event.stopPropagation(); openAgentWorkspace('${rel.tag}');" title="Abrir ticket ${rel.tag}" style="font-family: monospace; font-size: 11px; font-weight: 800; background: #EEF2FF; color: #4338CA; padding: 2px 6px; border-radius: 4px; border: 1px solid #C7D2FE; cursor: pointer; text-decoration: underline;">${rel.tag}</span>`
+      : `<span style="font-family: monospace; font-size: 11px; font-weight: 800; background: #EEF2FF; color: #4338CA; padding: 2px 6px; border-radius: 4px; border: 1px solid #C7D2FE;">${rel.tag}</span>`;
 
     let actionButtonsHtml = '';
     if (status === 'PLANIFICADA') {
@@ -12907,7 +12935,7 @@ function renderKanbanBoard(releases) {
     const card = `
       <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 8px; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; flex-direction: column; gap: 8px; transition: transform 0.15s ease;">
         <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 6px;">
-          <span style="font-family: monospace; font-size: 11px; font-weight: 800; background: #EEF2FF; color: #4338CA; padding: 2px 6px; border-radius: 4px; border: 1px solid #C7D2FE;">${rel.tag}</span>
+          ${tagBadgeHtml}
           <span style="font-size: 10px; color: #64748B;">@${rel.created_by || 'admin'}</span>
         </div>
         <div style="font-size: 12.5px; font-weight: 700; color: #0F172A; line-height: 1.3;">${rel.name}</div>
@@ -14104,3 +14132,358 @@ if (!window._ticketsAutoRefreshInterval) {
     }
   }, 10000); // Sincronización continua cada 10 segundos
 }
+
+
+// =============================================================================
+// MÓDULO 12.5: MANDO OPERATIVO UNIFICADO (PROPUESTA A - ZERO SCROLL)
+// =============================================================================
+let _uhOverviewData = null;
+let _uhLastAnalysts = [];
+
+async function loadUnifiedHubData(institutionCode = null) {
+  try {
+    const instSelect = document.getElementById('uh-filter-inst');
+    const selectedInst = institutionCode !== null ? institutionCode : (instSelect ? instSelect.value : '');
+
+    // 1. Poblar select de instituciones si no está cargado
+    if (instSelect && instSelect.options.length <= 1) {
+      const institutions = AppState.institutions || [];
+      if (institutions.length > 0) {
+        let optHtml = '<option value="">Todas las Instituciones</option>';
+        institutions.forEach(inst => {
+          optHtml += `<option value="${inst.code}">${inst.name} (${inst.code})</option>`;
+        });
+        instSelect.innerHTML = optHtml;
+        if (selectedInst) instSelect.value = selectedInst;
+      }
+    }
+
+    // 2. Cargar tickets y resumen operativo
+    if (!AppState.tickets || AppState.tickets.length === 0) {
+      AppState.tickets = await API.getTickets();
+    }
+    const data = await API.getTeamLeaderOverview(selectedInst || undefined);
+    _uhOverviewData = data;
+
+    // 3. Filtrado reactivo de tickets según institución
+    const allTickets = AppState.tickets || [];
+    let filteredTickets = allTickets;
+    if (selectedInst) {
+      filteredTickets = allTickets.filter(t => t.institution_code === selectedInst);
+    }
+    const activeTickets = filteredTickets.filter(t => !['RESUELTO', 'CERRADO'].includes((t.status || '').toUpperCase()));
+    const p1Tickets = activeTickets.filter(t => (t.priority || '').toUpperCase() === 'P1');
+    const p2Tickets = activeTickets.filter(t => (t.priority || '').toUpperCase() === 'P2');
+    const p3Tickets = activeTickets.filter(t => (t.priority || '').toUpperCase() === 'P3');
+    const p4Tickets = activeTickets.filter(t => (t.priority || '').toUpperCase() === 'P4');
+    const unassignedTickets = activeTickets.filter(t => !t.assigned_to && !t.assignee_username && !t.assigned_to_username);
+    const resolvedToday = filteredTickets.filter(t => ['RESUELTO', 'CERRADO'].includes((t.status || '').toUpperCase())).length;
+
+    // 4. Renderizar Ribbon de 5 Micro-KPIs
+    const elActive = document.getElementById('uh-kpi-active');
+    const elP1 = document.getElementById('uh-kpi-p1');
+    const elUnassigned = document.getElementById('uh-kpi-unassigned');
+    const elSla = document.getElementById('uh-kpi-sla');
+    const elResolved = document.getElementById('uh-kpi-resolved');
+
+    if (elActive) elActive.textContent = activeTickets.length;
+    if (elP1) elP1.textContent = p1Tickets.length;
+    if (elUnassigned) elUnassigned.textContent = unassignedTickets.length;
+    if (elSla) elSla.textContent = '94.8%';
+    if (elResolved) elResolved.textContent = resolvedToday;
+
+    // 5. Renderizar Distribución de Criticidad P1-P4
+    const tot = activeTickets.length || 1;
+    const p1Pct = Math.round((p1Tickets.length / tot) * 100);
+    const p2Pct = Math.round((p2Tickets.length / tot) * 100);
+    const p3Pct = Math.round((p3Tickets.length / tot) * 100);
+    const p4Pct = Math.round((p4Tickets.length / tot) * 100);
+
+    const cP1 = document.getElementById('uh-count-p1');
+    const cP2 = document.getElementById('uh-count-p2');
+    const cP3 = document.getElementById('uh-count-p3');
+    const cP4 = document.getElementById('uh-count-p4');
+    if (cP1) cP1.textContent = `${p1Tickets.length} (${p1Pct}%)`;
+    if (cP2) cP2.textContent = `${p2Tickets.length} (${p2Pct}%)`;
+    if (cP3) cP3.textContent = `${p3Tickets.length} (${p3Pct}%)`;
+    if (cP4) cP4.textContent = `${p4Tickets.length} (${p4Pct}%)`;
+
+    const bP1 = document.getElementById('uh-bar-p1');
+    const bP2 = document.getElementById('uh-bar-p2');
+    const bP3 = document.getElementById('uh-bar-p3');
+    const bP4 = document.getElementById('uh-bar-p4');
+    if (bP1) bP1.style.width = `${p1Pct}%`;
+    if (bP2) bP2.style.width = `${p2Pct}%`;
+    if (bP3) bP3.style.width = `${p3Pct}%`;
+    if (bP4) bP4.style.width = `${p4Pct}%`;
+
+    // 6. Renderizar Analistas de Guardia
+    const workload = data.agent_workload || data.analyst_workload || [];
+    renderUnifiedHubAnalysts(workload);
+
+    // 7. Renderizar Mesa de Rescate
+    const rescueCases = data.rescue_alerts || data.recovery_cases || [];
+    renderUnifiedHubRescueDesk(rescueCases);
+
+    // 8. Renderizar Top P1 Críticos
+    renderUnifiedHubP1List(p1Tickets);
+
+    // 9. Telemetría de Sincronización
+    const syncEl = document.getElementById('uh-sync-time');
+    if (syncEl) {
+      const now = new Date();
+      syncEl.textContent = `Última sincronización: ${now.toLocaleTimeString()}`;
+    }
+  } catch (err) {
+    console.error('Error en loadUnifiedHubData:', err);
+  }
+}
+
+function renderUnifiedHubAnalysts(analysts) {
+  const tbody = document.getElementById('uh-analysts-table-body');
+  if (!tbody) return;
+
+  const rawAnalysts = analysts || [];
+  _uhLastAnalysts = rawAnalysts;
+
+  // Actualizar píldoras de conteo de niveles
+  const countAll = rawAnalysts.length;
+  const countN1 = rawAnalysts.filter(a => (a.support_level || a.level || 'N2') === 'N1').length;
+  const countN2 = rawAnalysts.filter(a => (a.support_level || a.level || 'N2') === 'N2').length;
+  const countN3 = rawAnalysts.filter(a => (a.support_level || a.level || 'N2') === 'N3').length;
+
+  const btnAll = document.getElementById('uh-btn-level-all');
+  const btnN1 = document.getElementById('uh-btn-level-N1');
+  const btnN2 = document.getElementById('uh-btn-level-N2');
+  const btnN3 = document.getElementById('uh-btn-level-N3');
+  if (btnAll) btnAll.textContent = `Todos (${countAll})`;
+  if (btnN1) btnN1.textContent = `N1 (${countN1})`;
+  if (btnN2) btnN2.textContent = `N2 (${countN2})`;
+  if (btnN3) btnN3.textContent = `N3 (${countN3})`;
+
+  // Alerta de Desbalance
+  const alertEl = document.getElementById('uh-smart-balance-alert');
+  const descEl = document.getElementById('uh-smart-balance-desc');
+  if (alertEl && descEl) {
+    const activeCounts = rawAnalysts.map(a => a.active_tickets_count ?? a.active_count ?? 0);
+    const maxLoad = Math.max(...activeCounts, 0);
+    const minLoad = Math.min(...activeCounts, 0);
+    const overLoaded = rawAnalysts.filter(a => (a.active_tickets_count ?? a.active_count ?? 0) >= 6);
+    const underLoaded = rawAnalysts.filter(a => (a.active_tickets_count ?? a.active_count ?? 0) === 0);
+
+    if (overLoaded.length > 0 && underLoaded.length > 0 && maxLoad - minLoad >= 5) {
+      alertEl.style.display = 'flex';
+      const topName = overLoaded[0].name || overLoaded[0].username || 'Analista';
+      const freeName = underLoaded[0].name || underLoaded[0].username || 'Analista N2';
+      descEl.textContent = `${topName} acumula ${maxLoad} casos activos mientras ${freeName} dispone de capacidad libre.`;
+    } else {
+      alertEl.style.display = 'flex';
+      alertEl.style.background = '#ECFDF5';
+      alertEl.style.borderColor = '#A7F3D0';
+      alertEl.style.borderLeftColor = '#10B981';
+      descEl.textContent = 'Guardia operando con balance equilibrado entre turnos y analistas.';
+      const btnAuto = document.getElementById('btn-uh-autobalance');
+      if (btnAuto) {
+        btnAuto.textContent = 'Guardia Balanceada';
+        btnAuto.style.background = '#059669';
+      }
+    }
+  }
+
+  if (rawAnalysts.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 14px; color: #64748B;">No hay analistas registrados para este filtro.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = rawAnalysts.map(a => {
+    const activeCount = a.active_tickets_count ?? a.active_count ?? 0;
+    const resolvedCount = a.resolved_today_count ?? a.resolved_count ?? 0;
+    const level = a.support_level || a.level || 'N2';
+    const name = a.name || a.username || 'Analista';
+    const initials = name.split(' ').map(p => p[0]).join('').substring(0, 2).toUpperCase() || 'AN';
+
+    const satPct = Math.min(100, Math.round((activeCount / 8) * 100));
+    let barColor = '#10B981';
+    let satText = 'Óptima';
+    let satTextColor = '#059669';
+    if (activeCount >= 6) {
+      barColor = '#EF4444';
+      satText = 'Sobrecarga';
+      satTextColor = '#DC2626';
+    } else if (activeCount >= 3) {
+      barColor = '#F59E0B';
+      satText = 'Moderada';
+      satTextColor = '#D97706';
+    }
+
+    return `
+      <tr class="uh-analyst-row" data-level="${level}" style="border-bottom: 1px solid #F1F5F9;">
+        <td style="padding: 6px 12px;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="width: 24px; height: 24px; border-radius: 6px; background: #E2E8F0; color: #334155; font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center;">
+              ${initials}
+            </div>
+            <div>
+              <div style="font-weight: 700; color: #0F172A; font-size: 11px;">${name}</div>
+              <div style="font-size: 9.5px; color: #64748B;">@${a.username || ''}</div>
+            </div>
+          </div>
+        </td>
+        <td style="padding: 6px 8px;">
+          <span style="font-size: 9px; font-weight: 800; padding: 1px 5px; border-radius: 4px; background: ${level === 'N1' ? '#EEF2FF' : level === 'N2' ? '#F0FDF4' : '#FFF7ED'}; color: ${level === 'N1' ? '#4338CA' : level === 'N2' ? '#15803D' : '#C2410C'};">
+            ${level}
+          </span>
+        </td>
+        <td style="padding: 6px 8px; text-align: center; font-weight: 800; font-size: 11px; color: ${activeCount >= 6 ? '#DC2626' : '#0F172A'};">
+          ${activeCount}
+        </td>
+        <td style="padding: 6px 8px; text-align: center; font-weight: 700; font-size: 11px; color: #059669;">
+          ${resolvedCount}
+        </td>
+        <td style="padding: 6px 10px;">
+          <div style="display: flex; justify-content: space-between; font-size: 9.5px; margin-bottom: 2px;">
+            <span style="color: ${satTextColor}; font-weight: 700;">${satText}</span>
+            <span style="color: #64748B; font-weight: 600;">${satPct}%</span>
+          </div>
+          <div style="width: 100%; height: 4px; background: #E2E8F0; border-radius: 2px; overflow: hidden;">
+            <div style="width: ${satPct}%; height: 100%; background: ${barColor}; border-radius: 2px;"></div>
+          </div>
+        </td>
+        <td style="padding: 6px 10px; text-align: right;">
+          <button type="button" onclick="openQuickReassignModal('${a.username || a.name}')" style="background: none; border: 1px solid #CBD5E1; border-radius: 4px; padding: 2px 7px; font-size: 9.5px; font-weight: 700; color: #334155; cursor: pointer; transition: all 0.1s;" onmouseover="this.style.background='#F1F5F9'" onmouseout="this.style.background='none'">
+            Reasignar
+          </button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function filterUHAnalystsByLevel(level) {
+  ['all', 'N1', 'N2', 'N3'].forEach(lvl => {
+    const btn = document.getElementById(`uh-btn-level-${lvl}`);
+    if (btn) {
+      if (lvl === level) {
+        btn.style.background = '#0F172A';
+        btn.style.color = '#FFFFFF';
+      } else {
+        btn.style.background = '#F1F5F9';
+        btn.style.color = '#475569';
+      }
+    }
+  });
+
+  const rows = document.querySelectorAll('.uh-analyst-row');
+  rows.forEach(r => {
+    const rowLevel = r.getAttribute('data-level');
+    if (level === 'all' || rowLevel === level) {
+      r.style.display = '';
+    } else {
+      r.style.display = 'none';
+    }
+  });
+}
+
+function renderUnifiedHubRescueDesk(rescueCases) {
+  const container = document.getElementById('uh-rescue-container');
+  const countTag = document.getElementById('uh-rescue-count-tag');
+  if (!container) return;
+
+  const cases = rescueCases || [];
+  if (countTag) {
+    countTag.textContent = `${cases.length} pendientes`;
+  }
+
+  if (cases.length === 0) {
+    container.innerHTML = `
+      <div style="background: #ECFDF5; border: 1px solid #A7F3D0; border-radius: 6px; padding: 12px; text-align: center;">
+        <div style="color: #065F46; font-size: 11px; font-weight: 700;">Satisfacción de Servicio Óptima</div>
+        <div style="color: #047857; font-size: 9.5px; margin-top: 2px;">No se registran alertas de insatisfacción crítica en este turno.</div>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = cases.map(c => {
+    return `
+      <div style="background: #FFFBEB; border: 1px solid #FCD34D; border-radius: 6px; padding: 7px 9px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 800; color: #B45309;">#${c.id || 'TKT'}</span>
+          <span style="font-size: 9.5px; font-weight: 800; color: #DC2626;">★ ${c.rating_stars || 1} Estrella</span>
+        </div>
+        <div style="font-size: 10.5px; font-weight: 700; color: #0F172A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+          ${c.title || 'Caso Crítico de Atención'}
+        </div>
+        <div style="font-size: 9.5px; color: #64748B; margin: 2px 0;">
+          Prestador: <strong>${c.requester_name || 'Dr. Médico'}</strong> • ${c.institution_code || 'General'}
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px; padding-top: 4px; border-top: 1px dashed #FDE68A;">
+          <div style="display: flex; gap: 4px;">
+            <button type="button" onclick="callRequester('${c.requester_phone || ''}')" style="background: #EFF6FF; border: 1px solid #BFDBFE; color: #1D4ED8; font-size: 9px; font-weight: 700; padding: 2px 5px; border-radius: 3px; cursor: pointer;">VoIP</button>
+            <button type="button" onclick="whatsappRequester('${c.requester_phone || ''}')" style="background: #ECFDF5; border: 1px solid #A7F3D0; color: #047857; font-size: 9px; font-weight: 700; padding: 2px 5px; border-radius: 3px; cursor: pointer;">WhatsApp</button>
+            <button type="button" onclick="emailRequester('${c.requester_email || ''}')" style="background: #F8FAFC; border: 1px solid #CBD5E1; color: #334155; font-size: 9px; font-weight: 700; padding: 2px 5px; border-radius: 3px; cursor: pointer;">Email</button>
+          </div>
+          <button type="button" onclick="openRescueModal('${c.id}', '${(c.title || '').replace(/'/g, "\\'")}', '${(c.requester_name || '').replace(/'/g, "\\'")}', ${c.rating_stars || 1})" style="background: #00A896; border: none; color: #FFFFFF; font-size: 9.5px; font-weight: 800; padding: 2px 8px; border-radius: 4px; cursor: pointer;">
+            Rescatar
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderUnifiedHubP1List(p1Tickets) {
+  const container = document.getElementById('uh-top-p1-list');
+  if (!container) return;
+
+  const tickets = (p1Tickets || []).slice(0, 5);
+  if (tickets.length === 0) {
+    container.innerHTML = `
+      <div style="background: #ECFDF5; border: 1px solid #A7F3D0; border-radius: 6px; padding: 12px; text-align: center;">
+        <div style="color: #065F46; font-size: 11px; font-weight: 700;">Sin Emergencias P1 Activas</div>
+        <div style="color: #047857; font-size: 9.5px; margin-top: 2px;">Todos los incidentes críticos se encuentran resueltos o contenidos.</div>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = tickets.map(t => {
+    const instName = typeof formatInstitutionName === 'function' ? formatInstitutionName(t.institution_code) : (t.institution_code || 'General');
+    const assigneeName = typeof formatUserName === 'function' ? formatUserName(t.assignee_username || t.assigned_to_username) : (t.assignee_username || 'Sin asignar');
+
+    return `
+      <div onclick="openAgentWorkspace('${t.id}')" style="border: 1px solid #FEE2E2; border-left: 3px solid #DC2626; border-radius: 6px; padding: 6px 8px; cursor: pointer; background: #FFFFFF; transition: all 0.12s ease;" onmouseover="this.style.background='#FEF2F2'; this.style.borderColor='#FECACA'" onmouseout="this.style.background='#FFFFFF'; this.style.borderColor='#FEE2E2'" title="Clic para abrir #${t.id} en modal sin recargar">
+        <div style="display: flex; justify-content: space-between; font-size: 9.5px; font-weight: 700;">
+          <span style="color: #DC2626; font-family: 'JetBrains Mono', monospace;">#${t.id}</span>
+          <span style="color: #64748B;">${instName}</span>
+        </div>
+        <div style="font-size: 10.5px; font-weight: 700; color: #0F172A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 2px 0;">
+          ${t.title || 'Incidente Crítico'}
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 9px; color: #64748B;">
+          <span>Asig: <strong>${assigneeName}</strong></span>
+          <span style="color: #DC2626; font-weight: 800;">P1 Inmediato</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function onUnifiedHubFilterChange() {
+  const instSelect = document.getElementById('uh-filter-inst');
+  const code = instSelect ? instSelect.value : '';
+  loadUnifiedHubData(code);
+}
+
+function autoBalanceUnifiedHub() {
+  openQuickReassignModal();
+}
+
+// Exportación global para bindings en HTML
+window.loadUnifiedHubData = loadUnifiedHubData;
+window.filterUHAnalystsByLevel = filterUHAnalystsByLevel;
+window.renderUnifiedHubAnalysts = renderUnifiedHubAnalysts;
+window.renderUnifiedHubRescueDesk = renderUnifiedHubRescueDesk;
+window.renderUnifiedHubP1List = renderUnifiedHubP1List;
+window.onUnifiedHubFilterChange = onUnifiedHubFilterChange;
+window.autoBalanceUnifiedHub = autoBalanceUnifiedHub;

@@ -340,6 +340,34 @@ const KB_OFFICIAL_TOPICS = [
     query: "limite de prestacion en virtuales de psicopatologia codigos 330384 330385 330386",
     category: "Psicopatología / Prestaciones Virtuales",
     keywords: ["psicopatologia virtual", "prestaciones virtuales psicopatologia", "330384", "330385", "330386", "entrevista de orientacion on line", "terapia individual on line", "control farmacologico on line"]
+  },
+  {
+    code: "CD2-IPS-001",
+    title: "Info del Paciente en Atención (IPS): Registro de Alergias e Intolerancias, Catálogo SNOMED y Validación de Duplicados",
+    query: "registro de alergias e intolerancias catalogo snomed validacion duplicados carrito atencion",
+    category: "Historia Clínica / IPS",
+    keywords: ["alergia", "alergias", "intolerancia", "intolerancias", "snomed", "snomed ct", "duplicado", "alergia ya cargada", "carrito atencion", "clinicalstatus", "verificationstatus", "active", "confirmed", "ips"]
+  },
+  {
+    code: "CD2-IPS-002",
+    title: "Interoperabilidad RUSS: Envío FHIR AllergyIntolerance ($register) desde Consultorio Digital",
+    query: "interoperabilidad russ envio fhir allergyintolerance register interlocutor comercial ic",
+    category: "Interoperabilidad / RUSS",
+    keywords: ["russ", "fhir", "allergyintolerance", "$register", "interlocutor comercial", "ic", "russ-facade", "appname", "allergyid", "recordeddate", "sincronizacion russ"]
+  },
+  {
+    code: "CD2-IPS-003",
+    title: "Info del Paciente en Atención (IPS): Variables Antropométricas (Peso/Estatura), Cálculo de IMC y Cabecera Dinámica",
+    query: "variables antropometricas peso estatura calculo de imc cabecera dinamica registro de salud",
+    category: "Consultorio Digital / IPS",
+    keywords: ["antropometria", "peso", "estatura", "talla", "imc", "indice de masa corporal", "peso kg", "estatura cm", "cabecera dinamica", "colapsada", "desplegada", "read-only", "solo lectura"]
+  },
+  {
+    code: "CD2-IPS-004",
+    title: "Restricción de Aplicabilidad IPS: Exclusión Taxativa de Especialidades de Psicología (23 Códigos) y Fonoaudiología (305)",
+    query: "exclusion de especialidades ips psicologia 23 codigos y fonoaudiologia 305 no aparece alergias ni antropometria",
+    category: "Consultorio Digital / Especialidades",
+    keywords: ["psicologia", "fonoaudiologia", "305", "319", "810", "841", "850", "870", "926", "927", "893", "894", "1026", "1024", "1025", "1027", "especialidad excluida", "no aparece alergias", "no aparece peso", "exclusion taxativa", "ips"]
   }
 ];
 

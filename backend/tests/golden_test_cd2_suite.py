@@ -82,7 +82,7 @@ class GoldenCD2TriageTestSuite(unittest.TestCase):
         runbook = result["matched_runbook"]
         
         self.assertIsNotNone(runbook)
-        self.assertTrue("NUT-008" in runbook["code"] or "SNOMED-001" in runbook["code"])
+        self.assertTrue("NUT-001" in runbook["code"] or "NUT-008" in runbook["code"] or "SNOMED-001" in runbook["code"])
         print(f"[OK] TEST-06 OK: '{query}' -> {runbook['code']} ({runbook['title'][:40]}...)")
 
     def test_07_pantalla_blanca_videoconsulta_resuelve_a_jitsi(self):

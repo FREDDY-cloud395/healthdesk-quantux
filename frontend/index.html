@@ -365,6 +365,20 @@
             </div>
           </div>
 
+          <!-- Mando Unificado (Propuesta A • Zero-Scroll) -->
+          <div class="nav-link-item nav-hub-tab nav-link-unified-hub" data-view="unified-hub" id="tab-unified-hub" title="Mando Unificado • Propuesta A" data-tooltip="Mando Unificado">
+            <div class="nav-indicator-pill"></div>
+            <div class="nav-link-left">
+              <svg class="nav-link-icon" viewBox="0 0 24 24" fill="none" stroke="#00A896" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px;">
+                <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                <line x1="9" y1="3" x2="9" y2="21"></line>
+                <line x1="15" y1="3" x2="15" y2="21"></line>
+              </svg>
+              <span class="nav-link-text">Mando Unificado</span>
+              <span style="font-size: 8px; font-weight: 800; background: #E6FFFA; color: #00A896; border: 1px solid #A7F3D0; padding: 1px 4px; border-radius: 4px; margin-left: 6px;">PROP. A</span>
+            </div>
+          </div>
+
           <!-- Tablero Kanban N3 -->
           <div class="nav-link-item nav-hub-tab nav-link-kanban" data-view="kanban" id="tab-kanban" title="Tablero Kanban N3" data-tooltip="Tablero Kanban N3">
             <div class="nav-indicator-pill"></div>
@@ -1054,6 +1068,304 @@
             </div>
 
           </div>
+        </section>
+
+        <!-- ===================================================================
+             VISTA 2.6: MANDO OPERATIVO UNIFICADO (PROPUESTA A - ZERO SCROLL)
+             =================================================================== -->
+        <section class="app-view" id="view-unified-hub" style="height: calc(100vh - 58px); max-height: calc(100vh - 58px); overflow: hidden; display: flex; flex-direction: column; background: #F8FAFC; padding: 10px 16px; box-sizing: border-box; gap: 8px;">
+          
+          <!-- SUB-HEADER SLIM CON ACCIONES Y FILTROS -->
+          <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 10px; padding: 7px 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px; shrink: 0; box-shadow: 0 1px 2px rgba(0,0,0,0.02);">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span style="font-size: 13px; font-weight: 800; color: #0F172A; letter-spacing: -0.2px;">Mando Operativo Unificado</span>
+              <span style="background: #E6FFFA; border: 1px solid #A7F3D0; color: #00A896; font-size: 9px; font-weight: 800; padding: 2px 7px; border-radius: 4px; text-transform: uppercase;">Propuesta A • Zero-Scroll</span>
+            </div>
+
+            <!-- Controles y Filtros Rápidos -->
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <div style="display: flex; align-items: center; gap: 5px;">
+                <label style="font-size: 11px; font-weight: 700; color: #64748B;">Institución:</label>
+                <select id="uh-filter-inst" onchange="onUnifiedHubFilterChange()" style="font-size: 11px; padding: 3px 8px; border-radius: 6px; border: 1px solid #CBD5E1; background: #FFFFFF; font-weight: 600; color: #0F172A; outline: none;">
+                  <option value="">Todas las Instituciones</option>
+                </select>
+              </div>
+
+              <div style="display: flex; align-items: center; gap: 5px;">
+                <label style="font-size: 11px; font-weight: 700; color: #64748B;">Período:</label>
+                <select id="uh-filter-period" onchange="onUnifiedHubFilterChange()" style="font-size: 11px; padding: 3px 8px; border-radius: 6px; border: 1px solid #CBD5E1; background: #FFFFFF; font-weight: 600; color: #0F172A; outline: none;">
+                  <option value="today" selected>Hoy (En Vivo)</option>
+                  <option value="7days">Últimos 7 días</option>
+                  <option value="all">Todo el Historial</option>
+                </select>
+              </div>
+
+              <button type="button" id="btn-uh-refresh" onclick="loadUnifiedHubData()" class="btn-sec btn-sm" style="font-size: 11px; padding: 4px 10px; border-radius: 6px; font-weight: 700; display: inline-flex; align-items: center; gap: 5px;" title="Actualizar telemetría">
+                <span>Refrescar</span>
+              </button>
+
+              <button type="button" id="btn-uh-open-balance" onclick="openQuickReassignModal()" class="btn-pri btn-sm" style="font-size: 11px; padding: 4px 12px; border-radius: 6px; font-weight: 800; background: #00A896; border: none; color: #FFFFFF; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; box-shadow: 0 1px 3px rgba(0,168,150,0.25);">
+                <span>Balancear Carga</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- STRIP DE 5 MICRO-KPIS CONSOLIDADOS (HIGH DENSITY) -->
+          <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; shrink: 0;">
+            <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 8px; padding: 8px 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div style="font-size: 9.5px; font-weight: 800; color: #64748B; text-transform: uppercase;">Total Activos</div>
+                <div style="font-size: 20px; font-weight: 900; color: #0F172A; line-height: 1.1;" id="uh-kpi-active">0</div>
+              </div>
+              <span style="font-size: 9px; font-weight: 700; color: #059669; background: #ECFDF5; padding: 2px 5px; border-radius: 4px;">En Curso</span>
+            </div>
+
+            <div style="background: #FFFFFF; border: 1px solid #FECACA; border-radius: 8px; padding: 8px 12px; box-shadow: 0 1px 2px rgba(220,38,38,0.04); display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div style="font-size: 9.5px; font-weight: 800; color: #DC2626; text-transform: uppercase;">P1 Críticos</div>
+                <div style="font-size: 20px; font-weight: 900; color: #DC2626; line-height: 1.1;" id="uh-kpi-p1">0</div>
+              </div>
+              <span style="font-size: 9px; font-weight: 800; color: #DC2626; background: #FEF2F2; padding: 2px 5px; border-radius: 4px;">Inmediato</span>
+            </div>
+
+            <div onclick="toggleTLTriageDrawer(true)" style="background: #FFFFFF; border: 1px dashed #F97316; border-radius: 8px; padding: 8px 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: all 0.15s;" onmouseover="this.style.background='#FFF7ED'" onmouseout="this.style.background='#FFFFFF'" title="Abrir Triage Express">
+              <div>
+                <div style="font-size: 9.5px; font-weight: 800; color: #D97706; text-transform: uppercase;">Sin Asignar</div>
+                <div style="font-size: 20px; font-weight: 900; color: #D97706; line-height: 1.1;" id="uh-kpi-unassigned">0</div>
+              </div>
+              <span style="font-size: 9px; font-weight: 800; color: #EA580C; text-decoration: underline;">Triage</span>
+            </div>
+
+            <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 8px; padding: 8px 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div style="font-size: 9.5px; font-weight: 800; color: #64748B; text-transform: uppercase;">SLA Cumplido</div>
+                <div style="font-size: 20px; font-weight: 900; color: #00A896; line-height: 1.1;" id="uh-kpi-sla">94.2%</div>
+              </div>
+              <span style="font-size: 9px; font-weight: 700; color: #00A896; background: #E6FFFA; padding: 2px 5px; border-radius: 4px;">Meta >90%</span>
+            </div>
+
+            <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 8px; padding: 8px 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div style="font-size: 9.5px; font-weight: 800; color: #64748B; text-transform: uppercase;">Resueltos Hoy</div>
+                <div style="font-size: 20px; font-weight: 900; color: #2563EB; line-height: 1.1;" id="uh-kpi-resolved">0</div>
+              </div>
+              <span style="font-size: 9px; font-weight: 700; color: #2563EB; background: #EFF6FF; padding: 2px 5px; border-radius: 4px;">Cierres</span>
+            </div>
+          </div>
+
+          <!-- CUERPO PRINCIPAL: 3 COLUMNAS PROPORCIONALES (PROPUESTA A - ZERO SCROLL) -->
+          <div style="flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 1.35fr 1fr; gap: 10px; overflow: hidden;">
+            
+            <!-- COLUMNA 1: DEMANDA Y ANALÍTICA ASISTENCIAL -->
+            <div style="display: flex; flex-direction: column; gap: 8px; min-height: 0; overflow: hidden;">
+              
+              <!-- Tarjeta 1A: Distribución por Criticidad P1-P4 -->
+              <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 10px; padding: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); display: flex; flex-direction: column; gap: 8px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <span style="font-size: 11.5px; font-weight: 800; color: #0F172A;">Distribución por Criticidad</span>
+                  <span style="font-size: 9.5px; font-weight: 700; color: #64748B;">Activos</span>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                  <!-- P1 -->
+                  <div>
+                    <div style="display: flex; justify-content: space-between; font-size: 10px; font-weight: 700; margin-bottom: 2px;">
+                      <span style="color: #DC2626;">P1 Urgente</span>
+                      <span style="color: #0F172A;" id="uh-count-p1">0 (0%)</span>
+                    </div>
+                    <div style="width: 100%; height: 5px; background: #F1F5F9; border-radius: 3px; overflow: hidden;">
+                      <div id="uh-bar-p1" style="width: 0%; height: 100%; background: #DC2626; border-radius: 3px; transition: width 0.3s ease;"></div>
+                    </div>
+                  </div>
+
+                  <!-- P2 -->
+                  <div>
+                    <div style="display: flex; justify-content: space-between; font-size: 10px; font-weight: 700; margin-bottom: 2px;">
+                      <span style="color: #D97706;">P2 Alta</span>
+                      <span style="color: #0F172A;" id="uh-count-p2">0 (0%)</span>
+                    </div>
+                    <div style="width: 100%; height: 5px; background: #F1F5F9; border-radius: 3px; overflow: hidden;">
+                      <div id="uh-bar-p2" style="width: 0%; height: 100%; background: #D97706; border-radius: 3px; transition: width 0.3s ease;"></div>
+                    </div>
+                  </div>
+
+                  <!-- P3 -->
+                  <div>
+                    <div style="display: flex; justify-content: space-between; font-size: 10px; font-weight: 700; margin-bottom: 2px;">
+                      <span style="color: #2563EB;">P3 Media</span>
+                      <span style="color: #0F172A;" id="uh-count-p3">0 (0%)</span>
+                    </div>
+                    <div style="width: 100%; height: 5px; background: #F1F5F9; border-radius: 3px; overflow: hidden;">
+                      <div id="uh-bar-p3" style="width: 0%; height: 100%; background: #2563EB; border-radius: 3px; transition: width 0.3s ease;"></div>
+                    </div>
+                  </div>
+
+                  <!-- P4 -->
+                  <div>
+                    <div style="display: flex; justify-content: space-between; font-size: 10px; font-weight: 700; margin-bottom: 2px;">
+                      <span style="color: #64748B;">P4 Baja</span>
+                      <span style="color: #0F172A;" id="uh-count-p4">0 (0%)</span>
+                    </div>
+                    <div style="width: 100%; height: 5px; background: #F1F5F9; border-radius: 3px; overflow: hidden;">
+                      <div id="uh-bar-p4" style="width: 0%; height: 100%; background: #94A3B8; border-radius: 3px; transition: width 0.3s ease;"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Tarjeta 1B: Demanda por Especialidad FSM -->
+              <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 10px; padding: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); flex: 1; min-height: 0; display: flex; flex-direction: column;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                  <span style="font-size: 11.5px; font-weight: 800; color: #0F172A;">Demanda Asistencial FSM</span>
+                  <span style="font-size: 9.5px; font-weight: 700; color: #00A896;">En Vivo</span>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 7px; overflow-y: auto; flex: 1;">
+                  <div>
+                    <div style="display: flex; justify-content: space-between; font-size: 10px; font-weight: 600; margin-bottom: 2px;">
+                      <span style="color: #334155;">Consultorio Digital</span>
+                      <span style="font-weight: 700; color: #0F172A;">38%</span>
+                    </div>
+                    <div style="width: 100%; height: 4px; background: #F1F5F9; border-radius: 2px; overflow: hidden;">
+                      <div style="width: 38%; height: 100%; background: #00A896;"></div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div style="display: flex; justify-content: space-between; font-size: 10px; font-weight: 600; margin-bottom: 2px;">
+                      <span style="color: #334155;">Receta Electrónica</span>
+                      <span style="font-weight: 700; color: #0F172A;">32%</span>
+                    </div>
+                    <div style="width: 100%; height: 4px; background: #F1F5F9; border-radius: 2px; overflow: hidden;">
+                      <div style="width: 32%; height: 100%; background: #0284C7;"></div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div style="display: flex; justify-content: space-between; font-size: 10px; font-weight: 600; margin-bottom: 2px;">
+                      <span style="color: #334155;">Guardia Médica</span>
+                      <span style="font-weight: 700; color: #0F172A;">18%</span>
+                    </div>
+                    <div style="width: 100%; height: 4px; background: #F1F5F9; border-radius: 2px; overflow: hidden;">
+                      <div style="width: 18%; height: 100%; background: #F59E0B;"></div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div style="display: flex; justify-content: space-between; font-size: 10px; font-weight: 600; margin-bottom: 2px;">
+                      <span style="color: #334155;">Internación / Camas</span>
+                      <span style="font-weight: 700; color: #0F172A;">8%</span>
+                    </div>
+                    <div style="width: 100%; height: 4px; background: #F1F5F9; border-radius: 2px; overflow: hidden;">
+                      <div style="width: 8%; height: 100%; background: #8B5CF6;"></div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div style="display: flex; justify-content: space-between; font-size: 10px; font-weight: 600; margin-bottom: 2px;">
+                      <span style="color: #334155;">Facturación Médica</span>
+                      <span style="font-weight: 700; color: #0F172A;">4%</span>
+                    </div>
+                    <div style="width: 100%; height: 4px; background: #F1F5F9; border-radius: 2px; overflow: hidden;">
+                      <div style="width: 4%; height: 100%; background: #64748B;"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- COLUMNA 2: GESTIÓN OPERATIVA DE GUARDIA (MONITOR Y BALANCEADOR) -->
+            <div style="display: flex; flex-direction: column; gap: 8px; min-height: 0; overflow: hidden;">
+              
+              <!-- Tarjeta 2A: Monitor de Cargas de Analistas -->
+              <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 10px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden;">
+                <div style="padding: 10px 14px; background: #F8FAFC; border-bottom: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center; shrink: 0;">
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 12px; font-weight: 800; color: #0F172A;">Analistas de Guardia</span>
+                    <span style="font-size: 10px; color: #64748B; font-weight: 600;">Monitor en Vivo</span>
+                  </div>
+
+                  <!-- Filtro Nivel ITIL -->
+                  <div style="display: flex; gap: 4px;">
+                    <button type="button" onclick="filterUHAnalystsByLevel('all')" id="uh-btn-level-all" style="font-size: 9.5px; font-weight: 700; padding: 2px 7px; border-radius: 12px; border: none; background: #0F172A; color: #FFFFFF; cursor: pointer;">Todos</button>
+                    <button type="button" onclick="filterUHAnalystsByLevel('N1')" id="uh-btn-level-N1" style="font-size: 9.5px; font-weight: 700; padding: 2px 7px; border-radius: 12px; border: none; background: #F1F5F9; color: #475569; cursor: pointer;">N1</button>
+                    <button type="button" onclick="filterUHAnalystsByLevel('N2')" id="uh-btn-level-N2" style="font-size: 9.5px; font-weight: 700; padding: 2px 7px; border-radius: 12px; border: none; background: #F1F5F9; color: #475569; cursor: pointer;">N2</button>
+                    <button type="button" onclick="filterUHAnalystsByLevel('N3')" id="uh-btn-level-N3" style="font-size: 9.5px; font-weight: 700; padding: 2px 7px; border-radius: 12px; border: none; background: #F1F5F9; color: #475569; cursor: pointer;">N3</button>
+                  </div>
+                </div>
+
+                <div style="flex: 1; overflow-y: auto; overflow-x: auto;">
+                  <table style="width: 100%; border-collapse: collapse; font-size: 11px; text-align: left;">
+                    <thead>
+                      <tr style="background: #F8FAFC; border-bottom: 1px solid #E2E8F0; color: #475569; font-weight: 700; font-size: 10px;">
+                        <th style="padding: 6px 12px;">Analista</th>
+                        <th style="padding: 6px 8px;">Nivel</th>
+                        <th style="padding: 6px 8px; text-align: center;">Activos</th>
+                        <th style="padding: 6px 8px; text-align: center;">Resueltos</th>
+                        <th style="padding: 6px 10px;">Saturación Operativa</th>
+                        <th style="padding: 6px 10px; text-align: right;">Acción</th>
+                      </tr>
+                    </thead>
+                    <tbody id="uh-analysts-table-body">
+                      <!-- Renderizado dinámico -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Tarjeta 2B: Alerta de Desbalance Asistencial & 1-Clic Rebalance -->
+              <div id="uh-smart-balance-alert" style="background: #FFFBEB; border: 1px solid #FCD34D; border-left: 3.5px solid #F59E0B; border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px; shrink: 0;">
+                <div>
+                  <div style="font-size: 11px; font-weight: 800; color: #92400E;">Desbalance de Carga Asistencial</div>
+                  <div id="uh-smart-balance-desc" style="font-size: 10px; color: #78350F;">Carlos Páez acumula 258 casos activos mientras Sofía Valdez registra capacidad disponible.</div>
+                </div>
+                <button type="button" id="btn-uh-autobalance" onclick="autoBalanceUnifiedHub()" style="border: none; background: #EA580C; color: #FFFFFF; font-size: 10.5px; font-weight: 800; padding: 4px 10px; border-radius: 5px; cursor: pointer; white-space: nowrap; box-shadow: 0 1px 2px rgba(234,88,12,0.25);">
+                  Nivelar 1-Clic
+                </button>
+              </div>
+            </div>
+
+            <!-- COLUMNA 3: ATENCIÓN PRIORITARIA Y MESA DE RESCATE -->
+            <div style="display: flex; flex-direction: column; gap: 8px; min-height: 0; overflow: hidden;">
+              
+              <!-- Tarjeta 3A: Mesa de Rescate al Cliente CSAT -->
+              <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 10px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden;">
+                <div style="padding: 8px 12px; background: #FFFBEB; border-bottom: 1px solid #FED7AA; display: flex; justify-content: space-between; align-items: center; shrink: 0;">
+                  <span style="font-size: 11.5px; font-weight: 800; color: #92400E;">Mesa de Rescate al Cliente</span>
+                  <span id="uh-rescue-count-tag" style="background: #FEF3C7; color: #92400E; font-size: 9.5px; font-weight: 800; padding: 1px 6px; border-radius: 4px;">0 pendientes</span>
+                </div>
+
+                <div id="uh-rescue-container" style="padding: 8px; flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 6px;">
+                  <!-- Renderizado dinámico de tarjetas de rescate -->
+                </div>
+              </div>
+
+              <!-- Tarjeta 3B: Top 5 Incidentes P1 Críticos en Seguimiento -->
+              <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 10px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden;">
+                <div style="padding: 8px 12px; background: #FEF2F2; border-bottom: 1px solid #FECACA; display: flex; justify-content: space-between; align-items: center; shrink: 0;">
+                  <span style="font-size: 11.5px; font-weight: 800; color: #991B1B;">Top Incidentes P1 Críticos</span>
+                  <span style="font-size: 9.5px; font-weight: 700; color: #DC2626;">Seguimiento Activo</span>
+                </div>
+
+                <div id="uh-top-p1-list" style="padding: 8px; flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 6px;">
+                  <!-- Renderizado interactivo con clic a openAgentWorkspace -->
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- FOOTER SLIM DE CONTROL & TELEMETRÍA (SIN SCROLL) -->
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 10px; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 6px; font-size: 10px; color: #64748B; shrink: 0;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-weight: 700; color: #0F172A;">Quantux Enterprise • Mando Operativo Unificado</span>
+              <span>|</span>
+              <span style="color: #00A896; font-weight: 600;">Viewport 100% Fit • Sin Scroll Vertical</span>
+            </div>
+            <div id="uh-sync-time" style="font-family: 'JetBrains Mono', monospace; font-size: 9.5px;">Última sincronización: en vivo</div>
+          </div>
+
         </section>
 
         <!-- ===================================================================
