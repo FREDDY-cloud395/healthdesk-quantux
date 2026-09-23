@@ -1007,6 +1007,15 @@ html, body {
   display: flex;
 }
 
+/* BLINDAJE DE AISLAMIENTO: MANDO OPERATIVO UNIFICADO */
+#view-unified-hub {
+  display: none;
+}
+
+#view-unified-hub.active {
+  display: flex !important;
+}
+
 /* 5. DASHBOARD & INNER VIEWS SCROLLING */
 .dashboard-scroll {
   flex: 1 1 0%;
