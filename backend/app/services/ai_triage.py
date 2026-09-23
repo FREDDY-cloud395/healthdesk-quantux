@@ -105,13 +105,179 @@ class N3CognitiveTriageEngine:
 
                 # --- A. INTENT ROUTING DETERMINISTA DE ALTA FIDELIDAD CON TAXONOMÍA Y SINÓNIMOS ---
 
+                # L1.1 Desacople de Consultorio (institution) y Turno (appointment) en Vistas DW (CD2-DW-001)
+                if any(k in query_norm for k in [
+                    "desacople", "institution", "appointment", "filial y contrato", "filial contrato"
+                ]) or ("vistas dw" in query_norm and any(x in query_norm for x in ["desacopl", "filial", "contrato", "institution"])):
+                    if "DW-001" in code:
+                        score += 7000
+                    elif "DW-002" in code:
+                        score += 3000
+                    else:
+                        score -= 2000
+
+                # L1.2 Vista Atenciones e Indicadores Fuera de Consulta DW (CD2-DW-002)
+                elif any(k in query_norm for k in [
+                    "vista atenciones", "indicadores dw", "socios unicos", "fuera de consulta",
+                    "demanda espontanea", "medicationrequest", "imageservicerequest", "practiceservicerequest"
+                ]):
+                    if "DW-002" in code:
+                        score += 7000
+                    elif "DW-001" in code or "ESC-001" in code:
+                        score += 3000
+                    else:
+                        score -= 2000
+
+                # L1.3 Restricción Regulatoria SISA y Bloqueo 01/06 (CD2-SISA-001)
+                elif any(k in query_norm for k in [
+                    "restriccion de matricula", "restriccion de matriculas", "baja de crm", "baja crm",
+                    "bloqueo 01/06", "01/06", "refeps@msal.gov.ar", "escenarios selector", "sisa habilitada prescribir"
+                ]) or ("sisa" in query_norm and any(x in query_norm for x in ["crm", "bloqueo", "01/06", "prescribir", "vencida", "inhabilitada"])):
+                    if "SISA-001" in code:
+                        score += 7000
+                    elif "MAT-001" in code or "MAT-002" in code:
+                        score += 2500
+                    else:
+                        score -= 2000
+
+                # L1.4 Optimización del Flujo de Alta en CD (CD2-ALTA-001)
+                elif any(k in query_norm for k in [
+                    "alta consultorio digital", "flujo de alta", "celular whatsapp", "email de bienvenida",
+                    "correo no compartido", "enlace primer login", "sala de espera a consultorio digital"
+                ]) or ("alta" in query_norm and any(x in query_norm for x in ["menu lateral", "lateral", "tuerca", "mis datos", "whatsapp"])):
+                    if "ALTA-001" in code:
+                        score += 7000
+                    elif "INST-001" in code:
+                        score += 2500
+                    else:
+                        score -= 2000
+
+                # L1.5 Pacientes No Socios en CD: Atención Integral y Bloqueo Filiatorio (CD2-NOSOC-001)
+                elif (
+                    any(k in query_norm for k in [
+                        "paciente no socio", "pacientes no socios", "no socio", "no socios", "no osde",
+                        "otra cobertura", "branding neutro", "bloqueo filiatorio", "datos filiatorios"
+                    ]) and not any(x in query_norm for x in ["innovamed", "render", "atlas", "arquitectura"])
+                ):
+                    if "NOSOC-001" in code:
+                        score += 7000
+                    elif "NOSOC-002" in code:
+                        score += 3500
+                    else:
+                        score -= 2000
+
+                # L1.6 Pacientes No Socios en CD: Arquitectura y Recetas INNOVAMED (CD2-NOSOC-002)
+                elif any(k in query_norm for k in [
+                    "innovamed", "receta no socios", "recetas no socios", "recetas sin diagnostico",
+                    "ofuscacion diagnostico", "mongodb atlas", "render api"
+                ]) or ("no socio" in query_norm and any(x in query_norm for x in ["innovamed", "render", "atlas", "arquitectura"])):
+                    if "NOSOC-002" in code:
+                        score += 7000
+                    elif "NOSOC-001" in code:
+                        score += 3500
+                    else:
+                        score -= 2000
+
+                # L1.7 Módulo Registraciones: Multirregistro OK, Rechazos y Estado (CD2-REG-001)
+                elif any(k in query_norm for k in [
+                    "modulo registracion", "modulo registraciones", "todas las registraciones",
+                    "consolidacion de rechazo", "consolidacion rechazos", "esta atencion no tiene registraciones asociadas",
+                    "anular prestacion", "420296 rechazada", "registraciones ok"
+                ]):
+                    if "REG-001" in code:
+                        score += 7000
+                    else:
+                        score -= 2000
+
+                # L1.8 Manejo de Errores Repositorio de Medicamentos (CD2-MED-001)
+                elif any(k in query_norm for k in [
+                    "repositorio de medicamentos", "receta no generada", "error 500 al 599", "500 al 599",
+                    "credencial excede longitud", "credencial menor a 11", "credencial 11 caracteres",
+                    "socio inexistente", "reenviar la receta", "seccion atenciones realizadas"
+                ]) or ("repositorio" in query_norm and any(x in query_norm for x in ["medicamento", "medicamentos", "receta", "error"])):
+                    if "MED-001" in code:
+                        score += 7000
+                    elif "MED-006" in code or "PRESC-002" in code:
+                        score += 2500
+                    else:
+                        score -= 2000
+
+                # L1.9 Psicopatología Virtual: Lista Cerrada de Prestaciones (CD2-PSICO-001)
+                elif any(k in query_norm for k in [
+                    "330384", "330385", "330386", "entrevista de orientacion on line",
+                    "terapia individual on line", "control farmacologico on line"
+                ]) or ("psicopatologia" in query_norm and any(x in query_norm for x in ["virtual", "on line", "limite de prestacion", "prestacion virtual", "solo 3"])):
+                    if "PSICO-001" in code:
+                        score += 7000
+                    else:
+                        score -= 2000
+
+                # --- DESAMBIGUACIÓN ESPECÍFICA N3 (MÁXIMA PRIORIDAD) ---
+                elif any(k in query_norm for k in ["circuito de agenda", "validacion del circuito de agenda", "alta de prestador y"]):
+                    if "INST-001" in code:
+                        score += 8500
+                    else:
+                        score -= 2000
+
+                elif any(k in query_norm for k in ["infraestructura local", "infraestructura aparentemente operativa", "conectividad externa"]):
+                    if "INC-001" in code:
+                        score += 8500
+                    else:
+                        score -= 2000
+
+                elif any(k in query_norm for k in ["documentacion clinica", "descarga de documentacion clinica"]):
+                    if "DOC-001" in code:
+                        score += 8500
+                    else:
+                        score -= 2000
+
+                elif any(k in query_norm for k in ["periodo de retencion", "retencion 6 meses", "fuera del periodo de retencion", "fuera de periodo de retencion"]):
+                    if "DOC-002" in code:
+                        score += 8500
+                    else:
+                        score -= 2000
+
+                elif any(k in query_norm for k in ["firma digital", "criptografica", "validacion criptografica"]):
+                    if "PRESC-002" in code:
+                        score += 8500
+                    else:
+                        score -= 2000
+
+                elif any(k in query_norm for k in ["offline", "codigo de barras", "receta offline", "contingencia de receta"]):
+                    if "PRESC-003" in code:
+                        score += 8500
+                    else:
+                        score -= 2000
+
+                elif any(k in query_norm for k in ["datos sensibles", "modificacion de datos sensibles", "validacion de fuentes"]):
+                    if "IAM-002" in code:
+                        score += 8500
+                    else:
+                        score -= 2000
+
+                elif any(k in query_norm for k in ["codigo de jurisdiccion", "jurisdiccion de medicamentos", "jurisdiccion", "alfabeta"]):
+                    if "MED-006" in code:
+                        score += 8500
+                    else:
+                        score -= 2000
+
+                elif any(k in query_norm for k in ["habilitacion de prestacion", "habilitacion prestacion"]):
+                    if "NUT-008" in code:
+                        score += 8500
+                    else:
+                        score -= 2000
+
+                elif any(k in query_norm for k in ["spinner", "sockets", "reconexion de sockets", "reconexion"]):
+                    if "CON-009" in code:
+                        score += 8500
+                    else:
+                        score -= 2000
+
                 # 1. Correo de Login / IAM (IAM-001, CD2-ESC-001)
-                is_login_mail = any(k in query_norm for k in [
+                elif any(k in query_norm for k in [
                     "mail de login", "correo de login", "cambio de mail de login", "cambiar mail de login",
                     "correo principal", "mail principal", "credenciales iam", "login prestador"
-                ]) or (("login" in query_norm or "acceso" in query_norm) and any(m in query_norm for m in ["mail", "correo", "email"]))
-
-                if is_login_mail:
+                ]) or (("login" in query_norm or "acceso" in query_norm) and any(m in query_norm for m in ["mail", "correo", "email"])):
                     if "IAM-001" in code:
                         score += 6000
                     elif "ESC-001" in code:
@@ -205,7 +371,7 @@ class N3CognitiveTriageEngine:
                         score -= 3000
 
                 # 8. Cambio de CUIT (CD2-PREST-001)
-                elif "cuit" in query_norm:
+                elif re.search(r'\bcuit\b', query_norm):
                     if "PREST-001" in code:
                         score += 6000
                     else:
@@ -223,9 +389,9 @@ class N3CognitiveTriageEngine:
 
                 # 10. Recetas y Documentos Clínicos: 404, 400, descarga, firma (PDF-005, PRESC-002, DOC-001)
                 elif any(k in query_norm for k in [
-                    "receta", "recetas", "descargar receta", "descarga receta", "error al descargar receta",
+                    "descargar receta", "descarga receta", "error al descargar receta", "descargar pdf",
                     "receta 404", "pdf 404", "error 400", "retenci", "firma digital", "receta digital", "prescripci"
-                ]):
+                ]) or (any(r in query_norm for r in ["receta", "recetas"]) and any(x in query_norm for x in ["medicamento", "digital", "medico", "paciente", "descarg", "pdf", "firm", "farmacia", "404", "400", "gcs", "valida", "innovamed"])):
                     if "PDF-005" in code:
                         score += 6000
                     elif "PRESC-002" in code or "DOC-001" in code:

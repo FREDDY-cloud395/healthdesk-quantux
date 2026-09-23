@@ -275,6 +275,71 @@ const KB_OFFICIAL_TOPICS = [
     query: "circuito de derivacion inteligente iam crm sap o atenciones modulares dw",
     category: "Consultorio Digital",
     keywords: ["derivacion inteligente", "atencion modular", "demanda espontanea", "dw", "data warehouse", "nec-6838", "nec-6836", "get date_from"]
+  },
+
+  // 39-47: Lote 1 Funcional CD2 (Vistas DW, Matrículas SISA, Alta CD, No Socios, Registraciones, Errores Medicamentos, Psicopatología Virtual)
+  {
+    code: "CD2-DW-001",
+    title: "Adecuación de Vistas DW: Desacople de Consultorio (institution) y Turno (appointment) para Filial y Contrato",
+    query: "desacople de institution y appointment en vistas dw filial contrato",
+    category: "Data Warehouse / Vistas",
+    keywords: ["vistas dw", "dw", "institution", "appointment", "desacople", "filial", "contrato", "atencion modular", "recetas", "indicaciones", "evoluciones"]
+  },
+  {
+    code: "CD2-DW-002",
+    title: "Adecuación de Vistas DW: Construcción de Vista Atenciones e Indicadores Fuera de Consulta",
+    query: "vista atenciones data warehouse indicadores demandas espontaneas y prescripciones fuera de consulta",
+    category: "Data Warehouse / Vistas",
+    keywords: ["vista atenciones", "indicadores dw", "socios unicos", "fuera de consulta", "demanda espontanea", "medicationrequest", "imageservicerequest", "practiceservicerequest", "labservicerequest", "note", "certificate"]
+  },
+  {
+    code: "CD2-SISA-001",
+    title: "Restricción Regulatoria SISA: Eliminación de CRM, Bloqueo de Prescripción (01/06) y 8 Escenarios del Selector",
+    query: "restriccion de matriculas sisa baja crm y bloqueo de prescripcion 01/06",
+    category: "Matrículas / SISA",
+    keywords: ["sisa", "matricula sisa", "matriculas crm", "baja crm", "bloqueo 01/06", "prescribir", "receta bloqueada", "selector matricula", "refeps@msal.gov.ar", "escenarios selector"]
+  },
+  {
+    code: "CD2-ALTA-001",
+    title: "Optimización del Flujo de Alta de Prestador en CD: Menú Lateral, Justificación Celular/Email y Transición de Sala de Espera",
+    query: "flujo de alta prestador menu lateral justificacion celular whatsapp email bienvenida",
+    category: "Onboarding / Alta Prestador",
+    keywords: ["alta prestador", "alta consultorio digital", "menu lateral", "mis datos", "tuerca", "celular whatsapp", "correo no compartido", "enlace primer login", "cartillas", "sala de espera a consultorio digital"]
+  },
+  {
+    code: "CD2-NOSOC-001",
+    title: "Pacientes No Socios en CD: Atención Integral, Branding Neutro, Bloqueo Filiatorio Obligatorio y Restricciones",
+    query: "paciente no socio bloqueo filiatorio primera atencion branding neutro",
+    category: "Pacientes No Socios",
+    keywords: ["no socio", "paciente no socio", "otra cobertura", "branding neutro", "bloqueo datos filiatorios", "primera atencion", "desde aca", "editar datos", "restricciones psicopatologia nutricion fonoaudiologia"]
+  },
+  {
+    code: "CD2-NOSOC-002",
+    title: "Pacientes No Socios en CD: Arquitectura Dual, Recetas INNOVAMED sin Diagnóstico, API Render y MongoDB Atlas",
+    query: "arquitectura no socios recetas innovamed sin diagnostico api render mongodb atlas",
+    category: "Pacientes No Socios / Arquitectura",
+    keywords: ["innovamed", "receta no socios", "recetas sin diagnostico", "ofuscacion diagnostico", "mongodb atlas", "render api", "registro de salud dual", "jitsi osde", "jitsi quantux"]
+  },
+  {
+    code: "CD2-REG-001",
+    title: "Módulo Registraciones: Exposición Multirregistro OK, Consolidación de Rechazos, Estado 'Sin Registraciones' y Regla Virtual",
+    query: "visualizar todas las registraciones ok consolidacion de rechazos esta atencion no tiene registraciones asociadas",
+    category: "Registración de Prestaciones",
+    keywords: ["modulo registraciones", "todas las registraciones", "registrado ok", "consolidacion rechazos", "420296 rechazada", "anular prestacion", "esta atencion no tiene registraciones asociadas", "validado ok", "regla virtual maximo 1"]
+  },
+  {
+    code: "CD2-MED-001",
+    title: "Manejo de Errores del Repositorio de Medicamentos: Clasificación en 3 Categorías, Reenvío 5xx vs Reemisión",
+    query: "manejo de errores repositorio medicamentos reenvio 500 al 599 o reemision credencial 11 caracteres",
+    category: "Prescripción / Repositorio Medicamentos",
+    keywords: ["repositorio de medicamentos", "receta no generada", "error 500", "error 599", "credencial 11 caracteres", "socio inexistente", "reenviar receta atenciones realizadas", "nueva receta medicamentos", "alfabeta"]
+  },
+  {
+    code: "CD2-PSICO-001",
+    title: "Registro de Prestaciones en Psicopatología Virtual: Restricción a Lista Cerrada (330384, 330385, 330386)",
+    query: "limite de prestacion en virtuales de psicopatologia codigos 330384 330385 330386",
+    category: "Psicopatología / Prestaciones Virtuales",
+    keywords: ["psicopatologia virtual", "prestaciones virtuales psicopatologia", "330384", "330385", "330386", "entrevista de orientacion on line", "terapia individual on line", "control farmacologico on line"]
   }
 ];
 
