@@ -4,9 +4,9 @@ from fastapi.middleware.gzip import GZipMiddleware
 from app.db.seed import run_seed
 
 app = FastAPI(
-    title="Quantux ServiceDesk Enterprise API",
-    description="Backend centralizado de Quantux ServiceDesk Enterprise (Ambiente de Desarrollo en la Nube v4.1.0-DEV)",
-    version="4.1.0-DEV"
+    title="Quantux ServiceDesk Enterprise API - Hito v8.0.0",
+    description="Backend centralizado de Quantux ServiceDesk Enterprise (Hito Oficial v8.0.0 - Verdad Única SSOT & Centrado Geométrico CD2)",
+    version="8.0.0-HITO-CD2-SSOT"
 )
 
 # GZIP para aceleración de transferencia en redes móviles y tablets (90% reducción de payload)

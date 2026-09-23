@@ -2375,9 +2375,24 @@ function renderRequesterModalHistory() {
 function handleRequesterChatKey(event) {
   if (event.key === 'Enter' && !event.shiftKey) {
     event.preventDefault();
+    const dropdown = document.getElementById('requester-typeahead-dropdown');
+    if (dropdown) dropdown.style.display = 'none';
     sendRequesterChatMessage();
   }
 }
+
+function clearRequesterChat() {
+  requesterChatMessages = [];
+  renderRequesterChatStream();
+  const dropdown = document.getElementById('requester-typeahead-dropdown');
+  if (dropdown) dropdown.style.display = 'none';
+  const input = document.getElementById('requester-chat-input');
+  if (input) {
+    input.value = '';
+    input.focus();
+  }
+}
+window.clearRequesterChat = clearRequesterChat;
 
 function sendRequesterPrompt(promptText) {
   const input = document.getElementById('requester-chat-input');
@@ -2505,29 +2520,33 @@ function getLocalAiClinicalResponse(text) {
     };
   } else {
     return {
-      subsystem: 'Mesa de Asistencia Integral TI',
-      rootCause: 'Consulta funcional / técnica de consultorio asistencial',
-      solutionApplied: 'Diagnóstico guiado por base de conocimiento ITIL',
+      subsystem: 'Análisis Funcional / Desarrollo',
+      rootCause: 'No se localizó un procedimiento homologado para la consulta en la Base de Conocimiento oficial de Consultorio Digital.',
+      solutionApplied: 'Se debe escalar la consulta a Análisis Funcional o para análisis por parte de Desarrollo.',
       solutionSteps: [
-        '1. Revisa si el inconveniente ocurre con un paciente en particular o en todas las consultas.',
-        '2. Refresca la vista del navegador con F5.',
-        '3. Si la dificultad persiste, puedes derivar este caso directamente a la guardia de soporte con 1 clic.'
+        '1. Constatar que la consulta ingresada no corresponde a ninguno de los runbooks homologados vigentes de CD2.',
+        '2. Recopilar identificadores del caso (ID de turno, DNI socio, CUIT prestador, institución o captura del incidente).',
+        '3. Escalar formalmente la consulta a Análisis Funcional o para análisis por parte de Desarrollo.'
       ],
-      text: `Hemos registrado tu consulta: "${escapeHtml(text)}". Consulta la siguiente indicación técnica o deriva a guardia técnica si necesitas asistencia directa:`
+      text: 'Estimado/a profesional: su consulta no se encuentra contemplada en el catálogo operativo estándar de Consultorio Digital. Conforme al protocolo de soporte oficial, se debe escalar la consulta a Análisis Funcional o para análisis por parte de Desarrollo.'
     };
   }
 }
 
 function renderRequesterChatStream() {
   const stream = document.getElementById('requester-inline-chat-stream');
+  const clearBtn = document.getElementById('btn-clear-req-chat');
   if (!stream) return;
 
-  const hero = document.getElementById('requester-chat-hero');
   if (requesterChatMessages.length === 0) {
-    if (hero) hero.style.display = 'block';
+    stream.style.display = 'none';
+    stream.innerHTML = '';
+    if (clearBtn) clearBtn.style.display = 'none';
     return;
   }
-  if (hero) hero.style.display = 'none';
+
+  stream.style.display = 'flex';
+  if (clearBtn) clearBtn.style.display = 'inline-block';
 
   let html = '';
   requesterChatMessages.forEach(msg => {
@@ -5236,27 +5255,34 @@ window.askKbAi = (query) => {
 
 window.clearKbAiChat = () => {
   const history = document.getElementById('kb-ai-chat-history');
-  const welcome = document.getElementById('kb-chat-welcome-box');
-  if (history) {
-    history.innerHTML = '';
-    history.style.display = 'none';
-  }
-  if (welcome) {
-    welcome.style.display = 'block';
+  const scrollArea = document.getElementById('kb-chat-scroll-area');
+  const clearBtn = document.getElementById('btn-clear-kb-chat');
+  if (history) history.innerHTML = '';
+  if (scrollArea) scrollArea.style.display = 'none';
+  if (clearBtn) clearBtn.style.display = 'none';
+  const typeaheadDropdown = document.getElementById('kb-typeahead-dropdown');
+  if (typeaheadDropdown) typeaheadDropdown.style.display = 'none';
+  const input = document.getElementById('kb-ai-chat-input');
+  if (input) {
+    input.value = '';
+    input.focus();
   }
 };
 
 window.submitKbAiQuestion = async () => {
   const input = document.getElementById('kb-ai-chat-input');
   const history = document.getElementById('kb-ai-chat-history');
-  const welcome = document.getElementById('kb-chat-welcome-box');
   const scrollArea = document.getElementById('kb-chat-scroll-area');
+  const clearBtn = document.getElementById('btn-clear-kb-chat');
+  const typeaheadDropdown = document.getElementById('kb-typeahead-dropdown');
+  if (typeaheadDropdown) typeaheadDropdown.style.display = 'none';
   if (!input || !history) return;
 
   const query = (input.value || '').trim();
   if (!query) return;
 
-  if (welcome) welcome.style.display = 'none';
+  if (scrollArea) scrollArea.style.display = 'block';
+  if (clearBtn) clearBtn.style.display = 'inline-block';
   history.style.display = 'flex';
 
   // 1. Mensaje del usuario (Estilo Google Cloud Chat)
@@ -5279,7 +5305,7 @@ window.submitKbAiQuestion = async () => {
       <div style="width: 34px; height: 34px; border-radius: 50%; background: #E8F0FE; color: #1A73E8; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; border: 1.5px solid #D2E3FC; box-shadow: 0 1px 4px rgba(26,115,232,0.15);">✨</div>
       <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 18px 18px 18px 4px; padding: 14px 18px; font-size: 13px; color: #64748B; font-style: italic; box-shadow: 0 2px 8px rgba(0,0,0,0.03); display: flex; align-items: center; gap: 8px;">
         <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #1A73E8;"></span>
-        Consultando los 29 Runbooks y la Matriz de Interoperabilidad CD2...
+        Consultando los 34 Runbooks Oficiales y la Matriz de Verdad Única (SSOT)...
       </div>
     </div>
   `;
@@ -5315,69 +5341,214 @@ window.submitKbAiQuestion = async () => {
   }
 };
 
+window.toggleKbStepCheck = (checkbox) => {
+  const label = checkbox.closest('label');
+  if (!label) return;
+  if (checkbox.checked) {
+    label.style.background = '#ECFDF5';
+    label.style.borderColor = '#A7F3D0';
+    const textSpan = label.querySelector('span');
+    if (textSpan) textSpan.style.color = '#065F46';
+  } else {
+    label.style.background = '#F8FAFC';
+    label.style.borderColor = '#E2E8F0';
+    const textSpan = label.querySelector('span');
+    if (textSpan) textSpan.style.color = '#1E293B';
+  }
+};
+
+window.copyDoctorMessageBtn = (btn, encodedMsg) => {
+  const msg = decodeURIComponent(encodedMsg);
+  navigator.clipboard.writeText(msg).then(() => {
+    const originalHtml = btn.innerHTML;
+    btn.innerHTML = '<span>✓</span> ¡Copiado!';
+    btn.style.background = '#059669';
+    setTimeout(() => {
+      btn.innerHTML = originalHtml;
+      btn.style.background = '#16A34A';
+    }, 2000);
+  }).catch(() => {
+    prompt('Copie el mensaje para el médico:', msg);
+  });
+};
+
 window.renderKbAiResponse = (query, data, history, scrollArea) => {
   const subsystem = data.subsystem || 'Consultorio Digital 2';
   const rootCause = data.root_cause || 'Análisis pericial N3 de interoperabilidad y reglas de negocio.';
   const topArticle = (data.top_articles && data.top_articles[0]) ? data.top_articles[0] : null;
-  const articleTitle = topArticle ? topArticle.title : 'Matriz Maestra de Contingencias CD2';
-  const articleCategory = topArticle ? topArticle.category : 'Soporte Asistencial';
+  const articleTitle = (data.matched_runbook && data.matched_runbook.title) ? data.matched_runbook.title : (topArticle ? topArticle.title : 'Matriz Maestra de Contingencias CD2');
+  const articleCategory = (data.matched_runbook && data.matched_runbook.category) ? data.matched_runbook.category : (topArticle ? topArticle.category : 'Soporte Asistencial');
+  const runbookCode = (data.matched_runbook && data.matched_runbook.code) ? data.matched_runbook.code : 'SOP-N3';
 
-  // Procesar respuesta limpia con formato visual
-  let bodyContent = '';
-  if (data.recommended_action && Array.isArray(data.recommended_action) && data.recommended_action.length > 0) {
-    bodyContent = `
-      <ol style="margin: 8px 0 12px 0; padding-left: 20px; line-height: 1.6; color: #1E293B;">
-        ${data.recommended_action.map(step => `<li style="margin-bottom: 6px;">${escapeHtml(step)}</li>`).join('')}
-      </ol>
+  // Checklist de Pasos Interactivos
+  let steps = data.structured_steps || [];
+  if ((!steps || steps.length === 0) && data.recommended_action) {
+    if (Array.isArray(data.recommended_action)) {
+      steps = data.recommended_action;
+    } else if (typeof data.recommended_action === 'string') {
+      steps = [data.recommended_action];
+    }
+  }
+
+  let stepsHtml = '';
+  if (steps && steps.length > 0) {
+    stepsHtml = `
+      <div style="margin: 10px 0 14px 0; display: flex; flex-direction: column; gap: 6px;">
+        ${steps.map((st, idx) => {
+          const cleanText = st.replace(/^[\d\.\-\*\s]+/, '').trim();
+          return `
+            <label style="display: flex; align-items: flex-start; gap: 10px; background: #F8FAFC; border: 1px solid #E2E8F0; padding: 8px 12px; border-radius: 8px; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.background='#F1F5F9'" onmouseout="this.style.background='#F8FAFC'">
+              <input type="checkbox" onchange="toggleKbStepCheck(this)" style="margin-top: 3px; accent-color: #10B981; width: 15px; height: 15px; cursor: pointer;">
+              <span style="font-size: 12.5px; color: #1E293B; line-height: 1.45;"><strong>Paso ${idx + 1}:</strong> ${escapeHtml(cleanText || st)}</span>
+            </label>
+          `;
+        }).join('')}
+      </div>
     `;
   } else if (data.ai_response_text) {
-    bodyContent = `
-      <div style="line-height: 1.6; color: #1E293B; margin: 8px 0 12px 0; white-space: pre-line;">
+    stepsHtml = `
+      <div style="line-height: 1.6; color: #1E293B; margin: 8px 0 12px 0; white-space: pre-line; font-size: 13px;">
         ${escapeHtml(data.ai_response_text)}
       </div>
     `;
+  }
+
+  // Mensaje sugerido empático para el médico
+  const doctorMsg = data.suggested_doctor_message || 'Estamos revisando la situación reportada y gestionando la resolución operativa. En breve podrá continuar con su atención con total normalidad.';
+  const doctorMsgEscaped = escapeHtml(doctorMsg);
+
+  // Notas técnicas para N2/N3 (si existen)
+  const techNotes = data.technical_notes ? data.technical_notes.trim() : '';
+  const techNotesHtml = techNotes ? `
+    <div style="margin-top: 10px; border: 1px solid #E2E8F0; border-radius: 8px; overflow: hidden;">
+      <details style="font-size: 11.5px; color: #475569;">
+        <summary style="background: #F1F5F9; padding: 6px 12px; cursor: pointer; font-weight: 700; color: #334155; user-select: none;">
+          🛠️ Notas Técnicas N2 / N3 y Scripts Autorizados
+        </summary>
+        <div style="padding: 10px 12px; background: #FFFFFF; font-family: monospace; font-size: 11px; white-space: pre-wrap; line-height: 1.5; color: #0F172A;">
+${escapeHtml(techNotes)}
+        </div>
+      </details>
+    </div>
+  ` : '';
+
+  const isFallback = !!data.is_fallback || !data.matched_runbook;
+
+  // Cabecera de clasificación según estado
+  let headerBadgesHtml = '';
+  if (isFallback) {
+    headerBadgesHtml = `
+      <span style="font-size: 10.5px; font-weight: 800; background: #FEE2E2; color: #991B1B; padding: 3px 10px; border-radius: 12px; border: 1px solid #FCA5A5;">
+        ⚠️ NO INDEXADO EN CATÁLOGO
+      </span>
+      <span style="font-size: 10.5px; font-weight: 700; background: #FEF3C7; color: #92400E; padding: 3px 10px; border-radius: 12px; border: 1px solid #FDE68A;">
+        Escalamiento Requerido
+      </span>
+      <span style="font-size: 10px; font-weight: 800; background: #F1F5F9; color: #475569; padding: 2px 8px; border-radius: 10px; margin-left: auto;">
+        AF-DEV
+      </span>
+    `;
   } else {
-    bodyContent = `<p style="margin: 8px 0 12px 0; line-height: 1.6; color: #1E293B;">Se ha registrado el procedimiento correspondiente en la base pericial.</p>`;
+    headerBadgesHtml = `
+      <span style="font-size: 10.5px; font-weight: 800; background: #E8F0FE; color: #1A73E8; padding: 3px 10px; border-radius: 12px; border: 1px solid #D2E3FC;">
+        ⚙️ ${escapeHtml(subsystem)}
+      </span>
+      <span style="font-size: 10.5px; font-weight: 700; background: #F1F5F9; color: #475569; padding: 3px 10px; border-radius: 12px;">
+        ${escapeHtml(articleCategory)}
+      </span>
+      <span style="font-size: 10px; font-weight: 800; background: #FEF3C7; color: #92400E; padding: 2px 8px; border-radius: 10px; border: 1px solid #FDE68A; margin-left: auto;">
+        ${escapeHtml(runbookCode)}
+      </span>
+    `;
+  }
+
+  // Diagnóstico y Directiva
+  let diagHtml = '';
+  if (isFallback) {
+    diagHtml = `
+      <div style="background: #FFFBEB; border-left: 4px solid #F59E0B; padding: 12px 14px; border-radius: 0 8px 8px 0; margin-bottom: 12px;">
+        <div style="font-size: 11px; font-weight: 800; color: #92400E; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px;">Diagnóstico de Estado</div>
+        <div style="font-size: 13px; color: #78350F; font-weight: 600; line-height: 1.45;">${escapeHtml(rootCause)}</div>
+      </div>
+      <div style="background: #FEF2F2; border: 1.5px solid #EF4444; border-radius: 8px; padding: 12px 14px; margin-bottom: 14px;">
+        <div style="font-size: 11px; font-weight: 800; color: #991B1B; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">🚨 Directiva Mandatoria de Escalamiento:</div>
+        <div style="font-size: 13.5px; color: #7F1D1D; font-weight: 700; line-height: 1.45;">👉 Se debe sugerir que se escale la consulta a Análisis Funcional o para análisis por parte de Desarrollo.</div>
+      </div>
+    `;
+  } else {
+    diagHtml = `
+      <div style="background: #F8FAFC; border-left: 3.5px solid #1A73E8; padding: 10px 14px; border-radius: 0 8px 8px 0; margin-bottom: 14px;">
+        <div style="font-size: 11px; font-weight: 800; color: #1E3A8A; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px;">Diagnóstico de Causa Raíz</div>
+        <div style="font-size: 13px; color: #334155; font-weight: 500; line-height: 1.45;">${escapeHtml(rootCause)}</div>
+      </div>
+    `;
+  }
+
+  // Tarjeta de Runbook Oficial o Alerta de No Indexado
+  let runbookFooterHtml = '';
+  if (isFallback) {
+    runbookFooterHtml = `
+      <div style="background: #FEF2F2; border: 1px solid #FECACA; border-radius: 8px; padding: 8px 12px; font-size: 11.5px; color: #991B1B; display: flex; justify-content: space-between; align-items: center; margin-top: 12px;">
+        <span style="display: flex; align-items: center; gap: 6px;">
+          <span>⚠️</span>
+          <span>Runbook Oficial: <strong>Ninguno (Fuera de Catálogo Homologado)</strong></span>
+        </span>
+        <span style="font-size: 10.5px; font-weight: 700; background: #FEE2E2; color: #991B1B; padding: 2px 8px; border-radius: 10px;">Escalamiento Requerido</span>
+      </div>
+    `;
+  } else {
+    runbookFooterHtml = `
+      <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 8px 12px; font-size: 11.5px; color: #475569; display: flex; justify-content: space-between; align-items: center; margin-top: 12px;">
+        <span style="display: flex; align-items: center; gap: 6px;">
+          <span>📖</span>
+          <span>Runbook Oficial: <strong>${escapeHtml(articleTitle)}</strong></span>
+        </span>
+        <span style="font-size: 10.5px; font-weight: 700; background: #DCFCE7; color: #166534; padding: 2px 8px; border-radius: 10px;">Verdad Única (SSOT)</span>
+      </div>
+    `;
   }
 
   const aiMsgHtml = `
     <div style="display: flex; gap: 12px; align-items: flex-start; margin-bottom: 6px;">
-      <div style="width: 34px; height: 34px; border-radius: 50%; background: #E8F0FE; color: #1A73E8; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; border: 1.5px solid #D2E3FC; box-shadow: 0 1px 4px rgba(26,115,232,0.15);">✨</div>
-      <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 18px 18px 18px 4px; padding: 16px 20px; font-size: 13px; color: #1E293B; line-height: 1.5; max-width: 86%; box-shadow: 0 2px 10px rgba(0,0,0,0.03);">
+      <div style="width: 36px; height: 36px; border-radius: 50%; background: ${isFallback ? '#FEE2E2' : '#E8F0FE'}; color: ${isFallback ? '#991B1B' : '#1A73E8'}; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; border: 1.5px solid ${isFallback ? '#FCA5A5' : '#D2E3FC'}; box-shadow: 0 1px 4px rgba(0,0,0,0.06);">
+        ${isFallback ? '⚠️' : '✨'}
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid ${isFallback ? '#FECACA' : '#E2E8F0'}; border-radius: 18px 18px 18px 4px; padding: 18px 22px; font-size: 13px; color: #1E293B; line-height: 1.5; max-width: 90%; box-shadow: 0 2px 10px rgba(0,0,0,0.04);">
         
-        <div style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 10px;">
-          <span style="font-size: 10.5px; font-weight: 800; background: #E8F0FE; color: #1A73E8; padding: 2px 8px; border-radius: 12px; border: 1px solid #D2E3FC;">
-            ⚙️ ${escapeHtml(subsystem)}
-          </span>
-          <span style="font-size: 10.5px; font-weight: 700; background: #F1F5F9; color: #475569; padding: 2px 8px; border-radius: 12px;">
-            Categoría: ${escapeHtml(articleCategory)}
-          </span>
+        <!-- CABECERA DE CLASIFICACIÓN -->
+        <div style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 12px;">
+          ${headerBadgesHtml}
         </div>
 
-        <div style="background: #F8FAFC; border-left: 3px solid #1A73E8; padding: 8px 12px; border-radius: 0 6px 6px 0; margin-bottom: 12px;">
-          <div style="font-size: 11px; font-weight: 800; color: #1E3A8A; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;">Causa Raíz Identificada</div>
-          <div style="font-size: 12.5px; color: #334155; font-weight: 500;">${escapeHtml(rootCause)}</div>
+        <!-- DIAGNÓSTICO / CAUSA RAÍZ Y DIRECTIVA -->
+        ${diagHtml}
+
+        <!-- CHECKLIST DE RESOLUCIÓN PASO A PASO -->
+        <div style="font-size: 12px; font-weight: 800; color: #0F172A; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+          <span>${isFallback ? '📋' : '✅'}</span> ${isFallback ? 'Protocolo de Escalamiento Obligatorio:' : 'Guía de Acción Operativa (Checklist en Vivo):'}
+        </div>
+        ${stepsHtml}
+
+        <!-- TARJETA: MENSAJE EMPÁTICO LISTO PARA EL MÉDICO -->
+        <div style="background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 10px; padding: 12px 14px; margin-top: 14px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <span style="font-size: 11px; font-weight: 800; color: #166534; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 5px;">
+              <span>💬</span> Mensaje Empático para Responder al Médico:
+            </span>
+            <button type="button" onclick="copyDoctorMessageBtn(this, '${encodeURIComponent(doctorMsg)}')" style="background: #16A34A; color: #FFF; border: none; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; box-shadow: 0 1px 3px rgba(22,163,74,0.3); transition: all 0.15s ease;">
+              <span>📋</span> Copiar Mensaje
+            </button>
+          </div>
+          <div style="font-size: 12.5px; color: #14532D; font-style: italic; line-height: 1.45; background: #FFFFFF; padding: 8px 12px; border-radius: 6px; border: 1px dashed #86EFAC;">
+            "${doctorMsgEscaped}"
+          </div>
         </div>
 
-        <div style="font-size: 12px; font-weight: 800; color: #0F172A; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Procedimiento Operativo de Resolución:</div>
-        ${bodyContent}
+        <!-- NOTAS TÉCNICAS N2 / N3 -->
+        ${techNotesHtml}
 
-        <div style="background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 8px; padding: 8px 12px; font-size: 11.5px; color: #166534; display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
-          <span style="display: flex; align-items: center; gap: 6px;">
-            <span>📖</span>
-            <span>Runbook Oficial: <strong>${escapeHtml(articleTitle)}</strong></span>
-          </span>
-          <span style="font-size: 10.5px; font-weight: 700; background: #DCFCE7; padding: 2px 6px; border-radius: 10px;">Validado N3</span>
-        </div>
-
-        <div style="display: flex; gap: 10px; margin-top: 14px; padding-top: 10px; border-top: 1px solid #F1F5F9;">
-          <button type="button" class="btn-sec" onclick="copySolutionToClipboard(this)" style="font-size: 11.5px; padding: 6px 12px; border-radius: 6px; font-weight: 600; display: inline-flex; align-items: center; gap: 5px;">
-            <span>📋</span> Copiar Solución
-          </button>
-          <button type="button" class="btn-pri" onclick="autoCreateTicketFromAiChat('${encodeURIComponent(query)}')" style="font-size: 11.5px; padding: 6px 14px; border-radius: 6px; background: #1A73E8; border: none; color: #FFF; font-weight: 700; display: inline-flex; align-items: center; gap: 5px; box-shadow: 0 1px 4px rgba(26,115,232,0.3);">
-            <span>🎫</span> Generar Ticket Formal (1 Clic)
-          </button>
-        </div>
+        <!-- RUNBOOK OFICIAL / ALERTA DE NO INDEXADO -->
+        ${runbookFooterHtml}
 
       </div>
     </div>
@@ -5387,57 +5558,115 @@ window.renderKbAiResponse = (query, data, history, scrollArea) => {
   if (scrollArea) scrollArea.scrollTop = scrollArea.scrollHeight;
 };
 
+
+
 window.renderKbAiFallback = (query, history, scrollArea) => {
   const qLower = query.toLowerCase();
-  let title = 'Guía Operativa Asistencial Homologada';
-  let subsystem = 'Consultorio Digital 2';
-  let rootCause = 'Análisis pericial N3 en contingencia local.';
+  let title = '';
+  let subsystem = '';
+  let rootCause = '';
   let steps = [];
+  let isFallback = false;
 
-  if (qLower.includes('mail') || qLower.includes('correo') || qLower.includes('consultorio') || qLower.includes('notificac') || qLower.includes('sede')) {
-    title = 'Reglas de Mensajería y Correo de Consultorio';
-    subsystem = 'Servicio de Notificaciones y Cartilla Médica';
-    rootCause = 'El correo del profesional toma la casilla principal de Cartilla Médica (modificable en Extranet/Mis Datos), no se actualiza de forma automática en los turnos agendados.';
+  if (qLower.includes('cuit')) {
+    title = 'CD2-PREST-001: Cambio de CUIT de prestador manteniendo la información asociada';
+    subsystem = 'Consultorio Digital / Prestadores';
+    rootCause = 'El cambio de CUIT implica trabajar sobre la identificación del prestador y su relación con el usuario actual. El procedimiento operativo documentado contempla una baja del usuario actual en CD2, modificación del CUIT desde Cartillas/Turnos y posterior asociación de la información anterior al nuevo registro.';
     steps = [
-      'Email del Prestador: Las notificaciones se despachan a 1 sola casilla configurada como principal en Cartilla Médica.',
-      'Email y Teléfono del Paciente: Se capturan con el primer turno y adoptan los datos actualizados de cada cita.',
-      'Baja de Consultorio: Acción administrativa manual aplicando la bandera lógica isDeleted = true en BD de CD2.',
-      'Dirección y Teléfono de Sede: Solicitar ticket PAU a Mesa de Ayuda para validación y ejecución pericial.'
+      'Identificar el prestador y el usuario actualmente asociado.',
+      'Dar de baja el usuario actual en CD2.',
+      'Realizar el cambio de CUIT desde Cartillas/Turnos.',
+      'Reenviar un turno de prueba.',
+      'Asociar los datos del registro anterior al nuevo registro.',
+      'Validar que el prestador pueda operar nuevamente con su información histórica.'
     ];
-  } else if (qLower.includes('receta') || qLower.includes('firma')) {
-    title = 'Protocolo de Validación de Firma Digital y Receta Electrónica';
-    subsystem = 'Servicio Criptográfico de Prescripción';
-    rootCause = 'Desincronización de token criptográfico o certificado raíz intermedio no reconocido.';
+  } else if (qLower.includes('diferid') || qLower.includes('no puede registrar') || qLower.includes('no puedo registrar') || qLower.includes('rechaz')) {
+    title = 'CD2-PAU-001: Error al registrar una consulta en Consultorio Digital (Atención Rechazada y Registro por Diferido)';
+    subsystem = 'Historia Clínica / Diferidos';
+    rootCause = 'Atención presencial rechazada. Regla Mandatoria: NO se debe reintentar registrar la consulta directamente en CD2; debe registrarse por diferido o validador externo.';
     steps = [
-      'Verificar sincronización de fecha y hora de la estación médica por NTP.',
-      'Reiniciar el agente local de firma digital criptográfica.',
-      'En caso de urgencia médica en guardia, emitir prescripción en Contingencia Offline con código de barras homologado de 18 dígitos.'
+      'DICTAMEN INMEDIATO: Informar al prestador que debe registrar la atención por diferido o validador externo.',
+      'NO reintentar el registro dentro de CD2 para evitar bloqueos del afiliado.',
+      'Solicitar al prestador el comprobante de atención rechazada.',
+      'Verificar en el auditor de solicitudes si existe registro del intento.',
+      'Escalar a Soporte N2/N3 únicamente si la consulta no impactó en el sistema externo de diferidos.'
     ];
-  } else if (qLower.includes('pdf') || qLower.includes('404') || qLower.includes('400')) {
-    title = 'Descarga de Documentación y PDFs Clínicos';
-    subsystem = 'Servicio Criptográfico de Almacenamiento (Bucket)';
-    rootCause = 'Expiración de la política de retención de 6 meses en bucket o truncamiento de la cadena hash en la URL.';
+  } else if (qLower.includes('mail de consultorio') || qLower.includes('correo de consultorio') || qLower.includes('email consultorio') || qLower.includes('contacto sede') || qLower.includes('inhabilitacion por ic') || qLower.includes('1000 + ic')) {
+    title = 'CD2-SEDE-001: Módulo Consultorio - Mail de Sede, Teléfono y Protocolos de Baja / Inhabilitación por IC';
+    subsystem = 'Consultorio Digital / Sedes';
+    rootCause = 'El email de sede publicado en Cartilla y Extranet no se actualiza automáticamente desde la interfaz web asistencial. Requiere actualización pericial en MongoDB o baja/inhabilitación por 1000 + IC.';
     steps = [
-      'Error 404: Corrobore si la fecha de emisión del documento supera los 6 meses (política de expiración).',
-      'Error 400: Limpiar cookies y caché del navegador médico o regenerar el token criptográfico del documento.',
-      'Escalar a Soporte N2 si el documento fue emitido en los últimos 30 días y persiste inaccesible.'
+      'Identificar la institución mediante su ID de Consultorio / Institución en BD.',
+      'Para cambio de datos: ejecutar updateOne en institutions actualizando telephone y email.',
+      'Para baja lógica asistencial: aplicar { $set: { isDeleted: true } } en institutions.',
+      'Para inhabilitación administrativa sin borrar: actualizar el código IC anteponiendo el prefijo 1000 (1000 + IC).',
+      'Confirmar que la sede deje de listar turnos y notificar al solicitante.'
+    ];
+  } else if (qLower.includes('contacto de socio') || qLower.includes('contacto socio') || qLower.includes('mail de socio') || qLower.includes('notificaciones no recibidas')) {
+    title = 'CD2-SOC-001: Módulo Socio - Persistencia de Datos de Contacto y Reclamos de Notificaciones no Recibidas';
+    subsystem = 'Consultorio Digital / Socios';
+    rootCause = 'El paciente se crea en el 1er turno tomando datos de la Caché de Socios (SAP). Los turnos posteriores priorizan el mail/teléfono cargado en ese turno específico. Reclamos de avisos no recibidos se deben a inconsistencias entre el contacto del turno y el perfil maestro.';
+    steps = [
+      'Verificar en la base de datos el contacto específico registrado para el turno cuestionado.',
+      'Constatar en la Caché de Socios si los datos maestros de SAP se encuentran sincronizados.',
+      'Informar al afiliado o prestador la casilla a la cual fue despachada la notificación del turno.',
+      'En caso de divergencia estructural, solicitar regeneración de caché en el Servicio de Socios.'
+    ];
+  } else if (qLower.includes('matricul') || qLower.includes('matrícul') || qLower.includes('padding') || qLower.includes('roxana fuentes') || qLower.includes('nombre en web')) {
+    title = 'CD2-PREST-002: Identidad de Prestador, Prefijos Profesionales y Reglas de Matrícula CABA/PBA (Padding CRM)';
+    subsystem = 'Consultorio Digital / Prestadores';
+    rootCause = 'Divergencia entre Nombre Legal IAM (Web) y Nombre CRM (Videoconsulta). Reglas de Matrícula y Padding para duplicidad en CRM: CABA requiere cero a la izquierda (0 + matrícula de 6 dígitos); PBA requiere un 1 al final. Prefijos Dr./Lic. administrados por CRM sin forzar defaults.';
+    steps = [
+      'Identificar si la divergencia corresponde al Nombre Legal en IAM o al Perfil CRM en Videoconsulta.',
+      'Verificar jurisdicción de matrícula para desempate de duplicidad en CRM: CABA (cero a la izquierda) o PBA (uno al final).',
+      'Aplicar prefijo Dr. o Lic. exclusivamente si está configurado en CRM sin forzar defaults erróneos.',
+      'Sincronizar y validar visualización en agenda de CD2.'
+    ];
+  } else if (qLower.includes('circuito de derivacion') || qLower.includes('derivacion inteligente') || qLower.includes('atencion modular')) {
+    title = 'CD2-ESC-001: Circuito de Derivación Inteligente por Subsistema y Atenciones Modulares (DW)';
+    subsystem = 'Consultorio Digital / Auditoría DW';
+    rootCause = 'Circuito pericial de enrutamiento por subsistema especializado y extracción de atenciones modulares.';
+    steps = [
+      'Clasificar origen de la falla: IAM (N1-Aplicaciones), CRM (Prefijos/Matrículas), SAP (Caché Socios), CD2 (Turnos/Prescripción).',
+      'Para auditoría de atenciones modulares: consumir endpoint GET ISO 8601 hacia el Data Warehouse.',
+      'Si persiste la anomalía fuera del catálogo, escalar formalmente a Análisis Funcional o Desarrollo.'
+    ];
+  } else if (qLower.includes('receta') || qLower.includes('404') || qLower.includes('400')) {
+    title = 'PDF-005: Descarga y Cifrado de Documentos Clínicos y Recetas - Diagnóstico Errores 404 y 400';
+    subsystem = 'Historia Clínica / Documentación';
+    rootCause = 'Error 404: documento con fecha de emisión mayor a 6 meses (política estricta de expiración en bucket). Error 400: parámetros de hash criptográfico corruptos o sesión vencida.';
+    steps = [
+      'Verificar fecha de emisión de la receta o documento clínico.',
+      'Si supera los 6 meses: informar al profesional la política de retención y expiración de bucket.',
+      'Si es menor a 6 meses y da 400: limpiar cookies y solicitar regeneración de token criptográfico.',
+      'Si persiste la inaccesibilidad en documentos recientes: derivar a Soporte N2.'
     ];
   } else {
-    title = 'Procedimiento Técnico Asistencial CD2';
-    subsystem = 'Mesa de Ayuda N2/N3';
-    rootCause = 'Consulta evaluada contra la Matriz Maestra de Contingencias y 29 runbooks oficiales.';
+    isFallback = true;
+    title = 'Ninguno (Fuera de Catálogo Homologado)';
+    subsystem = 'Análisis Funcional / Desarrollo';
+    rootCause = 'No se localizó un procedimiento homologado para la consulta en la Base de Conocimiento oficial de Consultorio Digital.';
     steps = [
-      'Verificar el estado de los conectores de red y VPN institucionales.',
-      'Consultar la sección del Catálogo de Artículos para conocer el runbook detallado.',
-      'Utilizar el botón "Generar Ticket Formal (1 Clic)" para derivar la consulta con todo el historial a Guardia N2.'
+      'Constatar que la consulta ingresada no corresponde a ninguno de los runbooks homologados vigentes de CD2.',
+      'Recopilar identificadores del caso (ID de turno, DNI socio, CUIT prestador, institución o captura del incidente).',
+      'Escalar formalmente la consulta a Análisis Funcional o para análisis por parte de Desarrollo.'
     ];
   }
 
   const dummyData = {
+    is_fallback: isFallback,
     subsystem: subsystem,
     root_cause: rootCause,
-    recommended_action: steps,
-    top_articles: [{ title: title, category: 'Consultorio Digital' }]
+    recommended_action: isFallback ? 'Se debe escalar la consulta a Análisis Funcional o para análisis por parte de Desarrollo.' : steps.join(' '),
+    suggested_doctor_message: isFallback ?
+      'Estimado/a profesional: su consulta ha sido recibida y, al requerir un análisis técnico específico no contemplado en el catálogo operativo estándar, se derivó formalmente a los equipos de Análisis Funcional y Desarrollo para su evaluación pericial.' :
+      'Estimado/a profesional: nos encontramos verificando la situación reportada para aplicar la actualización operativa correspondiente.',
+    technical_notes: isFallback ?
+      'ALERTA OPERATIVA - CERO ALUCINACIONES: Consulta fuera de catálogo homologado CD2. No forzar procedimientos ni asociar runbooks no verificados. Acción obligatoria: Escalar a Análisis Funcional o Desarrollo.' :
+      'Validar concordancia en microservicios e interoperabilidad.',
+    top_articles: isFallback ? [] : [{ title: title, category: subsystem }],
+    matched_runbook: isFallback ? null : { title: title, code: title.split(':')[0] || 'CD2', category: subsystem },
+    structured_steps: steps
   };
   renderKbAiResponse(query, dummyData, history, scrollArea);
 };
