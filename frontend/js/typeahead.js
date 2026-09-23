@@ -408,7 +408,7 @@ function handleRequesterTypeahead(val) {
     html += `
       <div onclick="selectRequesterTypeahead('${encodeURIComponent(m.query)}')" style="padding: 10px 14px; border-bottom: 1px solid #F1F5F9; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 10px; transition: background 0.15s ease;" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background='#FFFFFF'">
         <div style="display: flex; align-items: center; gap: 8px; overflow: hidden;">
-          <span style="font-size: 10.5px; font-weight: 800; background: #E8F0FE; color: #1A73E8; padding: 2px 7px; border-radius: 6px; white-space: nowrap;">
+          <span style="font-size: 10.5px; font-weight: 800; background: rgba(0, 168, 150, 0.1); color: #00A896; border: 1px solid rgba(0, 168, 150, 0.25); padding: 2px 7px; border-radius: 6px; white-space: nowrap;">
             ${m.code}
           </span>
           <span style="font-size: 12.5px; color: #1E293B; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">

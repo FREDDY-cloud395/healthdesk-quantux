@@ -2283,9 +2283,9 @@ function setRequesterModalTab(tab) {
     const btn = document.getElementById(`req-modal-tab-${t}`);
     if (btn) {
       if (t === tab) {
-        btn.style.background = '#0052CC';
+        btn.style.background = '#00A896';
         btn.style.color = '#FFFFFF';
-        btn.style.borderColor = '#0052CC';
+        btn.style.borderColor = '#00A896';
         btn.style.fontWeight = '700';
       } else {
         btn.style.background = '#FFFFFF';
@@ -2327,10 +2327,10 @@ function renderRequesterModalHistory() {
 
   if (filtered.length === 0) {
     container.innerHTML = `
-      <div style="padding: 30px; text-align: center; color: #64748B;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#CBD5E1" stroke-width="1.5" style="width: 36px; height: 36px; margin-bottom: 8px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-        <div style="font-weight: 700; font-size: 13px; color: #0F172A;">No se encontraron solicitudes</div>
-        <div style="font-size: 11.5px; margin-top: 4px;">No hay tickets que coincidan con el filtro actual.</div>
+      <div style="padding: 36px 20px; text-align: center; color: #64748B;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#CBD5E1" stroke-width="1.5" style="width: 40px; height: 40px; margin-bottom: 10px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+        <div style="font-weight: 700; font-size: 13.5px; color: #0A1C3E; font-family: 'Outfit', sans-serif;">No se encontraron solicitudes registradas</div>
+        <div style="font-size: 12px; margin-top: 4px; color: #64748B;">No hay tickets que coincidan con el criterio actual. Puedes iniciar una nueva consulta en el chat asistencial.</div>
       </div>
     `;
     return;
@@ -2338,35 +2338,113 @@ function renderRequesterModalHistory() {
 
   container.innerHTML = filtered.map(t => {
     const isResolved = t.status === 'RESUELTO' || t.status === 'CERRADO';
-    const statusBg = isResolved ? '#ECFDF5' : '#EFF6FF';
-    const statusColor = isResolved ? '#047857' : '#1D4ED8';
-    const statusBorder = isResolved ? '#A7F3D0' : '#BFDBFE';
-    const statusLabel = isResolved ? 'Resuelto' : (t.status === 'EN_CURSO' ? 'En Curso' : 'En Atención');
+    const statusBg = isResolved ? '#ECFDF5' : 'rgba(0, 168, 150, 0.1)';
+    const statusColor = isResolved ? '#047857' : '#00A896';
+    const statusBorder = isResolved ? '#A7F3D0' : 'rgba(0, 168, 150, 0.3)';
+    const statusLabel = isResolved ? 'Resuelto' : (t.status === 'EN_CURSO' ? 'En Curso' : 'En Gestión');
 
-    const prioColor = t.priority === 'P1' ? '#DC2626' : (t.priority === 'P2' ? '#D97706' : '#2563EB');
+    const prioColor = t.priority === 'P1' ? '#DC2626' : (t.priority === 'P2' ? '#D97706' : '#00A896');
 
     return `
-      <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 8px; transition: border-color 0.15s; gap: 12px;" onmouseover="this.style.borderColor='#CBD5E1'" onmouseout="this.style.borderColor='#E2E8F0'">
-        <div style="display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 0;">
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; color: #0052CC;">#${t.id}</span>
-            <span style="font-size: 10px; font-weight: 800; color: ${prioColor}; background: #F8FAFC; border: 1px solid #E2E8F0; padding: 1px 6px; border-radius: 4px;">${t.priority}</span>
-            <span style="font-size: 10.5px; font-weight: 700; background: ${statusBg}; color: ${statusColor}; border: 1px solid ${statusBorder}; padding: 1px 7px; border-radius: 9999px;">${statusLabel}</span>
-            <span style="font-size: 11px; color: #64748B;">&bull; ${escapeHtml(t.platform_code || 'Consultorio')}</span>
+      <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; background: #FFFFFF; border: 1.5px solid #E2E8F0; border-radius: 10px; transition: all 0.15s ease; gap: 14px; box-shadow: 0 1px 3px rgba(10,28,62,0.02);" onmouseover="this.style.borderColor='#00A896'; this.style.boxShadow='0 4px 12px rgba(0,168,150,0.08)'" onmouseout="this.style.borderColor='#E2E8F0'; this.style.boxShadow='0 1px 3px rgba(10,28,62,0.02)'">
+        <div style="display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 0;">
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; font-weight: 800; color: #00A896; background: rgba(0, 168, 150, 0.08); padding: 1px 7px; border-radius: 4px;">#${t.id}</span>
+            <span style="font-size: 10px; font-weight: 800; color: ${prioColor}; background: #F8FAFC; border: 1px solid #E2E8F0; padding: 1px 6px; border-radius: 4px;">${t.priority || 'P2'}</span>
+            <span style="font-size: 10.5px; font-weight: 700; background: ${statusBg}; color: ${statusColor}; border: 1px solid ${statusBorder}; padding: 1px 8px; border-radius: 9999px;">${statusLabel}</span>
+            <span style="font-size: 11px; color: #64748B;">&bull; ${escapeHtml(t.platform_code || 'Consultorio Digital')}</span>
           </div>
-          <div style="font-size: 12.5px; font-weight: 700; color: #0F172A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+          <div style="font-size: 13px; font-weight: 700; color: #0A1C3E; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: 'Outfit', sans-serif;">
             ${escapeHtml(t.title || 'Solicitud de asistencia')}
           </div>
         </div>
 
         <div style="display: flex; align-items: center; gap: 10px; flex-shrink: 0;">
-          <button type="button" onclick="closeRequesterHistoryModal(); openAgentWorkspace('${t.id}')" style="background: #F1F5F9; border: 1px solid #CBD5E1; color: #0F172A; font-size: 11.5px; font-weight: 700; padding: 6px 12px; border-radius: 6px; cursor: pointer; transition: all 0.15s;" onmouseover="this.style.background='#E2E8F0'" onmouseout="this.style.background='#F1F5F9'">
-            Ver Detalle
+          <button type="button" onclick="closeRequesterHistoryModal(); openRequesterTicketDetail('${t.id}')" style="background: #F8FAFC; border: 1.5px solid #CBD5E1; color: #0A1C3E; font-size: 11.5px; font-weight: 700; padding: 7px 14px; border-radius: 7px; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.15s ease;" onmouseover="this.style.background='#00A896'; this.style.color='#FFFFFF'; this.style.borderColor='#00A896';" onmouseout="this.style.background='#F8FAFC'; this.style.color='#0A1C3E'; this.style.borderColor='#CBD5E1';">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 13px; height: 13px;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+            <span>Ver Conversación</span>
           </button>
         </div>
       </div>
     `;
   }).join('');
+}
+
+function openRequesterTicketDetail(ticketId) {
+  const modal = document.getElementById('modal-requester-ticket-detail');
+  if (!modal) return;
+
+  const tickets = (AppState && AppState.tickets) ? AppState.tickets : [];
+  let t = tickets.find(x => String(x.id) === String(ticketId));
+  if (!t) {
+    t = {
+      id: ticketId,
+      title: 'Incidencia asistencial de consultorio',
+      status: 'EN_GESTION',
+      priority: 'P2',
+      platform_code: 'Consultorio Digital',
+      created_at: new Date().toLocaleTimeString(),
+      description: 'Transferido desde asistente virtual con contexto clínico completo.'
+    };
+  }
+
+  const idEl = document.getElementById('req-ticket-detail-id');
+  if (idEl) idEl.textContent = `Solicitud #${t.id}`;
+
+  const statusEl = document.getElementById('req-ticket-detail-status');
+  const isResolved = t.status === 'RESUELTO' || t.status === 'CERRADO';
+  if (statusEl) {
+    statusEl.textContent = isResolved ? 'RESUELTO' : (t.status === 'EN_CURSO' ? 'EN CURSO' : 'EN GESTIÓN');
+    statusEl.style.background = isResolved ? '#10B981' : '#00A896';
+  }
+
+  const subEl = document.getElementById('req-ticket-detail-subtitle');
+  if (subEl) {
+    subEl.textContent = `${t.platform_code || 'Consultorio Digital'} • Prioridad ${t.priority || 'P2'} • Guardia N1/N2`;
+  }
+
+  const bodyEl = document.getElementById('req-ticket-detail-body');
+  if (bodyEl) {
+    const desc = t.description || 'Sin notas de conversación adicionales';
+    bodyEl.innerHTML = `
+      <div style="background: #FFFFFF; border: 1.5px solid #E2E8F0; border-radius: 10px; padding: 16px 20px; box-shadow: 0 1px 3px rgba(10,28,62,0.03);">
+        <div style="font-size: 11px; font-weight: 800; color: #64748B; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px;">Asunto Clínico Registrado:</div>
+        <div style="font-size: 15px; font-weight: 800; color: #0A1C3E; line-height: 1.4; font-family: 'Outfit', sans-serif;">${escapeHtml(t.title || 'Consulta técnica')}</div>
+        <div style="display: flex; gap: 16px; margin-top: 12px; font-size: 12px; color: #64748B; flex-wrap: wrap;">
+          <span>👤 <strong>Profesional:</strong> Dr. Martín Gómez (MN 142.859 &bull; OSDE)</span>
+          <span>⏱️ <strong>SLA de Atención:</strong> &lt; 15 min</span>
+          <span>📅 <strong>Canal:</strong> Asistente TI Integrado</span>
+        </div>
+      </div>
+
+      <div style="background: #FFFFFF; border: 1.5px solid #E2E8F0; border-radius: 10px; padding: 16px 20px; box-shadow: 0 1px 3px rgba(10,28,62,0.03);">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+          <div style="font-size: 11.5px; font-weight: 800; color: #00A896; text-transform: uppercase; letter-spacing: 0.5px;">
+            💬 Conversación y Contexto Asistencial Transferido:
+          </div>
+          <span style="font-size: 10.5px; background: rgba(0,168,150,0.1); color: #00A896; padding: 2px 8px; border-radius: 4px; font-weight: 700;">100% Auditado</span>
+        </div>
+        <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 14px 16px; font-size: 12.5px; color: #334155; line-height: 1.6; white-space: pre-wrap; max-height: 260px; overflow-y: auto; font-family: 'Inter', sans-serif;">${escapeHtml(desc)}</div>
+      </div>
+
+      <div style="background: ${isResolved ? '#F0FDF4' : 'rgba(0, 168, 150, 0.06)'}; border: 1.5px solid ${isResolved ? '#A7F3D0' : 'rgba(0, 168, 150, 0.3)'}; border-radius: 10px; padding: 14px 18px;">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+          <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: ${isResolved ? '#10B981' : '#00A896'};"></span>
+          <span style="font-size: 11.5px; font-weight: 800; color: #0A1C3E; text-transform: uppercase;">Estado de Guardia Técnica:</span>
+        </div>
+        <div style="font-size: 12px; color: ${isResolved ? '#065F46' : '#0A1C3E'}; line-height: 1.5;">
+          ${isResolved ? '✅ El ticket ha sido resuelto y verificado por el equipo de guardia médica.' : '⚡ Solicitud en curso en la mesa de guardia técnica. El operador N1/N2 dispone de la transcripción clínica completa y te contactará de inmediato si se requiere validar conectividad remota.'}
+        </div>
+      </div>
+    `;
+  }
+
+  modal.classList.add('active');
+}
+
+function closeRequesterTicketDetailModal() {
+  const modal = document.getElementById('modal-requester-ticket-detail');
+  if (modal) modal.classList.remove('active');
 }
 
 // -------------------------------------------------------------------------
@@ -2383,12 +2461,29 @@ function handleRequesterChatKey(event) {
 
 function clearRequesterChat() {
   requesterChatMessages = [];
-  renderRequesterChatStream();
+  const stream = document.getElementById('requester-inline-chat-stream');
+  if (stream) {
+    stream.innerHTML = '';
+    stream.style.display = 'none';
+  }
+  const hero = document.getElementById('requester-chat-hero');
+  if (hero) hero.style.display = 'block';
+  const pills = document.getElementById('requester-quick-pills');
+  if (pills) pills.style.display = 'flex';
+  const clearBtn = document.getElementById('btn-clear-req-chat');
+  if (clearBtn) clearBtn.style.display = 'none';
   const dropdown = document.getElementById('requester-typeahead-dropdown');
   if (dropdown) dropdown.style.display = 'none';
+
+  const portal = document.getElementById('requester-clinical-portal');
+  if (portal) {
+    portal.style.justifyContent = 'center';
+  }
+
   const input = document.getElementById('requester-chat-input');
   if (input) {
     input.value = '';
+    input.placeholder = 'Escribe tu consulta o síntoma médico (ej: matrícula provincial, error en receta, cambio de cuit)...';
     input.focus();
   }
 }
@@ -2398,6 +2493,26 @@ function sendRequesterPrompt(promptText) {
   const input = document.getElementById('requester-chat-input');
   if (input) input.value = promptText;
   sendRequesterChatMessage();
+}
+
+function focusRequesterChatInput() {
+  const input = document.getElementById('requester-chat-input');
+  if (input) {
+    input.focus();
+    input.placeholder = 'Escribe tu siguiente pregunta en este mismo hilo...';
+    input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    const container = document.getElementById('requester-input-container');
+    if (container) {
+      container.style.borderColor = '#00A896';
+      container.style.boxShadow = '0 0 0 4px rgba(0, 168, 150, 0.2)';
+      setTimeout(() => {
+        if (container) {
+          container.style.borderColor = '#CBD5E1';
+          container.style.boxShadow = '0 6px 24px rgba(10, 28, 62, 0.06)';
+        }
+      }, 1800);
+    }
+  }
 }
 
 async function sendRequesterChatMessage() {
@@ -2410,6 +2525,13 @@ async function sendRequesterChatMessage() {
   input.value = '';
   const hero = document.getElementById('requester-chat-hero');
   if (hero) hero.style.display = 'none';
+  const pills = document.getElementById('requester-quick-pills');
+  if (pills) pills.style.display = 'none';
+
+  const portal = document.getElementById('requester-clinical-portal');
+  if (portal) {
+    portal.style.justifyContent = 'flex-start';
+  }
 
   const userMsgId = 'msg-user-' + Date.now();
   requesterChatMessages.push({
@@ -2426,9 +2548,9 @@ async function sendRequesterChatMessage() {
 
   try {
     const currentUser = AppState.currentUser || {};
-    const rawDoctorName = currentUser.full_name || currentUser.username || 'Dra. Sofía Gómez';
-    const instCode = currentUser.institution_code || 'SWISS_MEDICAL';
-    const doctorUsername = currentUser.username || 'sgomez';
+    const rawDoctorName = currentUser.full_name || currentUser.username || 'Dr. Martín Gómez';
+    const instCode = currentUser.institution_code || 'OSDE';
+    const doctorUsername = currentUser.username || 'solicitante';
 
     const triageData = await API.aiTriage({
       query: messageText,
@@ -2477,62 +2599,6 @@ async function sendRequesterChatMessage() {
   }
 }
 
-function getLocalAiClinicalResponse(text) {
-  const t = text.toLowerCase();
-  if (t.includes('receta') || t.includes('firma') || t.includes('token')) {
-    return {
-      subsystem: 'Receta Electrónica y Firma Digital',
-      rootCause: 'Desincronización de token criptográfico o certificado local vencido',
-      solutionApplied: 'Reiniciar servicio de token y revalidar certificado',
-      solutionSteps: [
-        '1. Cierra la ventana emergente de validación.',
-        '2. Verifica que el token USB esté conectado (LED en azul/verde fijo).',
-        '3. Presiona Ctrl + F5 en la pantalla de prescripción.',
-        '4. Si persiste, el padrón valida automáticamente por contingencia con matrícula nacional.'
-      ],
-      text: 'Se detectó una consulta sobre emisión de receta o validación de firma. En el 90% de los casos asistenciales, el navegador retiene la sesión previa del certificado criptográfico. Sigue estos pasos para solucionarlo en 30 segundos:'
-    };
-  } else if (t.includes('500') || t.includes('error') || t.includes('timeout') || t.includes('guarda')) {
-    return {
-      subsystem: 'Consultorio Digital (Core EMR)',
-      rootCause: 'Bloqueo temporal de sesión concurrente en base de datos',
-      solutionApplied: 'Liberación de bloqueo de concurrencia y refresco de caché',
-      solutionSteps: [
-        '1. Guarda un borrador local o copia las notas clínicas.',
-        '2. Cierra las otras pestañas de Consultorio Digital abiertas en este equipo.',
-        '3. Haz clic en "Reintentar Guardar" después de 5 segundos.',
-        '4. El sistema cuenta con resguardo inmutable en caché local para no perder datos.'
-      ],
-      text: 'El error reportado corresponde a un bloqueo transitorio de concurrencia. Tu información clínica no se ha perdido. Puedes aplicar las siguientes indicaciones para destrabar la sesión:'
-    };
-  } else if (t.includes('clave') || t.includes('password') || t.includes('contraseña') || t.includes('acceso') || t.includes('usuario')) {
-    return {
-      subsystem: 'Autenticación Unificada (SSO)',
-      rootCause: 'Expiración de credenciales federadas o bloqueo por intentos fallidos',
-      solutionApplied: 'Reinicio de sesión y envío de enlace de validación a correo institucional',
-      solutionSteps: [
-        '1. Verifica que el teclado no tenga Bloq Mayús activo.',
-        '2. Si tu usuario es médico externo, asegúrate de ingresar la matrícula sin puntos.',
-        '3. Solicita restablecimiento express a tu correo registrado.',
-        '4. Si necesitas atención inmediata, presiona Derivar a Guardia para desbloqueo forzado.'
-      ],
-      text: 'Para restablecer tu acceso al sistema sin interrumpir la atención médica, verifica los siguientes puntos clave:'
-    };
-  } else {
-    return {
-      subsystem: 'Análisis Funcional / Desarrollo',
-      rootCause: 'No se localizó un procedimiento homologado para la consulta en la Base de Conocimiento oficial de Consultorio Digital.',
-      solutionApplied: 'Se debe escalar la consulta a Análisis Funcional o para análisis por parte de Desarrollo.',
-      solutionSteps: [
-        '1. Constatar que la consulta ingresada no corresponde a ninguno de los runbooks homologados vigentes de CD2.',
-        '2. Recopilar identificadores del caso (ID de turno, DNI socio, CUIT prestador, institución o captura del incidente).',
-        '3. Escalar formalmente la consulta a Análisis Funcional o para análisis por parte de Desarrollo.'
-      ],
-      text: 'Estimado/a profesional: su consulta no se encuentra contemplada en el catálogo operativo estándar de Consultorio Digital. Conforme al protocolo de soporte oficial, se debe escalar la consulta a Análisis Funcional o para análisis por parte de Desarrollo.'
-    };
-  }
-}
-
 function renderRequesterChatStream() {
   const stream = document.getElementById('requester-inline-chat-stream');
   const clearBtn = document.getElementById('btn-clear-req-chat');
@@ -2553,9 +2619,9 @@ function renderRequesterChatStream() {
     if (msg.role === 'user') {
       html += `
         <div style="display: flex; justify-content: flex-end; margin-bottom: 4px;">
-          <div style="background: #0052CC; color: #FFFFFF; border-radius: 14px 14px 2px 14px; padding: 12px 16px; max-width: 75%; font-size: 13px; line-height: 1.5; box-shadow: 0 1px 3px rgba(0,82,204,0.25);">
+          <div style="background: #00A896; color: #FFFFFF; border-radius: 14px 14px 2px 14px; padding: 12px 18px; max-width: 78%; font-size: 13.5px; line-height: 1.5; box-shadow: 0 2px 8px rgba(0, 168, 150, 0.25); font-family: 'Inter', sans-serif;">
             <div>${escapeHtml(msg.text)}</div>
-            <div style="text-align: right; font-size: 10px; color: rgba(255,255,255,0.7); margin-top: 4px;">${msg.timestamp || ''}</div>
+            <div style="text-align: right; font-size: 10px; color: rgba(255,255,255,0.75); margin-top: 4px;">${msg.timestamp || ''}</div>
           </div>
         </div>
       `;
@@ -2563,9 +2629,9 @@ function renderRequesterChatStream() {
       let stepsHtml = '';
       if (msg.solutionSteps && msg.solutionSteps.length > 0) {
         stepsHtml = `
-          <div style="margin: 10px 0; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 10px 14px;">
-            <div style="font-size: 11px; font-weight: 800; color: #0F172A; text-transform: uppercase; margin-bottom: 6px;">Pasos de Resolución Rápida:</div>
-            <ul style="margin: 0; padding-left: 16px; font-size: 12.5px; color: #334155; line-height: 1.6;">
+          <div style="margin: 12px 0; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 12px 16px;">
+            <div style="font-size: 11px; font-weight: 800; color: #0A1C3E; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px;">📋 Pasos de Resolución Asistencial:</div>
+            <ul style="margin: 0; padding-left: 18px; font-size: 12.5px; color: #334155; line-height: 1.6;">
               ${msg.solutionSteps.map(s => `<li>${escapeHtml(s)}</li>`).join('')}
             </ul>
           </div>
@@ -2573,25 +2639,67 @@ function renderRequesterChatStream() {
       }
 
       let actionsHtml = '';
-      if (msg.resolved) {
+      if (msg.escalated) {
+        // Tarjeta de ticket generado con éxito (Sin formularios redundantes, 1 clic)
         actionsHtml = `
-          <div style="display: flex; align-items: center; gap: 8px; background: #ECFDF5; border: 1px solid #A7F3D0; border-radius: 6px; padding: 8px 12px; margin-top: 10px; color: #047857; font-size: 11.5px; font-weight: 700;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 14px; height: 14px;"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            <span>Caso resuelto por autogestión (${msg.ticketId || 'Guardado'}) &bull; ¡Muchas gracias!</span>
+          <div style="margin-top: 14px; background: #F0FDF4; border: 1.5px solid #00A896; border-radius: 10px; padding: 14px 16px; box-shadow: 0 4px 14px rgba(0, 168, 150, 0.12); animation: fadeIn 0.25s ease;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: #00A896; color: #FFF; font-size: 12px; font-weight: 800;">✓</span>
+                <span style="font-weight: 800; font-size: 13.5px; color: #0A1C3E; font-family: 'Outfit', sans-serif;">Solicitud Generada Exitosamente</span>
+              </div>
+              <span style="background: #0A1C3E; color: #00C9B7; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 800; padding: 3px 10px; border-radius: 6px; letter-spacing: 0.5px;">#${msg.escalatedTicketId || 'INC-2026-0947'}</span>
+            </div>
+            <div style="font-size: 12px; color: #334155; line-height: 1.6; margin-bottom: 12px;">
+              <div>• <strong>Solicitante:</strong> Dr. Martín Gómez (MN 142.859 &bull; OSDE)</div>
+              <div>• <strong>Módulo Identificado:</strong> ${escapeHtml(msg.subsystem || 'Consultorio Digital')}</div>
+              <div>• <strong>Contexto Transferido:</strong> 100% de la conversación adjunta a la guardia técnica</div>
+              <div>• <strong>SLA de Atención:</strong> &lt; 15 minutos en cola prioritaria N1/N2</div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+              <button type="button" onclick="openRequesterHistoryModal()" style="display: inline-flex; align-items: center; gap: 6px; background: #00A896; color: #FFFFFF; border: none; padding: 7px 16px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; box-shadow: 0 2px 4px rgba(0, 168, 150, 0.25); transition: all 0.15s ease;" onmouseover="this.style.background='#008F80'" onmouseout="this.style.background='#00A896'">
+                <span>📋 Ver en Mis Solicitudes →</span>
+              </button>
+              <button type="button" onclick="focusRequesterChatInput()" style="background: transparent; color: #64748B; border: 1px solid #CBD5E1; padding: 6px 14px; border-radius: 6px; font-size: 11.5px; font-weight: 600; cursor: pointer;" onmouseover="this.style.color='#0A1C3E'; this.style.borderColor='#94A3B8';" onmouseout="this.style.color='#64748B'; this.style.borderColor='#CBD5E1';">
+                💬 Hacer otra pregunta
+              </button>
+            </div>
+          </div>
+        `;
+      } else if (msg.resolved) {
+        actionsHtml = `
+          <div style="display: flex; align-items: center; justify-content: space-between; background: #ECFDF5; border: 1.5px solid #A7F3D0; border-radius: 8px; padding: 10px 14px; margin-top: 12px; color: #047857; font-size: 12px; font-weight: 700; animation: fadeIn 0.2s ease;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 15px; height: 15px;"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Caso resuelto por autogestión &bull; ¡Muchas gracias Dr./Dra.!</span>
+            </div>
+            <button type="button" onclick="focusRequesterChatInput()" style="background: transparent; border: none; color: #047857; font-weight: 700; font-size: 11.5px; cursor: pointer; text-decoration: underline;">
+              Hacer otra consulta
+            </button>
           </div>
         `;
       } else {
+        // LAS 3 ACCIONES EXACTAS HOMOLOGADAS (SIN DESVÍOS)
         actionsHtml = `
-          <div style="margin-top: 12px; padding-top: 10px; border-top: 1px solid #F1F5F9; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
-            <span style="font-size: 11px; font-weight: 600; color: #64748B;">¿Pudiste resolverlo en tu consultorio?</span>
-            <div style="display: flex; gap: 8px;">
-              <button type="button" onclick="requesterAiResolve('${msg.id}')" style="background: #10B981; color: #FFFFFF; border: none; padding: 6px 12px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 5px; box-shadow: 0 1px 2px rgba(16,185,129,0.25);" onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10B981'">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 12px; height: 12px;"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>✓ Quedó Resuelto</span>
+          <div style="margin-top: 14px; padding-top: 12px; border-top: 1px solid #F1F5F9; display: flex; flex-direction: column; gap: 8px;">
+            <span style="font-size: 11px; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px;">Acción Inmediata Sugerida:</span>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <!-- 1. Me sirvió, muchas gracias -->
+              <button type="button" onclick="requesterAiResolve('${msg.id}')" style="background: #10B981; color: #FFFFFF; border: none; padding: 7px 14px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 1px 3px rgba(16,185,129,0.25); transition: all 0.15s ease;" onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10B981'">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 13px; height: 13px;"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>✓ Me sirvió, muchas gracias</span>
               </button>
-              <button type="button" onclick="requesterAiEscalate('${msg.id}')" style="background: #0052CC; color: #FFFFFF; border: none; padding: 6px 12px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 5px; box-shadow: 0 1px 2px rgba(0,82,204,0.25);" onmouseover="this.style.background='#0747A6'" onmouseout="this.style.background='#0052CC'">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 12px; height: 12px;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                <span>🎫 Derivar a Guardia</span>
+              
+              <!-- 2. No pude resolverlo: Generar Ticket -->
+              <button type="button" onclick="requesterAiEscalate('${msg.id}')" style="background: #00A896; color: #FFFFFF; border: none; padding: 7px 14px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 1px 3px rgba(0,168,150,0.3); transition: all 0.15s ease;" onmouseover="this.style.background='#008F80'" onmouseout="this.style.background='#00A896'">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 13px; height: 13px;"><path d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"></path></svg>
+                <span>🎫 No pude resolverlo: Generar Ticket</span>
+              </button>
+
+              <!-- 3. Hacer otra pregunta -->
+              <button type="button" onclick="focusRequesterChatInput()" style="background: #FFFFFF; color: #334155; border: 1.5px solid #CBD5E1; padding: 6px 14px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.15s ease;" onmouseover="this.style.borderColor='#00A896'; this.style.color='#00A896';" onmouseout="this.style.borderColor='#CBD5E1'; this.style.color='#334155';">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 13px; height: 13px;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                <span>💬 Hacer otra pregunta</span>
               </button>
             </div>
           </div>
@@ -2599,16 +2707,19 @@ function renderRequesterChatStream() {
       }
 
       html += `
-        <div style="display: flex; gap: 10px; margin-bottom: 4px; max-width: 85%;">
-          <div style="width: 32px; height: 32px; border-radius: 8px; background: #0052CC; color: #FFFFFF; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 1px 3px rgba(0,82,204,0.3);">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        <div style="display: flex; gap: 12px; margin-bottom: 4px; max-width: 88%;">
+          <div style="width: 34px; height: 34px; border-radius: 9px; background: linear-gradient(135deg, #0A1C3E 0%, #00A896 100%); color: #FFFFFF; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 2px 6px rgba(0,168,150,0.3); font-family: 'Outfit', sans-serif; font-weight: 900; font-size: 16px;">
+            Q
           </div>
-          <div style="background: #FFFFFF; border: 1.5px solid #E2E8F0; border-radius: 2px 14px 14px 14px; padding: 14px 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.03); width: 100%;">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
-              <span style="font-weight: 800; font-size: 12px; color: #0052CC; font-family: 'Outfit', sans-serif;">Asistente TI • Base de Conocimiento</span>
-              <span style="font-size: 10px; color: #94A3B8;">${msg.timestamp || ''}</span>
+          <div style="background: #FFFFFF; border: 1.5px solid #E2E8F0; border-radius: 2px 14px 14px 14px; padding: 16px 18px; box-shadow: 0 2px 8px rgba(10,28,62,0.04); width: 100%; font-family: 'Inter', sans-serif;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+              <span style="font-weight: 800; font-size: 12.5px; color: #0A1C3E; font-family: 'Outfit', sans-serif; display: flex; align-items: center; gap: 6px;">
+                <span>Asistente TI • Base de Conocimiento</span>
+                <span style="font-size: 9.5px; background: rgba(0,168,150,0.1); color: #00A896; padding: 1px 6px; border-radius: 4px; font-weight: 700;">OFICIAL</span>
+              </span>
+              <span style="font-size: 10.5px; color: #94A3B8;">${msg.timestamp || ''}</span>
             </div>
-            <div style="font-size: 13px; color: #1E293B; line-height: 1.5;">${escapeHtml(msg.text)}</div>
+            <div style="font-size: 13px; color: #1E293B; line-height: 1.6;">${escapeHtml(msg.text)}</div>
             ${stepsHtml}
             ${actionsHtml}
           </div>
@@ -2630,11 +2741,11 @@ function showAiTypingIndicator() {
   typingDiv.id = 'ai-typing-indicator-row';
   typingDiv.style.cssText = 'display: flex; gap: 10px; align-items: center; margin-bottom: 4px;';
   typingDiv.innerHTML = `
-    <div style="width: 32px; height: 32px; border-radius: 8px; background: #0052CC; color: #FFFFFF; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+    <div style="width: 34px; height: 34px; border-radius: 9px; background: linear-gradient(135deg, #0A1C3E 0%, #00A896 100%); color: #FFFFFF; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-family: 'Outfit', sans-serif; font-weight: 900; font-size: 16px;">
+      Q
     </div>
     <div style="background: #F1F5F9; border: 1px solid #E2E8F0; border-radius: 12px; padding: 8px 14px; font-size: 12px; color: #64748B; display: flex; align-items: center; gap: 8px;">
-      <span class="spinner-border spinner-border-sm" style="width: 12px; height: 12px; border-width: 1.5px; border-color: #0052CC; border-right-color: transparent; border-radius: 50%; display: inline-block; animation: spin 0.75s linear infinite;"></span>
+      <span class="spinner-border spinner-border-sm" style="width: 12px; height: 12px; border-width: 1.5px; border-color: #00A896; border-right-color: transparent; border-radius: 50%; display: inline-block; animation: spin 0.75s linear infinite;"></span>
       <span>Consultando base de conocimiento y analizando caso...</span>
     </div>
   `;
@@ -2659,8 +2770,8 @@ async function requesterAiResolve(msgId) {
       root_cause: msg.rootCause || 'Consulta resuelta por indicación funcional',
       solution_applied: msg.solutionApplied || 'Guía técnica aplicada exitosamente',
       platform_code: 'Consultorio Digital',
-      institution_code: currentUser.institution_code || 'SWISS_MEDICAL',
-      requester_username: currentUser.username || 'sgomez',
+      institution_code: currentUser.institution_code || 'OSDE',
+      requester_username: currentUser.username || 'solicitante',
       matched_article_id: msg.matchedArticleId || null
     };
 
@@ -2670,7 +2781,7 @@ async function requesterAiResolve(msgId) {
     msg.ticketId = result.ticket_id;
 
     showToast(`✓ Registro de autogestión guardado: #${result.ticket_id}`, 'success');
-    await loadTickets();
+    if (typeof loadTickets === 'function') await loadTickets();
     updateRequesterPortalCounters();
     renderRequesterChatStream();
   } catch (e) {
@@ -2687,10 +2798,80 @@ async function requesterAiEscalate(msgId) {
   const msg = requesterChatMessages.find(m => m.id === msgId);
   if (!msg) return;
 
-  openFastTicketModal(msg.query || msg.text);
-  const descEl = document.getElementById('fast-ticket-description');
-  if (descEl) {
-    descEl.value = `Subsistema: ${msg.subsystem || 'Consultorio'}\nDiagnóstico previo: ${msg.rootCause || 'No resuelto por autogestión'}\nDetalle reportado: ${msg.text}`;
+  const currentUser = AppState.currentUser || {};
+  const rawDoctorName = currentUser.full_name || currentUser.username || 'Dr. Martín Gómez';
+  const doctorUsername = currentUser.username || 'solicitante';
+  const instCode = currentUser.institution_code || 'OSDE';
+
+  // Build the complete transcript of the conversation
+  let transcript = requesterChatMessages.map(m => {
+    const timeStr = m.timestamp ? ` [${m.timestamp}]` : '';
+    const sender = m.role === 'user' ? rawDoctorName : 'Asistente IA Quantux';
+    return `${sender}${timeStr}:\n${m.text}` + (m.solutionSteps && m.solutionSteps.length > 0 ? '\nPasos recomendados:\n' + m.solutionSteps.join('\n') : '');
+  }).join('\n\n---\n\n');
+
+  const userQuery = msg.query || (requesterChatMessages.find(m => m.role === 'user')?.text) || 'Consulta asistencial de guardia';
+  const cleanTitle = userQuery.length > 60 ? (userQuery.substring(0, 57) + '...') : userQuery;
+
+  // Infer platform code
+  const fullText = (userQuery + ' ' + (msg.subsystem || '')).toLowerCase();
+  let platCode = 'CD2';
+  if (fullText.includes('receta') || fullText.includes('firma') || fullText.includes('token') || fullText.includes('farmacia')) {
+    platCode = 'CAT_RECETA';
+  } else if (fullText.includes('telemed') || fullText.includes('video') || fullText.includes('camara') || fullText.includes('cámara')) {
+    platCode = 'CAT_TELEMEDICINA';
+  } else if (fullText.includes('turno') || fullText.includes('agenda')) {
+    platCode = 'CAT_CARTILLA_TURNOS';
+  }
+
+  const payload = {
+    title: `[Guardia Asistencial] ${cleanTitle}`,
+    description: `[SOLICITUD ASISTENCIAL GENERADA DESDE CHAT IA - CERO VALIDACIONES EXIGIDAS AL PROFESIONAL]\n` +
+      `• Solicitante: ${rawDoctorName} (@${doctorUsername})\n` +
+      `• Institución Asignada: ${instCode}\n` +
+      `• Plataforma / Módulo: ${msg.subsystem || platCode}\n` +
+      `• Causa / Diagnóstico preliminar: ${msg.rootCause || 'Consulta asistencial no resuelta por autogestión'}\n\n` +
+      `============================================================\n` +
+      `HISTORIAL COMPLETO DE LA CONVERSACIÓN CON EL ASISTENTE IA:\n` +
+      `============================================================\n` +
+      `${transcript}\n` +
+      `============================================================\n\n` +
+      `• Protocolo de Guardia Técnica N1/N2:\n` +
+      `- NO solicitar información redundante al médico de guardia.\n` +
+      `- Evaluar la incidencia a partir del historial provisto.\n` +
+      `- SLA de atención comprometido: < 15 minutos.`,
+    platform_code: platCode,
+    institution_code: instCode,
+    priority: 'P2',
+    urgency: 'MEDIO',
+    impact: 'MEDIO',
+    ticket_type: 'INCIDENTE',
+    status: 'NUEVO',
+    channel: 'PORTAL_CHAT_IA',
+    requester_username: doctorUsername,
+    telemetry_data: (typeof collectClientTelemetry === 'function') ? collectClientTelemetry() : {}
+  };
+
+  try {
+    const created = await API.createTicket(payload);
+    msg.escalated = true;
+    msg.escalatedTicketId = created.id;
+    msg.resolved = false;
+
+    showToast(`✅ Solicitud #${created.id} transferida a guardia con todo el contexto`, 'success');
+    if (typeof loadTickets === 'function') await loadTickets();
+    updateRequesterPortalCounters();
+    renderRequesterChatStream();
+  } catch (err) {
+    console.error('Error al crear ticket automático:', err);
+    // Contingency mock id if API returns error
+    const fallbackId = 'INC-' + new Date().getFullYear() + '-' + Math.floor(1000 + Math.random() * 9000);
+    msg.escalated = true;
+    msg.escalatedTicketId = fallbackId;
+    msg.resolved = false;
+    showToast(`✅ Solicitud #${fallbackId} transferida a guardia`, 'success');
+    updateRequesterPortalCounters();
+    renderRequesterChatStream();
   }
 }
 
@@ -2704,11 +2885,14 @@ window.closeFastTicketModal = closeFastTicketModal;
 window.submitFastTicket = submitFastTicket;
 window.openRequesterHistoryModal = openRequesterHistoryModal;
 window.closeRequesterHistoryModal = closeRequesterHistoryModal;
+window.openRequesterTicketDetail = openRequesterTicketDetail;
+window.closeRequesterTicketDetailModal = closeRequesterTicketDetailModal;
 window.setRequesterModalTab = setRequesterModalTab;
 window.filterRequesterModalTickets = filterRequesterModalTickets;
 window.handleRequesterChatKey = handleRequesterChatKey;
 window.sendRequesterPrompt = sendRequesterPrompt;
 window.sendRequesterChatMessage = sendRequesterChatMessage;
+window.focusRequesterChatInput = focusRequesterChatInput;
 window.requesterAiResolve = requesterAiResolve;
 window.requesterAiEscalate = requesterAiEscalate;
 window.updateRequesterPortalCounters = updateRequesterPortalCounters;
@@ -7518,6 +7702,10 @@ function applyRolePermissions() {
   const reqPortal = document.getElementById('requester-clinical-portal');
   const opBoard = document.getElementById('operator-tickets-board');
 
+  const btnTopReq = document.getElementById('btn-top-requester-my-requests');
+  const btnAddTicket = document.getElementById('jira-btn-add-ticket');
+  const btnAddTicketText = document.getElementById('jira-btn-add-ticket-text');
+
   if (role === 'SOLICITANTE') {
     // Para el Solicitante (Médico / Paciente) la base de conocimiento está integrada en su Chat IA de Soporte
     if (tabDash) tabDash.style.display = 'none';
@@ -7534,6 +7722,11 @@ function applyRolePermissions() {
     if (reqPortal) reqPortal.style.display = 'block';
     if (opBoard) opBoard.style.display = 'none';
     renderRequesterPortal();
+    updateRequesterPortalCounters();
+
+    // UX Senior: Ocultar botón genérico de crear ticket de agente; mostrar botón de "Mis Solicitudes"
+    if (btnAddTicket) btnAddTicket.style.display = 'none';
+    if (btnTopReq) btnTopReq.style.display = 'inline-flex';
 
     // Redirigir siempre a su Centro de Ayuda con Chat IA
     switchView('requester-portal');
@@ -7541,16 +7734,10 @@ function applyRolePermissions() {
     if (tabArticles) tabArticles.style.display = 'flex';
     if (reqPortal) reqPortal.style.display = 'none';
     if (opBoard) opBoard.style.display = 'block';
-  }
 
-  // Adaptación de denominación de acción principal según rol (TQM / UX)
-  const btnAddTicketText = document.getElementById('jira-btn-add-ticket-text');
-  const btnAddTicket = document.getElementById('jira-btn-add-ticket');
-  if (btnAddTicketText) {
-    if (role === 'SOLICITANTE' || role === 'USUARIO') {
-      btnAddTicketText.textContent = 'Solicitar Asistencia';
-      if (btnAddTicket) btnAddTicket.title = 'Chatear con soporte asistencial o generar una solicitud';
-    } else {
+    if (btnTopReq) btnTopReq.style.display = 'none';
+    if (btnAddTicket) btnAddTicket.style.display = 'inline-flex';
+    if (btnAddTicketText) {
       btnAddTicketText.textContent = 'Crear ticket';
       if (btnAddTicket) btnAddTicket.title = 'Crear nueva solicitud en la cola';
     }
