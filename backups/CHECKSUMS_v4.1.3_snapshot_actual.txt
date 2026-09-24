@@ -1,0 +1,5 @@
+# CHECKSUMS SHA-256 - SNAPSHOT OFICIAL v4.1.3_snapshot_actual
+# Generado: 2026-09-24T15:52:40.537467
+
+1c4432ec6f4940c318a5a8b4e346dc4daa88e29d21f2a966e3cb6a7aba595ced  healthdesk_v4.1.3_snapshot_actual.db
+b4940dc325b841b2d3dc66e5d84a139d3ff8b01c5c347b3ec258367596ee2780  quantux_v4.1.3_snapshot_actual_vault.zip
