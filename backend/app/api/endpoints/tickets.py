@@ -264,8 +264,10 @@ def list_tickets(
             t_plat_n = platform_names.get(t.platform_code, "")
             t_inst_c = normalize_str(t.institution_code)
             t_inst_n = institution_names.get(t.institution_code, "")
+            t_telem = normalize_str(t.telemetry_data or "")
+            t_type = normalize_str(t.ticket_type.value if hasattr(t.ticket_type, "value") else str(t.ticket_type or ""))
             
-            combined_haystack = f"{t_id} {t_title} {t_desc} {t_req_u} {t_req_name} {t_ass_u} {t_ass_name} {t_plat_c} {t_plat_n} {t_inst_c} {t_inst_n}"
+            combined_haystack = f"{t_id} {t_title} {t_desc} {t_req_u} {t_req_name} {t_ass_u} {t_ass_name} {t_plat_c} {t_plat_n} {t_inst_c} {t_inst_n} {t_telem} {t_type}"
             
             # Match si todos los términos buscados están contenidos en la entidad
             matches = True

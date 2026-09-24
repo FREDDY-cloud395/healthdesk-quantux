@@ -455,17 +455,28 @@ function switchView(viewName) {
  if (subEl) subEl.textContent = titles[viewName].sub;
  }
 
- // Control de visibilidad de acciones rápidas en el top-navbar para la mesa de ayuda
+  // Control de visibilidad de acciones rápidas y buscador en el top-navbar (Blindado v4.2)
   const topNavActions = document.getElementById('top-navbar-actions');
   const topNavRight = document.getElementById('top-navbar-right');
-  if (topNavActions && topNavRight) {
-    if (viewName === 'tickets') {
-      topNavActions.style.display = 'flex';
-      topNavRight.style.display = 'flex';
+  const topSearchBox = document.querySelector('.top-omnisearch-box');
+  const reqHeaderSuite = document.getElementById('requester-top-header-suite');
+  const staffCreateBtn = document.getElementById('jira-btn-add-ticket');
+
+  if (topNavRight) {
+    topNavRight.style.display = 'flex';
+    if (viewName === 'requester-portal') {
+      if (topSearchBox) topSearchBox.style.display = 'none';
+      if (staffCreateBtn) staffCreateBtn.style.display = 'none';
+      if (reqHeaderSuite) reqHeaderSuite.style.display = 'flex';
+      if (typeof updateRequesterPortalCounters === 'function') updateRequesterPortalCounters();
     } else {
-      topNavActions.style.display = 'none';
-      topNavRight.style.display = 'none';
+      if (topSearchBox) topSearchBox.style.display = 'flex';
+      if (staffCreateBtn) staffCreateBtn.style.display = 'inline-flex';
+      if (reqHeaderSuite) reqHeaderSuite.style.display = 'none';
     }
+  }
+  if (topNavActions) {
+    topNavActions.style.display = (viewName === 'tickets') ? 'flex' : 'none';
   }
 
  // Actualizar Enlaces del Sidebar Lateral
@@ -2687,22 +2698,19 @@ function renderRequesterChatStream() {
           <div style="margin-top: 14px; padding-top: 12px; border-top: 1px solid #F1F5F9; display: flex; flex-direction: column; gap: 8px;">
             <span style="font-size: 11px; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px;">Acción Inmediata Sugerida:</span>
             <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-              <!-- 1. Me sirvió, muchas gracias -->
-              <button type="button" onclick="requesterAiResolve('${msg.id}')" style="background: #10B981; color: #FFFFFF; border: none; padding: 7px 14px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 1px 3px rgba(16,185,129,0.25); transition: all 0.15s ease;" onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10B981'">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 13px; height: 13px;"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>✓ Me sirvió, muchas gracias</span>
+                            <!-- 1. Me sirvió, muchas gracias (100% Tipográfico / Cero Iconos / Regla de Oro) -->
+              <button type="button" onclick="requesterAiResolve('${msg.id}')" style="background: #047857; color: #FFFFFF; border: none; padding: 7px 16px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; box-shadow: 0 1px 3px rgba(4,120,87,0.25); transition: all 0.15s ease;" onmouseover="this.style.background='#065F46'" onmouseout="this.style.background='#047857'">
+                Me sirvió, muchas gracias
               </button>
               
-              <!-- 2. No pude resolverlo: Generar Ticket -->
-              <button type="button" onclick="requesterAiEscalate('${msg.id}')" style="background: #00A896; color: #FFFFFF; border: none; padding: 7px 14px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 1px 3px rgba(0,168,150,0.3); transition: all 0.15s ease;" onmouseover="this.style.background='#008F80'" onmouseout="this.style.background='#00A896'">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 13px; height: 13px;"><path d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"></path></svg>
-                <span>🎫 No pude resolverlo: Generar Ticket</span>
+              <!-- 2. No pude resolverlo: Generar Ticket (100% Tipográfico / Cero Iconos / Regla de Oro) -->
+              <button type="button" onclick="requesterAiEscalate('${msg.id}')" style="background: #008075; color: #FFFFFF; border: none; padding: 7px 16px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; box-shadow: 0 1px 3px rgba(0,128,117,0.25); transition: all 0.15s ease;" onmouseover="this.style.background='#00665E'" onmouseout="this.style.background='#008075'">
+                No pude resolverlo: Generar Ticket
               </button>
 
-              <!-- 3. Hacer otra pregunta -->
-              <button type="button" onclick="focusRequesterChatInput()" style="background: #FFFFFF; color: #334155; border: 1.5px solid #CBD5E1; padding: 6px 14px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.15s ease;" onmouseover="this.style.borderColor='#00A896'; this.style.color='#00A896';" onmouseout="this.style.borderColor='#CBD5E1'; this.style.color='#334155';">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 13px; height: 13px;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                <span>💬 Hacer otra pregunta</span>
+              <!-- 3. Hacer otra pregunta (100% Tipográfico / Cero Iconos / Regla de Oro) -->
+              <button type="button" onclick="focusRequesterChatInput()" style="background: #FFFFFF; color: #334155; border: 1.5px solid #CBD5E1; padding: 6px 16px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.borderColor='#00A896'; this.style.color='#00A896';" onmouseout="this.style.borderColor='#CBD5E1'; this.style.color='#334155';">
+                Hacer otra pregunta
               </button>
             </div>
           </div>
@@ -3750,7 +3758,7 @@ async function loadTickets(params = {}) {
   } else if (!params.status) {
     // Si include_all es true (como para el solicitante), de todos modos ocultamos CERRADO
     // si no hay una búsqueda de texto activa en el buscador.
-    const searchInput = document.getElementById('jira-ticket-search-input');
+    const searchInput = (document.getElementById('top-global-search-input') || document.getElementById('jira-ticket-search-input'));
     const hasSearchQuery = searchInput && searchInput.value.trim().length > 0;
     if (!hasSearchQuery) {
       filteredTickets = rawTickets.filter(t => t.status !== 'CERRADO');
@@ -4500,7 +4508,7 @@ window.sortTicketsBy = function(criterion) {
 };
 
 window.applyJiraQueueFilters = function() {
-  const searchInput = document.getElementById('jira-ticket-search-input');
+  const searchInput = (document.getElementById('top-global-search-input') || document.getElementById('jira-ticket-search-input'));
   const typeSelect = document.getElementById('jira-filter-type');
   const query = (searchInput ? searchInput.value : '').toLowerCase().trim();
   const selectedType = (typeSelect ? typeSelect.value : 'ALL').toUpperCase();
@@ -4525,14 +4533,18 @@ window.applyJiraQueueFilters = function() {
       return false;
     }
 
-    // 3. Filtro por Buscador de Texto
+    // 3. Filtro por Buscador de Texto (Incluye Telemetría Clínica, Pacientes y Médicos - v4.2)
     if (query) {
+      const telem = typeof t.telemetry_data === 'string' ? t.telemetry_data.toLowerCase() : JSON.stringify(t.telemetry_data || {}).toLowerCase();
       const match = (t.id && String(t.id).toLowerCase().includes(query)) ||
                     (t.title && t.title.toLowerCase().includes(query)) ||
+                    (t.description && t.description.toLowerCase().includes(query)) ||
                     (t.requester_name && t.requester_name.toLowerCase().includes(query)) ||
+                    (t.requester_username && t.requester_username.toLowerCase().includes(query)) ||
                     (t.assignee_name && t.assignee_name.toLowerCase().includes(query)) ||
                     (t.institution_code && t.institution_code.toLowerCase().includes(query)) ||
-                    (t.platform_code && t.platform_code.toLowerCase().includes(query));
+                    (t.platform_code && t.platform_code.toLowerCase().includes(query)) ||
+                    telem.includes(query);
       if (!match) return false;
     }
     return true;
@@ -11709,7 +11721,8 @@ function onGlobalOmniSearch(query) {
         const doc = (t.doctor_name || '').toLowerCase();
         const inst = (t.institution_code || t.institution_name || '').toLowerCase();
         const plat = (t.platform_code || '').toLowerCase();
-        return id.includes(q) || title.includes(q) || desc.includes(q) || req.includes(q) || pat.includes(q) || doc.includes(q) || inst.includes(q) || plat.includes(q);
+        const telem = typeof t.telemetry_data === 'string' ? t.telemetry_data.toLowerCase() : JSON.stringify(t.telemetry_data || {}).toLowerCase();
+        return id.includes(q) || title.includes(q) || desc.includes(q) || req.includes(q) || pat.includes(q) || doc.includes(q) || inst.includes(q) || plat.includes(q) || telem.includes(q);
       });
     }
     renderTicketList();
@@ -14139,7 +14152,7 @@ if (!window._ticketsAutoRefreshInterval) {
     try {
       // Sincronizar de forma reactiva únicamente si la pestaña del navegador está visible
       if (document.visibilityState === 'visible') {
-        const searchInput = document.getElementById('jira-ticket-search-input');
+        const searchInput = (document.getElementById('top-global-search-input') || document.getElementById('jira-ticket-search-input'));
         const hasSearchQuery = searchInput && searchInput.value.trim().length > 0;
         
         // Cargar los tickets frescos del servidor
@@ -14405,19 +14418,24 @@ function renderUnifiedHubAnalysts(analysts) {
     let satText = 'Óptima';
     let satTextColor = '#059669';
 
+    // Paleta Densidad Silenciosa: Neutral Slate armónico, Coral exclusivo en sobrecarga real (>24)
     if (activeCount > 24) {
-      barColor = '#EF4444';
+      barColor = '#DC2626';
       satText = 'Sobrecarga';
       satTextColor = '#DC2626';
       satPct = 100;
     } else if (activeCount >= 18) {
-      barColor = '#F59E0B';
+      barColor = '#64748B';
       satText = 'Carga Alta';
-      satTextColor = '#D97706';
+      satTextColor = '#475569';
     } else if (activeCount >= 12) {
-      barColor = '#00A896';
+      barColor = '#94A3B8';
       satText = 'Equilibrada';
-      satTextColor = '#0F766E';
+      satTextColor = '#475569';
+    } else {
+      barColor = '#CBD5E1';
+      satText = 'Nominal';
+      satTextColor = '#64748B';
     }
 
     return `

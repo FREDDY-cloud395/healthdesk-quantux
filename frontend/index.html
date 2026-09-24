@@ -365,7 +365,7 @@
             </div>
           </div>
 
-          <!-- Mando Unificado (Propuesta A • Zero-Scroll) -->
+          <!-- Mando Unificado (Versión 4.2 • Densidad Silenciosa) -->
           <div class="nav-link-item nav-hub-tab nav-link-unified-hub" data-view="unified-hub" id="tab-unified-hub" title="Mando Unificado • Propuesta A" data-tooltip="Mando Unificado">
             <div class="nav-indicator-pill"></div>
             <div class="nav-link-left">
@@ -862,8 +862,16 @@
               </div>
 
               <!-- BOTÓN CONTEXTUAL NUEVA CONSULTA (ACTIVO SOLO DURANTE CONVERSACIÓN, SIN ICONO) -->
-              <div style="display: flex; justify-content: flex-end; align-items: center; margin-top: 10px; padding: 0 12px;">
+              <div style="display: flex; justify-content: flex-end; align-items: center; margin-top: 8px; padding: 0 12px;">
                 <button type="button" onclick="clearRequesterChat()" id="btn-clear-req-chat" style="display: none; background: none; border: none; color: #00A896; cursor: pointer; font-weight: 700; font-size: 11.5px; text-decoration: underline;">Nueva consulta</button>
+              </div>
+
+              <!-- ENLACE DIRECTO DE RESPALDO: CONSULTAR MIS SOLICITUDES ANTERIORES -->
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding: 0 12px; font-size: 12px; border-top: 1px dashed #E2E8F0; padding-top: 10px;">
+                <span style="color: #94A3B8; font-size: 11.5px;">Quantux Asistencia Médica • v4.2</span>
+                <button type="button" onclick="openRequesterHistoryModal()" style="background: none; border: none; color: #00A896; cursor: pointer; font-weight: 700; font-size: 12px; text-decoration: underline; padding: 0;" title="Ver todas mis solicitudes asistenciales anteriores">
+                  Consultar estado de mis solicitudes anteriores →
+                </button>
               </div>
             </div>
 
@@ -1079,7 +1087,7 @@
           <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 10px; padding: 7px 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px; shrink: 0; box-shadow: 0 1px 2px rgba(0,0,0,0.02);">
             <div style="display: flex; align-items: center; gap: 10px;">
               <span style="font-size: 13px; font-weight: 800; color: #0F172A; letter-spacing: -0.2px;">Mando Operativo Unificado</span>
-              <span style="background: #E6FFFA; border: 1px solid #A7F3D0; color: #00A896; font-size: 9px; font-weight: 800; padding: 2px 7px; border-radius: 4px; text-transform: uppercase;">Propuesta A • Zero-Scroll</span>
+              <span style="background: #E6FFFA; border: 1px solid #A7F3D0; color: #00A896; font-size: 9px; font-weight: 800; padding: 2px 7px; border-radius: 4px; text-transform: uppercase;">Versión 4.2 • Densidad Silenciosa</span>
             </div>
 
             <!-- Controles y Filtros Rápidos -->
@@ -1132,12 +1140,12 @@
               <span style="font-size: 9px; font-weight: 800; color: #DC2626; background: #FEF2F2; padding: 2px 5px; border-radius: 4px;">Inmediato</span>
             </div>
 
-            <div onclick="toggleTLTriageDrawer(true)" style="background: #FFFFFF; border: 1px dashed #F97316; border-radius: 8px; padding: 8px 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: all 0.15s;" onmouseover="this.style.background='#FFF7ED'" onmouseout="this.style.background='#FFFFFF'" title="Abrir Triage Express">
+            <div onclick="toggleTLTriageDrawer(true)" style="background: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 8px; padding: 8px 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: all 0.15s;" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background='#FFFFFF'" title="Abrir Triage Express">
               <div>
-                <div style="font-size: 9.5px; font-weight: 800; color: #D97706; text-transform: uppercase;">Sin Asignar</div>
-                <div style="font-size: 20px; font-weight: 900; color: #D97706; line-height: 1.1;" id="uh-kpi-unassigned">0</div>
+                <div style="font-size: 9.5px; font-weight: 800; color: #64748B; text-transform: uppercase;">Sin Asignar</div>
+                <div style="font-size: 20px; font-weight: 900; color: #0F172A; line-height: 1.1;" id="uh-kpi-unassigned">0</div>
               </div>
-              <span style="font-size: 9px; font-weight: 800; color: #EA580C; text-decoration: underline;">Triage</span>
+              <span style="font-size: 9px; font-weight: 700; color: #64748B; background: #F1F5F9; padding: 2px 6px; border-radius: 4px;">Triage</span>
             </div>
 
             <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 8px; padding: 8px 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); display: flex; justify-content: space-between; align-items: center;">
@@ -1185,22 +1193,22 @@
                   <!-- P2 -->
                   <div>
                     <div style="display: flex; justify-content: space-between; font-size: 10px; font-weight: 700; margin-bottom: 2px;">
-                      <span style="color: #D97706;">P2 Alta</span>
+                      <span style="color: #475569;">P2 Alta</span>
                       <span style="color: #0F172A;" id="uh-count-p2">0 (0%)</span>
                     </div>
                     <div style="width: 100%; height: 5px; background: #F1F5F9; border-radius: 3px; overflow: hidden;">
-                      <div id="uh-bar-p2" style="width: 0%; height: 100%; background: #D97706; border-radius: 3px; transition: width 0.3s ease;"></div>
+                      <div id="uh-bar-p2" style="width: 0%; height: 100%; background: #475569; border-radius: 3px; transition: width 0.3s ease;"></div>
                     </div>
                   </div>
 
                   <!-- P3 -->
                   <div>
                     <div style="display: flex; justify-content: space-between; font-size: 10px; font-weight: 700; margin-bottom: 2px;">
-                      <span style="color: #2563EB;">P3 Media</span>
+                      <span style="color: #64748B;">P3 Media</span>
                       <span style="color: #0F172A;" id="uh-count-p3">0 (0%)</span>
                     </div>
                     <div style="width: 100%; height: 5px; background: #F1F5F9; border-radius: 3px; overflow: hidden;">
-                      <div id="uh-bar-p3" style="width: 0%; height: 100%; background: #2563EB; border-radius: 3px; transition: width 0.3s ease;"></div>
+                      <div id="uh-bar-p3" style="width: 0%; height: 100%; background: #94A3B8; border-radius: 3px; transition: width 0.3s ease;"></div>
                     </div>
                   </div>
 
@@ -1241,7 +1249,7 @@
                       <span style="font-weight: 700; color: #0F172A;">32%</span>
                     </div>
                     <div style="width: 100%; height: 4px; background: #F1F5F9; border-radius: 2px; overflow: hidden;">
-                      <div style="width: 32%; height: 100%; background: #0284C7;"></div>
+                      <div style="width: 32%; height: 100%; background: #334155;"></div>
                     </div>
                   </div>
 
@@ -1251,7 +1259,7 @@
                       <span style="font-weight: 700; color: #0F172A;">18%</span>
                     </div>
                     <div style="width: 100%; height: 4px; background: #F1F5F9; border-radius: 2px; overflow: hidden;">
-                      <div style="width: 18%; height: 100%; background: #F59E0B;"></div>
+                      <div style="width: 18%; height: 100%; background: #475569;"></div>
                     </div>
                   </div>
 
@@ -1261,7 +1269,7 @@
                       <span style="font-weight: 700; color: #0F172A;">8%</span>
                     </div>
                     <div style="width: 100%; height: 4px; background: #F1F5F9; border-radius: 2px; overflow: hidden;">
-                      <div style="width: 8%; height: 100%; background: #8B5CF6;"></div>
+                      <div style="width: 8%; height: 100%; background: #64748B;"></div>
                     </div>
                   </div>
 
