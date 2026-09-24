@@ -147,8 +147,8 @@ document.addEventListener('DOMContentLoaded', async () => {
    try {
      initialView = localStorage.getItem('quantux_active_view');
    } catch (e) {}
-   if (!initialView) {
-     initialView = document.querySelector('.app-view.active')?.id.replace('view-', '') || 'tickets';
+   if (!initialView || initialView === 'dashboard') {
+     initialView = 'unified-hub';
    }
    switchView(initialView);
    if (initialView === 'dashboard') loadDashboardMetrics();
@@ -434,17 +434,22 @@ function switchView(viewName) {
 		title: 'Tablero Kanban N3 • Releases y Despliegues',
 		sub: 'Gestión ágil de versiones, vinculación de tickets N3 y cierre en cascada a producción'
 	},
-	'team-leader': {
- icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px;"><circle cx="12" cy="12" r="10"></circle><polygon points="12 8 8 12 12 16 16 12 12 8"></polygon></svg>',
- title: 'Torre de Control • Supervisión Operativa',
- sub: 'Monitor de cargas en vivo, balanceo de guardia en 1 clic y mesa de rescate CSAT'
- },
- 'requester-portal': {
- icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#00A896" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px;"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></svg>',
- title: 'Centro de Ayuda & Guardia Médica',
- sub: 'Asistencia inmediata 24/7, triage inteligente con IA y seguimiento de solicitudes asistenciales'
- }
- };
+    'team-leader': {
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px;"><circle cx="12" cy="12" r="10"></circle><polygon points="12 8 8 12 12 16 16 12 12 8"></polygon></svg>',
+      title: 'Torre de Control • Supervisión Operativa',
+      sub: 'Monitor de cargas en vivo, balanceo de guardia en 1 clic y mesa de rescate CSAT'
+    },
+    'unified-hub': {
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#00A896" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px;"><rect x="3" y="3" width="18" height="18" rx="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line><line x1="15" y1="3" x2="15" y2="21"></line></svg>',
+      title: 'Mando Operativo Unificado',
+      sub: 'Versión 4.2 • Densidad Silenciosa, Telemetría en Vivo y Balanceo Inteligente'
+    },
+    'requester-portal': {
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#00A896" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px;"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></svg>',
+      title: 'Centro de Ayuda & Guardia Médica',
+      sub: 'Asistencia inmediata 24/7, triage inteligente con IA y seguimiento de solicitudes asistenciales'
+    }
+  };
 
  if (titles[viewName]) {
  if (titleContainer) {
@@ -998,7 +1003,7 @@ function openRequesterChatModal() {
         <div style="width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, #00A896 0%, #028090 100%); color: #FFF; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; flex-shrink: 0; box-shadow: 0 2px 6px rgba(0, 168, 150, 0.25);">Q</div>
         <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px; padding: 14px 16px; width: 100%; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
           <div style="font-weight: 800; color: #0F172A; font-size: 13.5px; margin-bottom: 2px;">
-            ¡Hola, ${escapeHtml(cleanFirstName)}! 👋
+            ¡Hola, ${escapeHtml(cleanFirstName)}!
           </div>
           <div style="font-size: 11.5px; color: #64748B; margin-bottom: 12px;">
             ¿Qué inconveniente resolvemos hoy? Seleccione un motivo frecuente para resolución inmediata:
@@ -1007,29 +1012,29 @@ function openRequesterChatModal() {
           <!-- Cuadrícula 2x2 de accesos directos rápidos de 1-clic -->
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
             <button type="button" onclick="quickSelectChatReason('Problema con Receta Electrónica y firma digital')" style="padding: 10px 12px; border-radius: 8px; border: 1.5px solid #E2E8F0; background: #F8FAFC; text-align: left; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.borderColor='#00A896'; this.style.background='#F0FDFA';" onmouseout="this.style.borderColor='#E2E8F0'; this.style.background='#F8FAFC';">
-              <div style="font-weight: 700; color: #0F172A; font-size: 11.5px; display: flex; align-items: center; gap: 6px;">
-                <span>💊</span> <span>Receta y Firma</span>
+              <div style="font-weight: 700; color: #0F172A; font-size: 11.5px;">
+                <span>Receta y Firma</span>
               </div>
               <div style="font-size: 10px; color: #64748B; margin-top: 3px;">Validación SISA o token</div>
             </button>
 
             <button type="button" onclick="quickSelectChatReason('No puedo seleccionar mi matrícula CRM provincial')" style="padding: 10px 12px; border-radius: 8px; border: 1.5px solid #E2E8F0; background: #F8FAFC; text-align: left; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.borderColor='#00A896'; this.style.background='#F0FDFA';" onmouseout="this.style.borderColor='#E2E8F0'; this.style.background='#F8FAFC';">
-              <div style="font-weight: 700; color: #0F172A; font-size: 11.5px; display: flex; align-items: center; gap: 6px;">
-                <span>🪪</span> <span>Matrícula CRM</span>
+              <div style="font-weight: 700; color: #0F172A; font-size: 11.5px;">
+                <span>Matrícula CRM</span>
               </div>
               <div style="font-size: 10px; color: #64748B; margin-top: 3px;">Padrón y circunscripción</div>
             </button>
 
             <button type="button" onclick="quickSelectChatReason('Desbloqueo de usuario o restablecimiento de contraseña')" style="padding: 10px 12px; border-radius: 8px; border: 1.5px solid #E2E8F0; background: #F8FAFC; text-align: left; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.borderColor='#00A896'; this.style.background='#F0FDFA';" onmouseout="this.style.borderColor='#E2E8F0'; this.style.background='#F8FAFC';">
-              <div style="font-weight: 700; color: #0F172A; font-size: 11.5px; display: flex; align-items: center; gap: 6px;">
-                <span>🔑</span> <span>Acceso y Clave</span>
+              <div style="font-weight: 700; color: #0F172A; font-size: 11.5px;">
+                <span>Acceso y Clave</span>
               </div>
               <div style="font-size: 10px; color: #64748B; margin-top: 3px;">Desbloqueo en 2 min</div>
             </button>
 
             <button type="button" onclick="escalateToHumanTicket()" style="padding: 10px 12px; border-radius: 8px; border: 1.5px solid #E2E8F0; background: #F8FAFC; text-align: left; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.borderColor='#00A896'; this.style.background='#F0FDFA';" onmouseout="this.style.borderColor='#E2E8F0'; this.style.background='#F8FAFC';">
-              <div style="font-weight: 700; color: #0F172A; font-size: 11.5px; display: flex; align-items: center; gap: 6px;">
-                <span>📋</span> <span>Abrir Ticket</span>
+              <div style="font-weight: 700; color: #0F172A; font-size: 11.5px;">
+                <span>Abrir Ticket</span>
               </div>
               <div style="font-size: 10px; color: #64748B; margin-top: 3px;">Hablar directo con guardia</div>
             </button>
@@ -1178,7 +1183,7 @@ async function autoCreateTicketFromAiChat(rawMsg) {
       <div style="width: 30px; height: 30px; border-radius: 8px; background: #10B981; color: #FFF; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; flex-shrink: 0;">✓</div>
       <div style="background: #ECFDF5; border: 1.5px solid #10B981; border-radius: 12px; padding: 14px 16px; color: #065F46; font-size: 12px; line-height: 1.5; width: 100%;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-          <span style="font-weight: 800; font-size: 13px; color: #064E3B;">✅ Ticket Generado con Éxito</span>
+          <span style="font-weight: 800; font-size: 13px; color: #064E3B;">Ticket Generado con Éxito</span>
           <span style="background: #059669; color: #FFF; padding: 2px 8px; border-radius: 4px; font-weight: 800; font-size: 11px;">#${created.id}</span>
         </div>
         <p style="margin: 0 0 10px 0; color: #047857; font-size: 12px;">
@@ -1186,7 +1191,7 @@ async function autoCreateTicketFromAiChat(rawMsg) {
         </p>
         <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
           <button type="button" onclick="closeRequesterChatModal(); switchView('tickets'); selectTicket('${created.id}', true);" style="background: #059669; color: #FFF; border: none; padding: 6px 14px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer; box-shadow: 0 1px 3px rgba(5,150,105,0.3);">
-            📋 Ver en Mis Solicitudes
+            Ver en Mis Solicitudes
           </button>
           <button type="button" onclick="closeRequesterChatModal();" style="background: transparent; color: #047857; border: 1px solid #A7F3D0; padding: 6px 14px; border-radius: 6px; font-size: 11.5px; cursor: pointer;">
             Cerrar Chat
@@ -1195,7 +1200,7 @@ async function autoCreateTicketFromAiChat(rawMsg) {
       </div>
     `;
 
-    showToast(`✅ Solicitud #${created.id} generada automáticamente con el historial del chat`, 'success');
+    showToast(`Solicitud #${created.id} generada automáticamente con el historial del chat`, 'success');
     
     if (typeof loadTickets === 'function') await loadTickets();
     if (typeof renderRequesterPortal === 'function') renderRequesterPortal();
@@ -1206,7 +1211,7 @@ async function autoCreateTicketFromAiChat(rawMsg) {
       <div style="background: #FEF2F2; border: 1px solid #FCA5A5; border-radius: 12px; padding: 12px 16px; color: #991B1B; font-size: 12px; width: 100%;">
         Hubo un inconveniente al registrar la solicitud: ${(err && err.detail) || 'Error de conexión'}.
         <button type="button" onclick="escalateToHumanTicketDirect('${encodeURIComponent(userQuery)}')" style="margin-top: 8px; display: inline-flex; align-items: center; gap: 6px; background: #991B1B; color: #FFF; border: none; padding: 6px 12px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer;">
-          📝 Abrir Formulario con Datos Precargados
+          Abrir Formulario con Datos Precargados
         </button>
       </div>
     `;
@@ -1400,10 +1405,10 @@ Aquí estamos para acompañarte y quitarte todo el peso administrativo y tecnol�
       <div style="font-weight: 700; color: #0F172A; font-size: 11.5px; margin-bottom: 8px;">¿Cómo deseas que te asistamos en este momento?</div>
       <div style="display: flex; gap: 8px; flex-wrap: wrap;">
         <button type="button" onclick="confirmRequesterResolved()" style="background: #10B981; color: #FFFFFF; border: none; padding: 7px 14px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 1px 3px rgba(16, 185, 129, 0.3);">
-          <span>☕ Tomar 5 min de descanso</span>
+          <span>Tomar 5 min de descanso</span>
         </button>
         <button type="button" onclick="autoCreateTicketFromAiChat('${encodeURIComponent(msg)}')" style="background: #0052CC; color: #FFFFFF; border: none; padding: 7px 14px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 4px rgba(0,82,204,0.25);">
-          <span>🎫 Generar Ticket para Aligerar Carga (1 Clic)</span>
+          <span>Generar Ticket para Aligerar Carga (1 Clic)</span>
         </button>
       </div>
     `;
@@ -1441,14 +1446,13 @@ Aquí estamos para acompañarte y quitarte todo el peso administrativo y tecnol�
             <div style="font-weight: 700; color: #0F172A; font-size: 11.5px; margin-bottom: 8px;">¿Esta indicación técnica resolvió su consulta asistencial?</div>
             <div style="display: flex; gap: 8px; flex-wrap: wrap;">
               <button type="button" onclick="confirmRequesterResolved('${sub}', '${root}', '${act}', ${matchedArticleId || 'null'})" style="background: #10B981; color: #FFFFFF; border: none; padding: 7px 14px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 1px 3px rgba(16, 185, 129, 0.3);">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 13px; height: 13px;"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>✓ Sí, problema resuelto</span>
+                <span>Sí, problema resuelto</span>
               </button>
               <button type="button" onclick="autoCreateTicketFromAiChat('${encodeURIComponent(msg)}')" style="background: #0052CC; color: #FFFFFF; border: none; padding: 7px 14px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 4px rgba(0,82,204,0.25);">
-                <span>🎫 Generar Ticket Formal (1 Clic)</span>
+                <span>Generar Ticket Formal (1 Clic)</span>
               </button>
               <button type="button" onclick="escalateToHumanTicketDirect('${encodeURIComponent(msg)}')" style="background: #FFFFFF; color: #475569; border: 1.5px solid #CBD5E1; padding: 7px 12px; border-radius: 6px; font-size: 11.5px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;">
-                <span>📝 Ver Formulario</span>
+                <span>Ver Formulario</span>
               </button>
             </div>
           `;
@@ -1476,11 +1480,10 @@ Para la gestión del mail de consultorio y notificaciones asistenciales en Consu
           <div style="font-weight: 700; color: #0F172A; font-size: 11.5px; margin-bottom: 8px;">¿Cómo deseas proceder?</div>
           <div style="display: flex; gap: 8px; flex-wrap: wrap;">
             <button type="button" onclick="confirmRequesterResolved()" style="background: #10B981; color: #FFFFFF; border: none; padding: 7px 14px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 1px 3px rgba(16, 185, 129, 0.3);">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 13px; height: 13px;"><polyline points="20 6 9 17 4 12"></polyline></svg>
-              <span>✓ Entendido, gestiono por Extranet</span>
+              <span>Entendido, gestiono por Extranet</span>
             </button>
             <button type="button" onclick="autoCreateTicketFromAiChat('${encodeURIComponent(msg)}')" style="background: #0052CC; color: #FFFFFF; border: none; padding: 7px 14px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 4px rgba(0,82,204,0.25);">
-              <span>🎫 Derivar a Soporte Cartilla / CRM (1 Clic)</span>
+              <span>Derivar a Soporte Cartilla / CRM (1 Clic)</span>
             </button>
           </div>
         `;
@@ -1496,10 +1499,10 @@ Para la gestión del mail de consultorio y notificaciones asistenciales en Consu
           <div style="font-weight: 700; color: #0F172A; font-size: 11.5px; margin-bottom: 8px;">¿Pudo conectarse a la videoconsulta?</div>
           <div style="display: flex; gap: 8px; flex-wrap: wrap;">
             <button type="button" onclick="confirmRequesterResolved()" style="background: #10B981; color: #FFFFFF; border: none; padding: 7px 14px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 1px 3px rgba(16, 185, 129, 0.3);">
-              <span>✓ Sí, ya pude ingresar</span>
+              <span>Sí, ya pude ingresar</span>
             </button>
             <button type="button" onclick="autoCreateTicketFromAiChat('${encodeURIComponent(msg)}')" style="background: #0052CC; color: #FFFFFF; border: none; padding: 7px 14px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 4px rgba(0,82,204,0.25);">
-              <span>🎫 Soporte Técnico WebRTC (1 Clic)</span>
+              <span>Soporte Técnico WebRTC (1 Clic)</span>
             </button>
           </div>
         `;
@@ -1515,10 +1518,10 @@ Para la gestión del mail de consultorio y notificaciones asistenciales en Consu
           <div style="font-weight: 700; color: #0F172A; font-size: 11.5px; margin-bottom: 8px;">¿Pudo abrir el documento?</div>
           <div style="display: flex; gap: 8px; flex-wrap: wrap;">
             <button type="button" onclick="confirmRequesterResolved()" style="background: #10B981; color: #FFFFFF; border: none; padding: 7px 14px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 1px 3px rgba(16, 185, 129, 0.3);">
-              <span>✓ Sí, documento abierto</span>
+              <span>Sí, documento abierto</span>
             </button>
             <button type="button" onclick="autoCreateTicketFromAiChat('${encodeURIComponent(msg)}')" style="background: #0052CC; color: #FFFFFF; border: none; padding: 7px 14px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 4px rgba(0,82,204,0.25);">
-              <span>🎫 Solicitar Regeneración de PDF (1 Clic)</span>
+              <span>Solicitar Regeneración de PDF (1 Clic)</span>
             </button>
           </div>
         `;
@@ -1534,10 +1537,10 @@ Para la gestión del mail de consultorio y notificaciones asistenciales en Consu
           <div style="font-weight: 700; color: #0F172A; font-size: 11.5px; margin-bottom: 8px;">¿Desea solicitar el cambio de prefijo?</div>
           <div style="display: flex; gap: 8px; flex-wrap: wrap;">
             <button type="button" onclick="confirmRequesterResolved()" style="background: #10B981; color: #FFFFFF; border: none; padding: 7px 14px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 1px 3px rgba(16, 185, 129, 0.3);">
-              <span>✓ Comprendido</span>
+              <span>Comprendido</span>
             </button>
             <button type="button" onclick="autoCreateTicketFromAiChat('${encodeURIComponent(msg)}')" style="background: #0052CC; color: #FFFFFF; border: none; padding: 7px 14px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 4px rgba(0,82,204,0.25);">
-              <span>🎫 Derivar a Cartilla Médica (1 Clic)</span>
+              <span>Derivar a Cartilla Médica (1 Clic)</span>
             </button>
           </div>
         `;
@@ -1553,10 +1556,10 @@ Para la gestión del mail de consultorio y notificaciones asistenciales en Consu
           <div style="font-weight: 700; color: #0F172A; font-size: 11.5px; margin-bottom: 8px;">¿Pudo finalizar la atención?</div>
           <div style="display: flex; gap: 8px; flex-wrap: wrap;">
             <button type="button" onclick="confirmRequesterResolved()" style="background: #10B981; color: #FFFFFF; border: none; padding: 7px 14px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 1px 3px rgba(16, 185, 129, 0.3);">
-              <span>✓ Sí, atención finalizada</span>
+              <span>Sí, atención finalizada</span>
             </button>
             <button type="button" onclick="autoCreateTicketFromAiChat('${encodeURIComponent(msg)}')" style="background: #0052CC; color: #FFFFFF; border: none; padding: 7px 14px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 4px rgba(0,82,204,0.25);">
-              <span>🎫 Asistencia de Cierre de HCE (1 Clic)</span>
+              <span>Asistencia de Cierre de HCE (1 Clic)</span>
             </button>
           </div>
         `;
@@ -1572,10 +1575,10 @@ Para la gestión del mail de consultorio y notificaciones asistenciales en Consu
           <div style="font-weight: 700; color: #0F172A; font-size: 11.5px; margin-bottom: 8px;">¿Pudo seleccionar su matrícula?</div>
           <div style="display: flex; gap: 8px; flex-wrap: wrap;">
             <button type="button" onclick="confirmRequesterResolved()" style="background: #10B981; color: #FFFFFF; border: none; padding: 7px 14px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 1px 3px rgba(16, 185, 129, 0.3);">
-              <span>✓ Sí, matrícula activa</span>
+              <span>Sí, matrícula activa</span>
             </button>
             <button type="button" onclick="autoCreateTicketFromAiChat('${encodeURIComponent(msg)}')" style="background: #0052CC; color: #FFFFFF; border: none; padding: 7px 14px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 4px rgba(0,82,204,0.25);">
-              <span>🎫 Destrabar Matrícula con Soporte (1 Clic)</span>
+              <span>Destrabar Matrícula con Soporte (1 Clic)</span>
             </button>
           </div>
         `;
@@ -1591,10 +1594,10 @@ Para la gestión del mail de consultorio y notificaciones asistenciales en Consu
           <div style="font-weight: 700; color: #0F172A; font-size: 11.5px; margin-bottom: 8px;">¿Esta indicación resolvió la emisión?</div>
           <div style="display: flex; gap: 8px; flex-wrap: wrap;">
             <button type="button" onclick="confirmRequesterResolved()" style="background: #10B981; color: #FFFFFF; border: none; padding: 7px 14px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 1px 3px rgba(16, 185, 129, 0.3);">
-              <span>✓ Sí, problema resuelto</span>
+              <span>Sí, problema resuelto</span>
             </button>
             <button type="button" onclick="autoCreateTicketFromAiChat('${encodeURIComponent(msg)}')" style="background: #0052CC; color: #FFFFFF; border: none; padding: 7px 14px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 4px rgba(0,82,204,0.25);">
-              <span>🎫 Derivar a Soporte Técnico (1 Clic)</span>
+              <span>Derivar a Soporte Técnico (1 Clic)</span>
             </button>
           </div>
         `;
@@ -1610,10 +1613,10 @@ Para la gestión del mail de consultorio y notificaciones asistenciales en Consu
           <div style="font-weight: 700; color: #0F172A; font-size: 11.5px; margin-bottom: 8px;">¿Pudo cargar el estudio?</div>
           <div style="display: flex; gap: 8px; flex-wrap: wrap;">
             <button type="button" onclick="confirmRequesterResolved()" style="background: #10B981; color: #FFFFFF; border: none; padding: 7px 14px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 1px 3px rgba(16, 185, 129, 0.3);">
-              <span>✓ Sí, práctica cargada</span>
+              <span>Sí, práctica cargada</span>
             </button>
             <button type="button" onclick="autoCreateTicketFromAiChat('${encodeURIComponent(msg)}')" style="background: #0052CC; color: #FFFFFF; border: none; padding: 7px 14px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 4px rgba(0,82,204,0.25);">
-              <span>🎫 Habilitar Práctica en Convenio (1 Clic)</span>
+              <span>Habilitar Práctica en Convenio (1 Clic)</span>
             </button>
           </div>
         `;
@@ -1628,10 +1631,10 @@ Para la gestión del mail de consultorio y notificaciones asistenciales en Consu
           <div style="font-weight: 700; color: #0F172A; font-size: 11.5px; margin-bottom: 8px;">¿Pudo ingresar al sistema?</div>
           <div style="display: flex; gap: 8px; flex-wrap: wrap;">
             <button type="button" onclick="confirmRequesterResolved()" style="background: #10B981; color: #FFFFFF; border: none; padding: 7px 14px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 1px 3px rgba(16, 185, 129, 0.3);">
-              <span>✓ Sí, ya pude ingresar</span>
+              <span>Sí, ya pude ingresar</span>
             </button>
             <button type="button" onclick="autoCreateTicketFromAiChat('${encodeURIComponent(msg)}')" style="background: #0052CC; color: #FFFFFF; border: none; padding: 7px 14px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 4px rgba(0,82,204,0.25);">
-              <span>🎫 Desbloquear con Guardia (1 Clic)</span>
+              <span>Desbloquear con Guardia (1 Clic)</span>
             </button>
           </div>
         `;
@@ -1640,18 +1643,16 @@ Para la gestión del mail de consultorio y notificaciones asistenciales en Consu
       else {
         clinicalAdvice = `Estimado/a ${cleanFirstName}:
 He registrado su consulta sobre "${msg}". 
-
 Para agilizar su tiempo en guardia y evitarle pasos administrativos, podemos derivar este caso de inmediato al equipo de analistas de soporte técnico con todo el contexto precargado.`;
 
         buttonsHtml = `
           <div style="font-weight: 700; color: #0F172A; font-size: 11.5px; margin-bottom: 8px;">¿Cómo deseas proceder?</div>
           <div style="display: flex; gap: 8px; flex-wrap: wrap;">
             <button type="button" onclick="autoCreateTicketFromAiChat('${encodeURIComponent(msg)}')" style="background: #0052CC; color: #FFFFFF; border: none; padding: 8px 18px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 4px rgba(0,82,204,0.25);">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 14px; height: 14px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="9" x2="15" y2="9"></line><line x1="9" y1="13" x2="15" y2="13"></line><line x1="9" y1="17" x2="13" y2="17"></line></svg>
-              <span>🎫 Generar Ticket Formal (1 Clic)</span>
+              <span>Generar Ticket Formal (1 Clic)</span>
             </button>
             <button type="button" onclick="escalateToHumanTicketDirect('${encodeURIComponent(msg)}')" style="background: #FFFFFF; color: #475569; border: 1.5px solid #CBD5E1; padding: 8px 14px; border-radius: 6px; font-size: 11.5px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;">
-              <span>📝 Ver Formulario con Datos Precargados</span>
+              <span>Ver Formulario con Datos Precargados</span>
             </button>
           </div>
         `;
@@ -2672,10 +2673,10 @@ function renderRequesterChatStream() {
             </div>
             <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
               <button type="button" onclick="openRequesterHistoryModal()" style="display: inline-flex; align-items: center; gap: 6px; background: #00A896; color: #FFFFFF; border: none; padding: 7px 16px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; box-shadow: 0 2px 4px rgba(0, 168, 150, 0.25); transition: all 0.15s ease;" onmouseover="this.style.background='#008F80'" onmouseout="this.style.background='#00A896'">
-                <span>📋 Ver en Mis Solicitudes →</span>
+                <span>Ver en Mis Solicitudes</span>
               </button>
               <button type="button" onclick="focusRequesterChatInput()" style="background: transparent; color: #64748B; border: 1px solid #CBD5E1; padding: 6px 14px; border-radius: 6px; font-size: 11.5px; font-weight: 600; cursor: pointer;" onmouseover="this.style.color='#0A1C3E'; this.style.borderColor='#94A3B8';" onmouseout="this.style.color='#64748B'; this.style.borderColor='#CBD5E1';">
-                💬 Hacer otra pregunta
+                Hacer otra pregunta
               </button>
             </div>
           </div>
@@ -2684,7 +2685,6 @@ function renderRequesterChatStream() {
         actionsHtml = `
           <div style="display: flex; align-items: center; justify-content: space-between; background: #ECFDF5; border: 1.5px solid #A7F3D0; border-radius: 8px; padding: 10px 14px; margin-top: 12px; color: #047857; font-size: 12px; font-weight: 700; animation: fadeIn 0.2s ease;">
             <div style="display: flex; align-items: center; gap: 8px;">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 15px; height: 15px;"><polyline points="20 6 9 17 4 12"></polyline></svg>
               <span>Caso resuelto por autogestión &bull; ¡Muchas gracias Dr./Dra.!</span>
             </div>
             <button type="button" onclick="focusRequesterChatInput()" style="background: transparent; border: none; color: #047857; font-weight: 700; font-size: 11.5px; cursor: pointer; text-decoration: underline;">
@@ -5702,8 +5702,8 @@ ${escapeHtml(techNotes)}
 
   const aiMsgHtml = `
     <div style="display: flex; gap: 12px; align-items: flex-start; margin-bottom: 6px;">
-      <div style="width: 36px; height: 36px; border-radius: 50%; background: ${isFallback ? '#FEE2E2' : '#E8F0FE'}; color: ${isFallback ? '#991B1B' : '#1A73E8'}; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; border: 1.5px solid ${isFallback ? '#FCA5A5' : '#D2E3FC'}; box-shadow: 0 1px 4px rgba(0,0,0,0.06);">
-        ${isFallback ? '⚠️' : '✨'}
+      <div style="width: 36px; height: 36px; border-radius: 50%; background: ${isFallback ? '#FEE2E2' : '#E8F0FE'}; color: ${isFallback ? '#991B1B' : '#1A73E8'}; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; flex-shrink: 0; border: 1.5px solid ${isFallback ? '#FCA5A5' : '#D2E3FC'}; box-shadow: 0 1px 4px rgba(0,0,0,0.06);">
+        ${isFallback ? '!' : 'Q'}
       </div>
       <div style="background: #FFFFFF; border: 1px solid ${isFallback ? '#FECACA' : '#E2E8F0'}; border-radius: 18px 18px 18px 4px; padding: 18px 22px; font-size: 13px; color: #1E293B; line-height: 1.5; max-width: 90%; box-shadow: 0 2px 10px rgba(0,0,0,0.04);">
         
@@ -5716,19 +5716,19 @@ ${escapeHtml(techNotes)}
         ${diagHtml}
 
         <!-- CHECKLIST DE RESOLUCIÓN PASO A PASO -->
-        <div style="font-size: 12px; font-weight: 800; color: #0F172A; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
-          <span>${isFallback ? '📋' : '✅'}</span> ${isFallback ? 'Protocolo de Escalamiento Obligatorio:' : 'Guía de Acción Operativa (Checklist en Vivo):'}
+        <div style="font-size: 12px; font-weight: 800; color: #0F172A; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">
+          ${isFallback ? 'Protocolo de Escalamiento Obligatorio:' : 'Guía de Acción Operativa (Checklist en Vivo):'}
         </div>
         ${stepsHtml}
 
         <!-- TARJETA: MENSAJE EMPÁTICO LISTO PARA EL MÉDICO -->
         <div style="background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 10px; padding: 12px 14px; margin-top: 14px;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-            <span style="font-size: 11px; font-weight: 800; color: #166534; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 5px;">
-              <span>💬</span> Mensaje Empático para Responder al Médico:
+            <span style="font-size: 11px; font-weight: 800; color: #166534; text-transform: uppercase; letter-spacing: 0.5px;">
+              Mensaje Empático para Responder al Médico:
             </span>
             <button type="button" onclick="copyDoctorMessageBtn(this, '${encodeURIComponent(doctorMsg)}')" style="background: #16A34A; color: #FFF; border: none; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; box-shadow: 0 1px 3px rgba(22,163,74,0.3); transition: all 0.15s ease;">
-              <span>📋</span> Copiar Mensaje
+              <span>Copiar Mensaje</span>
             </button>
           </div>
           <div style="font-size: 12.5px; color: #14532D; font-style: italic; line-height: 1.45; background: #FFFFFF; padding: 8px 12px; border-radius: 6px; border: 1px dashed #86EFAC;">
@@ -11112,10 +11112,10 @@ function renderWsWorkflowActions(ticket) {
       </div>
       <div style="display: flex; flex-direction: column; gap: 6px;">
         <button type="button" onclick="quickReopenTicket('${ticketId}')" style="width: 100%; padding: 9px 12px; font-weight: 700; font-size: 12px; border-radius: 6px; background: #0052CC; color: #FFFFFF; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
-          <span>🔄 Reabrir Solicitud</span>
+          <span>Reabrir Solicitud</span>
         </button>
         <button type="button" onclick="quickResolveTicket('${ticketId}')" style="width: 100%; padding: 9px 12px; font-weight: 700; font-size: 12px; border-radius: 6px; background: #00875A; color: #FFFFFF; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
-          <span>✓ Marcar como Resuelto</span>
+          <span>Marcar como Resuelto</span>
         </button>
       </div>
     `;
@@ -11125,7 +11125,7 @@ function renderWsWorkflowActions(ticket) {
     actionsHtml = `
       <div style="display: flex; flex-direction: column; gap: 8px;">
         <button type="button" onclick="quickResolveTicket('${ticketId}')" style="width: 100%; padding: 11px 14px; font-weight: 800; font-size: 13.5px; border-radius: 6px; background: #00875A; color: #FFFFFF; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 2px 6px rgba(0,135,90,0.3);">
-          <span>✓ Resolver Ticket</span>
+          <span>Resolver Ticket</span>
         </button>
     `;
 
@@ -11148,20 +11148,20 @@ function renderWsWorkflowActions(ticket) {
     const isAssignedToMe = AppState.currentUser && (ticket.assignee_username === AppState.currentUser.username);
     const selfAssignBtn = isAssignedToMe
       ? `<button type="button" disabled style="width: 100%; padding: 7px 10px; font-weight: 700; font-size: 11.5px; border-radius: 6px; background: #E6F4EA; color: #137333; border: 1px solid #A3E2C9; cursor: not-allowed; display: flex; align-items: center; justify-content: center; gap: 4px;">
-           <span>✓ Asignado a mí</span>
+           <span>Asignado a mí</span>
          </button>`
       : `<button type="button" onclick="quickSelfAssign('${ticketId}')" style="width: 100%; padding: 7px 10px; font-weight: 700; font-size: 11.5px; border-radius: 6px; background: #F0FDFA; color: #00A896; border: 1px solid #00A896; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;">
-           <span>🙋 Autoasignar (A mí)</span>
+           <span>Autoasignar (A mí)</span>
          </button>`;
 
     actionsHtml += `
         <button type="button" onclick="openResolveModal('${ticketId}')" style="width: 100%; padding: 7px 10px; font-weight: 600; font-size: 11.5px; border-radius: 6px; background: #FAFBFC; color: #172B4D; border: 1px solid #DFE1E6; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;">
-          <span>📝 Registrar Notas de Solución...</span>
+          <span>Registrar Notas de Solución...</span>
         </button>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 4px;">
           ${selfAssignBtn}
           <button type="button" onclick="openReassignModal('${ticketId}')" style="width: 100%; padding: 7px 10px; font-weight: 700; font-size: 11.5px; border-radius: 6px; background: #FAFBFC; color: #475569; border: 1px solid #DFE1E6; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;">
-            <span>👥 Asignar a...</span>
+            <span>Asignar a...</span>
           </button>
         </div>
       </div>
@@ -14371,30 +14371,32 @@ function renderUnifiedHubAnalysts(analysts) {
 
     if (isImbalanced && rawAnalysts.length > 1) {
       alertEl.style.display = 'flex';
-      alertEl.style.background = '#FFFBEB';
-      alertEl.style.borderColor = '#FCD34D';
+      alertEl.style.background = '#F8FAFC';
+      alertEl.style.borderColor = '#E2E8F0';
       alertEl.style.borderLeftColor = '#F59E0B';
       const topA = rawAnalysts.find(a => (a.active_tickets_count ?? a.active_count ?? 0) === maxLoad) || rawAnalysts[0];
       const lowA = rawAnalysts.find(a => (a.active_tickets_count ?? a.active_count ?? 0) === minLoad) || rawAnalysts[rawAnalysts.length - 1];
       const topName = topA.name || topA.full_name || topA.username || 'Analista';
       const lowName = lowA.name || lowA.full_name || lowA.username || 'Analista';
-      descEl.textContent = `⚠️ Desbalance Crítico: ${topName} acumula ${maxLoad} casos activos mientras ${lowName} registra sólo ${minLoad} casos. Se recomienda nivelar la carga.`;
+      descEl.textContent = `Desbalance Detectado: ${topName} acumula ${maxLoad} casos activos mientras ${lowName} registra sólo ${minLoad} casos. Se recomienda balancear la guardia.`;
       const btnAuto = document.getElementById('btn-uh-autobalance');
       if (btnAuto) {
-        btnAuto.textContent = '⚡ Nivelar 1-Clic';
-        btnAuto.style.background = '#EA580C';
+        btnAuto.textContent = 'Nivelar Carga';
+        btnAuto.style.background = '#0F172A';
+        btnAuto.style.borderColor = '#0F172A';
         btnAuto.disabled = false;
       }
     } else {
       alertEl.style.display = 'flex';
-      alertEl.style.background = '#ECFDF5';
-      alertEl.style.borderColor = '#A7F3D0';
-      alertEl.style.borderLeftColor = '#10B981';
-      descEl.textContent = `✅ Guardia Equilibrada: Carga homogénea (~${Math.round(avgLoad)} tickets/analista) en todos los niveles operativos.`;
+      alertEl.style.background = '#F8FAFC';
+      alertEl.style.borderColor = '#E2E8F0';
+      alertEl.style.borderLeftColor = '#00A896';
+      descEl.textContent = `Guardia Equilibrada: Carga homogénea (~${Math.round(avgLoad)} tickets/analista) en todos los niveles operativos.`;
       const btnAuto = document.getElementById('btn-uh-autobalance');
       if (btnAuto) {
-        btnAuto.textContent = 'Guardia Balanceada';
-        btnAuto.style.background = '#059669';
+        btnAuto.textContent = 'Carga Homogénea';
+        btnAuto.style.background = '#475569';
+        btnAuto.style.borderColor = '#475569';
         btnAuto.disabled = false;
       }
     }
@@ -14528,10 +14530,10 @@ function renderUnifiedHubRescueDesk(rescueCases) {
 
   container.innerHTML = cases.map(c => {
     return `
-      <div style="background: #FFFBEB; border: 1px solid #FCD34D; border-radius: 6px; padding: 7px 9px;">
+      <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-left: 3px solid #F59E0B; border-radius: 6px; padding: 7px 9px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
-          <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 800; color: #B45309;">#${c.id || 'TKT'}</span>
-          <span style="font-size: 9.5px; font-weight: 800; color: #DC2626;">★ ${c.rating_stars || 1} Estrella</span>
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 800; color: #475569;">#${c.id || 'TKT'}</span>
+          <span style="font-size: 9.5px; font-weight: 700; color: #B45309; background: #FEF3C7; padding: 1px 5px; border-radius: 3px; border: 1px solid #FDE68A;">CSAT: ${c.rating_stars || 1}/5</span>
         </div>
         <div style="font-size: 10.5px; font-weight: 700; color: #0F172A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
           ${c.title || 'Caso Crítico de Atención'}
@@ -14539,10 +14541,10 @@ function renderUnifiedHubRescueDesk(rescueCases) {
         <div style="font-size: 9.5px; color: #64748B; margin: 2px 0;">
           Prestador: <strong>${c.requester_name || 'Dr. Médico'}</strong> • ${c.institution_code || 'General'}
         </div>
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px; padding-top: 4px; border-top: 1px dashed #FDE68A;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px; padding-top: 4px; border-top: 1px solid #F1F5F9;">
           <div style="display: flex; gap: 4px;">
-            <button type="button" onclick="callRequester('${c.id}')" style="background: #EFF6FF; border: 1px solid #BFDBFE; color: #1D4ED8; font-size: 9px; font-weight: 700; padding: 2px 5px; border-radius: 3px; cursor: pointer;">VoIP</button>
-            <button type="button" onclick="whatsappRequester('${c.id}')" style="background: #ECFDF5; border: 1px solid #A7F3D0; color: #047857; font-size: 9px; font-weight: 700; padding: 2px 5px; border-radius: 3px; cursor: pointer;">WhatsApp</button>
+            <button type="button" onclick="callRequester('${c.id}')" style="background: #F8FAFC; border: 1px solid #CBD5E1; color: #334155; font-size: 9px; font-weight: 700; padding: 2px 5px; border-radius: 3px; cursor: pointer;">VoIP</button>
+            <button type="button" onclick="whatsappRequester('${c.id}')" style="background: #F8FAFC; border: 1px solid #CBD5E1; color: #334155; font-size: 9px; font-weight: 700; padding: 2px 5px; border-radius: 3px; cursor: pointer;">WhatsApp</button>
             <button type="button" onclick="emailRequester('${c.id}')" style="background: #F8FAFC; border: 1px solid #CBD5E1; color: #334155; font-size: 9px; font-weight: 700; padding: 2px 5px; border-radius: 3px; cursor: pointer;">Email</button>
           </div>
           <button type="button" onclick="openRescueModal('${c.id}', '${(c.title || '').replace(/'/g, "\\'")}', '${(c.requester_name || '').replace(/'/g, "\\'")}', ${c.rating_stars || 1})" style="background: #00A896; border: none; color: #FFFFFF; font-size: 9.5px; font-weight: 800; padding: 2px 8px; border-radius: 4px; cursor: pointer;">
