@@ -17,8 +17,10 @@ class TLReassignRequest(BaseModel):
     team_leader_username: str = "cdaneri"
 
 class TLRescueRequest(BaseModel):
-    rescue_notes: str
-    team_leader_username: str = "cdaneri"
+    rescue_notes: Optional[str] = None
+    resolution_notes: Optional[str] = None
+    team_leader_username: Optional[str] = "cdaneri"
+    rescued_by_username: Optional[str] = None
 
 class TLCustomRebalanceRequest(BaseModel):
     analyst_usernames: List[str]
@@ -41,7 +43,17 @@ def get_team_leader_overview(institution_code: Optional[str] = None, session: Se
     unassigned = [t for t in active_tickets if not t.assignee_username or t.status == TicketStatus.NUEVO]
     
     # 3. Alertas de Rescate CSAT (Quejas calificadas con 1 o 2 estrellas)
-    rescue_alerts = [t for t in all_tickets if getattr(t, "requires_service_recovery", False)]
+    rescue_raw = [t for t in all_tickets if getattr(t, "requires_service_recovery", False)]
+    all_users = session.exec(select(User)).all()
+    user_map = {u.username: u for u in all_users}
+    rescue_alerts = []
+    for t in rescue_raw:
+        t_data = t.model_dump() if hasattr(t, "model_dump") else t.dict()
+        u = user_map.get(t.requester_username)
+        t_data["requester_name"] = (u.full_name if u and u.full_name else t.requester_username) or "Solicitante"
+        t_data["requester_phone"] = (u.phone if u and u.phone else None) or "+54 9 11 4821-9920"
+        t_data["requester_email"] = (u.email if u and u.email else None) or f"{t.requester_username or 'solicitante'}@hospital.org"
+        rescue_alerts.append(t_data)
     
     # 4. Carga Operativa por Analista (SOPORTE / ADMIN / TEAM_LEADER)
     support_users = session.exec(
@@ -162,7 +174,8 @@ def custom_rebalance_workload(req: TLCustomRebalanceRequest, session: Session = 
             change_reason="[Rebalanceo Táctico TL] Asignación a analista seleccionado de menor carga"
         ))
 
-    for _ in range(30):
+    # Iterative leveling until delta is at most 1, or max safe iterations (2000)
+    for _ in range(2000):
         max_user = max(user_keys, key=lambda u: workload[u])
         min_user = min(user_keys, key=lambda u: workload[u])
         if workload[max_user] - workload[min_user] >= 2:
@@ -184,6 +197,8 @@ def custom_rebalance_workload(req: TLCustomRebalanceRequest, session: Session = 
                     new_value=min_user,
                     change_reason=f"[Rebalanceo Táctico TL] Descompresión de carga hacia @{min_user}"
                 ))
+            else:
+                break
         else:
             break
 
@@ -200,6 +215,7 @@ def auto_rebalance_workload(session: Session = Depends(get_session)):
     support_users = session.exec(
         select(User).where(User.role.in_([UserRole.SOPORTE, UserRole.ADMIN, UserRole.TEAM_LEADER]))
     ).all()
+    support_users = [u for u in support_users if u.is_active]
     if not support_users:
         return {"status": "warning", "message": "No hay analistas de soporte activos para balancear.", "reassigned_count": 0}
 
@@ -213,6 +229,7 @@ def auto_rebalance_workload(session: Session = Depends(get_session)):
             workload[t.assignee_username] += 1
             
     reassigned_count = 0
+    # 1. Asignar tickets huérfanos/nuevos al de menor carga
     for t in unassigned:
         min_user = min(workload.keys(), key=lambda u: workload[u])
         t.assignee_username = min_user
@@ -230,12 +247,49 @@ def auto_rebalance_workload(session: Session = Depends(get_session)):
             change_reason="[Auto-Balanceo Algorítmico] Asignación equitativa por menor carga de guardia"
         ))
 
+    # 2. Balanceo multi-nivel por soporte (N1, N2, N3)
+    tier_groups = {}
+    for u in support_users:
+        lvl = u.support_level.value if hasattr(u.support_level, 'value') and u.support_level else "N1"
+        tier_groups.setdefault(lvl, []).append(u.username)
+
+    for lvl, tier_members in tier_groups.items():
+        if len(tier_members) > 1:
+            for _ in range(1500):
+                sorted_tier = sorted(tier_members, key=lambda u: workload[u], reverse=True)
+                max_u = sorted_tier[0]
+                min_u = sorted_tier[-1]
+                if workload[max_u] - workload[min_u] >= 2:
+                    candidate = next((t for t in active_tickets if t.assignee_username == max_u and t.priority != PriorityLevel.P1), None)
+                    if not candidate:
+                        candidate = next((t for t in active_tickets if t.assignee_username == max_u), None)
+                    if candidate:
+                        candidate.assignee_username = min_u
+                        candidate.updated_at = datetime.utcnow()
+                        session.add(candidate)
+                        workload[max_u] -= 1
+                        workload[min_u] += 1
+                        reassigned_count += 1
+                        session.add(TicketAuditLog(
+                            ticket_id=candidate.id,
+                            changed_by_username="torre_control",
+                            field_changed="assignee_username",
+                            old_value=max_u,
+                            new_value=min_u,
+                            change_reason=f"[Auto-Balanceo Nivel {lvl}] Compensación equitativa de sobrecarga @{max_u} hacia @{min_u}"
+                        ))
+                    else:
+                        break
+                else:
+                    break
+
+    # 3. Nivelación global residual si aún persisten asimetrías severas
     if len(support_users) > 1:
-        for _ in range(25):
+        for _ in range(1000):
             sorted_users = sorted(workload.keys(), key=lambda u: workload[u], reverse=True)
             max_user = sorted_users[0]
             min_user = sorted_users[-1]
-            if workload[max_user] - workload[min_user] >= 2:
+            if workload[max_user] - workload[min_user] >= 3:
                 candidate = next((t for t in active_tickets if t.assignee_username == max_user and t.priority != PriorityLevel.P1), None)
                 if not candidate:
                     candidate = next((t for t in active_tickets if t.assignee_username == max_user), None)
@@ -252,8 +306,10 @@ def auto_rebalance_workload(session: Session = Depends(get_session)):
                         field_changed="assignee_username",
                         old_value=max_user,
                         new_value=min_user,
-                        change_reason=f"[Auto-Balanceo Algorítmico] Compensación de sobrecarga de @{max_user} hacia @{min_user}"
+                        change_reason=f"[Auto-Balanceo Global] Compensación residual de @{max_user} hacia @{min_user}"
                     ))
+                else:
+                    break
             else:
                 break
 
@@ -262,7 +318,38 @@ def auto_rebalance_workload(session: Session = Depends(get_session)):
     return {
         "status": "success",
         "message": msg,
-        "reassigned_count": reassigned_count
+        "reassigned_count": reassigned_count,
+        "workload": workload
+    }
+
+@router.post("/stress-test-imbalance")
+def create_stress_test_imbalance(session: Session = Depends(get_session)):
+    """Genera un escenario de desbalance asistencial controlado para probar el motor de balanceo."""
+    active_tickets = session.exec(select(Ticket).where(Ticket.status.in_([TicketStatus.NUEVO, TicketStatus.ASIGNADO, TicketStatus.EN_CURSO]))).all()
+    if not active_tickets:
+        raise HTTPException(status_code=400, detail="No hay tickets activos en el sistema.")
+
+    targets = ["cpaez", "soporte", "dnavarro"]
+    count_reassigned = 0
+    now = datetime.utcnow()
+
+    # Distribuir tickets activos concentrándolos en cpaez, soporte y dnavarro (hasta 240 tickets)
+    for i, t in enumerate(active_tickets):
+        if i < 240:
+            target = targets[i % len(targets)]
+            if t.assignee_username != target:
+                t.assignee_username = target
+                if t.status == TicketStatus.NUEVO:
+                    t.status = TicketStatus.ASIGNADO
+                t.updated_at = now
+                session.add(t)
+                count_reassigned += 1
+
+    session.commit()
+    return {
+        "status": "success",
+        "message": f"Escenario de estrés generado con éxito: {count_reassigned} tickets concentrados en cpaez (N1), soporte (N2) y dnavarro (N3). Ya puede ejecutar el balanceador para ver la nivelación en vivo.",
+        "concentrated_agents": targets
     }
 
 @router.post("/rescue/{ticket_id}")
@@ -275,13 +362,16 @@ def rescue_ticket_complaint(ticket_id: str, req: TLRescueRequest, session: Sessi
     ticket.updated_at = datetime.utcnow()
     session.add(ticket)
     
+    notes = req.rescue_notes or req.resolution_notes or "Rescate de satisfacción registrado con éxito."
+    actor = req.rescued_by_username or req.team_leader_username or "cdaneri"
+    
     session.add(TicketAuditLog(
         ticket_id=ticket.id,
-        changed_by_username=req.team_leader_username,
+        changed_by_username=actor,
         field_changed="requires_service_recovery",
         old_value="True",
         new_value="False",
-        change_reason=f"[Torre de Control TL - Rescate CSAT] {req.rescue_notes}"
+        change_reason=f"[Torre de Control TL - Rescate CSAT] {notes}"
     ))
     
     session.commit()

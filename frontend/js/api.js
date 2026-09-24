@@ -428,6 +428,24 @@ const API = {
     return res.json();
   },
 
+  async autoRebalanceWorkload() {
+    const res = await fetch(`${API_BASE}/api/v1/team-leader/auto-rebalance`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    if (!res.ok) throw await res.json();
+    return res.json();
+  },
+
+  async stressTestImbalance() {
+    const res = await fetch(`${API_BASE}/api/v1/team-leader/stress-test-imbalance`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    if (!res.ok) throw await res.json();
+    return res.json();
+  },
+
   // 8. V4.0.0 RELEASES DE SOFTWARE & DESPLIEGUE EN CASCADA
   async getReleases() {
     const res = await fetch(`${API_BASE}/api/v1/releases`);

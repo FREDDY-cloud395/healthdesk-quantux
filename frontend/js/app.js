@@ -12189,9 +12189,9 @@ function renderTeamLeaderRescueDesk(cases) {
     <div style="display: flex; align-items: center; justify-content: space-between; font-size: 11px;">
       <span style="font-weight: 700; color: #64748B; font-size: 10px; text-transform: uppercase;">Atajos Express:</span>
       <div style="display: flex; gap: 5px;">
-        <button type="button" onclick="window.simulateRescueContact('📞 VoIP/Teams', '${c.id}')" style="background: #EFF6FF; border: 1px solid #BFDBFE; color: #1E40AF; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; cursor: pointer; transition: all 0.1s;" onmouseover="this.style.background='#DBEAFE'" onmouseout="this.style.background='#EFF6FF'">📞 Llamar</button>
-        <button type="button" onclick="window.simulateRescueContact('💬 WhatsApp Directo', '${c.id}')" style="background: #ECFDF5; border: 1px solid #A7F3D0; color: #065F46; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; cursor: pointer; transition: all 0.1s;" onmouseover="this.style.background='#D1FAE5'" onmouseout="this.style.background='#ECFDF5'">💬 WA</button>
-        <button type="button" onclick="window.simulateRescueContact('✉️ Redactar Email', '${c.id}')" style="background: #F3E8FF; border: 1px solid #E9D5FF; color: #6B21A8; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; cursor: pointer; transition: all 0.1s;" onmouseover="this.style.background='#E9D5FF'" onmouseout="this.style.background='#F3E8FF'">✉️ Email</button>
+        <button type="button" onclick="callRequester('${c.id}')" style="background: #EFF6FF; border: 1px solid #BFDBFE; color: #1E40AF; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; cursor: pointer; transition: all 0.1s;" onmouseover="this.style.background='#DBEAFE'" onmouseout="this.style.background='#EFF6FF'">📞 Llamar</button>
+        <button type="button" onclick="whatsappRequester('${c.id}')" style="background: #ECFDF5; border: 1px solid #A7F3D0; color: #065F46; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; cursor: pointer; transition: all 0.1s;" onmouseover="this.style.background='#D1FAE5'" onmouseout="this.style.background='#ECFDF5'">💬 WA</button>
+        <button type="button" onclick="emailRequester('${c.id}')" style="background: #F3E8FF; border: 1px solid #E9D5FF; color: #6B21A8; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; cursor: pointer; transition: all 0.1s;" onmouseover="this.style.background='#E9D5FF'" onmouseout="this.style.background='#F3E8FF'">✉️ Email</button>
       </div>
     </div>
     <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
@@ -12681,7 +12681,16 @@ async function submitTLTriageExpress() {
 
 // [PROPUESTA 4] Atajo de simulación ágil de contacto omnicanal
 function simulateRescueContact(channel, ticketId) {
-  showToast(`${channel} abierto para el ticket #${ticketId}. Iniciando contacto de inmediato...`, 'info');
+  const ch = (channel || '').toLowerCase();
+  if (ch.includes('voip') || ch.includes('llamar') || ch.includes('call') || ch.includes('tel')) {
+    callRequester(ticketId);
+  } else if (ch.includes('whatsapp') || ch.includes('wa')) {
+    whatsappRequester(ticketId);
+  } else if (ch.includes('email') || ch.includes('redactar') || ch.includes('correo')) {
+    emailRequester(ticketId);
+  } else {
+    callRequester(ticketId);
+  }
 }
 
 window.toggleTLTriageDrawer = toggleTLTriageDrawer;
@@ -12690,34 +12699,38 @@ window.submitTLTriageExpress = submitTLTriageExpress;
 window.simulateRescueContact = simulateRescueContact;
 
 async function submitRescueResolution() {
- const inputHidden = document.getElementById('tl-rescue-target-ticket-id');
- const notesText = document.getElementById('tl-rescue-resolution-notes');
- const actionSelect = document.getElementById('tl-rescue-action-type');
+  const inputHidden = document.getElementById('tl-rescue-target-ticket-id');
+  const notesText = document.getElementById('tl-rescue-resolution-notes');
+  const actionSelect = document.getElementById('tl-rescue-action-type');
 
- if (!inputHidden || !notesText) return;
- const ticketId = inputHidden.value;
- const notes = notesText.value.trim();
- const actionType = actionSelect ? actionSelect.value : 'call_resolved';
+  if (!inputHidden || !notesText) return;
+  const ticketId = inputHidden.value;
+  const notes = notesText.value.trim();
+  const actionType = actionSelect ? actionSelect.value : 'call_resolved';
 
- if (!notes) {
- showToast('Por favor ingrese las notas del acuerdo con el cliente', 'warning');
- return;
- }
+  if (!notes) {
+    showToast('Por favor ingrese las notas del acuerdo con el cliente', 'warning');
+    return;
+  }
 
- try {
- const actor = AppState.currentUser ? AppState.currentUser.username : 'teamleader';
- await API.rescueClient(ticketId, {
- rescued_by_username: actor,
- resolution_notes: `[Acción: ${actionType}] ${notes}`
- });
- showToast(` Rescate registrado y caso recuperado con éxito`, 'success');
- closeRescueModal();
- await loadTeamLeaderData();
- await loadTickets();
- } catch (err) {
-  console.error('Error completando rescate:', err);
-  showToast('Error al registrar el rescate', 'error');
- }
+  try {
+    const actor = AppState.currentUser ? AppState.currentUser.username : 'cdaneri';
+    const noteMsg = `[Acción: ${actionType}] ${notes}`;
+    await API.rescueClient(ticketId, {
+      rescued_by_username: actor,
+      team_leader_username: actor,
+      resolution_notes: noteMsg,
+      rescue_notes: noteMsg
+    });
+    showToast(`✅ Rescate registrado y caso recuperado con éxito`, 'success');
+    closeRescueModal();
+    if (typeof loadTeamLeaderData === 'function') await loadTeamLeaderData();
+    if (typeof loadTickets === 'function') await loadTickets();
+    if (typeof loadUnifiedHubData === 'function') await loadUnifiedHubData(undefined, true);
+  } catch (err) {
+    console.error('Error completando rescate:', err);
+    showToast('Error al registrar el rescate', 'error');
+  }
 }
 
 // =============================================================================
@@ -14140,7 +14153,7 @@ if (!window._ticketsAutoRefreshInterval) {
 let _uhOverviewData = null;
 let _uhLastAnalysts = [];
 
-async function loadUnifiedHubData(institutionCode = null) {
+async function loadUnifiedHubData(institutionCode = null, forceReload = false) {
   try {
     const instSelect = document.getElementById('uh-filter-inst');
     const selectedInst = institutionCode !== null ? institutionCode : (instSelect ? instSelect.value : '');
@@ -14159,25 +14172,49 @@ async function loadUnifiedHubData(institutionCode = null) {
     }
 
     // 2. Cargar tickets y resumen operativo
-    if (!AppState.tickets || AppState.tickets.length === 0) {
+    const periodSelect = document.getElementById('uh-filter-period');
+    const period = periodSelect ? periodSelect.value : 'today';
+
+    if (forceReload || !AppState.tickets || AppState.tickets.length === 0) {
       AppState.tickets = await API.getTickets();
     }
     const data = await API.getTeamLeaderOverview(selectedInst || undefined);
     _uhOverviewData = data;
 
-    // 3. Filtrado reactivo de tickets según institución
+    // 3. Filtrado reactivo de tickets según institución y período seleccionado
     const allTickets = AppState.tickets || [];
     let filteredTickets = allTickets;
     if (selectedInst) {
       filteredTickets = allTickets.filter(t => t.institution_code === selectedInst);
     }
+
+    const now = new Date();
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    const sevenDaysAgo = now.getTime() - (7 * 24 * 60 * 60 * 1000);
+
+    // Los tickets ACTIVOS están pendientes de resolución en la guardia y aplican siempre
     const activeTickets = filteredTickets.filter(t => !['RESUELTO', 'CERRADO'].includes((t.status || '').toUpperCase()));
+
+    // Los tickets RESUELTOS se filtran según el período seleccionado
+    let resolvedTickets = filteredTickets.filter(t => ['RESUELTO', 'CERRADO'].includes((t.status || '').toUpperCase()));
+    if (period === 'today') {
+      resolvedTickets = resolvedTickets.filter(t => {
+        const rTime = t.resolved_at ? new Date(t.resolved_at).getTime() : (t.updated_at ? new Date(t.updated_at).getTime() : 0);
+        return rTime >= todayStart;
+      });
+    } else if (period === '7days') {
+      resolvedTickets = resolvedTickets.filter(t => {
+        const rTime = t.resolved_at ? new Date(t.resolved_at).getTime() : (t.updated_at ? new Date(t.updated_at).getTime() : (t.created_at ? new Date(t.created_at).getTime() : 0));
+        return rTime >= sevenDaysAgo;
+      });
+    }
+
     const p1Tickets = activeTickets.filter(t => (t.priority || '').toUpperCase() === 'P1');
     const p2Tickets = activeTickets.filter(t => (t.priority || '').toUpperCase() === 'P2');
     const p3Tickets = activeTickets.filter(t => (t.priority || '').toUpperCase() === 'P3');
     const p4Tickets = activeTickets.filter(t => (t.priority || '').toUpperCase() === 'P4');
     const unassignedTickets = activeTickets.filter(t => !t.assigned_to && !t.assignee_username && !t.assigned_to_username);
-    const resolvedToday = filteredTickets.filter(t => ['RESUELTO', 'CERRADO'].includes((t.status || '').toUpperCase())).length;
+    const resolvedToday = resolvedTickets.length;
 
     // 4. Renderizar Ribbon de 5 Micro-KPIs
     const elActive = document.getElementById('uh-kpi-active');
@@ -14217,12 +14254,42 @@ async function loadUnifiedHubData(institutionCode = null) {
     if (bP3) bP3.style.width = `${p3Pct}%`;
     if (bP4) bP4.style.width = `${p4Pct}%`;
 
-    // 6. Renderizar Analistas de Guardia
-    const workload = data.agent_workload || data.analyst_workload || [];
-    renderUnifiedHubAnalysts(workload);
+    // 6. Renderizar Analistas de Guardia con Telemetría Dinámica según Período
+    const baseWorkload = (data && (data.agent_workload || data.analyst_workload)) || [];
+    const agentMap = {};
+    baseWorkload.forEach(a => {
+      agentMap[a.username] = {
+        ...a,
+        active_tickets_count: 0,
+        resolved_today_count: a.resolved_today_count || 0
+      };
+    });
 
-    // 7. Renderizar Mesa de Rescate
-    const rescueCases = data.rescue_alerts || data.recovery_cases || [];
+    // Asignar carga activa dinámica según tickets filtrados
+    activeTickets.forEach(t => {
+      const u = t.assignee_username || t.assigned_to_username || t.assigned_to;
+      if (u && agentMap[u]) {
+        agentMap[u].active_tickets_count++;
+      }
+    });
+
+    // Asignar resueltos dinámicos según tickets filtrados
+    resolvedTickets.forEach(t => {
+      const u = t.assignee_username || t.assigned_to_username || t.closed_by;
+      if (u && agentMap[u]) {
+        agentMap[u].resolved_today_count++;
+      }
+    });
+
+    const dynamicWorkload = Object.values(agentMap);
+    renderUnifiedHubAnalysts(dynamicWorkload.length ? dynamicWorkload : baseWorkload);
+
+    // 7. Renderizar Mesa de Rescate Filtrada
+    let rescueCases = data.rescue_alerts || data.recovery_cases || [];
+    if (selectedInst) {
+      rescueCases = rescueCases.filter(c => c.institution_code === selectedInst);
+    }
+    _lastRescueDeskCases = rescueCases;
     renderUnifiedHubRescueDesk(rescueCases);
 
     // 8. Renderizar Top P1 Críticos
@@ -14261,31 +14328,43 @@ function renderUnifiedHubAnalysts(analysts) {
   if (btnN2) btnN2.textContent = `N2 (${countN2})`;
   if (btnN3) btnN3.textContent = `N3 (${countN3})`;
 
-  // Alerta de Desbalance
+  // Alerta de Desbalance Asistencial Inteligente
   const alertEl = document.getElementById('uh-smart-balance-alert');
   const descEl = document.getElementById('uh-smart-balance-desc');
   if (alertEl && descEl) {
     const activeCounts = rawAnalysts.map(a => a.active_tickets_count ?? a.active_count ?? 0);
-    const maxLoad = Math.max(...activeCounts, 0);
-    const minLoad = Math.min(...activeCounts, 0);
-    const overLoaded = rawAnalysts.filter(a => (a.active_tickets_count ?? a.active_count ?? 0) >= 6);
-    const underLoaded = rawAnalysts.filter(a => (a.active_tickets_count ?? a.active_count ?? 0) === 0);
+    const maxLoad = activeCounts.length ? Math.max(...activeCounts) : 0;
+    const minLoad = activeCounts.length ? Math.min(...activeCounts) : 0;
+    const avgLoad = activeCounts.length ? (activeCounts.reduce((a, b) => a + b, 0) / activeCounts.length) : 0;
+    const isImbalanced = (maxLoad - minLoad >= 8) || (maxLoad > 24);
 
-    if (overLoaded.length > 0 && underLoaded.length > 0 && maxLoad - minLoad >= 5) {
+    if (isImbalanced && rawAnalysts.length > 1) {
       alertEl.style.display = 'flex';
-      const topName = overLoaded[0].name || overLoaded[0].username || 'Analista';
-      const freeName = underLoaded[0].name || underLoaded[0].username || 'Analista N2';
-      descEl.textContent = `${topName} acumula ${maxLoad} casos activos mientras ${freeName} dispone de capacidad libre.`;
+      alertEl.style.background = '#FFFBEB';
+      alertEl.style.borderColor = '#FCD34D';
+      alertEl.style.borderLeftColor = '#F59E0B';
+      const topA = rawAnalysts.find(a => (a.active_tickets_count ?? a.active_count ?? 0) === maxLoad) || rawAnalysts[0];
+      const lowA = rawAnalysts.find(a => (a.active_tickets_count ?? a.active_count ?? 0) === minLoad) || rawAnalysts[rawAnalysts.length - 1];
+      const topName = topA.name || topA.full_name || topA.username || 'Analista';
+      const lowName = lowA.name || lowA.full_name || lowA.username || 'Analista';
+      descEl.textContent = `⚠️ Desbalance Crítico: ${topName} acumula ${maxLoad} casos activos mientras ${lowName} registra sólo ${minLoad} casos. Se recomienda nivelar la carga.`;
+      const btnAuto = document.getElementById('btn-uh-autobalance');
+      if (btnAuto) {
+        btnAuto.textContent = '⚡ Nivelar 1-Clic';
+        btnAuto.style.background = '#EA580C';
+        btnAuto.disabled = false;
+      }
     } else {
       alertEl.style.display = 'flex';
       alertEl.style.background = '#ECFDF5';
       alertEl.style.borderColor = '#A7F3D0';
       alertEl.style.borderLeftColor = '#10B981';
-      descEl.textContent = 'Guardia operando con balance equilibrado entre turnos y analistas.';
+      descEl.textContent = `✅ Guardia Equilibrada: Carga homogénea (~${Math.round(avgLoad)} tickets/analista) en todos los niveles operativos.`;
       const btnAuto = document.getElementById('btn-uh-autobalance');
       if (btnAuto) {
         btnAuto.textContent = 'Guardia Balanceada';
         btnAuto.style.background = '#059669';
+        btnAuto.disabled = false;
       }
     }
   }
@@ -14302,18 +14381,25 @@ function renderUnifiedHubAnalysts(analysts) {
     const name = a.name || a.username || 'Analista';
     const initials = name.split(' ').map(p => p[0]).join('').substring(0, 2).toUpperCase() || 'AN';
 
-    const satPct = Math.min(100, Math.round((activeCount / 8) * 100));
+    // Capacidad estándar: 20 tickets nominales
+    let satPct = Math.min(100, Math.round((activeCount / 20) * 100));
     let barColor = '#10B981';
     let satText = 'Óptima';
     let satTextColor = '#059669';
-    if (activeCount >= 6) {
+
+    if (activeCount > 24) {
       barColor = '#EF4444';
       satText = 'Sobrecarga';
       satTextColor = '#DC2626';
-    } else if (activeCount >= 3) {
+      satPct = 100;
+    } else if (activeCount >= 18) {
       barColor = '#F59E0B';
-      satText = 'Moderada';
+      satText = 'Carga Alta';
       satTextColor = '#D97706';
+    } else if (activeCount >= 12) {
+      barColor = '#00A896';
+      satText = 'Equilibrada';
+      satTextColor = '#0F766E';
     }
 
     return `
@@ -14419,9 +14505,9 @@ function renderUnifiedHubRescueDesk(rescueCases) {
         </div>
         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px; padding-top: 4px; border-top: 1px dashed #FDE68A;">
           <div style="display: flex; gap: 4px;">
-            <button type="button" onclick="callRequester('${c.requester_phone || ''}')" style="background: #EFF6FF; border: 1px solid #BFDBFE; color: #1D4ED8; font-size: 9px; font-weight: 700; padding: 2px 5px; border-radius: 3px; cursor: pointer;">VoIP</button>
-            <button type="button" onclick="whatsappRequester('${c.requester_phone || ''}')" style="background: #ECFDF5; border: 1px solid #A7F3D0; color: #047857; font-size: 9px; font-weight: 700; padding: 2px 5px; border-radius: 3px; cursor: pointer;">WhatsApp</button>
-            <button type="button" onclick="emailRequester('${c.requester_email || ''}')" style="background: #F8FAFC; border: 1px solid #CBD5E1; color: #334155; font-size: 9px; font-weight: 700; padding: 2px 5px; border-radius: 3px; cursor: pointer;">Email</button>
+            <button type="button" onclick="callRequester('${c.id}')" style="background: #EFF6FF; border: 1px solid #BFDBFE; color: #1D4ED8; font-size: 9px; font-weight: 700; padding: 2px 5px; border-radius: 3px; cursor: pointer;">VoIP</button>
+            <button type="button" onclick="whatsappRequester('${c.id}')" style="background: #ECFDF5; border: 1px solid #A7F3D0; color: #047857; font-size: 9px; font-weight: 700; padding: 2px 5px; border-radius: 3px; cursor: pointer;">WhatsApp</button>
+            <button type="button" onclick="emailRequester('${c.id}')" style="background: #F8FAFC; border: 1px solid #CBD5E1; color: #334155; font-size: 9px; font-weight: 700; padding: 2px 5px; border-radius: 3px; cursor: pointer;">Email</button>
           </div>
           <button type="button" onclick="openRescueModal('${c.id}', '${(c.title || '').replace(/'/g, "\\'")}', '${(c.requester_name || '').replace(/'/g, "\\'")}', ${c.rating_stars || 1})" style="background: #00A896; border: none; color: #FFFFFF; font-size: 9.5px; font-weight: 800; padding: 2px 8px; border-radius: 4px; cursor: pointer;">
             Rescatar
@@ -14472,11 +14558,348 @@ function renderUnifiedHubP1List(p1Tickets) {
 function onUnifiedHubFilterChange() {
   const instSelect = document.getElementById('uh-filter-inst');
   const code = instSelect ? instSelect.value : '';
-  loadUnifiedHubData(code);
+  loadUnifiedHubData(code, false);
 }
 
-function autoBalanceUnifiedHub() {
-  openQuickReassignModal();
+async function refreshUnifiedHubData(btn) {
+  const refreshBtn = btn || document.getElementById('btn-uh-refresh');
+  const viewContainer = document.getElementById('unified-hub-view');
+  if (refreshBtn) {
+    refreshBtn.innerHTML = '<span>⏳ Sincronizando...</span>';
+    refreshBtn.disabled = true;
+  }
+  if (viewContainer) {
+    viewContainer.style.opacity = '0.7';
+    viewContainer.style.transition = 'opacity 0.2s ease';
+  }
+  try {
+    AppState.tickets = await API.getTickets();
+    const instSelect = document.getElementById('uh-filter-inst');
+    const code = instSelect ? instSelect.value : '';
+    await loadUnifiedHubData(code, true);
+    showToast('Telemetría y métricas operativas sincronizadas en vivo', 'success');
+  } catch (err) {
+    console.error('Error al refrescar:', err);
+    showToast('Error al refrescar telemetría', 'error');
+  } finally {
+    if (viewContainer) {
+      viewContainer.style.opacity = '1';
+    }
+    if (refreshBtn) {
+      refreshBtn.innerHTML = '<span>Refrescar</span>';
+      refreshBtn.disabled = false;
+    }
+  }
+}
+
+async function triggerStressTestScenario(btn) {
+  const triggerBtn = btn || document.getElementById('btn-uh-stress-test');
+  const originalHtml = triggerBtn ? triggerBtn.innerHTML : '⚡ Simular Sobrecarga';
+  if (triggerBtn) {
+    triggerBtn.innerHTML = '<span>⏳ Generando...</span>';
+    triggerBtn.disabled = true;
+  }
+  try {
+    const res = await API.stressTestImbalance();
+    showToast(res.message || 'Escenario de sobrecarga generado para pruebas de balanceo', 'warning');
+    AppState.tickets = await API.getTickets();
+    const instSelect = document.getElementById('uh-filter-inst');
+    const code = instSelect ? instSelect.value : '';
+    await loadUnifiedHubData(code, true);
+    if (typeof loadTeamLeaderData === 'function') await loadTeamLeaderData();
+    if (typeof loadTickets === 'function') await loadTickets();
+  } catch (err) {
+    console.error('Error generando sobrecarga:', err);
+    showToast('Error generando escenario de sobrecarga', 'error');
+  } finally {
+    if (triggerBtn) {
+      triggerBtn.innerHTML = originalHtml;
+      triggerBtn.disabled = false;
+    }
+  }
+}
+
+async function autoBalanceUnifiedHub() {
+  const btn1 = document.getElementById('btn-uh-autobalance');
+  const btn2 = document.getElementById('btn-uh-open-balance');
+  const origText1 = btn1 ? btn1.textContent : 'Nivelar 1-Clic';
+  const origText2 = btn2 ? btn2.textContent : '⚖️ Balancear Carga';
+
+  if (btn1) { btn1.textContent = '⏳ Balanceando...'; btn1.disabled = true; }
+  if (btn2) { btn2.textContent = '⏳ Balanceando...'; btn2.disabled = true; }
+  showToast('Ejecutando redistribución equitativa inteligente por nivel operativo...', 'info');
+
+  try {
+    const res = await API.autoRebalanceWorkload();
+    showToast(res.message || 'Auto-balanceo completado con éxito', 'success');
+    AppState.tickets = await API.getTickets();
+    const instSelect = document.getElementById('uh-filter-inst');
+    const code = instSelect ? instSelect.value : '';
+    await loadUnifiedHubData(code, true);
+    if (typeof loadTeamLeaderData === 'function') await loadTeamLeaderData();
+    if (typeof loadTickets === 'function') await loadTickets();
+  } catch (err) {
+    console.error('Error en autoBalanceUnifiedHub:', err);
+    showToast('Error al ejecutar el balanceo automatizado', 'error');
+  } finally {
+    if (btn1) { btn1.textContent = origText1; btn1.disabled = false; }
+    if (btn2) { btn2.textContent = origText2; btn2.disabled = false; }
+  }
+}
+
+// =============================================================================
+// SIMULACIONES OMNICANAL (VoIP, WhatsApp, Email) PARA RESCATE CSAT
+// =============================================================================
+let _voipTimerInterval = null;
+let _voipSeconds = 0;
+let _activeOmniTicket = null;
+
+function callRequester(phoneOrId, name, ticketId, title) {
+  let targetTicketId = ticketId;
+  let targetPhone = phoneOrId;
+  let targetName = name;
+  let targetTitle = title;
+
+  if (phoneOrId && (typeof phoneOrId === 'string') && (phoneOrId.startsWith('TICK-') || !ticketId)) {
+    targetTicketId = phoneOrId;
+    const found = (_lastRescueDeskCases || []).find(x => x.id === targetTicketId) || (AppState.tickets || []).find(x => x.id === targetTicketId) || {};
+    targetPhone = found.requester_phone || '+54 9 11 4821-9920';
+    targetName = found.requester_name || 'Dr. Médico Solicitante';
+    targetTitle = found.title || 'Caso Crítico de Atención';
+  }
+
+  _activeOmniTicket = {
+    phone: targetPhone || '+54 9 11 4821-9920',
+    name: targetName || 'Dr. Médico Solicitante',
+    ticketId: targetTicketId || 'TICK-ACTUAL',
+    title: targetTitle || 'Servicio de Atención'
+  };
+
+  const modal = document.getElementById('modal-voip-sim');
+  const nameEl = document.getElementById('voip-sim-name');
+  const phoneEl = document.getElementById('voip-sim-phone');
+  const timerEl = document.getElementById('voip-sim-timer');
+  const statusEl = document.getElementById('voip-sim-status');
+
+  if (nameEl) nameEl.textContent = _activeOmniTicket.name;
+  if (phoneEl) phoneEl.textContent = `${_activeOmniTicket.phone} • Troncal SIP #04`;
+  if (statusEl) statusEl.textContent = 'CONECTANDO CON PROFESIONAL...';
+
+  if (modal) {
+    modal.style.setProperty('display', 'flex', 'important');
+    modal.style.setProperty('opacity', '1', 'important');
+    modal.style.setProperty('pointer-events', 'auto', 'important');
+    modal.classList.add('active');
+  }
+
+  _voipSeconds = 0;
+  if (_voipTimerInterval) clearInterval(_voipTimerInterval);
+  
+  setTimeout(() => {
+    if (statusEl) statusEl.textContent = 'EN LLAMADA CON PROFESIONAL';
+  }, 1000);
+
+  _voipTimerInterval = setInterval(() => {
+    _voipSeconds++;
+    const mins = String(Math.floor(_voipSeconds / 60)).padStart(2, '0');
+    const secs = String(_voipSeconds % 60).padStart(2, '0');
+    if (timerEl) timerEl.textContent = `${mins}:${secs}`;
+  }, 1000);
+}
+
+function closeVoipModal() {
+  const modal = document.getElementById('modal-voip-sim');
+  if (modal) {
+    modal.classList.remove('active');
+    modal.style.setProperty('display', 'none', 'important');
+    modal.style.setProperty('opacity', '0', 'important');
+    modal.style.setProperty('pointer-events', 'none', 'important');
+  }
+  if (_voipTimerInterval) {
+    clearInterval(_voipTimerInterval);
+    _voipTimerInterval = null;
+  }
+}
+
+function toggleVoipMute(btn) {
+  if (!btn) return;
+  if (btn.classList.contains('muted')) {
+    btn.classList.remove('muted');
+    btn.textContent = '🔇 Silenciar Mic';
+    btn.style.background = '#334155';
+    showToast('Micrófono activado', 'info');
+  } else {
+    btn.classList.add('muted');
+    btn.textContent = '🔊 Reactivar Mic';
+    btn.style.background = '#DC2626';
+    showToast('Micrófono silenciado', 'warning');
+  }
+}
+
+function finishVoipAndOpenRescue() {
+  const mins = String(Math.floor(_voipSeconds / 60)).padStart(2, '0');
+  const secs = String(_voipSeconds % 60).padStart(2, '0');
+  const durationStr = `${mins}:${secs} min`;
+  const t = _activeOmniTicket || { id: 'TICK-ACTUAL', name: 'Dr. Solicitante', ticketId: 'TICK-ACTUAL', title: 'Atención' };
+  
+  closeVoipModal();
+  openRescueModal(t.ticketId, t.title, t.name, 1);
+
+  const actionSelect = document.getElementById('tl-rescue-action-type');
+  if (actionSelect) actionSelect.value = 'call_resolved';
+
+  const notesText = document.getElementById('tl-rescue-resolution-notes');
+  if (notesText) {
+    notesText.value = `Contacto telefónico directo exitoso con ${t.name} vía VoIP SIP Trunk (Duración: ${durationStr}). Se acordó la solución inmediata del caso y se verificó la plena conformidad del profesional.`;
+  }
+  showToast('Llamada finalizada. Complete el registro del rescate.', 'info');
+}
+
+function whatsappRequester(phoneOrId, name, ticketId, title) {
+  let targetTicketId = ticketId;
+  let targetPhone = phoneOrId;
+  let targetName = name;
+  let targetTitle = title;
+
+  if (phoneOrId && (typeof phoneOrId === 'string') && (phoneOrId.startsWith('TICK-') || !ticketId)) {
+    targetTicketId = phoneOrId;
+    const found = (_lastRescueDeskCases || []).find(x => x.id === targetTicketId) || (AppState.tickets || []).find(x => x.id === targetTicketId) || {};
+    targetPhone = found.requester_phone || '+54 9 11 4821-9920';
+    targetName = found.requester_name || 'Dr. Médico Solicitante';
+    targetTitle = found.title || 'Caso Crítico de Atención';
+  }
+
+  _activeOmniTicket = {
+    phone: targetPhone || '+54 9 11 4821-9920',
+    name: targetName || 'Dr. Médico Solicitante',
+    ticketId: targetTicketId || 'TICK-ACTUAL',
+    title: targetTitle || 'Servicio de Atención'
+  };
+
+  const modal = document.getElementById('modal-whatsapp-sim');
+  const nameEl = document.getElementById('wa-sim-name');
+  const phoneEl = document.getElementById('wa-sim-phone');
+  const tagEl = document.getElementById('wa-sim-ticket-tag');
+  const bodyEl = document.getElementById('wa-sim-message-body');
+
+  if (nameEl) nameEl.textContent = _activeOmniTicket.name;
+  if (phoneEl) phoneEl.textContent = `${_activeOmniTicket.phone} • En línea`;
+  if (tagEl) tagEl.textContent = `Caso #${_activeOmniTicket.ticketId}`;
+  if (bodyEl) {
+    bodyEl.textContent = `Estimado/a ${_activeOmniTicket.name}, le escribimos desde la Mesa de Ayuda Quantux para coordinar la recuperación inmediata de su solicitud #${_activeOmniTicket.ticketId} ('${_activeOmniTicket.title}'). Lamentamos los inconvenientes ocasionados en su guardia y hemos priorizado su caso con soporte especializado. ¿Desea que validemos la solución juntos?`;
+  }
+
+  if (modal) {
+    modal.style.setProperty('display', 'flex', 'important');
+    modal.style.setProperty('opacity', '1', 'important');
+    modal.style.setProperty('pointer-events', 'auto', 'important');
+    modal.classList.add('active');
+  }
+}
+
+function closeWhatsappModal() {
+  const modal = document.getElementById('modal-whatsapp-sim');
+  if (modal) {
+    modal.classList.remove('active');
+    modal.style.setProperty('display', 'none', 'important');
+    modal.style.setProperty('opacity', '0', 'important');
+    modal.style.setProperty('pointer-events', 'none', 'important');
+  }
+}
+
+function openRealWhatsappWeb() {
+  const t = _activeOmniTicket || { phone: '5491148219920', ticketId: 'TICK', name: 'Dr.', title: 'Caso' };
+  const cleanPhone = (t.phone || '').replace(/[^0-9]/g, '') || '5491148219920';
+  const msg = `Hola ${t.name}, le escribimos desde la Mesa de Ayuda Quantux por su ticket #${t.ticketId} (${t.title}).`;
+  window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`, '_blank');
+}
+
+function finishWhatsappAndOpenRescue() {
+  const t = _activeOmniTicket || { id: 'TICK-ACTUAL', name: 'Dr. Solicitante', ticketId: 'TICK-ACTUAL', title: 'Atención', phone: '+54 9 11 4821-9920' };
+  closeWhatsappModal();
+  openRescueModal(t.ticketId, t.title, t.name, 1);
+
+  const actionSelect = document.getElementById('tl-rescue-action-type');
+  if (actionSelect) actionSelect.value = 'call_resolved';
+
+  const notesText = document.getElementById('tl-rescue-resolution-notes');
+  if (notesText) {
+    notesText.value = `Contacto directo por WhatsApp enviado a ${t.name} (${t.phone}). Se transmitió el estado prioritario del ticket #${t.ticketId} y se coordinó seguimiento con conformidad del prestador.`;
+  }
+  showToast('Mensaje de WhatsApp despachado. Registre el acuerdo de rescate.', 'info');
+}
+
+function emailRequester(emailOrId, name, ticketId, title) {
+  let targetTicketId = ticketId;
+  let targetEmail = emailOrId;
+  let targetName = name;
+  let targetTitle = title;
+
+  if (emailOrId && (typeof emailOrId === 'string') && (emailOrId.startsWith('TICK-') || !ticketId)) {
+    targetTicketId = emailOrId;
+    const found = (_lastRescueDeskCases || []).find(x => x.id === targetTicketId) || (AppState.tickets || []).find(x => x.id === targetTicketId) || {};
+    targetEmail = found.requester_email || 'medico@sanatorio.org';
+    targetName = found.requester_name || 'Dr. Médico Solicitante';
+    targetTitle = found.title || 'Caso Crítico de Atención';
+  }
+
+  _activeOmniTicket = {
+    email: targetEmail || 'medico@sanatorio.org',
+    name: targetName || 'Dr. Médico Solicitante',
+    ticketId: targetTicketId || 'TICK-ACTUAL',
+    title: targetTitle || 'Servicio de Atención'
+  };
+
+  const modal = document.getElementById('modal-email-sim');
+  const toEl = document.getElementById('email-sim-to');
+  const subjectEl = document.getElementById('email-sim-subject');
+  const bodyEl = document.getElementById('email-sim-body');
+
+  if (toEl) toEl.value = `${_activeOmniTicket.name} <${_activeOmniTicket.email}>`;
+  if (subjectEl) subjectEl.value = `[PRIORITARIO • MESA DE AYUDA QUANTUX] Rescate y Recuperación de Servicio - Caso #${_activeOmniTicket.ticketId}`;
+  if (bodyEl) {
+    bodyEl.value = `Estimado/a ${_activeOmniTicket.name},\n\nNos ponemos en contacto directo desde la Torre de Control de Quantux HealthDesk en relación a su solicitud #${_activeOmniTicket.ticketId} ("${_activeOmniTicket.title}").\n\nLamentamos profundamente la demora o fricción experimentada durante su guardia. Le informamos que su requerimiento ha sido intervenido por nuestro equipo técnico y se han aplicado las medidas correctivas correspondientes.\n\nQuedamos a su entera disposición para cualquier asistencia adicional.\n\nAtentamente,\nEquipo de Gestión Operativa y Calidad Quantux`;
+  }
+
+  if (modal) {
+    modal.style.setProperty('display', 'flex', 'important');
+    modal.style.setProperty('opacity', '1', 'important');
+    modal.style.setProperty('pointer-events', 'auto', 'important');
+    modal.classList.add('active');
+  }
+}
+
+function closeEmailModal() {
+  const modal = document.getElementById('modal-email-sim');
+  if (modal) {
+    modal.classList.remove('active');
+    modal.style.setProperty('display', 'none', 'important');
+    modal.style.setProperty('opacity', '0', 'important');
+    modal.style.setProperty('pointer-events', 'none', 'important');
+  }
+}
+
+function openNativeEmailClient() {
+  const t = _activeOmniTicket || { email: 'soporte@hospital.org', ticketId: 'TICK', title: 'Atención' };
+  const to = t.email || 'soporte@hospital.org';
+  const sub = `[URGENTE] Seguimiento Ticket #${t.ticketId}`;
+  const body = `Estimado/a ${t.name || ''},\n\nLe escribimos en relación al caso #${t.ticketId}.`;
+  window.location.href = `mailto:${to}?subject=${encodeURIComponent(sub)}&body=${encodeURIComponent(body)}`;
+}
+
+function finishEmailAndOpenRescue() {
+  const t = _activeOmniTicket || { id: 'TICK-ACTUAL', name: 'Dr. Solicitante', ticketId: 'TICK-ACTUAL', title: 'Atención', email: 'medico@hospital.org' };
+  closeEmailModal();
+  openRescueModal(t.ticketId, t.title, t.name, 1);
+
+  const actionSelect = document.getElementById('tl-rescue-action-type');
+  if (actionSelect) actionSelect.value = 'ticket_reworked';
+
+  const notesText = document.getElementById('tl-rescue-resolution-notes');
+  if (notesText) {
+    notesText.value = `Notificación institucional enviada por correo electrónico a ${t.name} (${t.email}). Se formalizó el compromiso de soporte prioritario y la corrección técnica del incidente #${t.ticketId}.`;
+  }
+  showToast('Correo despachado. Registre la resolución del rescate.', 'info');
 }
 
 // Exportación global para bindings en HTML
@@ -14486,4 +14909,18 @@ window.renderUnifiedHubAnalysts = renderUnifiedHubAnalysts;
 window.renderUnifiedHubRescueDesk = renderUnifiedHubRescueDesk;
 window.renderUnifiedHubP1List = renderUnifiedHubP1List;
 window.onUnifiedHubFilterChange = onUnifiedHubFilterChange;
+window.refreshUnifiedHubData = refreshUnifiedHubData;
+window.triggerStressTestScenario = triggerStressTestScenario;
 window.autoBalanceUnifiedHub = autoBalanceUnifiedHub;
+window.callRequester = callRequester;
+window.closeVoipModal = closeVoipModal;
+window.toggleVoipMute = toggleVoipMute;
+window.finishVoipAndOpenRescue = finishVoipAndOpenRescue;
+window.whatsappRequester = whatsappRequester;
+window.closeWhatsappModal = closeWhatsappModal;
+window.openRealWhatsappWeb = openRealWhatsappWeb;
+window.finishWhatsappAndOpenRescue = finishWhatsappAndOpenRescue;
+window.emailRequester = emailRequester;
+window.closeEmailModal = closeEmailModal;
+window.openNativeEmailClient = openNativeEmailClient;
+window.finishEmailAndOpenRescue = finishEmailAndOpenRescue;

@@ -1100,12 +1100,16 @@
                 </select>
               </div>
 
-              <button type="button" id="btn-uh-refresh" onclick="loadUnifiedHubData()" class="btn-sec btn-sm" style="font-size: 11px; padding: 4px 10px; border-radius: 6px; font-weight: 700; display: inline-flex; align-items: center; gap: 5px;" title="Actualizar telemetría">
+              <button type="button" id="btn-uh-refresh" onclick="refreshUnifiedHubData(this)" class="btn-sec btn-sm" style="font-size: 11px; padding: 4px 10px; border-radius: 6px; font-weight: 700; display: inline-flex; align-items: center; gap: 5px; cursor: pointer;" title="Actualizar telemetría">
                 <span>Refrescar</span>
               </button>
 
-              <button type="button" id="btn-uh-open-balance" onclick="openQuickReassignModal()" class="btn-pri btn-sm" style="font-size: 11px; padding: 4px 12px; border-radius: 6px; font-weight: 800; background: #00A896; border: none; color: #FFFFFF; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; box-shadow: 0 1px 3px rgba(0,168,150,0.25);">
-                <span>Balancear Carga</span>
+              <button type="button" id="btn-uh-stress-test" onclick="triggerStressTestScenario(this)" class="btn-sec btn-sm" style="font-size: 11px; padding: 4px 9px; border-radius: 6px; font-weight: 700; border: 1px solid #FCD34D; background: #FFFBEB; color: #B45309; display: inline-flex; align-items: center; gap: 4px; cursor: pointer;" title="Concentrar casos en 3 analistas para probar el balanceo">
+                <span>⚡ Simular Sobrecarga</span>
+              </button>
+
+              <button type="button" id="btn-uh-open-balance" onclick="autoBalanceUnifiedHub()" class="btn-pri btn-sm" style="font-size: 11px; padding: 4px 12px; border-radius: 6px; font-weight: 800; background: #00A896; border: none; color: #FFFFFF; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; box-shadow: 0 1px 3px rgba(0,168,150,0.25);" title="Redistribuir carga equitativamente entre los 81 analistas">
+                <span>⚖️ Balancear Carga</span>
               </button>
             </div>
           </div>
@@ -1409,57 +1413,57 @@
             <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; align-items: flex-start;">
               
               <!-- Columna 1: Planificadas -->
-              <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px; overflow: hidden; display: flex; flex-direction: column;">
-                <div style="padding: 10px 14px; background: #F1F5F9; border-bottom: 1.5px solid #CBD5E1; display: flex; justify-content: space-between; align-items: center;">
+              <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; max-height: calc(100vh - 170px);">
+                <div style="padding: 10px 14px; background: #F1F5F9; border-bottom: 1.5px solid #CBD5E1; display: flex; justify-content: space-between; align-items: center; shrink: 0;">
                   <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 800; color: #475569;">
                     <span style="width: 8px; height: 8px; border-radius: 50%; background: #94A3B8;"></span>
                     <span>PLANIFICADAS</span>
                   </div>
                   <span id="kanban-count-planificada" style="font-size: 11px; font-weight: 800; background: #FFFFFF; border: 1px solid #CBD5E1; color: #475569; padding: 1px 7px; border-radius: 10px;">0</span>
                 </div>
-                <div id="kanban-col-planificada" style="padding: 10px; display: flex; flex-direction: column; gap: 10px; min-height: 480px; max-height: 720px; overflow-y: auto;">
+                <div id="kanban-col-planificada" style="padding: 10px; display: flex; flex-direction: column; gap: 10px; height: calc(100vh - 225px); max-height: calc(100vh - 225px); overflow-y: auto; padding-bottom: 40px; box-sizing: border-box;">
                   <!-- Renderizado dinámico -->
                 </div>
               </div>
 
               <!-- Columna 2: En Desarrollo -->
-              <div style="background: #F0F9FF; border: 1px solid #BAE6FD; border-radius: 10px; overflow: hidden; display: flex; flex-direction: column;">
-                <div style="padding: 10px 14px; background: #E0F2FE; border-bottom: 1.5px solid #7DD3FC; display: flex; justify-content: space-between; align-items: center;">
+              <div style="background: #F0F9FF; border: 1px solid #BAE6FD; border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; max-height: calc(100vh - 170px);">
+                <div style="padding: 10px 14px; background: #E0F2FE; border-bottom: 1.5px solid #7DD3FC; display: flex; justify-content: space-between; align-items: center; shrink: 0;">
                   <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 800; color: #0369A1;">
                     <span style="width: 8px; height: 8px; border-radius: 50%; background: #0284C7;"></span>
                     <span>EN DESARROLLO (N3)</span>
                   </div>
                   <span id="kanban-count-desarrollo" style="font-size: 11px; font-weight: 800; background: #FFFFFF; border: 1px solid #7DD3FC; color: #0369A1; padding: 1px 7px; border-radius: 10px;">0</span>
                 </div>
-                <div id="kanban-col-desarrollo" style="padding: 10px; display: flex; flex-direction: column; gap: 10px; min-height: 480px; max-height: 720px; overflow-y: auto;">
+                <div id="kanban-col-desarrollo" style="padding: 10px; display: flex; flex-direction: column; gap: 10px; height: calc(100vh - 225px); max-height: calc(100vh - 225px); overflow-y: auto; padding-bottom: 40px; box-sizing: border-box;">
                   <!-- Renderizado dinámico -->
                 </div>
               </div>
 
               <!-- Columna 3: Staging / QA -->
-              <div style="background: #FFFBEB; border: 1px solid #FDE68A; border-radius: 10px; overflow: hidden; display: flex; flex-direction: column;">
-                <div style="padding: 10px 14px; background: #FEF3C7; border-bottom: 1.5px solid #FCD34D; display: flex; justify-content: space-between; align-items: center;">
+              <div style="background: #FFFBEB; border: 1px solid #FDE68A; border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; max-height: calc(100vh - 170px);">
+                <div style="padding: 10px 14px; background: #FEF3C7; border-bottom: 1.5px solid #FCD34D; display: flex; justify-content: space-between; align-items: center; shrink: 0;">
                   <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 800; color: #B45309;">
                     <span style="width: 8px; height: 8px; border-radius: 50%; background: #D97706;"></span>
                     <span>STAGING / PRUEBAS</span>
                   </div>
                   <span id="kanban-count-staging" style="font-size: 11px; font-weight: 800; background: #FFFFFF; border: 1px solid #FCD34D; color: #B45309; padding: 1px 7px; border-radius: 10px;">0</span>
                 </div>
-                <div id="kanban-col-staging" style="padding: 10px; display: flex; flex-direction: column; gap: 10px; min-height: 480px; max-height: 720px; overflow-y: auto;">
+                <div id="kanban-col-staging" style="padding: 10px; display: flex; flex-direction: column; gap: 10px; height: calc(100vh - 225px); max-height: calc(100vh - 225px); overflow-y: auto; padding-bottom: 40px; box-sizing: border-box;">
                   <!-- Renderizado dinámico -->
                 </div>
               </div>
 
               <!-- Columna 4: Desplegadas a Producción -->
-              <div style="background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 10px; overflow: hidden; display: flex; flex-direction: column;">
-                <div style="padding: 10px 14px; background: #DCFCE7; border-bottom: 1.5px solid #86EFAC; display: flex; justify-content: space-between; align-items: center;">
+              <div style="background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; max-height: calc(100vh - 170px);">
+                <div style="padding: 10px 14px; background: #DCFCE7; border-bottom: 1.5px solid #86EFAC; display: flex; justify-content: space-between; align-items: center; shrink: 0;">
                   <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 800; color: #15803D;">
                     <span style="width: 8px; height: 8px; border-radius: 50%; background: #16A34A;"></span>
                     <span>DESPLEGADAS (PROD)</span>
                   </div>
                   <span id="kanban-count-desplegada" style="font-size: 11px; font-weight: 800; background: #FFFFFF; border: 1px solid #86EFAC; color: #15803D; padding: 1px 7px; border-radius: 10px;">0</span>
                 </div>
-                <div id="kanban-col-desplegada" style="padding: 10px; display: flex; flex-direction: column; gap: 10px; min-height: 480px; max-height: 720px; overflow-y: auto;">
+                <div id="kanban-col-desplegada" style="padding: 10px; display: flex; flex-direction: column; gap: 10px; height: calc(100vh - 225px); max-height: calc(100vh - 225px); overflow-y: auto; padding-bottom: 40px; box-sizing: border-box;">
                   <!-- Renderizado dinámico -->
                 </div>
               </div>
@@ -4288,6 +4292,132 @@
       </div>
     </div>
   </div>
+
+  <!-- MODAL 1: SIMULACIÓN DE TELEFONÍA IP / SOFTPHONE VOIP -->
+  <div id="modal-voip-sim" style="display: none; position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; width: 100vw !important; height: 100vh !important; z-index: 999999 !important; background: rgba(15, 23, 42, 0.85) !important; backdrop-filter: blur(6px) !important; align-items: center !important; justify-content: center !important; opacity: 1 !important; pointer-events: auto !important; padding: 16px; box-sizing: border-box;">
+    <div style="max-width: 440px; width: 90%; background: #0F172A; border-radius: 16px; border: 1.5px solid #38BDF8; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); overflow: hidden; color: #FFFFFF;">
+      <div style="background: linear-gradient(135deg, #0284C7 0%, #0369A1 100%); padding: 14px 18px; display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 13px;">
+          <span style="font-size: 16px;">📞</span>
+          <span>Central Telefónica IP • Troncal WebRTC</span>
+        </div>
+        <button type="button" onclick="closeVoipModal()" style="background: none; border: none; color: #FFFFFF; font-size: 20px; cursor: pointer;">&times;</button>
+      </div>
+      <div style="padding: 24px 20px; text-align: center;">
+        <div style="display: inline-flex; align-items: center; gap: 6px; background: rgba(34, 197, 94, 0.2); border: 1px solid #22C55E; color: #4ADE80; font-size: 11px; font-weight: 800; padding: 3px 10px; border-radius: 20px; margin-bottom: 16px;">
+          <span style="width: 8px; height: 8px; border-radius: 50%; background: #22C55E;"></span>
+          <span id="voip-sim-status">EN LLAMADA CON PROFESIONAL</span>
+        </div>
+        
+        <div style="font-size: 18px; font-weight: 800; color: #F8FAFC; margin-bottom: 4px;" id="voip-sim-name">Dr. Médico Solicitante</div>
+        <div style="font-size: 12.5px; color: #94A3B8; font-family: monospace;" id="voip-sim-phone">+54 9 11 4821-9920</div>
+        
+        <div style="margin: 20px 0; background: #1E293B; border-radius: 12px; padding: 14px;">
+          <div style="font-size: 10px; text-transform: uppercase; color: #64748B; font-weight: 800; letter-spacing: 0.5px;">Duración de Comunicación</div>
+          <div style="font-size: 28px; font-weight: 900; font-family: monospace; color: #38BDF8; margin-top: 2px;" id="voip-sim-timer">00:01</div>
+        </div>
+
+        <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 20px;">
+          <button type="button" onclick="toggleVoipMute(this)" style="background: #334155; border: 1px solid #475569; color: #FFFFFF; font-size: 11px; font-weight: 700; padding: 6px 12px; border-radius: 6px; cursor: pointer;">
+            🔇 Silenciar Mic
+          </button>
+          <button type="button" onclick="showToast('Llamada en espera musical con mensaje institucional', 'info')" style="background: #334155; border: 1px solid #475569; color: #FFFFFF; font-size: 11px; font-weight: 700; padding: 6px 12px; border-radius: 6px; cursor: pointer;">
+            ⏸️ Espera Musical
+          </button>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <button type="button" onclick="finishVoipAndOpenRescue()" style="background: #00A896; border: none; color: #FFFFFF; font-size: 12.5px; font-weight: 800; padding: 10px 16px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 12px rgba(0, 168, 150, 0.4);">
+            <span>✅ Finalizar Llamada y Registrar Rescate</span>
+          </button>
+          <button type="button" onclick="closeVoipModal()" style="background: #EF4444; border: none; color: #FFFFFF; font-size: 11.5px; font-weight: 700; padding: 8px 14px; border-radius: 8px; cursor: pointer;">
+            🔴 Cortar Comunicación
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: SIMULACIÓN DE WHATSAPP BUSINESS -->
+  <div id="modal-whatsapp-sim" style="display: none; position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; width: 100vw !important; height: 100vh !important; z-index: 999999 !important; background: rgba(15, 23, 42, 0.85) !important; backdrop-filter: blur(6px) !important; align-items: center !important; justify-content: center !important; opacity: 1 !important; pointer-events: auto !important; padding: 16px; box-sizing: border-box;">
+    <div style="max-width: 480px; width: 92%; background: #EFEAE2; border-radius: 16px; border: 1.5px solid #25D366; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); overflow: hidden;">
+      <div style="background: #075E54; color: #FFFFFF; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="width: 34px; height: 34px; border-radius: 50%; background: #25D366; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 16px;">
+            💬
+          </div>
+          <div>
+            <div style="font-weight: 800; font-size: 13px;" id="wa-sim-name">Mesa de Ayuda Quantux</div>
+            <div style="font-size: 10px; color: #A7F3D0;" id="wa-sim-phone">+54 9 11 4821-9920 • En línea</div>
+          </div>
+        </div>
+        <button type="button" onclick="closeWhatsappModal()" style="background: none; border: none; color: #FFFFFF; font-size: 20px; cursor: pointer;">&times;</button>
+      </div>
+
+      <div style="padding: 16px; min-height: 200px; display: flex; flex-direction: column; justify-content: space-between;">
+        <div style="background: #FFFFFF; border-radius: 8px; padding: 12px 14px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); border-left: 4px solid #25D366; margin-bottom: 12px;">
+          <div style="font-size: 11px; font-weight: 800; color: #075E54; margin-bottom: 4px;" id="wa-sim-ticket-tag">Caso #TICK-...</div>
+          <div style="font-size: 12px; color: #1E293B; line-height: 1.4;" id="wa-sim-message-body">
+            Hola Dr/a., le escribimos desde la Mesa de Ayuda Quantux para coordinar la recuperación de su incidente. Hemos elevado la prioridad para darle resolución inmediata.
+          </div>
+          <div style="text-align: right; font-size: 9.5px; color: #64748B; margin-top: 6px;">10:42 hs • Enviado vía Quantux Bot</div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <button type="button" onclick="openRealWhatsappWeb()" style="background: #25D366; border: none; color: #FFFFFF; font-size: 12px; font-weight: 800; padding: 9px 14px; border-radius: 7px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 2px 6px rgba(37, 211, 102, 0.3);">
+            <span>📲 Abrir en WhatsApp Web Oficial</span>
+          </button>
+          <button type="button" onclick="finishWhatsappAndOpenRescue()" style="background: #00A896; border: none; color: #FFFFFF; font-size: 12px; font-weight: 800; padding: 9px 14px; border-radius: 7px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+            <span>✅ Simular Envío y Registrar Rescate</span>
+          </button>
+          <button type="button" class="btn-sec" onclick="closeWhatsappModal()" style="font-size: 11px; padding: 6px;">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 3: SIMULACIÓN DE REDACTOR DE EMAIL CORPORATIVO -->
+  <div id="modal-email-sim" style="display: none; position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; width: 100vw !important; height: 100vh !important; z-index: 999999 !important; background: rgba(15, 23, 42, 0.85) !important; backdrop-filter: blur(6px) !important; align-items: center !important; justify-content: center !important; opacity: 1 !important; pointer-events: auto !important; padding: 16px; box-sizing: border-box;">
+    <div style="max-width: 520px; width: 92%; background: #FFFFFF; border-radius: 14px; border: 1.5px solid #CBD5E1; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); overflow: hidden;">
+      <div style="background: #1E293B; color: #FFFFFF; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 13px;">
+          <span>✉️</span>
+          <span>Redactor de Correo • Recuperación de Servicio CSAT</span>
+        </div>
+        <button type="button" onclick="closeEmailModal()" style="background: none; border: none; color: #FFFFFF; font-size: 20px; cursor: pointer;">&times;</button>
+      </div>
+
+      <div style="padding: 18px;">
+        <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px;">
+          <div style="display: flex; align-items: center; gap: 8px; font-size: 12px;">
+            <strong style="width: 50px; color: #64748B;">Para:</strong>
+            <input type="text" id="email-sim-to" class="form-control" style="font-size: 12px; height: 32px;" readonly>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px; font-size: 12px;">
+            <strong style="width: 50px; color: #64748B;">Asunto:</strong>
+            <input type="text" id="email-sim-subject" class="form-control" style="font-size: 12px; height: 32px; font-weight: 700;" readonly>
+          </div>
+          <div>
+            <strong style="display: block; font-size: 11px; color: #64748B; margin-bottom: 4px;">Mensaje de Compromiso y Disculpas Institucionales:</strong>
+            <textarea id="email-sim-body" class="form-control" rows="5" style="font-size: 12px; font-family: sans-serif; line-height: 1.4;"></textarea>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+          <button type="button" onclick="openNativeEmailClient()" style="background: #F1F5F9; border: 1px solid #CBD5E1; color: #334155; font-size: 11px; font-weight: 700; padding: 7px 12px; border-radius: 6px; cursor: pointer;">
+            📧 Abrir en Outlook / Mail
+          </button>
+          <div style="display: flex; gap: 8px;">
+            <button type="button" class="btn-sec" onclick="closeEmailModal()">Cancelar</button>
+            <button type="button" onclick="finishEmailAndOpenRescue()" style="background: #00A896; border: none; color: #FFFFFF; font-size: 11.5px; font-weight: 800; padding: 7px 14px; border-radius: 6px; cursor: pointer;">
+              ✅ Despachar y Abrir Rescate
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL VINCULACIÓN DE TICKETS HIJOS (Módulo 1: Incidentes Masivos) -->
   <div class="modal" id="modal-link-children" style="z-index: 1050;">
     <div class="modal-content" style="max-width: 620px; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.25);">
@@ -4478,9 +4608,9 @@ Muchas gracias.</textarea>
 
   <!-- SCRIPTS (LOCAL CHART.JS BUNDLE & APP CODE) -->
   <script src="/js/chart.umd.min.js"></script>
-  <script src="/js/api.js?v=4.1.6_integrated_cockpit_pro"></script>
-  <script src="/js/typeahead.js?v=4.2.0_homologacion_estricta"></script>
-  <script src="/js/app.js?v=4.2.0_homologacion_estricta"></script>
+  <script src="/js/api.js?v=4.3.0_verified_hotfix"></script>
+  <script src="/js/typeahead.js?v=4.3.0_verified_hotfix"></script>
+  <script src="/js/app.js?v=4.3.0_verified_hotfix"></script>
   <script>
     (function initMobileSidebar() {
       const toggleBtn = document.getElementById('btn-sidebar-toggle');
