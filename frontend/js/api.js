@@ -419,7 +419,8 @@ const API = {
   },
 
   async rescueClient(ticketId, payload) {
-    const res = await fetch(`${API_BASE}/api/v1/team-leader/rescue/${ticketId}`, {
+    const cleanId = String(ticketId || '').replace(/#/g, '').replace(/%23/g, '').trim();
+    const res = await fetch(`${API_BASE}/api/v1/team-leader/rescue/${encodeURIComponent(cleanId)}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)

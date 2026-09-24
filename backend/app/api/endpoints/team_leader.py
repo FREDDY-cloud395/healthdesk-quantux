@@ -354,7 +354,7 @@ def create_stress_test_imbalance(session: Session = Depends(get_session)):
 
 @router.post("/rescue/{ticket_id}")
 def rescue_ticket_complaint(ticket_id: str, req: TLRescueRequest, session: Session = Depends(get_session)):
-    clean_id = (ticket_id or "").replace('#', '').strip()
+    clean_id = (ticket_id or "").replace('#', '').replace('%23', '').strip()
     ticket = session.get(Ticket, clean_id)
     if not ticket and ticket_id != clean_id:
         ticket = session.get(Ticket, ticket_id)
