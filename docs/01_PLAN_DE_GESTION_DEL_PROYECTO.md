@@ -74,23 +74,25 @@ La demo debe recorrer un caso completo, no funcionalidades aisladas:
 
 ---
 
-### 3. Enfoque de Desarrollo y Adaptación Metodológica
-El proyecto adopta un marco Ágil (Iterativo e Incremental) bajo la modalidad Scrumban estructurado en 5 ciclos semanales con gestión visual de flujo:
-1. **Enfoque de Desarrollo:** Ciclo iterativo e incremental en 5 Sprints para validar software funcional utilizable cada semana.
-2. **Adaptación a Quantux:** Alineación al modelo operativo de soporte para las plataformas y clientes institucionales.
-3. **Adaptación al Proyecto:** Estructuración sobre los 5 pasos del flujo y panel centralizado de operación (Cockpit).
-4. **Mejora Continua:** Revisiones periódicas para calibrar y ajustar prioridades de entrega con los referentes.
+### 3. Enfoque de Desarrollo y Adaptación Metodológica (Marco PMI + IA)
+El proyecto adopta un marco Ágil (Iterativo e Incremental) bajo la modalidad Scrumban estructurado en 5 ciclos semanales con gestión visual de flujo, gobernado formalmente bajo el estándar de adaptación del PMI (PMBOK® 7ª Edición) integrado con IA generativa (Ref: **DOC-GOV-008**):
+1. **Paso 1 • Enfoque de Desarrollo Inicial:** Enfoque Híbrido Estricto. Fase de especificación y contratos predictiva (Spec-Driven / OpenAPI / DDL), complementada con micro-sprints adaptativos de desarrollo asistido por IA.
+2. **Paso 2 • Adaptación a Quantux (Organización):** Alineación a las directrices institucionales de Quantux (`GEMINI.md`, `AGENTS.md`), restricciones negativas inquebrantables ("OJO") y estándares de interoperabilidad y datos en salud.
+3. **Paso 3 • Adaptación al Proyecto:** Desglose atómico de Historias de Usuario, Test-Driven Development (TDD) con ejecución en CLI, y compuertas automáticas de calidad (`validate_ojo_compliance.py`, tests DOM).
+4. **Paso 4 • Mejora Continua y Regla Mandatoria de Backlog:** Toda mejora, oportunidad de mejora (OM) o gap técnico/funcional DEBE canalizarse obligatoriamente como una tarjeta en la columna **Product Backlog** del Tablero Scrumban (`00_Tablero_Scrumban_Quantux.html`), conteniendo la documentación completa o su enlace directo (`doc_link`). Queda prohibido el desarrollo "al vuelo" sin tarjeta en el Backlog.
 
 ---
 
 ### 4. Estructura de Roles y Matriz RACI de Gobernanza
-| Actividad / Hito de Gestión | Solution Owner | Ref. Funcional | Fac. Técnico | Cap. Humano | Gerencia Gral. |
-| :--- | :---: | :---: | :---: | :---: | :---: |
-| Definición de Alcance y Plan de Gestión | **R / A** | C | C | I | I |
-| Aprobación de Requerimientos y Backlog | **R** | **A** | C | I | I |
-| Diseño y Construcción del Incremento | **R / A** | I | C | I | I |
-| Validación de la Demo Operativa E2E | **R** | **A** | C | I | I |
-| Aprobación Final del Proyecto | **R** | C | C | C | **A** |
+| Actividad / Hito de Gestión | Solution Owner | Ref. Funcional | Fac. Técnico | Cap. Humano | Gerencia Gral. | Agente IA |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| Definición de Alcance y Plan de Gestión | **R / A** | C | C | I | I | C |
+| Aprobación de Requerimientos y Backlog | **R** | **A** | C | I | I | C |
+| Priorización de Mejoras/Gaps en Product Backlog | **R / A** | C | C | I | I | R (Alta) |
+| Diseño y Construcción del Incremento (TDD) | **A** | I | C | I | I | **R** |
+| Validación de Calidad y Gatekeepers OJO | **A** | I | C | I | I | **R** |
+| Validación de la Demo Operativa E2E | **R** | **A** | C | I | I | I |
+| Aprobación Final del Proyecto | **R** | C | C | C | **A** | I |
 
 *Referencias: **R** (Responsable de ejecución), **A** (Aprobador final), **C** (Consultado), **I** (Informado).*
 
@@ -140,6 +142,7 @@ El proyecto adopta un marco Ágil (Iterativo e Incremental) bajo la modalidad Sc
    * Doc 02: Especificación Funcional y Backlog.
    * Doc 03: Arquitectura y Diseño Técnico.
    * Doc 04: Guía de Demostración Operativa.
+   * Doc 08: Marco de Trabajo PMI + IA y Gobernanza de Calidad (DOC-GOV-008).
    * *Criterio de Aceptación:* Aprobación formal por el Comité Evaluador.
 2. **Paquete de Software:**
    * Aplicación Backend con base de datos configurada.

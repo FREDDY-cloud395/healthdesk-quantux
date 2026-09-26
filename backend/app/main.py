@@ -21,6 +21,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+from fastapi import Request
+
+@app.middleware("http")
+async def add_no_cache_header(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    return response
+
 from app.api.endpoints import auth, tickets, masters, users, releases, team_leader, files, ai_assistant
 
 # SEED AUTOMATICO Y MOTOR DE DEMOSTRACION CONTINUA AL INICIAR
@@ -48,8 +58,9 @@ app.include_router(releases.router, prefix="/api/v1/releases", tags=["Software R
 app.include_router(team_leader.router, prefix="/api/v1/team-leader", tags=["Torre de Control Team Leader"])
 
 # Configuración de Rutas de Archivos Estáticos
-docs_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "docs"))
-frontend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "frontend"))
+base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+docs_dir = os.path.abspath(os.path.join(base_dir, "docs"))
+frontend_dir = os.path.abspath(os.path.join(base_dir, "frontend"))
 
 # Montar frontend en /static, /css, /js, /assets
 if os.path.exists(frontend_dir):
@@ -65,7 +76,48 @@ if os.path.exists(frontend_dir):
         app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
 
 if os.path.exists(docs_dir):
-    app.mount("/docs-files", StaticFiles(directory=docs_dir), name="docs_files")
+    app.mount("/docs-files-static", StaticFiles(directory=docs_dir), name="docs_files_static")
+
+from app.doc_viewer import serve_document
+
+@app.get("/docs-files/{file_name:path}")
+@app.get("/docs/{file_name:path}")
+def route_docs_path(file_name: str, raw: bool = False):
+    candidates = [
+        os.path.join(docs_dir, file_name),
+        os.path.join(docs_dir, f"{file_name}.md"),
+        os.path.join(base_dir, file_name),
+        os.path.join(base_dir, f"{file_name}.md"),
+    ]
+    for c in candidates:
+        if os.path.isfile(c):
+            return serve_document(c, os.path.basename(c), raw=raw)
+    return serve_document("", file_name, raw=raw)
+
+@app.get("/{file_name}.md")
+def route_markdown_root(file_name: str, raw: bool = False):
+    full_name = f"{file_name}.md"
+    candidates = [
+        os.path.join(docs_dir, full_name),
+        os.path.join(base_dir, full_name),
+    ]
+    for c in candidates:
+        if os.path.isfile(c):
+            return serve_document(c, os.path.basename(c), raw=raw)
+    return serve_document("", full_name, raw=raw)
+
+@app.get("/{file_name}.py")
+def route_py_root(file_name: str, raw: bool = False):
+    full_name = f"{file_name}.py"
+    candidates = [
+        os.path.join(base_dir, full_name),
+        os.path.join(base_dir, "scripts", full_name),
+        os.path.join(docs_dir, full_name),
+    ]
+    for c in candidates:
+        if os.path.isfile(c):
+            return serve_document(c, os.path.basename(c), raw=raw)
+    return serve_document("", full_name, raw=raw)
 
 # Endpoints de Documentación y Cockpit Central
 @app.get("/")
@@ -91,6 +143,16 @@ def serve_scrumban():
     if os.path.exists(f):
         return FileResponse(f, headers={"Cache-Control": "no-cache, no-store, must-revalidate"})
     return {"message": "Tablero Scrumban no encontrado"}
+
+@app.get("/assets/{file_path:path}")
+def serve_assets(file_path: str):
+    p1 = os.path.join(docs_dir, "assets", file_path)
+    if os.path.exists(p1):
+        return FileResponse(p1, headers={"Cache-Control": "no-cache, no-store, must-revalidate"})
+    p2 = os.path.join(frontend_dir, "assets", file_path)
+    if os.path.exists(p2):
+        return FileResponse(p2, headers={"Cache-Control": "no-cache, no-store, must-revalidate"})
+    return {"message": "Recurso no encontrado", "file": file_path}
 
 @app.get("/plan")
 def serve_plan():
@@ -150,6 +212,33 @@ def download_presentacion_pptx():
         )
     return {"message": "Presentación PowerPoint no encontrada"}
 
+@app.get("/reemplazo-n1")
+@app.get("/portal-n1")
+@app.get("/n1")
+def serve_reemplazo_n1():
+    f = os.path.join(frontend_dir, "reemplazo-n1.html")
+    if os.path.exists(f):
+        return FileResponse(f, headers={"Cache-Control": "no-cache, no-store, must-revalidate"})
+    return {"message": "Interfaz Oficial de Reemplazo N1 no encontrada"}
+
+@app.get("/propuesta-n1")
+def serve_propuesta_n1_html():
+    f = os.path.join(docs_dir, "Documento_Propuesta_Solucion_Reemplazo_N1_Final.html")
+    if os.path.exists(f):
+        return FileResponse(f, headers={"Cache-Control": "no-cache, no-store, must-revalidate"})
+    return {"message": "Documento Propuesta N1 no encontrado"}
+
+@app.get("/propuesta-n1.pdf")
+def download_propuesta_n1_pdf():
+    f = os.path.join(docs_dir, "Propuesta_Funcional_Reemplazo_N1_OSDE_Quantux.pdf")
+    if os.path.exists(f):
+        return FileResponse(
+            f,
+            filename="Propuesta_Funcional_Reemplazo_N1_OSDE_Quantux.pdf",
+            media_type="application/pdf"
+        )
+    return {"message": "PDF Propuesta N1 no encontrado"}
+
 @app.get("/api")
 @app.get("/health")
 def api_status():
@@ -157,10 +246,13 @@ def api_status():
         "system": "Quantux ServiceDesk Enterprise",
         "organization": "Quantux Global Enterprise",
         "status": "ONLINE",
-        "environment": "Enterprise Edition (v4.2.0)",
-        "version": "4.2.0",
-        "release": "Mando Operativo Unificado (v4.2.0 • Densidad Silenciosa)",
+        "environment": "Enterprise Edition (v4.3.0)",
+        "version": "4.3.0",
+        "release": "Reemplazo Integral N1 OSDE (v4.3.0 • ITIL 4, KCS v6 & Densidad Silenciosa)",
         "cockpit_url": "/cockpit",
+        "reemplazo_n1_url": "/reemplazo-n1",
+        "propuesta_url": "/propuesta-n1",
+        "propuesta_pdf_url": "/propuesta-n1.pdf",
         "scrumban_url": "/scrumban",
         "manual_url": "/manual",
         "docs_url": "/docs"

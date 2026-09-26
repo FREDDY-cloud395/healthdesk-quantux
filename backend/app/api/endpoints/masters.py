@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session, select, delete
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 from datetime import datetime
 from pydantic import BaseModel
 import unicodedata
@@ -146,7 +146,7 @@ def _ensure_kb_seed(session: Session):
         if script.exists():
             subprocess.run([sys.executable, str(script)], check=False)
 
-@router.get("/articles", response_model=List[KBArticle])
+@router.get("/articles")
 def list_articles(
     category: Optional[str] = None,
     search: Optional[str] = None,
@@ -179,7 +179,16 @@ def list_articles(
             return ca.replace(tzinfo=None)
         return ca
 
-    return sorted(articles, key=_safe_sort_key, reverse=True)
+    sorted_arts = sorted(articles, key=_safe_sort_key, reverse=True)
+    from app.services.ticket_manager_bot import TicketManagerBot
+    enriched = []
+    for art in sorted_arts:
+        d = art.model_dump()
+        contribs = TicketManagerBot.get_article_contributing_tickets(session, art.id)
+        d["contributing_tickets"] = contribs
+        d["contributing_tickets_count"] = len(contribs)
+        enriched.append(d)
+    return enriched
 
 @router.get("/articles/categories-count")
 def get_categories_count(session: Session = Depends(get_session)):
@@ -196,12 +205,25 @@ def get_categories_count(session: Session = Depends(get_session)):
         "by_category": counts
     }
 
-@router.get("/articles/{article_id}", response_model=KBArticle)
+@router.get("/articles/{article_id}")
 def get_article(article_id: int, session: Session = Depends(get_session)):
     article = session.get(KBArticle, article_id)
     if not article:
         raise HTTPException(status_code=404, detail="Artículo no encontrado")
-    return article
+    from app.services.ticket_manager_bot import TicketManagerBot
+    contribs = TicketManagerBot.get_article_contributing_tickets(session, article_id)
+    art_dict = article.model_dump()
+    art_dict["contributing_tickets"] = contribs
+    art_dict["contributing_tickets_count"] = len(contribs)
+    return art_dict
+
+@router.get("/articles/{article_id}/contributing-tickets")
+def get_article_contributing_tickets(article_id: int, session: Session = Depends(get_session)):
+    article = session.get(KBArticle, article_id)
+    if not article:
+        raise HTTPException(status_code=404, detail="Artículo no encontrado")
+    from app.services.ticket_manager_bot import TicketManagerBot
+    return TicketManagerBot.get_article_contributing_tickets(session, article_id)
 
 @router.get("/articles/{article_id}/history", response_model=List[KBArticleHistory])
 def get_article_history(article_id: int, session: Session = Depends(get_session)):
@@ -802,6 +824,8 @@ class CopilotQueryResponse(BaseModel):
     client_response: str
     technical_sop: str
     quick_solution: str
+    contributing_tickets: List[Dict[str, Any]] = []
+    contributing_tickets_count: int = 0
 
 @router.post("/articles/copilot-chat", response_model=CopilotQueryResponse)
 def copilot_chat_kb(req: CopilotQueryRequest, session: Session = Depends(get_session)):
@@ -918,6 +942,9 @@ def copilot_chat_kb(req: CopilotQueryRequest, session: Session = Depends(get_ses
         tech_sop = f"Consultar artículo oficial #{best_article.id} en Base de Conocimiento para pasos detallados de N1/N2."
         quick = best_article.title
 
+    from app.services.ticket_manager_bot import TicketManagerBot
+    contribs = TicketManagerBot.get_article_contributing_tickets(session, best_article.id)
+
     return CopilotQueryResponse(
         query=req.query,
         matched_article_id=best_article.id,
@@ -926,5 +953,7 @@ def copilot_chat_kb(req: CopilotQueryRequest, session: Session = Depends(get_ses
         diagnostic=diag,
         client_response=client_res,
         technical_sop=tech_sop,
-        quick_solution=quick
+        quick_solution=quick,
+        contributing_tickets=contribs,
+        contributing_tickets_count=len(contribs)
     )

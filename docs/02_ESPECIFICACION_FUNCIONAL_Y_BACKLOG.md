@@ -250,3 +250,95 @@
   * *Narrativa:* **Como** Administrador, **quiero** administrar las plataformas, tipos de ticket y niveles de prioridad, **para** mantener el sistema alineado a la evolución del catálogo corporativo.
   * *Criterios de Aceptación:*
     * **Dado** el panel de configuración, **cuando** se edita una categoría, **entonces** los formularios de alta y filtros reflejan los cambios de forma consistente.
+
+---
+
+### 5. Épica de Gobernanza, Calidad PMI+IA y Mejoras de Backlog (EP-07)
+*Marco de Referencia:* **DOC-GOV-008** (`docs/08_MARCO_DE_TRABAJO_PMI_IA_Y_GOBERNANZA_CALIDAD.md`)
+
+En virtud del protocolo de adaptación PMI y aseguramiento de calidad, todo gap funcional, mejora técnica u oportunidad se gestiona atómicamente en formato de Historia de Usuario con criterios Gherkin y criterios de adaptación metodológica:
+* **GAP-01 (5 SP):** Formalización del Marco PMI+IA y Protocolo de Calidad en Suite Documental.
+* **MEJ-01 (5 SP):** Automatización de Bucle TDD y Pre-commit Hooks para Validadores OJO.
+* **OM-01 (8 SP):** Trazabilidad Bidireccional de Tickets hacia Contratos OpenAPI y Esquemas DDL.
+* **GAP-02 (5 SP):** Blindaje de Integridad de Contexto para Auditorías TQM y Cero Scope Creep.
+* **MEJ-02 (3 SP):** Soporte Nativo de Enlaces Documentales y Modal de UH en Tablero Scrumban.
+
+#### Nuevos Items de Alta Prioridad Incorporados al Sprint Backlog (Sprint 6):
+* **UH-66 [P1 - 3 SP]:** Depuración de Componentes de Debug, Subtítulo Redundante y Limpieza Zen del Portal del Solicitante.
+  * *Narrativa:* **Como** Profesional Médico y Solicitante del Centro de Ayuda, **quiero** un portal limpio y sin ruido visual de desarrollo (sin pastillas de mockups 1 a 7, sin subtítulo redundante y sin elementos desbordados), **para** concentrarme exclusivamente en resolver mi consulta sin distracciones.
+  * *Criterios de Aceptación Gherkin:*
+    * **Dado** el ingreso al sistema, **cuando** se visualiza la barra de navegación superior, **entonces** no existe el contenedor de debug `#nav-mockup-pills` (1. Portal a 7. Config ITIL).
+    * **Dado** el Portal del Solicitante en reposo, **cuando** se renderiza el Hero centrado, **entonces** solo se muestra el logo, el título "¿En qué podemos asistirte hoy?" y el buscador, sin el subtítulo redundante.
+    * **Dado** cualquier ancho de pantalla, **cuando** se renderiza la cabecera, **entonces** las acciones (`+ Crear Solicitud`, `Mis Solicitudes`, Chip de Perfil) se alinean perfectamente sin truncamiento ni botones espurios [M...].
+* **ISSUE-04 [P1 - 3 SP]:** Imposibilidad de scroll en desplegable de temas oficiales homologados (Typeahead).
+  * *Componente:* `frontend/index.html` (`#requester-typeahead-dropdown`), `frontend/js/typeahead.js`.
+  * *Causa:* Desbordamiento vertical fuera de viewport con `overflow: hidden` en contenedores superiores.
+  * *Criterios:* Scroll vertical fluido habilitado con `overflow-y: auto !important` y `max-height: calc(100vh - 420px)`.
+* **ISSUE-05 [P1 - 2 SP]:** Botón 'Hacer otra consulta' no oculta ni reinicia el historial de consultas anteriores.
+  * *Componente:* `frontend/js/app.js` (líneas 2876, 2896, 2909).
+  * *Causa:* Invocación a `focusRequesterChatInput()` en lugar de reseteo completo con `clearRequesterChat()`.
+  * *Criterios:* Al presionar "Hacer otra consulta", el stream previo se oculta de inmediato y se restaura el Hero centrado con input en blanco.
+* **ISSUE-06 [P1 - 3 SP]:** Falla en visualización de Constancia de Resolución Inmediata y campo/toast fantasma sin texto.
+  * *Componente:* `frontend/js/app.js` (`requesterAiResolve`), `frontend/css/styles.css` (`.toast`).
+  * *Causa:* Notificación toast con texto blanco puro (`#FFFFFF`) sobre fondo blanco hueso (`#F8FAFC`) creando una caja fantasma sin texto legible, y falta de anclaje de la constancia formal al hacer clic en "Ver en Mis Solicitudes".
+  * *Criterios:* Toasts con contraste corporativo de alto impacto (`#0F172A`) y apertura de Constancia FCR Oficial certificada con número de ticket.
+
+* **UH-67 [P1 - 5 SP]:** Subniveles Interactivos de Navegación en Árbol N1 y Separación de Capas Médico vs Soporte.
+  * *Evidencia Visual:* ![Captura UH-67](assets/capturas/UH-67_doble_informacion_subniveles_arbol.png)
+  * *Narrativa:* **Como** Profesional Médico y Solicitante, **quiero** que al consultar por un tema del árbol de decisiones N1 el sistema me presente subniveles de navegación claros e interactivos y una respuesta sin ambigüedades, separando la acción resolutiva asistencial de los fundamentos normativos para soporte, **para** comprender de inmediato qué debo hacer en Consultorio Digital sin saturarme de información técnica no aplicable.
+  * *Criterios de Aceptación Gherkin:*
+    * **Dado** una consulta que activa un árbol con subramas (ej: Matrícula SISA / Vademécum), **cuando** el Asistente N1 responde, **entonces** despliega chips de navegación interactiva (`[ Matrícula SISA ]`, `[ Vademécum ]`, `[ Validación Biométrica ]`, `[ Receta en Contingencia ]`) para desambiguar la necesidad.
+    * **Dado** el contenido de la respuesta, **cuando** se renderiza para el médico, **entonces** la Capa 1 presenta únicamente el paso resolutivo inmediato en lenguaje claro, y la Capa 2 (marco normativo, leyes, validaciones de backend) queda accesible bajo un botón/acordeón colapsable `"▾ Ver Fundamento Normativo y Técnico Oficial"`.
+    * **Dado** el texto de respuesta con formato, **cuando** se renderiza en pantalla, **entonces** los asteriscos de Markdown se transforman en negritas y viñetas HTML limpias.
+  * *Criterios de Adaptación PMI (4 Pasos):*
+    1. Reducción de carga cognitiva en el punto de atención médica.
+    2. Separación de incumbencias: Médico asistencial (Paso resolutivo) vs Analista de soporte (Fundamento técnico/regulatorio).
+    3. Reutilización del catálogo local y del endpoint `/api/ai/triage`.
+    4. Trazabilidad con captura original `UH-67_doble_informacion_subniveles_arbol.png`.
+
+* **UH-68 [P1 - 2 SP]:** Remoción de Métricas y Etiquetas de SLA en el Portal del Solicitante / Médico.
+  * *Evidencia Visual:* ![Captura UH-68](assets/capturas/UH-68_quitar_sla_solicitante.png)
+  * *Narrativa:* **Como** Profesional Médico Solicitante, **quiero** que el sistema no exhiba tiempos ni etiquetas de compromisos de SLA internos de TI en mi vista ni en mis comprobantes de solicitud, **para** que la interfaz esté libre de métricas burocráticas internas que nadie solicitó y que no aportan valor asistencial a mi práctica clínica.
+  * *Criterios de Aceptación Gherkin:*
+    * **Dado** el modal de detalle de solicitud del solicitante, **cuando** se visualiza el asunto registrado, **entonces** no figura la etiqueta `⏱️ SLA de Atención: < 15 min`.
+    * **Dado** un incidente escalado a Soporte N2 en el chat, **cuando** se renderiza la tarjeta de confirmación, **entonces** no figura la línea `• SLA de Atención N2: < 15 minutos en cola prioritaria`.
+    * **Dado** el acceso de analistas N2, supervisores y líderes en la Mesa de Ayuda y Tableros ITIL, **cuando** se gestionan los tickets, **entonces** los cálculos y monitores de SLA permanecen plenamente operativos para la gestión operativa interna.
+  * *Criterios de Adaptación PMI (4 Pasos):*
+    1. Simplificación y despojo de ruidos burocráticos hacia el usuario final asistencial.
+    2. Respeto a las directivas del Solution Owner: "quita el sla, nadie lo pidió".
+    3. Verificación de no regresión en endpoints backend de cálculo SLA ITIL.
+    4. Trazabilidad con captura original `UH-68_quitar_sla_solicitante.png`.
+
+* **ISSUE-07 [P1 - 3 SP]:** Erradicación de Terminología Médica/Hospitalaria en Mensajes y Estados del Sistema de TI.
+  * *Evidencia Visual:* ![Captura ISSUE-07](assets/capturas/ISSUE-07_terminologia_medica_guardia.png)
+  * *Severidad:* P1 — Alta Prioridad / Dominio Conceptual y Vocabulario.
+  * *Componente:* `frontend/index.html` (navbar, placeholders), `frontend/js/app.js` (`openRequesterTicketDetail`, `renderRequesterChatStream`).
+  * *Descripción:* El sistema utiliza terminología de la medicina asistencial ('Estado de Guardia Técnica', 'Transcripción clínica completa', 'Asunto Clínico Registrado', 'Conversación y Contexto Asistencial Transferido', 'Centro de Ayuda & Guardia Médica', 'Escribe tu consulta o síntoma médico') para describir procesos y estados que corresponden estrictamente al soporte técnico de software TI. El Solution Owner ha establecido taxativamente: "no deben haber en el producto términos similares a los usados en la terminología médica".
+  * *Solución Estandarizada ITIL:*
+    1. `ESTADO DE GUARDIA TÉCNICA:` -> `ESTADO DE LA SOLICITUD DE SOPORTE:`
+    2. `transcripción clínica completa` -> `diagnóstico y detalle técnico transferido`
+    3. `ASUNTO CLÍNICO REGISTRADO:` -> `ASUNTO DE LA SOLICITUD:`
+    4. `CONVERSACIÓN Y CONTEXTO ASISTENCIAL TRANSFERIDO:` -> `HISTORIAL Y CONTEXTO DE LA CONSULTA:`
+    5. `Centro de Ayuda & Guardia Médica` (Navbar) -> `Centro de Ayuda & Mesa de Soporte`
+    6. Placeholder del chat: `Escribe tu consulta sobre Consultorio Digital (ej: matrícula provincial, error en receta, cambio de cuit)...`
+    7. `Guardia N1/N2` -> `Soporte N1/N2`
+  * *Criterios de Aceptación Gherkin:*
+    * **Dado** el modal de solicitud y el chat del solicitante, **cuando** se visualizan los estados, **entonces** no figura la palabra "Guardia", "Clínico" o "Asistencial" para referirse a tickets, operadores o sistemas TI.
+    * **Dado** cualquier mensaje generado por el sistema, **cuando** describe el flujo de soporte, **entonces** emplea vocabulario estándar de Service Desk ("Solicitud de Soporte", "Detalle Técnico", "Mesa de Ayuda").
+    * **Dado** el issue registrado en el tablero, **cuando** se abre la tarjeta, **entonces** presenta la captura con el recuadro verde "ESTADO DE GUARDIA TÉCNICA" como evidencia.
+
+* **UH-69 [P1 - 8 SP]:** Bot Gestor de Tickets Multi-Rol, Evaluación KCS v6 y Trazabilidad de Tickets Contribuyentes en Base de Conocimiento.
+  * *Narrativa:* **Como** Solution Owner, Analista de Soporte y Profesional Asistencial, **quiero** que el Bot Gestor de Tickets avance automáticamente los casos interactuando con todos los roles y sectores institucionales, registre los diálogos con autor, rol y sector, evalúe según el negocio si el caso capitaliza conocimiento para asociarlo a la Base de Conocimiento al resolverse, y permita que al consultar la KB se visualicen los tickets que sumaron información, **para** asegurar la continuidad operativa, trazabilidad conversacional y enriquecimiento continuo de la Base de Conocimiento (KCS v6) sin sobrecarga burocrática manual.
+  * *Criterios de Aceptación Gherkin:*
+    * **Dado** un ticket en cualquier estado del flujo ITIL (`NUEVO`, `ASIGNADO`, `EN_CURSO`), **cuando** el bot gestor procesa un paso, **entonces** interactúa con el rol correspondiente (`SOLICITANTE`, `SOPORTE_N1`, `ESPECIALISTA_N2`, `ADMIN_INFRAESTRUCTURA_N3`, `TEAM_LEADER`, `PASARELA_TERCEROS`) y su sector (Guardia Central, Farmacia y Triage, Integraciones y Pasarelas OSDE/SISA, Infraestructura N3), registrando cada mensaje en `ticket_comments` con `author_role` y `author_sector`.
+    * **Dado** un ticket en transición a `RESUELTO`, **cuando** el bot evalúa la resolución, **entonces** si es una incidencia técnica transferible (errores 500/504, caídas de pasarela, timeout SISA, nomencladores) lo asocia al artículo KB creando la entidad `KBArticleContribution` y marcando `contributed_to_kb = True` y `associated_kb_id`; y si es una rutina administrativa sin valor de conocimiento (reseteo simple, duplicado) lo resuelve justificando la no asociación.
+    * **Dado** un usuario u operador que consulta la Base de Conocimiento por tema (vía listado `/articles`, detalle `/articles/{id}`, o `/copilot-chat`), **cuando** se inspecciona el artículo o se responde la consulta, **entonces** el sistema exhibe los tickets específicos (ID, rol, sector, autor, fecha y síntesis de solución/RCA) que sumaron información al resolverse.
+    * **Dado** el backend FastAPI y el simulador en segundo plano `live_simulator`, **cuando** el bot se ejecuta o se invocan los endpoints `/api/v1/tickets/bot/advance-cycle`, `/bot/step`, `/bot/advance-to-resolution` y `/kb-contribution`, **entonces** responden con HTTP 200 y actualizan la persistencia relacional SQLite con índices optimizados.
+  * *Criterios de Adaptación PMI (4 Pasos):*
+    1. Especificación predictiva de la matriz de roles, sectores y reglas de negocio KCS v6 combinada con ejecución ágil automatizada.
+    2. Cumplimiento de la Pizarra Neutral Quantux (cero fondos oscuros masivos, cero rojos `#DC2626` / `#EF4444`, acento Teal `#00A896`).
+    3. Verificación técnica automatizada con suite de pruebas dedicada (`test_ticket_manager_bot_and_kb.py`: 4/4 tests OK).
+    4. Trazabilidad inmutable e indexada en SQLite (`ix_kb_contributions_article`, `ix_kb_contributions_ticket`) y sincronización con el tablero Scrumban.
+
+*(El detalle completo de narrativas, escenarios Gherkin y criterios de adaptación se encuentra en el Documento DOC-GOV-008, DOC-QA-004 y en el Tablero Scrumban interactivo docs/00_Tablero_Scrumban_Quantux.html).*
+

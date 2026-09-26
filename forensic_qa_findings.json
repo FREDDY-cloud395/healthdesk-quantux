@@ -1,0 +1,96 @@
+[
+  {
+    "modulo": "HTML / DOM",
+    "tipo": "IDs Duplicados en DOM",
+    "gravedad": "ALTA",
+    "descripcion": "Se encontraron 3 IDs duplicados en index.html que causan comportamiento impredecible en getElementById",
+    "detalles": [
+      "email-sim-subject",
+      "email-sim-body",
+      "requester-chat-input"
+    ]
+  },
+  {
+    "modulo": "JavaScript / DOM Binding",
+    "tipo": "Referencias a IDs Inexistentes (getById Fantasmas)",
+    "gravedad": "CRÍTICA",
+    "descripcion": "El JS intenta manipular 175 elementos por ID que NO existen en index.html ni en plantillas dinámicas",
+    "detalles": [
+      "cfg-sla-p3-resol",
+      "req-portal-user-name",
+      "action-is-workaround",
+      "unified-hub-view",
+      "btn-top-new-ticket",
+      "current-user-name",
+      "zd-main-input-domains",
+      "zd-main-check-shared",
+      "btn-zd-view-bipanel",
+      "cfg-notify-p1",
+      "kb-copilot-container",
+      "cfg-sla-p1-resp",
+      "tl-filter-institution",
+      "tab-btn-kb-catalog",
+      "profile-full-name",
+      "jira-drag-subtitle",
+      "top-username",
+      "modal-priority-select",
+      "filter-platform",
+      "btn-run-custom-rebalance"
+    ]
+  },
+  {
+    "modulo": "Estilos / Pizarra Neutral",
+    "tipo": "Violación de Paleta Neutral (Fondos Oscuros / Rojos Saturados)",
+    "gravedad": "ALTA",
+    "descripcion": "Se detectaron 22 componentes visuales con fondos oscuros (#0A1C3E, #0F172A) o rojos saturados (#DC2626) prohibidos por OJO",
+    "detalles": [
+      "Línea 488: <button type=\"button\" id=\"btn-top-requester-my-requests\" onclick=\"openRequesterHistoryModa",
+      "Línea 1691: <button type=\"button\" class=\"btn-clean-action\" data-inst-type-filter=\"INCIDENTS\" onclick=\"",
+      "Línea 1696: <button type=\"button\" id=\"btn-view-mode-cards\" class=\"btn-view-mode active\" onclick=\"toggl",
+      "Línea 2155: <span class=\"modal-title\" id=\"history-modal-article-title\" style=\"font-size: 14.5px; font-",
+      "Línea 2243: <label for=\"modal-institution\" style=\"display: block; font-size: 12px; font-weight: 700; c",
+      "Línea 2244: <select id=\"modal-institution\" name=\"institution_code\" class=\"form-control\" required style",
+      "Línea 2257: <label for=\"modal-platform\" style=\"display: block; font-size: 12px; font-weight: 700; colo",
+      "Línea 2258: <select id=\"modal-platform\" name=\"platform\" class=\"form-control\" required style=\"font-size",
+      "Línea 2274: <label for=\"modal-title\" style=\"display: block; font-size: 12px; font-weight: 700; color: ",
+      "Línea 2275: <input type=\"text\" id=\"modal-title\" name=\"title\" class=\"form-control\" required placeholder",
+      "Línea 2280: <label for=\"modal-description\" style=\"display: block; font-size: 12px; font-weight: 700; c",
+      "Línea 2281: <textarea id=\"modal-description\" name=\"description\" class=\"form-control\" rows=\"4\" required"
+    ]
+  },
+  {
+    "modulo": "Maquetación / Scroll & Overflow",
+    "tipo": "Bloqueo de Scroll en Contenedores de Datos",
+    "gravedad": "MEDIA",
+    "descripcion": "Contenedores que fuerzan overflow: hidden impidiendo el desplazamiento vertical de contenido extenso",
+    "detalles": [
+      "Línea 1711: <div id=\"container-institutions-table\" style=\"display: none; background: #FFFFFF; border: "
+    ]
+  },
+  {
+    "modulo": "JavaScript / Invocaciones Inline",
+    "tipo": "Funciones en atributos on*() no declaradas en JS",
+    "gravedad": "CRÍTICA",
+    "descripcion": "Se encontraron 3 llamadas onclick/onchange/oninput en el HTML cuyas funciones NO existen en el JS",
+    "detalles": [
+      "handleRequesterTypeahead",
+      "if",
+      "handleKbTypeahead"
+    ]
+  },
+  {
+    "modulo": "Deuda Técnica / JS",
+    "tipo": "Funciones Duplicadas en app.js",
+    "gravedad": "ALTA",
+    "descripcion": "Se detectaron 7 funciones redeclaradas múltiples veces en app.js (la última sobreescribe a las anteriores)",
+    "detalles": [
+      "sendRequesterChatMessage",
+      "handleOutside",
+      "openReassignModal",
+      "openTechDetailsModal",
+      "openAuditTrailModal",
+      "openEscalateModal",
+      "formatDateFriendly"
+    ]
+  }
+]

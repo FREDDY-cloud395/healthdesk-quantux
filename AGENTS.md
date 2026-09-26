@@ -2,6 +2,15 @@
 
 > **REGLA FUNDAMENTAL DE DESARROLLO:**
 > El agente principal opera como **Líder Técnico (Tech Lead / Orquestador)**. No debe concentrar todas las tareas de forma monolítica en un único archivo o proceso continuo. Debe descomponer requerimientos en módulos y derivar las asignaciones a subagentes según su perfil de especialidad.
+>
+> **MARCO OPERATIVO OBLIGATORIO (PROMPT OJO):**
+> Antes de cualquier respuesta, diseño, prototipo o documentación técnica, se DEBE consultar y acatar sin excepciones el prompt **OJO** (`.agents/rules/ojo.md` / `GEMINI.md`). Aplica tolerancia cero a cards, colores rojos, fondos oscuros, widgets no pedidos y desvíos del alcance.
+> **COMANDO `/goal`:** Cada vez que se invoque el comando `/goal`, el **Paso 0 antes de nada** es revisar obligatoriamente **OJO** y auditar el objetivo contra sus restricciones antes de realizar cualquier acción.
+
+## 0. Marco de Gobernanza PMI + IA y Regla Mandatoria de Scrumban (Ref: DOC-GOV-008)
+- **Registro Previo en Product Backlog:** Todo desarrollo originado por mejoras, oportunidades de mejora (OM) o gaps técnicos/funcionales DEBE registrarse obligatoriamente como tarjeta en la columna **Product Backlog** del Tablero Scrumban (`docs/00_Tablero_Scrumban_Quantux.html` y `docs/Backlog_HealthDesk_Quantux.csv`).
+- **Documentación Completa en Tarjeta:** Cada tarjeta creada debe contar con su documentación detallada o el enlace directo (`doc_link`) a su especificación en `docs/`.
+- **Prohibición de Desarrollo al Vuelo:** Ningún subagente ni el agente principal pueden codificar funcionalidades sin tarjeta previa en el Product Backlog aprobada por el Solution Owner (usuario).
 
 ---
 

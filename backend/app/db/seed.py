@@ -42,6 +42,8 @@ def run_seed():
             User(username="dnavarro", full_name="Diego Navarro", email="dnavarro@quantux.com", role=UserRole.SOPORTE, support_level=SupportLevel.N3),
             User(username="ealvarez", full_name="Esteban Álvarez", email="ealvarez@quantux.com", role=UserRole.SOPORTE, support_level=SupportLevel.N3),
             User(username="solicitante", full_name="Dr. Martín Gómez", email="solicitante@quantux.com", role=UserRole.SOLICITANTE, support_level=None),
+            User(username="dr_lopez", full_name="Dr. Juan López", email="dr_lopez@osde.com.ar", role=UserRole.SOLICITANTE, support_level=None),
+            User(username="bot_quantux", full_name="Bot Quantux", email="bot@quantux.com", role=UserRole.SOPORTE, support_level=SupportLevel.N1),
             User(username="alopez", full_name="Dra. Andrea López", email="alopez@sanatorio.salud.ar", role=UserRole.SOLICITANTE, support_level=None),
             User(username="jmolina", full_name="Dr. Javier Molina", email="jmolina@swissmedical.com.ar", role=UserRole.SOLICITANTE, support_level=None),
             User(username="cbenedetti", full_name="Dra. Clara Benedetti", email="cbenedetti@hospitalaleman.com", role=UserRole.SOLICITANTE, support_level=None),

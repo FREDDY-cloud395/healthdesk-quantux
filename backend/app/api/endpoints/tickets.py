@@ -71,7 +71,7 @@ class TicketUpdateRequest(BaseModel):
 
 class TicketAssignRequest(BaseModel):
     assignee_username: str
-    support_level: Optional[SupportLevel] = SupportLevel.N1
+    support_level: Optional[str] = "N1"
     reason: Optional[str] = None
     changed_by_username: str = "soporte"
 
@@ -128,11 +128,48 @@ class IaResolvedTicketRequest(BaseModel):
     chat_transcript: Optional[str] = None
     ia_feedback: Optional[str] = "Resuelto en Chat IA con éxito"
 
+class KCSMetadata(BaseModel):
+    version_metodologia: str = "KCS_v6"
+    tipo_resolucion: str = "DEFINITIVA"
+    tiempo_dedicado_minutos: Optional[int] = 10
+    resuelto_por: Optional[str] = "soporte"
+    nivel_soporte: Optional[str] = "N1"
+
+class ITILClassification(BaseModel):
+    nivel_1_macro: str = "SISTEMAS_ASISTENCIALES"
+    nivel_2_sistema: str = "CONSULTORIO_DIGITAL_OSDE"
+    nivel_3_componente: str = "MODULO_RECETA_ELECTRONICA"
+    nivel_4_sintoma_falla: str = "BLOQUEO_FIRMA_DIGITAL_OTP"
+
+class RootCauseAnalysis(BaseModel):
+    categoria_origen: str = "DESINCRONIZACION_PASARELA_REPOSITORIO"
+    descripcion_rca: str = "Desalineación de timestamp entre el token OTP y el servidor central."
+    codigo_error_sistema: Optional[str] = "ERR_VAL_OTP_TIMEOUT"
+    recurrencia_conocida: bool = True
+
+class KCSArticleCandidate(BaseModel):
+    propuesto_para_kb: bool = True
+    titulo_articulo: str
+    resumen_solucion: str
+    visibilidad: str = "INTERNO_SOPORTE"
+
+class KCSClosureRequest(BaseModel):
+    cierre_ticket_metadata: Optional[KCSMetadata] = None
+    clasificacion_itil: ITILClassification
+    diagnostico_causa_raiz: RootCauseAnalysis
+    procedimiento_resolutivo_secuencial: List[str]
+    articulo_kcs_candidato: KCSArticleCandidate
+
+class LinkParentTicketRequest(BaseModel):
+    parent_ticket_id: str
+    linked_by_username: Optional[str] = "soporte"
+
 class TicketDetailResponse(BaseModel):
     ticket: Ticket
     comments: List[TicketComment] = []
     audit_logs: List[TicketAuditLog] = []
     email_logs: List[EmailNotificationLog] = []
+    linked_child_ticket_ids: List[str] = []
 
 import threading
 _seq_lock = threading.Lock()
@@ -526,12 +563,14 @@ def get_ticket_detail(ticket_id: str, session: Session = Depends(get_session)):
     comments = session.exec(select(TicketComment).where(TicketComment.ticket_id == ticket_id)).all()
     audit_logs = session.exec(select(TicketAuditLog).where(TicketAuditLog.ticket_id == ticket_id).order_by(TicketAuditLog.created_at.desc())).all()
     email_logs = session.exec(select(EmailNotificationLog).where(EmailNotificationLog.ticket_id == ticket_id).order_by(EmailNotificationLog.created_at.desc())).all()
+    child_ids = session.exec(select(Ticket.id).where(Ticket.parent_ticket_id == ticket_id)).all()
     
     return {
         "ticket": ticket,
         "comments": comments,
         "audit_logs": audit_logs,
-        "email_logs": email_logs
+        "email_logs": email_logs,
+        "linked_child_ticket_ids": child_ids
     }
 
 # 2.1 OBTENER HISTORIAL DE NOTIFICACIONES POR EMAIL (UH-35)
@@ -755,10 +794,23 @@ def assign_ticket(ticket_id: str, req: TicketAssignRequest, background_tasks: Ba
     
     old_assignee = ticket.assignee_username
     ticket.assignee_username = req.assignee_username
-    if req.support_level:
-        ticket.support_level = req.support_level
+    req_level_str = str(getattr(req.support_level, 'value', req.support_level or '')).upper()
+    if req_level_str in ["N1", "N2", "N3"]:
+        ticket.support_level = SupportLevel(req_level_str)
     
-    if ticket.status == TicketStatus.NUEVO:
+    req_level_str = str(getattr(req.support_level, 'value', req.support_level or '')).upper()
+    if req.assignee_username == ticket.requester_username or req_level_str in ["SOLICITANTE", "PRESTADOR"]:
+        ticket.status = TicketStatus.ESPERANDO_AL_PRESTADOR
+        ticket.sla_paused = True
+        session.add(TicketAuditLog(
+            ticket_id=ticket_id,
+            changed_by_username=req.changed_by_username,
+            field_changed="sla_paused",
+            old_value="False",
+            new_value="True",
+            change_reason="Pausa automática de reloj SLA por derivación directa al solicitante/prestador"
+        ))
+    elif ticket.status == TicketStatus.NUEVO:
         ticket.status = TicketStatus.ASIGNADO
     
     ticket.updated_at = datetime.utcnow()
@@ -856,6 +908,15 @@ def update_ticket_status(ticket_id: str, req: TicketStatusRequest, background_ta
     old_status = ticket.status
     ticket.status = req.new_status
     ticket.updated_at = datetime.utcnow()
+    
+    # Pausa o Reanudación de Reloj SLA (Sección 5.5 ITIL 4)
+    from app.core.fsm import is_sla_paused_status
+    if is_sla_paused_status(req.new_status):
+        ticket.sla_paused = True
+        ticket.sla_paused_at = datetime.utcnow()
+    elif req.new_status == TicketStatus.EN_CURSO:
+        ticket.sla_paused = False
+        
     session.add(ticket)
     
     operator_user = req.changed_by_username or req.changed_by or "soporte"
@@ -907,6 +968,47 @@ def resolve_ticket(ticket_id: str, req: TicketResolveRequest, background_tasks: 
         new_value="RESUELTO",
         change_reason=f"Resolución técnica documentada (Workaround: {req.is_workaround})"
     ))
+
+    # ACCIÓN MANDATORIA: Solución Temporal (Workaround) genera automáticamente tarjeta en el Kanban de N3 y traza
+    if req.is_workaround:
+        from app.models.entities import SoftwareRelease, ReleaseStatus, SupportLevel, TicketComment
+        active_rel = session.exec(
+            select(SoftwareRelease).where(SoftwareRelease.status != ReleaseStatus.DESPLEGADA).order_by(SoftwareRelease.created_at.desc())
+        ).first()
+        if not active_rel:
+            active_rel = SoftwareRelease(
+                tag="v4.3.0-FIX",
+                name="Ingeniería N3 - Corrección Definitiva Workarounds",
+                notes="Release activa en tablero Kanban N3 para resolución de causa raíz de incidentes temporales.",
+                status=ReleaseStatus.PLANIFICADA,
+                created_by=resolver_user,
+                created_at=datetime.utcnow()
+            )
+            session.add(active_rel)
+            session.flush()
+
+        ticket.release_tag = active_rel.tag
+        ticket.support_level = SupportLevel.N3
+        session.add(ticket)
+
+        # Traza formal inmutable en TicketAuditLog
+        session.add(TicketAuditLog(
+            ticket_id=ticket.id,
+            changed_by_username=resolver_user,
+            field_changed="kanban_n3_workaround",
+            old_value=None,
+            new_value=f"Tarjeta Kanban N3 creada en Release {active_rel.tag}",
+            change_reason=f"[Pase a Ingeniería N3] Solución Temporal (Workaround). Se generó automáticamente la tarjeta en el Tablero Kanban de N3 ({active_rel.tag}) para corrección definitiva de causa raíz."
+        ))
+
+        # Traza visible en el feed/comentarios del ticket
+        session.add(TicketComment(
+            ticket_id=ticket.id,
+            author_username="bot_quantux",
+            message=f"🤖 [Bot Quantux - Pase a Ingeniería N3] Se ha aplicado una Solución Temporal (Workaround). Se generó automáticamente la tarjeta en el Tablero Kanban de N3 (Release {active_rel.tag}) para la corrección definitiva de la causa raíz.",
+            is_internal=True,
+            created_at=datetime.utcnow()
+        ))
     
     # Cascada de resolución si es Incidente Padre / Mayor (Módulo 1)
     child_tickets = session.exec(
@@ -941,6 +1043,7 @@ def resolve_ticket(ticket_id: str, req: TicketResolveRequest, background_tasks: 
     
     return ticket
 
+
 # 7. PASO 5 • CERRAR Y CALIFICAR TICKET (SOLO SOLICITANTE / ADMIN - MÓDULO 10)
 @router.patch("/{ticket_id}/close", response_model=Ticket)
 @router.post("/{ticket_id}/close", response_model=Ticket)
@@ -953,9 +1056,15 @@ def close_ticket(ticket_id: str, req: TicketCloseRequest, background_tasks: Back
         # Para evitar condiciones de carrera con el simulador continuo, hacemos la llamada idempotente:
         # actualizamos las calificaciones CSAT recibidas en la base de datos y retornamos éxito.
         if req.rating_stars is not None:
-            ticket.rating_stars = req.rating_stars
             if req.rating_stars <= 2:
+                fb_text = (req.rating_feedback or req.feedback or "").strip()
+                if not fb_text and not (ticket.rating_feedback or "").strip():
+                    raise HTTPException(
+                        status_code=422,
+                        detail="Para calificaciones de 1 o 2 estrellas es obligatorio ingresar una nota justificando el motivo de la insatisfacción."
+                    )
                 ticket.requires_service_recovery = True
+            ticket.rating_stars = req.rating_stars
         if req.rating_kudos:
             ticket.rating_kudos = req.rating_kudos
         if req.rating_feedback or req.feedback:
@@ -973,16 +1082,24 @@ def close_ticket(ticket_id: str, req: TicketCloseRequest, background_tasks: Back
     if closer_user and closer_user.role.value not in ("ADMIN", "SOLICITANTE") and closer_user.username != ticket.requester_username:
         raise HTTPException(status_code=403, detail="Por directiva de gobernanza de servicio, los tickets solo pueden ser cerrados y calificados por el usuario solicitante o un administrador.")
     
+    # Calificación CSAT "Buena Onda" y Detección de Queja
+    stars = req.rating_stars if req.rating_stars is not None else 5
+    fb_text = (req.rating_feedback or req.feedback or "").strip()
+    
+    # UH-19: Justificación obligatoria para 1 o 2 estrellas
+    if stars <= 2 and not fb_text:
+        raise HTTPException(
+            status_code=422,
+            detail="Para calificaciones de 1 o 2 estrellas es obligatorio ingresar una nota justificando el motivo de la insatisfacción."
+        )
+
     ticket.status = TicketStatus.CERRADO
     ticket.closed_by = req.closed_by_username
     ticket.closed_at = datetime.utcnow()
     ticket.updated_at = datetime.utcnow()
-    
-    # Calificación CSAT "Buena Onda" y Detección de Queja
-    stars = req.rating_stars if req.rating_stars is not None else 5
     ticket.rating_stars = stars
     ticket.rating_kudos = req.rating_kudos
-    ticket.rating_feedback = req.rating_feedback or req.feedback
+    ticket.rating_feedback = fb_text if fb_text else None
     
     # Si la calificación es baja (1 o 2 estrellas), activar Alerta de Rescate para el Team Leader
     if stars <= 2:
@@ -1042,7 +1159,7 @@ def close_ticket(ticket_id: str, req: TicketCloseRequest, background_tasks: Back
     
     return ticket
 
-# 8. AGREGAR COMENTARIO / NOTA PRIVADA
+# 8. AGREGAR COMENTARIO / NOTA PRIVADA CON MEDIACIÓN ACTIVA DEL BOT
 @router.post("/{ticket_id}/comments", response_model=TicketComment)
 def add_comment(ticket_id: str, req: TicketCommentRequest, session: Session = Depends(get_session)):
     ticket = session.get(Ticket, ticket_id)
@@ -1050,17 +1167,145 @@ def add_comment(ticket_id: str, req: TicketCommentRequest, session: Session = De
         raise HTTPException(status_code=404, detail="Ticket no encontrado.")
     
     text_msg = req.message or req.content or ""
+    author = req.author_username or "soporte"
     comment = TicketComment(
         ticket_id=ticket_id,
-        author_username=req.author_username or "soporte",
+        author_username=author,
         message=text_msg,
         is_internal=req.is_internal,
         created_at=datetime.utcnow()
     )
     session.add(comment)
+
+    # BOT INTERACCIÓN AUTOMÁTICA: Si el solicitante responde y el ticket estaba 'ESPERANDO_AL_PRESTADOR'
+    is_requester = (author.strip().lower() == (ticket.requester_username or "").strip().lower())
+    if is_requester and ticket.status == TicketStatus.ESPERANDO_AL_PRESTADOR:
+        old_status = ticket.status
+        ticket.status = TicketStatus.EN_CURSO
+        ticket.sla_paused = False
+        ticket.updated_at = datetime.utcnow()
+        session.add(ticket)
+
+        session.add(TicketAuditLog(
+            ticket_id=ticket.id,
+            changed_by_username="bot_quantux",
+            field_changed="status",
+            old_value=old_status.value if hasattr(old_status, 'value') else str(old_status),
+            new_value="EN_CURSO",
+            change_reason="Reanudación automática de SLA y pase a EN CURSO detectado por respuesta del solicitante."
+        ))
+
+        # El Bot publica confirmación de interacción en el hilo
+        bot_reply = TicketComment(
+            ticket_id=ticket.id,
+            author_username="bot_quantux",
+            message=f"🤖 [Bot Quantux - Interacción Registrada] El solicitante @{author} ha provisto información. Se reanuda el reloj de SLA y el ticket vuelve a EN CURSO para el analista asignado (@{ticket.assignee_username or 'soporte'}).",
+            is_internal=False,
+            created_at=datetime.utcnow()
+        )
+        session.add(bot_reply)
+
+    # BOT INTERACCIÓN INTERSECTORIAL: Detección de menciones intersectoriales (@n2, @n3, @infraestructura, @facturacion)
+    lower_msg = text_msg.lower()
+    sectors = {
+        "@n2": "Nivel 2 Pasarelas & Integraciones",
+        "@n3": "Nivel 3 Ingeniería Core & DBA",
+        "@infraestructura": "Infraestructura Cloud & Conectividad",
+        "@facturacion": "Facturación OSDE & Convenios Prestacionales",
+        "@red": "Auditoría Médica & Red Prestacional"
+    }
+    for tag, sector_name in sectors.items():
+        if tag in lower_msg:
+            session.add(TicketAuditLog(
+                ticket_id=ticket.id,
+                changed_by_username=author,
+                field_changed="intersector_mention",
+                old_value=None,
+                new_value=sector_name,
+                change_reason=f"Mención y solicitud de colaboración intersectorial hacia {sector_name}."
+            ))
+            break
+
     session.commit()
     session.refresh(comment)
     return comment
+
+
+class BotInteractionModeRequest(BaseModel):
+    action_type: str  # 'request_requester_info', 'dispatch_sector', 'summarize_handoff'
+    target_sector: Optional[str] = None
+    custom_note: Optional[str] = None
+    performed_by: str = "soporte"
+
+# 8.1 BOT DE TICKETS: GENERACIÓN DE INTERACCIÓN ENTRE ANALISTAS Y SOLICITANTE
+@router.post("/{ticket_id}/bot-interact")
+def bot_ticket_interact(ticket_id: str, req: BotInteractionModeRequest, session: Session = Depends(get_session)):
+    ticket = session.get(Ticket, ticket_id)
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket no encontrado.")
+
+    bot_msg = ""
+    if req.action_type == "request_requester_info":
+        # Pasa a esperando al prestador y pausa SLA
+        old_status = ticket.status
+        ticket.status = TicketStatus.ESPERANDO_AL_PRESTADOR
+        ticket.sla_paused = True
+        ticket.sla_paused_at = datetime.utcnow()
+        ticket.updated_at = datetime.utcnow()
+        session.add(ticket)
+
+        session.add(TicketAuditLog(
+            ticket_id=ticket.id,
+            changed_by_username=req.performed_by,
+            field_changed="status",
+            old_value=old_status.value if hasattr(old_status, 'value') else str(old_status),
+            new_value="ESPERANDO_AL_PRESTADOR",
+            change_reason="Bot de tickets solicitó datos complementarios al prestador. Reloj de SLA pausado."
+        ))
+
+        note = req.custom_note or "Por favor, indíquenos si el error persiste en el navegador y si cuenta con el token de atención generado."
+        bot_msg = f"🤖 [Bot Quantux - Solicitud de Información al Prestador]\nEstimado/a @{ticket.requester_username or 'Prestador'}: El analista @{req.performed_by} requiere datos adicionales para avanzar en su caso:\n\n👉 {note}\n\n(El cómputo de SLA permanecerá en pausa hasta su respuesta)."
+
+    elif req.action_type == "dispatch_sector":
+        sector = req.target_sector or "Nivel 2 Especializado"
+        note = req.custom_note or "Se solicita intervención para verificación técnica de conectividad o base de datos."
+        bot_msg = f"🤖 [Bot Quantux - Coordinación Intersectorial]\nSe ha notificado al sector: **{sector}**.\nAnalista emisor: @{req.performed_by}.\nDetalle de la solicitud: {note}\nContexto: Ticket #{ticket.id} - {ticket.title} (Prioridad: {ticket.priority})."
+
+        session.add(TicketAuditLog(
+            ticket_id=ticket.id,
+            changed_by_username=req.performed_by,
+            field_changed="intersector_dispatch",
+            old_value=None,
+            new_value=sector,
+            change_reason=f"Intervención de {sector} coordinada por Bot de Tickets."
+        ))
+
+    elif req.action_type == "summarize_handoff":
+        bot_msg = f"🤖 [Bot Quantux - Resumen de Traspaso Intersectorial]\n• Incidencia: #{ticket.id} - {ticket.title}\n• Estado actual: {ticket.status.value if hasattr(ticket.status, 'value') else ticket.status}\n• Solicitante: @{ticket.requester_username}\n• Diagnóstico previo: {ticket.resolution_notes or 'En evaluación preliminar por N1'}\n• Acción requerida: Continuidad operativa sin corte de servicio asistencial."
+
+    else:
+        bot_msg = f"🤖 [Bot Quantux] Interacción registrada por @{req.performed_by}."
+
+    comment = TicketComment(
+        ticket_id=ticket.id,
+        author_username="bot_quantux",
+        message=bot_msg,
+        is_internal=(req.action_type != "request_requester_info"),
+        created_at=datetime.utcnow()
+    )
+    session.add(comment)
+    session.commit()
+    session.refresh(ticket)
+
+    return {
+        "status": "success",
+        "ticket_id": ticket.id,
+        "action": req.action_type,
+        "bot_message": bot_msg,
+        "ticket_status": ticket.status.value if hasattr(ticket.status, 'value') else str(ticket.status),
+        "sla_paused": ticket.sla_paused
+    }
+
 
 # 9. DECLARACIÓN DE INCIDENTE MASIVO (MÓDULO 1)
 @router.post("/{ticket_id}/major-incident", response_model=Ticket)
@@ -1115,6 +1360,200 @@ def link_child_tickets_endpoint(ticket_id: str, req: LinkChildrenRequest, sessio
     return {
         "status": "success",
         "message": f"Se vincularon {linked_count} solicitudes hijas al incidente maestro #{parent.id}."
+    }
+
+# 10.1 VINCULACIÓN DESDE EL HIJO AL INCIDENTE PADRE (UH-20)
+@router.post("/{ticket_id}/link-parent")
+def link_parent_ticket(ticket_id: str, req: LinkParentTicketRequest, session: Session = Depends(get_session)):
+    ticket = session.get(Ticket, ticket_id)
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket no encontrado.")
+    
+    parent = session.get(Ticket, req.parent_ticket_id)
+    if not parent:
+        raise HTTPException(status_code=404, detail="Ticket Padre no encontrado.")
+    
+    old_parent = ticket.parent_ticket_id
+    ticket.parent_ticket_id = req.parent_ticket_id
+    ticket.updated_at = datetime.utcnow()
+    session.add(ticket)
+    
+    session.add(TicketAuditLog(
+        ticket_id=ticket.id,
+        changed_by_username=req.linked_by_username or "soporte",
+        field_changed="parent_ticket_id",
+        old_value=old_parent or "",
+        new_value=req.parent_ticket_id,
+        change_reason=f"Vinculado a Incidencia Mayor Padre #{req.parent_ticket_id} (UH-20)"
+    ))
+    
+    session.commit()
+    session.refresh(ticket)
+    return {
+        "status": "success",
+        "message": f"Ticket #{ticket.id} vinculado exitosamente al Incidente Padre #{parent.id}.",
+        "ticket": ticket,
+        "parent_ticket_id": req.parent_ticket_id
+    }
+
+# 10.2 CIERRE TÉCNICO NORMALIZADO KCS v6 / ITIL 4 (UH-18 & Sección 5.2)
+@router.post("/{ticket_id}/kcs-close")
+def close_ticket_kcs_endpoint(ticket_id: str, req: KCSClosureRequest, background_tasks: BackgroundTasks, session: Session = Depends(get_session)):
+    import json
+    ticket = session.get(Ticket, ticket_id)
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket no encontrado.")
+    
+    if not req.procedimiento_resolutivo_secuencial or len(req.procedimiento_resolutivo_secuencial) < 1:
+        raise HTTPException(status_code=422, detail="Debe especificar al menos un paso secuencial en el procedimiento resolutivo.")
+        
+    if not req.articulo_kcs_candidato.resumen_solucion or len(req.articulo_kcs_candidato.resumen_solucion.strip()) < 10:
+        raise HTTPException(status_code=422, detail="El resumen de solución KCS debe tener al menos 10 caracteres explicativos.")
+        
+    kcs_payload = req.dict()
+    ticket.kcs_data = json.dumps(kcs_payload, ensure_ascii=False)
+    
+    old_status = ticket.status
+    ticket.status = TicketStatus.RESUELTO
+    ticket.resolution_notes = req.articulo_kcs_candidato.resumen_solucion
+    
+    actor = req.cierre_ticket_metadata.resuelto_por if req.cierre_ticket_metadata and req.cierre_ticket_metadata.resuelto_por else "soporte"
+    ticket.resolved_by = actor
+    ticket.resolved_at = datetime.utcnow()
+    ticket.updated_at = datetime.utcnow()
+    session.add(ticket)
+    
+    session.add(TicketAuditLog(
+        ticket_id=ticket.id,
+        changed_by_username=actor,
+        field_changed="status",
+        old_value=old_status.value if hasattr(old_status, 'value') else str(old_status),
+        new_value="RESUELTO",
+        change_reason=f"Resolución normalizada KCS v6 / ITIL 4: [{req.articulo_kcs_candidato.titulo_articulo}]"
+    ))
+    
+    # Cascada de resolución si es Incidente Padre
+    child_tickets = session.exec(
+        select(Ticket).where(
+            Ticket.parent_ticket_id == ticket_id,
+            Ticket.status != TicketStatus.RESUELTO,
+            Ticket.status != TicketStatus.CERRADO
+        )
+    ).all()
+    for child in child_tickets:
+        c_old_status = child.status.value if hasattr(child.status, 'value') else str(child.status)
+        child.status = TicketStatus.RESUELTO
+        child.resolution_notes = f"[Resuelto vía KCS v6 Padre #{ticket.id}] {req.articulo_kcs_candidato.resumen_solucion}"
+        child.resolved_by = actor
+        child.resolved_at = datetime.utcnow()
+        child.updated_at = datetime.utcnow()
+        session.add(child)
+        session.add(TicketAuditLog(
+            ticket_id=child.id,
+            changed_by_username=actor,
+            field_changed="status",
+            old_value=c_old_status,
+            new_value="RESUELTO",
+            change_reason=f"Resolución en cascada KCS v6 heredada del Incidente Maestro #{ticket.id}"
+        ))
+
+    # ACCIÓN MANDATORIA: Ingesta y persistencia en Base de Conocimiento activa (KBArticle)
+    if req.articulo_kcs_candidato:
+        from app.models.entities import KBArticle
+        art_title = req.articulo_kcs_candidato.titulo_articulo or f"Solución KCS: {ticket.title}"
+        macro_cat = req.clasificacion_itil.nivel_1_macro if req.clasificacion_itil else "Consultorio Digital"
+        rca_desc = req.diagnostico_causa_raiz.descripcion_rca if req.diagnostico_causa_raiz else "Incidencia resuelta bajo estándar KCS v6"
+        steps_str = "\n".join([f"{i+1}. {step}" for i, step in enumerate(req.procedimiento_resolutivo_secuencial)])
+        
+        kb_entry = KBArticle(
+            title=art_title,
+            category=macro_cat,
+            content=f"### CAUSA RAÍZ (RCA)\n{rca_desc}\n\n### PROCEDIMIENTO TÉCNICO HOMOLOGADO\n{steps_str}\n\n### RESULTADO\nSolución KCS v6 validada y aprobada para reutilización.",
+            tags="kcs, itil4, solucion_oficial",
+            version="v1.0",
+            changelog=f"Generado automáticamente desde cierre KCS de ticket #{ticket.id}",
+            author_username=actor,
+            source_ticket_id=ticket.id,
+            is_published=True,
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow()
+        )
+        session.add(kb_entry)
+        session.flush()
+
+        session.add(TicketAuditLog(
+            ticket_id=ticket.id,
+            changed_by_username=actor,
+            field_changed="knowledge_base_kcs",
+            old_value=None,
+            new_value=f"KB-{kb_entry.id}: {art_title}",
+            change_reason=f"Artículo KCS v6 publicado automáticamente en Base de Conocimiento activa (ID #{kb_entry.id})."
+        ))
+
+        # Traza visible en comentarios
+        session.add(TicketComment(
+            ticket_id=ticket.id,
+            author_username=actor,
+            message=f"📚 [Base de Conocimiento KCS v6] Solución publicada exitosamente como artículo reutilizable (ID #{kb_entry.id}: '{art_title}').",
+            is_internal=True,
+            created_at=datetime.utcnow()
+        ))
+        
+    session.commit()
+    session.refresh(ticket)
+    
+    background_tasks.add_task(notify_ticket_resolved, ticket, req.articulo_kcs_candidato.resumen_solucion, False)
+    return {
+        "status": "success",
+        "message": f"Cierre técnico KCS v6 completado exitosamente para la solicitud #{ticket.id}.",
+        "ticket": ticket,
+        "kcs_metadata": kcs_payload
+    }
+
+# 10.3 PROTOCOLO DE RESCATE CSAT POR LÍDER DE SOPORTE (UH-19 & Sección 5.4)
+class TicketDirectRescueRequest(BaseModel):
+    rescue_notes: str
+    team_leader_username: Optional[str] = "cdaneri"
+    rescue_status: Optional[str] = "RESCATADO_CON_CONFORMIDAD"
+
+@router.post("/{ticket_id}/rescue")
+def direct_rescue_ticket(ticket_id: str, req: TicketDirectRescueRequest, session: Session = Depends(get_session)):
+    ticket = session.get(Ticket, ticket_id)
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket no encontrado.")
+    
+    if not req.rescue_notes or not req.rescue_notes.strip():
+        raise HTTPException(status_code=422, detail="Debe ingresar un informe detallado de las acciones de rescate ejecutadas.")
+        
+    actor = req.team_leader_username or "cdaneri"
+    ticket.requires_service_recovery = False
+    ticket.rescue_leader_username = actor
+    ticket.rescue_notes = req.rescue_notes.strip()
+    ticket.rescue_status = req.rescue_status or "RESCATADO_CON_CONFORMIDAD"
+    ticket.updated_at = datetime.utcnow()
+    session.add(ticket)
+    
+    session.add(TicketAuditLog(
+        ticket_id=ticket.id,
+        changed_by_username=actor,
+        field_changed="requires_service_recovery",
+        old_value="True",
+        new_value="False",
+        change_reason=f"[Rescate de Satisfacción CSAT Líder N2] {req.rescue_notes.strip()}"
+    ))
+    
+    session.add(TicketComment(
+        ticket_id=ticket.id,
+        author_username=actor,
+        message=f"[INFORME DE RESCATE CSAT DEL LÍDER DE SOPORTE]\n{req.rescue_notes.strip()}\nEstado: {ticket.rescue_status}"
+    ))
+    
+    session.commit()
+    session.refresh(ticket)
+    return {
+        "status": "success",
+        "message": f"Rescate registrado con éxito para el ticket #{ticket.id}.",
+        "ticket": ticket
     }
 
 # 11. INGESTA AUTOMÁTICA EMAIL-TO-TICKET & EMAIL THREADING (MÓDULO 9)
@@ -1297,5 +1736,104 @@ def copilot_auto_fix(ticket_id: str, req: CopilotActionRequest, session: Session
         "action": req.action,
         "message": msg,
         "ticket_id": ticket.id
+    }
+
+# =============================================================================
+# BOT GESTOR DE TICKETS MULTI-ROL & ASOCIACIÓN A BASE DE CONOCIMIENTO
+# =============================================================================
+from app.services.ticket_manager_bot import TicketManagerBot
+
+@router.post("/bot/advance-cycle")
+def bot_advance_cycle(count: int = Query(default=3, ge=1, le=20), session: Session = Depends(get_session)):
+    """
+    Ejecuta un ciclo de avance automatizado de tickets mediante el Bot Gestor,
+    interactuando con los roles y sectores, y asociando selectivamente a KB.
+    """
+    results = TicketManagerBot.run_automation_cycle(session, max_tickets=count)
+    return {
+        "status": "success",
+        "processed_count": len(results),
+        "results": results
+    }
+
+@router.post("/{ticket_id}/bot/step")
+def bot_step_ticket(ticket_id: str, session: Session = Depends(get_session)):
+    """
+    Avanza un ticket específico un paso en su ciclo ITIL mediante el Bot Gestor,
+    registrando los comentarios con rol y sector correspondientes.
+    """
+    ticket = session.get(Ticket, ticket_id)
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket no encontrado")
+    result = TicketManagerBot.process_ticket_step(session, ticket)
+    return {
+        "status": "success",
+        "result": result
+    }
+
+@router.post("/{ticket_id}/bot/advance-to-resolution")
+def bot_advance_to_resolution(ticket_id: str, session: Session = Depends(get_session)):
+    """
+    Avanza un ticket por todos sus roles y sectores (Mesa de Ayuda, Solicitante,
+    Especialista N2, Pasarelas) hasta alcanzar el estado RESUELTO o CERRADO,
+    evaluando la regla de negocio para asociar o no a la Base de Conocimiento.
+    """
+    ticket = session.get(Ticket, ticket_id)
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket no encontrado")
+    
+    steps = []
+    max_steps = 6
+    while ticket.status not in (TicketStatus.RESUELTO, TicketStatus.CERRADO) and max_steps > 0:
+        res = TicketManagerBot.process_ticket_step(session, ticket)
+        steps.append(res)
+        session.refresh(ticket)
+        max_steps -= 1
+
+    return {
+        "status": "success",
+        "ticket_id": ticket.id,
+        "final_status": ticket.status.value if hasattr(ticket.status, 'value') else str(ticket.status),
+        "associated_to_kb": ticket.contributed_to_kb,
+        "associated_kb_id": ticket.associated_kb_id,
+        "steps_count": len(steps),
+        "steps": steps
+    }
+
+@router.get("/{ticket_id}/kb-contribution")
+def get_ticket_kb_contribution(ticket_id: str, session: Session = Depends(get_session)):
+    """
+    Obtiene los detalles de la contribución que este ticket realizó a la Base de Conocimiento
+    al momento de ser resuelto.
+    """
+    from app.models.entities import KBArticleContribution, KBArticle
+    ticket = session.get(Ticket, ticket_id)
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket no encontrado")
+    
+    contrib = session.exec(
+        select(KBArticleContribution).where(KBArticleContribution.ticket_id == ticket_id)
+    ).first()
+    
+    if not contrib:
+        return {
+            "ticket_id": ticket_id,
+            "contributed_to_kb": False,
+            "message": "Este ticket no generó nuevo conocimiento transferible o no ha sido asociado a KB."
+        }
+    
+    art = session.get(KBArticle, contrib.article_id)
+    return {
+        "ticket_id": ticket_id,
+        "contributed_to_kb": True,
+        "article_id": contrib.article_id,
+        "article_title": art.title if art else "Artículo de KB",
+        "article_category": art.category if art else "General",
+        "contribution_summary": contrib.contribution_summary,
+        "solution_steps": contrib.solution_steps,
+        "contributor_username": contrib.contributor_username,
+        "contributor_role": contrib.contributor_role,
+        "contributor_sector": contrib.contributor_sector,
+        "created_at": contrib.created_at.isoformat() if contrib.created_at else None
     }
 

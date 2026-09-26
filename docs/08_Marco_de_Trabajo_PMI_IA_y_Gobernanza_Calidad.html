@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DOC-GOV-008 — Marco de Trabajo PMI + IA, Adaptación Metodológica y Calidad</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap');
+
+    :root {
+      --q-navy: #1E3A5F;
+      --q-navy-dark: #142842;
+      --q-navy-soft: #2D4B73;
+      --q-teal: #00C4B4;
+      --q-teal-hover: #00A89A;
+      --q-teal-light: #E0F7F5;
+      --q-gray-bg: #F8FAFC;
+      --q-gray-border: #E2E8F0;
+      --q-text-body: #334155;
+      --q-text-muted: #64748B;
+      --q-amber: #D97706;
+      --q-amber-bg: #FEF3C7;
+      --q-blue: #0284C7;
+      --q-blue-bg: #E0F2FE;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      color: var(--q-text-body);
+      background-color: #E2E8F0;
+      line-height: 1.6;
+      font-size: 13px;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .doc-page {
+      max-width: 1060px;
+      margin: 28px auto;
+      background: #FFFFFF;
+      padding: 40px 50px;
+      border-radius: 14px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+      border: 1px solid #CBD5E1;
+      position: relative;
+    }
+
+    @media print {
+      body { background: transparent; }
+      .doc-page { width: 100%; margin: 0; padding: 0; box-shadow: none; border: none; }
+      .page-break { page-break-before: always; }
+      @page { size: A4; margin: 15mm; }
+    }
+
+    .quantux-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid var(--q-teal);
+      padding-bottom: 14px;
+      margin-bottom: 24px;
+    }
+
+    .brand-title-group h1 {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--q-navy);
+      letter-spacing: -0.3px;
+    }
+
+    .brand-title-group h1 span {
+      color: var(--q-teal);
+    }
+
+    .brand-title-group p {
+      font-size: 11px;
+      color: var(--q-text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .doc-code-pill {
+      background: var(--q-teal-light);
+      border: 1px solid var(--q-teal);
+      color: var(--q-navy);
+      font-family: 'Montserrat', sans-serif;
+      font-size: 12px;
+      font-weight: 800;
+      padding: 6px 14px;
+      border-radius: 20px;
+    }
+
+    h2.section-header {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--q-navy);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1.5px solid var(--q-teal);
+      padding-bottom: 6px;
+      margin-top: 28px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    h3.sub-header {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--q-navy-soft);
+      margin-top: 18px;
+      margin-bottom: 8px;
+    }
+
+    p { margin-bottom: 10px; text-align: justify; }
+
+    .callout-box {
+      background: var(--q-gray-bg);
+      border-left: 4px solid var(--q-teal);
+      border: 1px solid var(--q-gray-border);
+      border-left-width: 4px;
+      border-radius: 6px;
+      padding: 14px 18px;
+      margin: 14px 0;
+    }
+
+    .callout-danger {
+      border-left-color: var(--q-amber);
+      background: #FFFBEB;
+    }
+
+    .callout-danger strong {
+      color: var(--q-amber);
+    }
+
+    /* DIAGRAMAS Y CAJAS */
+    .steps-container {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin: 18px 0;
+    }
+
+    .step-card {
+      background: #FFFFFF;
+      border: 1px solid var(--q-gray-border);
+      border-top: 3px solid var(--q-teal);
+      border-radius: 6px;
+      padding: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    }
+
+    .step-num {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--q-teal);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+
+    .step-title {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--q-navy);
+      margin-bottom: 6px;
+      line-height: 1.3;
+    }
+
+    .step-desc {
+      font-size: 11px;
+      color: #475569;
+      line-height: 1.4;
+    }
+
+    /* TABLAS FORMALES */
+    table.gov-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 12px;
+    }
+
+    table.gov-table th {
+      background: var(--q-navy);
+      color: #FFFFFF;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      text-align: left;
+      padding: 9px 12px;
+      border: 1px solid var(--q-navy);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    table.gov-table td {
+      padding: 9px 12px;
+      border: 1px solid var(--q-gray-border);
+      vertical-align: top;
+    }
+
+    table.gov-table tr:nth-child(even) td {
+      background: var(--q-gray-bg);
+    }
+
+    .badge-pill {
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 12px;
+      display: inline-block;
+      text-transform: uppercase;
+    }
+    .badge-gap { background: #FEF3C7; color: #B45309; border: 1px solid #FDE68A; }
+    .badge-mejora { background: #E0F2FE; color: #0369A1; border: 1px solid #BAE6FD; }
+    .badge-oportunidad { background: #F3E8FF; color: #6B21A8; border: 1px solid #E9D5FF; }
+
+    .code-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      background: #F1F5F9;
+      padding: 2px 5px;
+      border-radius: 4px;
+      color: var(--q-navy);
+      border: 1px solid #CBD5E1;
+    }
+
+    footer.doc-footer {
+      border-top: 1px solid var(--q-gray-border);
+      padding-top: 12px;
+      margin-top: 32px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      color: var(--q-text-muted);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="doc-page">
+    <header class="quantux-header">
+      <div class="brand-title-group">
+        <h1>HealthDesk <span>Quantux</span></h1>
+        <p>Gobernanza Operativa • Marco PMI + IA & Calidad TQM</p>
+      </div>
+      <div class="doc-code-pill">DOC-GOV-008 • v1.0</div>
+    </header>
+
+    <div class="callout-box">
+      <strong>Metadatos del Documento:</strong><br>
+      • <strong>Proyecto:</strong> HealthDesk Quantux — Mesa de Ayuda Omnicanal Integrada<br>
+      • <strong>Solution Owner:</strong> Freddy Cortés (Analista Funcional Lead)<br>
+      • <strong>Fecha de Vigencia:</strong> 26 de Septiembre de 2026<br>
+      • <strong>Comité Evaluador:</strong> Paula Sbarbati • Diego Martínez • Carolina Brizuela • Nicolás Sánchez
+    </div>
+
+    <h2 class="section-header">1. Diagnóstico: Por qué falla la instrucción directa en la IA</h2>
+    <p>
+      Operar mediante requerimientos libres en chat conversacional degrada progresivamente la calidad del producto por cuatro causas mecánicas inherentes a los Modelos de Lenguaje (LLMs):
+    </p>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0;">
+      <div style="background: #F8FAFC; border: 1px solid #E2E8F0; padding: 10px; border-radius: 6px;">
+        <strong style="color: var(--q-navy);">1. Deriva de Contexto (Context Drift):</strong> La memoria de trabajo olvida restricciones iniciales ante prompts sucesivos.
+      </div>
+      <div style="background: #F8FAFC; border: 1px solid #E2E8F0; padding: 10px; border-radius: 6px;">
+        <strong style="color: var(--q-navy);">2. Alucinación de Arquitectura:</strong> Ante vacíos de especificación, la IA inventa estructuras que rompen la coherencia global.
+      </div>
+      <div style="background: #F8FAFC; border: 1px solid #E2E8F0; padding: 10px; border-radius: 6px;">
+        <strong style="color: var(--q-navy);">3. Calidad Ilusoria (Textual vs Operativa):</strong> La IA asume que el código funciona porque sintácticamente se lee bien, sin haberlo ejecutado.
+      </div>
+      <div style="background: #F8FAFC; border: 1px solid #E2E8F0; padding: 10px; border-radius: 6px;">
+        <strong style="color: var(--q-navy);">4. Sobrecarga Cognitiva:</strong> Diseñar la solución y codificar en un solo turno supera la capacidad de inferencia limpia.
+      </div>
+    </div>
+
+    <h2 class="section-header">2. Marco PMI: Los Cuatro Pasos del Proceso de Adaptación (Tailoring) con IA</h2>
+    <div class="steps-container">
+      <div class="step-card">
+        <div class="step-num">Paso 1</div>
+        <div class="step-title">Enfoque de Desarrollo Inicial</div>
+        <div class="step-desc"><strong>Híbrido Estricto:</strong> Contratos y criterios predictivos cerrados + Sprints de construcción atómicos asistidos por IA.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">Paso 2</div>
+        <div class="step-title">Adaptación Organizacional</div>
+        <div class="step-desc">Inyección mandatoria de directrices institucionales (<span class="code-tag">GEMINI.md</span>) y restricciones negativas inquebrantables OJO.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">Paso 3</div>
+        <div class="step-title">Adaptación al Proyecto</div>
+        <div class="step-desc">Desglose atómico de UHs, TDD con ejecución en CLI y compuertas automáticas de software (<span class="code-tag">validate_ojo_compliance.py</span>).</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">Paso 4</div>
+        <div class="step-title">Mejora Continua</div>
+        <div class="step-desc">Canalización visual de toda mejora/gap en el <strong>Product Backlog Scrumban</strong> e inmunización en reglas de contexto.</div>
+      </div>
+    </div>
+
+    <h2 class="section-header">3. Métodos de Calidad de Alto Desempeño</h2>
+    <ul style="margin-left: 20px; line-height: 1.8;">
+      <li><strong>Spec-Driven Development (SDD):</strong> Ningún código se redacta sin contar con la especificación técnica y de contratos formalmente aprobada por el Solution Owner.</li>
+      <li><strong>Test-Driven Development (TDD) Asistido por IA:</strong> Se define el criterio Gherkin, se redacta la prueba, se ejecuta en terminal (falla en rojo), se implementa el código mínimo y se certifica en verde.</li>
+      <li><strong>Dual-Loop Validation:</strong> Validación mecánica obligatoria de la IA (linters, tests automatizados, tipado) + Validación semántica del Solution Owner (valor de negocio y UX).</li>
+    </ul>
+
+    <h2 class="section-header">4. Matriz de Responsabilidad: Solution Owner vs. Agente IA</h2>
+    <table class="gov-table">
+      <thead>
+        <tr>
+          <th>Área de Responsabilidad</th>
+          <th>Rol del Solution Owner (Freddy Cortés - Humano)</th>
+          <th>Límites y Rol del Agente IA (Antigravity)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Alcance y Requerimientos</strong></td>
+          <td>Dueño absoluto del "Qué" y "Por qué". Define prioridades y criterios de aceptación.</td>
+          <td><strong>Límite:</strong> No puede inventar ni asumir alcance.<br><strong>Rol:</strong> Alertar riesgos y estructurar desglose.</td>
+        </tr>
+        <tr>
+          <td><strong>Diseño y Arquitectura</strong></td>
+          <td>Aprueba contratos de interfaz, DDLs y decisiones estructurales.</td>
+          <td><strong>Límite:</strong> Cero improvisación de esquemas.<br><strong>Rol:</strong> Proponer borradores y mockups visuales neutrales.</td>
+        </tr>
+        <tr>
+          <td><strong>Desarrollo y Código</strong></td>
+          <td>Autoriza la fase de codificación tras validar la especificación.</td>
+          <td><strong>Rol:</strong> Escribir código limpio subordinado al contrato. Aplicar TDD en terminal.</td>
+        </tr>
+        <tr>
+          <td><strong>Aseguramiento de Calidad</strong></td>
+          <td>Valida la calidad semántica, ergonomía y da el visto bueno final.</td>
+          <td><strong>Límite:</strong> Prohibido autodeclarar victoria.<br><strong>Rol:</strong> Presentar logs reales de tests ejecutados.</td>
+        </tr>
+        <tr>
+          <td><strong>Gobernanza Scrumban</strong></td>
+          <td>Autoriza el movimiento de tarjetas entre columnas del tablero.</td>
+          <td><strong>Rol:</strong> Registrar inmediatamente todo gap o mejora en el <strong>Product Backlog</strong> con enlace documental.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2 class="section-header">5. Regla Operativa Suprema: Gestión de Mejoras y Gaps en el Scrumban</h2>
+    <div class="callout-box callout-danger">
+      <strong>DIRECTRIZ INQUEBRANTABLE DE GOBERNANZA:</strong><br>
+      Queda terminantemente prohibido desarrollar mejoras, oportunidades de mejora o correcciones de gaps "al vuelo" o sin respaldo en el tablero. Toda evolución técnica o funcional DEBE registrarse obligatoriamente como una tarjeta en la columna <strong>Product Backlog</strong> de <span class="code-tag">00_Tablero_Scrumban_Quantux.html</span> y contar con la documentación completa o su enlace directo (<span class="code-tag">doc_link</span>) antes de ser promovida a desarrollo.
+    </div>
+
+    <h3 class="sub-header">Tarjetas de Gobernanza Registradas Inicialmente en el Product Backlog:</h3>
+    <table class="gov-table">
+      <thead>
+        <tr>
+          <th style="width: 80px;">ID</th>
+          <th style="width: 100px;">Tipo</th>
+          <th>Título del Requerimiento</th>
+          <th style="width: 60px;">SP</th>
+          <th>Disciplina</th>
+          <th>Documentación Enlazada</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="code-tag">GAP-01</span></td>
+          <td><span class="badge-pill badge-gap">GAP</span></td>
+          <td>Formalización Marco PMI+IA y Protocolo de Calidad</td>
+          <td><strong>5</strong></td>
+          <td>AF / Gobernanza</td>
+          <td><a href="08_MARCO_DE_TRABAJO_PMI_IA_Y_GOBERNANZA_CALIDAD.md" target="_blank">DOC-GOV-008</a></td>
+        </tr>
+        <tr>
+          <td><span class="code-tag">MEJ-01</span></td>
+          <td><span class="badge-pill badge-mejora">MEJORA</span></td>
+          <td>Automatización de Bucle TDD y Hooks para Validadores OJO</td>
+          <td><strong>5</strong></td>
+          <td>DevOps / QA</td>
+          <td><a href="08_MARCO_DE_TRABAJO_PMI_IA_Y_GOBERNANZA_CALIDAD.md" target="_blank">DOC-GOV-008 (Sec 3.2)</a></td>
+        </tr>
+        <tr>
+          <td><span class="code-tag">OM-01</span></td>
+          <td><span class="badge-pill badge-oportunidad">OPORTUNIDAD</span></td>
+          <td>Trazabilidad Bidireccional de Tickets hacia Contratos OpenAPI</td>
+          <td><strong>8</strong></td>
+          <td>Backend / Arq</td>
+          <td><a href="API_CONTRACTS.md" target="_blank">API_CONTRACTS.md</a></td>
+        </tr>
+        <tr>
+          <td><span class="code-tag">GAP-02</span></td>
+          <td><span class="badge-pill badge-gap">GAP</span></td>
+          <td>Blindaje de Integridad de Contexto para Auditorías TQM</td>
+          <td><strong>5</strong></td>
+          <td>QA / Metodología</td>
+          <td><a href="04_INFORME_DE_PRUEBAS_Y_EVIDENCIAS.md" target="_blank">DOC-QA-004</a></td>
+        </tr>
+        <tr>
+          <td><span class="code-tag">MEJ-02</span></td>
+          <td><span class="badge-pill badge-mejora">MEJORA</span></td>
+          <td>Soporte Nativo de Links Documentales en Scrumban Board</td>
+          <td><strong>3</strong></td>
+          <td>Frontend / UX</td>
+          <td><a href="00_Tablero_Scrumban_Quantux.html" target="_blank">Tablero Scrumban</a></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2 class="section-header" style="margin-top: 32px;">6. Fichas Técnicas Detalladas de las Historias de Usuario (UH)</h2>
+    <p>Cada requerimiento registrado en el Product Backlog cuenta con su especificación formal bajo estándar Gherkin y los 4 pasos de adaptación PMI:</p>
+
+    <!-- GAP-01 -->
+    <div style="background: #F8FAFC; border: 1px solid #CBD5E1; border-left: 4px solid var(--q-amber); border-radius: 6px; padding: 14px 18px; margin: 14px 0;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <div>
+          <span class="badge-pill badge-gap">GAP</span>
+          <strong style="color: var(--q-navy); font-size: 13px; font-family: 'Montserrat', sans-serif; margin-left: 6px;">GAP-01: Formalización del Marco PMI + IA y Protocolo de Calidad</strong>
+        </div>
+        <span class="code-tag">5 Story Points • AF / Gobernanza</span>
+      </div>
+      <p style="margin-bottom: 6px;"><strong>Narrativa:</strong> <strong>COMO</strong> Solution Owner de HealthDesk Quantux, <strong>NECESITO</strong> formalizar la integración de los 4 pasos del proceso de adaptación del PMI (PMBOK® 7ª Edición) con el ciclo de desarrollo asistido por IA generativa en la suite documental, <strong>PARA</strong> erradicar la degradación de calidad por instrucciones en lenguaje natural libre, evitar la deriva de contexto y asegurar respaldo contractual.</p>
+      <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 4px; padding: 8px 12px; margin-top: 6px; font-size: 11.5px;">
+        <strong style="color: var(--q-navy-soft);">Criterios de Aceptación (Gherkin):</strong>
+        <ul style="margin-left: 18px; margin-top: 4px; line-height: 1.5;">
+          <li><strong>Escenario 1 (Formalización y Trazabilidad):</strong> <strong>DADO</strong> el ecosistema documental en <span class="code-tag">docs/</span>, <strong>CUANDO</strong> se audita la gobernanza, <strong>ENTONCES</strong> debe existir el documento oficial <span class="code-tag">DOC-GOV-008</span> en Markdown y HTML, registrado en el Plan de Gestión (<span class="code-tag">DOC-MGT-001</span>).</li>
+          <li><strong>Escenario 2 (Matriz RACI y Delimitación):</strong> <strong>DADO</strong> el trabajo con el Agente IA, <strong>CUANDO</strong> se consulta la matriz de límites, <strong>ENTONCES</strong> se delimita que el Solution Owner (Humano) es el único dueño del alcance y valor, y la IA un ejecutor técnico subordinado sin autovalidación.</li>
+          <li><strong>Escenario 3 (Regla de Backlog):</strong> <strong>DADO</strong> un nuevo requerimiento o gap, <strong>CUANDO</strong> se detecta, <strong>ENTONCES</strong> debe registrarse como tarjeta en la columna <span class="code-tag">Product Backlog</span> antes de codificar.</li>
+        </ul>
+        <div style="margin-top: 6px; padding-top: 6px; border-top: 1px solid #F1F5F9; color: #475569;">
+          <strong>Criterios de Adaptación (Tailoring PMI):</strong> Paso 1 (Híbrido Estricto: contratos predictivos + micro-sprints IA) • Paso 2 (Inyección de reglas OJO en GEMINI.md) • Paso 3 (Desglose en UH con tests en CLI) • Paso 4 (Canalización visual en Scrumban).
+        </div>
+      </div>
+    </div>
+
+    <!-- MEJ-01 -->
+    <div style="background: #F8FAFC; border: 1px solid #CBD5E1; border-left: 4px solid var(--q-blue); border-radius: 6px; padding: 14px 18px; margin: 14px 0;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <div>
+          <span class="badge-pill badge-mejora">MEJORA</span>
+          <strong style="color: var(--q-navy); font-size: 13px; font-family: 'Montserrat', sans-serif; margin-left: 6px;">MEJ-01: Automatización de Bucle TDD y Pre-commit Hooks para Validadores OJO</strong>
+        </div>
+        <span class="code-tag">5 Story Points • DevOps / QA</span>
+      </div>
+      <p style="margin-bottom: 6px;"><strong>Narrativa:</strong> <strong>COMO</strong> Facilitador Técnico y QA Lead, <strong>NECESITO</strong> instrumentar un hook de pre-commit y script automatizado que ejecute secuencialmente <span class="code-tag">validate_ojo_compliance.py</span> y los tests del DOM, <strong>PARA</strong> impedir mecánicamente que el Agente IA introduzca cards flotantes, fondos oscuros, tonos rojos o jergas clínicas.</p>
+      <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 4px; padding: 8px 12px; margin-top: 6px; font-size: 11.5px;">
+        <strong style="color: var(--q-navy-soft);">Criterios de Aceptación (Gherkin):</strong>
+        <ul style="margin-left: 18px; margin-top: 4px; line-height: 1.5;">
+          <li><strong>Escenario 1 (Bloqueo Automatizado):</strong> <strong>DADO</strong> un intento de commit con clases <span class="code-tag">.card</span>, colores rojos o términos clínicos, <strong>CUANDO</strong> se ejecuta el validador, <strong>ENTONCES</strong> finaliza con Exit Code 1, abortando la entrega y detallando archivo y regla violada.</li>
+          <li><strong>Escenario 2 (Certificación Verde):</strong> <strong>DADO</strong> código conforme a estilo neutral y maquetación en filas de 1px, <strong>CUANDO</strong> se ejecuta, <strong>ENTONCES</strong> reporta Exit Code 0 ("100% COMPLIANT").</li>
+          <li><strong>Escenario 3 (Automatización TDD):</strong> <strong>DADO</strong> un nuevo criterio, <strong>CUANDO</strong> inicia el desarrollo, <strong>ENTONCES</strong> se ejecuta primero la prueba demostrando fallo (rojo) antes del código funcional.</li>
+        </ul>
+        <div style="margin-top: 6px; padding-top: 6px; border-top: 1px solid #F1F5F9; color: #475569;">
+          <strong>Criterios de Adaptación (Tailoring PMI):</strong> Paso 1 (Calidad Predictiva con Quality Gates) • Paso 2 (Cero tolerancia a desvíos OJO) • Paso 3 (Ejecución determinista en terminal local) • Paso 4 (Registro forense de no conformidades).
+        </div>
+      </div>
+    </div>
+
+    <!-- OM-01 -->
+    <div style="background: #F8FAFC; border: 1px solid #CBD5E1; border-left: 4px solid #9333EA; border-radius: 6px; padding: 14px 18px; margin: 14px 0;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <div>
+          <span class="badge-pill badge-oportunidad">OPORTUNIDAD</span>
+          <strong style="color: var(--q-navy); font-size: 13px; font-family: 'Montserrat', sans-serif; margin-left: 6px;">OM-01: Trazabilidad Bidireccional hacia Contratos OpenAPI y Esquemas DDL</strong>
+        </div>
+        <span class="code-tag">8 Story Points • Backend / Arq</span>
+      </div>
+      <p style="margin-bottom: 6px;"><strong>Narrativa:</strong> <strong>COMO</strong> Arquitecto de Software, <strong>NECESITO</strong> vincular cada endpoint FastAPI y tabla SQLite/PostgreSQL con la especificación en <span class="code-tag">docs/API_CONTRACTS.md</span>, <strong>PARA</strong> asegurar consistencia 100% de esquemas, prevenir alucinaciones de modelos y permitir generación automatizada de pruebas.</p>
+      <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 4px; padding: 8px 12px; margin-top: 6px; font-size: 11.5px;">
+        <strong style="color: var(--q-navy-soft);">Criterios de Aceptación (Gherkin):</strong>
+        <ul style="margin-left: 18px; margin-top: 4px; line-height: 1.5;">
+          <li><strong>Escenario 1 (Paridad OpenAPI):</strong> <strong>DADO</strong> el contrato en <span class="code-tag">API_CONTRACTS.md</span>, <strong>CUANDO</strong> se inspecciona <span class="code-tag">/openapi.json</span>, <strong>ENTONCES</strong> existe paridad exacta de tipos, parámetros, códigos HTTP y payloads.</li>
+          <li><strong>Escenario 2 (Trazabilidad DDL):</strong> <strong>DADO</strong> el modelo de datos de tickets y auditoría, <strong>CUANDO</strong> se crean/alteran tablas, <strong>ENTONCES</strong> los campos corresponden estrictamente a lo pactado sin atributos espurios.</li>
+          <li><strong>Escenario 3 (Protección de Integración):</strong> <strong>DADO</strong> un cambio en API propuesto por la IA, <strong>CUANDO</strong> no cuenta con actualización previa del contrato, <strong>ENTONCES</strong> es rechazado por la compuerta.</li>
+        </ul>
+        <div style="margin-top: 6px; padding-top: 6px; border-top: 1px solid #F1F5F9; color: #475569;">
+          <strong>Criterios de Adaptación (Tailoring PMI):</strong> Paso 1 (Spec-Driven Development inmutable) • Paso 2 (Seguridad y trazabilidad en salud) • Paso 3 (Validación Pydantic estricta) • Paso 4 (Versionado semántico formal).
+        </div>
+      </div>
+    </div>
+
+    <!-- GAP-02 -->
+    <div style="background: #F8FAFC; border: 1px solid #CBD5E1; border-left: 4px solid var(--q-amber); border-radius: 6px; padding: 14px 18px; margin: 14px 0;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <div>
+          <span class="badge-pill badge-gap">GAP</span>
+          <strong style="color: var(--q-navy); font-size: 13px; font-family: 'Montserrat', sans-serif; margin-left: 6px;">GAP-02: Blindaje de Integridad de Contexto para Auditorías TQM y Cero Scope Creep</strong>
+        </div>
+        <span class="code-tag">5 Story Points • QA / Metodología</span>
+      </div>
+      <p style="margin-bottom: 6px;"><strong>Narrativa:</strong> <strong>COMO</strong> Auditor de Calidad TQM, <strong>NECESITO</strong> un protocolo determinista de verificación de contexto y cotejo de observaciones que audite el 100% de los requerimientos y comentarios del usuario antes de cada entrega, <strong>PARA</strong> erradicar el olvido de especificaciones, evitar el desvío de alcance y asegurar evidencias en <span class="code-tag">DOC-QA-004</span>.</p>
+      <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 4px; padding: 8px 12px; margin-top: 6px; font-size: 11.5px;">
+        <strong style="color: var(--q-navy-soft);">Criterios de Aceptación (Gherkin):</strong>
+        <ul style="margin-left: 18px; margin-top: 4px; line-height: 1.5;">
+          <li><strong>Escenario 1 (Cero Omisiones):</strong> <strong>DADO</strong> el historial completo de solicitudes, <strong>CUANDO</strong> la IA prepara un informe o código, <strong>ENTONCES</strong> contrasta cada punto contra una matriz de cobertura explícita sin omisiones.</li>
+          <li><strong>Escenario 2 (Evidencia Ejecutable):</strong> <strong>DADO</strong> <span class="code-tag">DOC-QA-004</span>, <strong>CUANDO</strong> se audita, <strong>ENTONCES</strong> contiene logs reales de terminal, aserciones y capturas que comprueban la operatividad.</li>
+          <li><strong>Escenario 3 (Sin Supuestos Arbitrarios):</strong> <strong>DADO</strong> un requerimiento no especificado, <strong>CUANDO</strong> la IA enfrenta una bifurcación, <strong>ENTONCES</strong> se detiene y consulta al Solution Owner sin asumir.</li>
+        </ul>
+        <div style="margin-top: 6px; padding-top: 6px; border-top: 1px solid #F1F5F9; color: #475569;">
+          <strong>Criterios de Adaptación (Tailoring PMI):</strong> Paso 1 (Dual-Loop Validation) • Paso 2 (Inmunización en GEMINI.md) • Paso 3 (Checklist pre-vuelo binario) • Paso 4 (Retroalimentación inmediata a backlog).
+        </div>
+      </div>
+    </div>
+
+    <!-- MEJ-02 -->
+    <div style="background: #F8FAFC; border: 1px solid #CBD5E1; border-left: 4px solid var(--q-blue); border-radius: 6px; padding: 14px 18px; margin: 14px 0;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <div>
+          <span class="badge-pill badge-mejora">MEJORA</span>
+          <strong style="color: var(--q-navy); font-size: 13px; font-family: 'Montserrat', sans-serif; margin-left: 6px;">MEJ-02: Soporte Nativo de Enlaces Documentales y Modal de UH en Tablero Scrumban</strong>
+        </div>
+        <span class="code-tag">3 Story Points • Frontend / UX</span>
+      </div>
+      <p style="margin-bottom: 6px;"><strong>Narrativa:</strong> <strong>COMO</strong> Solution Owner y miembro del Comité Evaluador, <strong>NECESITO</strong> visualizar en el tablero Scrumban interactivo los badges tipológicos, el enlace directo a documentación y un modal interactivo con la UH completa y criterios, <strong>PARA</strong> gestionar el Product Backlog con transparencia total y auditar requerimientos en 1 clic.</p>
+      <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 4px; padding: 8px 12px; margin-top: 6px; font-size: 11.5px;">
+        <strong style="color: var(--q-navy-soft);">Criterios de Aceptación (Gherkin):</strong>
+        <ul style="margin-left: 18px; margin-top: 4px; line-height: 1.5;">
+          <li><strong>Escenario 1 (Visualización de Badges):</strong> <strong>DADO</strong> el tablero Scrumban, <strong>CUANDO</strong> se inspecciona <span class="code-tag">Product Backlog</span>, <strong>ENTONCES</strong> cada tarjeta exhibe su ID, SP, badge tipológico y caja con enlace documental.</li>
+          <li><strong>Escenario 2 (Acceso Inmediato):</strong> <strong>DADO</strong> el enlace documental, <strong>CUANDO</strong> se hace clic, <strong>ENTONCES</strong> abre en pestaña nueva la especificación técnica en <span class="code-tag">docs/</span>.</li>
+          <li><strong>Escenario 3 (Modal con Criterios):</strong> <strong>DADO</strong> una tarjeta del backlog, <strong>CUANDO</strong> se hace clic en "Ver UH y Criterios", <strong>ENTONCES</strong> se despliega un modal con la narrativa, Criterios Gherkin y Adaptación PMI.</li>
+        </ul>
+        <div style="margin-top: 6px; padding-top: 6px; border-top: 1px solid #F1F5F9; color: #475569;">
+          <strong>Criterios de Adaptación (Tailoring PMI):</strong> Paso 1 (Progressive disclosure ágil) • Paso 2 (Diseño institucional Quantux sin cards flotantes) • Paso 3 (Ejecución cliente 100% nativa) • Paso 4 (Sincronización bidireccional con CSV).
+        </div>
+      </div>
+    </div>
+
+    <footer class="doc-footer">
+      <span>HealthDesk Quantux — Documentación Oficial de Gobernanza</span>
+      <span>Aprobado por el Comité Evaluador • Quantux Salud</span>
+    </footer>
+  </div>
+
+</body>
+</html>

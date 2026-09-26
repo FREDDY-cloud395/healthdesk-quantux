@@ -113,10 +113,10 @@ const KB_OFFICIAL_TOPICS = [
   },
   {
     code: "SOPORTE-001",
-    title: "Clasificación y escalamiento de incidentes (Mesa de Ayuda N1 / N2 / N3 y Guardias)",
+    title: "Clasificación y escalamiento de incidentes (Mesa de Ayuda N1 / N2 / N3 y Soporte Operativo)",
     query: "clasificacion y escalamiento de incidentes mesa de ayuda",
     category: "Contingencias",
-    keywords: ["escalamiento", "guardia", "mesa de ayuda", "n1", "n2", "n3", "horarios"]
+    keywords: ["escalamiento", "soporte operativo", "mesa de ayuda", "n1", "n2", "n3", "horarios"]
   },
   {
     code: "KB-001",

@@ -32,6 +32,7 @@ else:
             pass
 
 def init_db():
+    import app.models.entities  # Asegura registro de todos los modelos SQLModel
     SQLModel.metadata.create_all(engine)
     with Session(engine) as session:
         for col_def in [
@@ -66,7 +67,11 @@ def init_db():
             "ALTER TABLE tickets ADD COLUMN ia_feedback TEXT",
             "ALTER TABLE tickets ADD COLUMN git_branch TEXT",
             "ALTER TABLE tickets ADD COLUMN git_pr TEXT",
-            "ALTER TABLE tickets ADD COLUMN git_commit TEXT"
+            "ALTER TABLE tickets ADD COLUMN git_commit TEXT",
+            "ALTER TABLE tickets ADD COLUMN associated_kb_id INTEGER",
+            "ALTER TABLE tickets ADD COLUMN contributed_to_kb INTEGER DEFAULT 0",
+            "ALTER TABLE ticket_comments ADD COLUMN author_role TEXT DEFAULT 'SOPORTE'",
+            "ALTER TABLE ticket_comments ADD COLUMN author_sector TEXT DEFAULT 'Mesa de Ayuda'"
         ]:
             try:
                 session.exec(text(col_def))
@@ -106,7 +111,23 @@ def init_db():
                     role=UserRole.TEAM_LEADER,
                     support_level=SupportLevel.N2
                 ))
-                session.commit()
+            if not session.exec(select(User).where(User.username == "pasarela_osde")).first():
+                session.add(User(
+                    username="pasarela_osde",
+                    full_name="Sistema Validador POS OSDE",
+                    email="pasarela_osde@osde.com.ar",
+                    role=UserRole.SOPORTE,
+                    support_level=SupportLevel.N2
+                ))
+            if not session.exec(select(User).where(User.username == "pasarela_sisa")).first():
+                session.add(User(
+                    username="pasarela_sisa",
+                    full_name="Servicio Central SISA",
+                    email="sisa@msal.gob.ar",
+                    role=UserRole.SOPORTE,
+                    support_level=SupportLevel.N2
+                ))
+            session.commit()
         except Exception:
             pass
 
@@ -126,7 +147,9 @@ def init_db():
             "CREATE INDEX IF NOT EXISTS ix_ticket_comments_ticket_created ON ticket_comments(ticket_id, created_at ASC)",
             "CREATE INDEX IF NOT EXISTS ix_email_logs_ticket_created ON email_notification_logs(ticket_id, created_at DESC)",
             "CREATE INDEX IF NOT EXISTS ix_email_logs_sent_status ON email_notification_logs(sent_status)",
-            "CREATE INDEX IF NOT EXISTS ix_users_role_is_active ON users(role, is_active)"
+            "CREATE INDEX IF NOT EXISTS ix_users_role_is_active ON users(role, is_active)",
+            "CREATE INDEX IF NOT EXISTS ix_kb_contributions_article ON kb_article_contributions(article_id)",
+            "CREATE INDEX IF NOT EXISTS ix_kb_contributions_ticket ON kb_article_contributions(ticket_id)"
         ]:
             try:
                 session.exec(text(idx_def))

@@ -1,0 +1,1501 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Propuesta Funcional y Técnica • Reemplazo Integral del Nivel 1 de Soporte • Quantux ServiceDesk</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    @page {
+      size: A4 portrait;
+      margin: 14mm 14mm 14mm 14mm;
+    }
+    * {
+      box-sizing: border-box;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: #1E293B;
+      background-color: #FFFFFF;
+      margin: 0;
+      padding: 0;
+      font-size: 8.8pt;
+      line-height: 1.45;
+    }
+    .font-outfit { font-family: 'Outfit', sans-serif; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+
+    /* LAYOUT DE PÁGINAS */
+    .page {
+      page-break-after: always;
+      position: relative;
+      padding-bottom: 25px;
+    }
+    .page:last-child {
+      page-break-after: avoid;
+    }
+    .no-break {
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+
+    /* ENCABEZADO Y PIE DE PÁGINA (ESTILO PIZARRA NEUTRAL - LUMINOSO) */
+    .doc-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #CBD5E1;
+      padding-bottom: 8px;
+      margin-bottom: 16px;
+    }
+    .header-logo-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .header-q-badge {
+      width: 24px;
+      height: 24px;
+      background: #F0FDFA;
+      border: 1px solid #99F6E4;
+      color: #00A896;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 13px;
+    }
+    .header-title-text {
+      font-family: 'Outfit', sans-serif;
+      font-size: 9.5pt;
+      font-weight: 800;
+      color: #0F172A;
+    }
+    .header-subtitle-text {
+      font-size: 8pt;
+      color: #64748B;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .doc-footer {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid #E2E8F0;
+      padding-top: 6px;
+      font-size: 7.5pt;
+      color: #64748B;
+    }
+
+    /* TIPOGRAFÍA Y TÍTULOS */
+    h1.sec-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 14pt;
+      font-weight: 800;
+      color: #0F172A;
+      margin: 0 0 10px 0;
+      border-bottom: 2px solid #E2E8F0;
+      padding-bottom: 5px;
+    }
+    h2.sec-subtitle {
+      font-family: 'Outfit', sans-serif;
+      font-size: 10.5pt;
+      font-weight: 700;
+      color: #0F172A;
+      margin: 12px 0 6px 0;
+    }
+    h3.sub-heading {
+      font-family: 'Outfit', sans-serif;
+      font-size: 9.2pt;
+      font-weight: 700;
+      color: #1E293B;
+      margin: 8px 0 4px 0;
+    }
+    p { margin: 0 0 6px 0; color: #334155; }
+
+    /* FILAS ESTRUCTURADAS (ÁRBOLES DE DECISIÓN) */
+    .tree-row {
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      border-left: 3.5px solid #00A896;
+      border-radius: 5px;
+      padding: 9px 12px;
+      margin-bottom: 8px;
+    }
+    .tree-row-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+    .tree-row-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 8pt;
+      font-weight: 700;
+      background: #F1F5F9;
+      color: #334155;
+      border: 1px solid #CBD5E1;
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+    .tree-row-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 9.5pt;
+      font-weight: 700;
+      color: #0F172A;
+    }
+    .tree-row-body {
+      font-size: 8.3pt;
+      color: #334155;
+      line-height: 1.45;
+    }
+
+    /* HISTORIAS DE USUARIO */
+    .uh-box {
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      border-radius: 4px;
+      padding: 4px 8px;
+      margin-bottom: 5px;
+    }
+    .uh-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+    .uh-code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 8.5pt;
+      font-weight: 700;
+      color: #0F172A;
+      background: #F1F5F9;
+      border: 1px solid #CBD5E1;
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+    .uh-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 9.5pt;
+      font-weight: 700;
+      color: #0F172A;
+      flex: 1;
+      margin-left: 8px;
+    }
+    .uh-formula {
+      font-size: 8.3pt;
+      color: #1E293B;
+      line-height: 1.45;
+      margin-bottom: 5px;
+    }
+    .gherkin-box {
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      border-radius: 4px;
+      padding: 6px 10px;
+      font-size: 8pt;
+      color: #334155;
+      line-height: 1.4;
+    }
+
+    /* CAJAS DE INFORMACIÓN Y ALERTAS SILENCIOSAS */
+    .info-box-clean {
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      border-left: 3.5px solid #00A896;
+      border-radius: 4px;
+      padding: 8px 12px;
+      margin-bottom: 10px;
+      font-size: 8.3pt;
+      color: #1E293B;
+    }
+    .neutral-box-clean {
+      background: #F8FAFC;
+      border: 1px solid #CBD5E1;
+      border-left: 3.5px solid #64748B;
+      border-radius: 4px;
+      padding: 8px 12px;
+      margin-bottom: 10px;
+      font-size: 8.3pt;
+      color: #1E293B;
+    }
+
+    /* CÓDIGO Y JSON */
+    pre.code-block {
+      background: #F8FAFC;
+      border: 1px solid #CBD5E1;
+      border-radius: 5px;
+      padding: 8px 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 7.5pt;
+      color: #0F172A;
+      line-height: 1.35;
+      overflow-x: auto;
+      margin: 6px 0 10px 0;
+    }
+
+    /* CONTENEDOR DE IMÁGENES */
+    
+    /* CONTENEDOR COMPACTO PARA PAGINAS CON DOS MOCKUPS */
+    .img-card-compact {
+      border: 1px solid #CBD5E1;
+      border-radius: 5px;
+      overflow: hidden;
+      margin: 4px 0 6px 0;
+      background: #FFFFFF;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+    }
+    .img-card-compact img {
+      width: 100%;
+      height: 290px;
+      object-fit: cover;
+      object-position: top;
+      display: block;
+    }
+    .img-card-compact .img-caption {
+      background: #F8FAFC;
+      border-top: 1px solid #E2E8F0;
+      padding: 3px 8px;
+      font-size: 7.2pt;
+      color: #475569;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .img-card {
+      border: 1px solid #CBD5E1;
+      border-radius: 6px;
+      overflow: hidden;
+      margin: 10px 0 14px 0;
+      background: #FFFFFF;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    }
+    .img-card img {
+      width: 100%;
+      max-height: 600px;
+      object-fit: cover;
+      object-position: top;
+      display: block;
+    }
+    .img-caption {
+      background: #F8FAFC;
+      border-top: 1px solid #E2E8F0;
+      padding: 6px 12px;
+      font-size: 8pt;
+      color: #475569;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* BADGES */
+    .badge-clean-fcr {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 7.5pt;
+      font-weight: 700;
+      background: #F0FDF4;
+      color: #166534;
+      border: 1px solid #BBF7D0;
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+        .badge-clean-pause {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 7.5pt;
+      font-weight: 700;
+      background: #F8FAFC;
+      color: #475569;
+      border: 1px solid #CBD5E1;
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+    .badge-clean-n2 {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 7.5pt;
+      font-weight: 700;
+      background: #F1F5F9;
+      color: #334155;
+      border: 1px solid #CBD5E1;
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+
+    /* PORTADA */
+    .cover-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 94%;
+      padding: 30px 10px;
+    }
+    .cover-top {
+      border-bottom: 3px solid #00A896;
+      padding-bottom: 25px;
+    }
+    .cover-meta-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 30px;
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      border-radius: 6px;
+      padding: 16px;
+    }
+    .cover-meta-item {
+      font-size: 8.5pt;
+    }
+    .cover-meta-label {
+      font-weight: 700;
+      color: #64748B;
+      text-transform: uppercase;
+      font-size: 7.5pt;
+      margin-bottom: 2px;
+    }
+    .cover-meta-val {
+      font-weight: 600;
+      color: #0F172A;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- =========================================================================
+       PÁGINA 1: PORTADA EJECUTIVA
+       ========================================================================= -->
+  <div class="page">
+    <div class="cover-container">
+      <div class="cover-top">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">
+          <div style="width: 44px; height: 44px; background: #F0FDFA; border: 1.5px solid #99F6E4; color: #00A896; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-family: 'Outfit', sans-serif; font-weight: 900; font-size: 24px;">
+            Q
+          </div>
+          <div>
+            <h2 style="font-family: 'Outfit', sans-serif; font-size: 16pt; font-weight: 800; color: #0F172A; margin: 0;">Quantux ServiceDesk Enterprise</h2>
+            <p style="font-size: 9pt; color: #64748B; margin: 2px 0 0 0;">Arquitectura Tecnológica &bull; División HealthTech Solutions</p>
+          </div>
+        </div>
+
+        <h1 style="font-family: 'Outfit', sans-serif; font-size: 24pt; font-weight: 900; color: #0F172A; line-height: 1.15; margin: 0 0 12px 0;">
+          PROPUESTA FUNCIONAL Y TÉCNICA
+        </h1>
+        <p style="font-family: 'Outfit', sans-serif; font-size: 13pt; font-weight: 700; color: #00A896; margin: 0 0 16px 0;">
+          Reemplazo Integral del Nivel 1 de Soporte – Ticketera Quantux (OSDE / Consultorio Digital)
+        </p>
+        <p style="font-size: 9.5pt; color: #334155; line-height: 1.5;">
+          Especificación integral del nuevo Módulo de Soporte N1 de Quantux ServiceDesk, concebido para automatizar la operación de primer nivel para prestadores de Consultorio Digital OSDE mediante árboles de decisión técnico-operativos normalizados, trazabilidad de datos estructurados, base de conocimiento autónoma y escalamiento asistido a Nivel 2.
+        </p>
+
+        <div class="cover-meta-grid">
+          <div class="cover-meta-item">
+            <div class="cover-meta-label">Organización Cliente</div>
+            <div class="cover-meta-val">OSDE &bull; Red Nacional de Prestadores Médicos</div>
+          </div>
+          <div class="cover-meta-item">
+            <div class="cover-meta-label">Plataforma Objetivo</div>
+            <div class="cover-meta-val">Consultorio Digital OSDE (CD2) &bull; Extranet</div>
+          </div>
+          <div class="cover-meta-item">
+            <div class="cover-meta-label">Estándar de Interfaz</div>
+            <div class="cover-meta-val">Densidad Silenciosa &bull; Pizarra Neutral (Regla de Oro)</div>
+          </div>
+          <div class="cover-meta-item">
+            <div class="cover-meta-label">Marco Normativo Aplicable</div>
+            <div class="cover-meta-val">Ley 27.553 &bull; Ley 27.802 &bull; Dec. 407/2026 &bull; Res. 2214/2025</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="info-box-clean">
+          <strong>Directriz Estricta de Aprobación por Comité:</strong> Cero uso de colores oscuros masivos y prohibición absoluta de tonos rojos. Toda criticidad y estado se modela mediante tipografía estructurada, fondos luminosos (<code>#FFFFFF</code> / <code>#F8FAFC</code>) y bordes sutiles de 1px.
+        </div>
+        <div style="font-size: 8pt; color: #64748B; display: flex; justify-content: space-between;">
+          <span>Versión Oficial: 4.3 Enterprise</span>
+          <span>Fecha: 25 / Septiembre / 2026</span>
+          <span>Confidencialidad: Uso Exclusivo Comité Evaluador</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       PÁGINA 2: SECCIÓN 1 Y SECCIÓN 2
+       ========================================================================= -->
+  <div class="page">
+    <div class="doc-header">
+      <div class="header-logo-group">
+        <div class="header-q-badge">Q</div>
+        <span class="header-title-text">Quantux ServiceDesk Enterprise</span>
+      </div>
+      <span class="header-subtitle-text">DOC-N1-OSDE-2026 &bull; PÁG. 2</span>
+    </div>
+
+    <h1 class="sec-title">1. Resumen Ejecutivo y Objetivo General</h1>
+    <p>
+      El presente documento detalla la especificación funcional y técnica del nuevo <strong>Módulo de Soporte N1 de la Ticketera Quantux</strong>, diseñado para automatizar y reemplazar de forma integral la operación de primer nivel (N1) para los profesionales de la salud que operan en la plataforma <strong>Consultorio Digital OSDE</strong>.
+    </p>
+    <p>
+      El módulo integra un motor conversacional guiado, árboles de decisión técnico-operativos normalizados estrictamente bajo la información oficial de OSDE, y un sistema de trazabilidad automatizada que garantiza la resolución autónoma (FCR) o el escalamiento limpio hacia el Nivel 2 (N2), sin utilizar colores oscuros ni tonos rojos, bajo una interfaz neutral, corporativa y de alta densidad silenciosa.
+    </p>
+
+    <div class="info-box-clean" style="margin-top: 10px;">
+      <strong>Objetivos Estratégicos del Módulo N1 Autónomo:</strong>
+      <ul style="margin: 4px 0 0 0; padding-left: 18px; line-height: 1.5;">
+        <li><strong>Resolución en Primer Contacto (FCR &gt; 88%):</strong> Diagnóstico autónomo y aplicación inmediata de playbooks oficiales para todas las consultas operativas y normativas frecuentes.</li>
+        <li><strong>Continuidad del Acto Médico (Ley 27.553):</strong> Instrucciones taxativas para no interrumpir videoconsultas ni suspender sesiones ante fallas de validación.</li>
+        <li><strong>Bypass Limpio a Nivel 2 (SLA &lt; 15 min):</strong> Transferencia quirúrgica con telemetría precargada ante bloqueos generales de credenciales o fallas de infraestructura.</li>
+        <li><strong>Cero Desvío de Terminología:</strong> Alineación absoluta con el léxico oficial de OSDE (<em>validador de OSDE</em>, <em>herramienta POS</em>, etc.).</li>
+      </ul>
+    </div>
+
+    <h1 class="sec-title" style="margin-top: 16px;">2. Arquitectura de Diseño y Estilos (Regla de Oro Cuantux / Quantux)</h1>
+    <p>
+      Conforme a las directrices corporativas aprobadas por el comité evaluador:
+    </p>
+
+    <div class="neutral-box-clean">
+      <ul style="margin: 0; padding-left: 18px; line-height: 1.55;">
+        <li><strong>Paleta Cromática Estricta:</strong> Uso exclusivo de superficies claras y luminosas (<code>#FFFFFF</code>, <code>#F8FAFC</code>, <code>#F1F5F9</code>), bordes sutiles de un tono (<code>#E2E8F0</code>, <code>#CBD5E1</code>) y una escala tipográfica neutral de grises (<code>#0F172A</code>, <code>#1E293B</code>, <code>#475569</code>, <code>#64748B</code>).</li>
+        <li><strong>Prohibición Absoluta de Colores Rojos y Tonos Oscuros:</strong> No se permiten badges, alertas, bordes ni textos en rojo o tonos saturados/oscuros. La criticidad y los estados se resuelven mediante pesos tipográficos, jerarquía de filas estructuradas y etiquetas neutras.</li>
+        <li><strong>Componentes Nativos:</strong> Estructuras en filas de resolución operativa (<code>.tree-node-row</code>) con botonera 100% tipográfica, sin iconos flotantes ni bloques de tarjetas (cards) sobrecargados.</li>
+      </ul>
+    </div>
+
+    <h2 class="sec-subtitle" style="margin-top: 10px; font-size: 10pt;">2.1. Selector Dinámico de Especialidad y Pautas de Psicología</h2>
+    <p style="font-size: 8.2pt; line-height: 1.4; color: #1E293B; margin-bottom: 6px;">
+      El portal y el modal de soporte incorporan un <strong>Selector de Especialidad del Prestador</strong>. Al seleccionarse <em>Psicología</em>, el motor adapta su flujo a las particularidades de la disciplina:
+    </p>
+    <div class="info-box-clean" style="margin-bottom: 6px; padding: 6px 10px; font-size: 7.9pt;">
+      <ul style="margin: 0; padding-left: 16px; line-height: 1.45;">
+        <li><strong>Continuidad Terapéutica Protegida (Ley 26.657 y Ley 27.553):</strong> Cero interrupción o suspensión de la sesión psicológica ante fallas de validación. Respaldo médico-legal en vivo.</li>
+        <li><strong>Saldo de Sesiones y Copagos:</strong> Muestra en pantalla el saldo restante de sesiones y el copago vigente; la percepción queda a criterio del profesional sin trabar la consulta.</li>
+        <li><strong>Token en Videollamada:</strong> El paciente accede sin software; el reingreso del token de 3 dígitos se realiza durante la videoconsulta antes del cierre.</li>
+        <li><strong>Encuadre de Salud Mental vs Prescripción:</strong> Se omiten validaciones bloqueantes de vademécum para Lic. en Psicología, priorizando evolución clínica y secreto profesional.</li>
+        <li><strong>Migración a Consultorio de Cartilla (Filial Metropolitana):</strong> Guía paso a paso para migrar la agenda provisoria al consultorio real habilitado en cartilla.</li>
+        <li><strong>Periodicidad y Bloqueos Asistidos:</strong> Configuración de turnos semanales recurrentes y cancelación masiva por licencias con avisos por WhatsApp/correo.</li>
+      </ul>
+    </div>
+
+    <h2 class="sec-subtitle" style="margin-top: 8px; font-size: 9.8pt;">2.2. Mecanismo de Búsqueda Predictiva en Tiempo Real (Typeahead)</h2>
+    <p style="font-size: 8pt; line-height: 1.35; color: #1E293B; margin-bottom: 2px;">
+      El buscador central y la cápsula superior integran un motor predictivo que se activa desde el <strong>2.° carácter</strong>, filtrando dinámicamente las ramas de los 7 árboles técnico-operativos y sugiriendo playbooks oficiales en 1 clic.
+    </p>
+
+    <div class="doc-footer">
+      <span>Quantux ServiceDesk Enterprise &bull; OSDE Consultorio Digital</span>
+      <span>Sección 1 &bull; Resumen Ejecutivo &bull; Arquitectura de Estilos</span>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       PÁGINA 3: SECCIÓN 3 - ÁRBOLES 1 Y 2
+       ========================================================================= -->
+  <div class="page">
+    <div class="doc-header">
+      <div class="header-logo-group">
+        <div class="header-q-badge">Q</div>
+        <span class="header-title-text">Quantux ServiceDesk Enterprise</span>
+      </div>
+      <span class="header-subtitle-text">DOC-N1-OSDE-2026 &bull; PÁG. 3</span>
+    </div>
+
+    <h1 class="sec-title">3. Árboles de Decisión Técnico-Operativos (Nivel N1)</h1>
+    <p>
+      Los árboles de decisión estructuran de forma jerárquica y determinística la atención de incidencias en Consultorio Digital OSDE, garantizando que el profesional reciba pautas precisas sin ambigüedades.
+    </p>
+
+    <!-- ÁRBOL 1 -->
+    <div class="tree-row no-break">
+      <div class="tree-row-header">
+        <span class="tree-row-badge">ÁRBOL 1</span>
+        <span class="tree-row-title">Activación y Accesos a Consultorio Digital</span>
+      </div>
+      <div class="tree-row-body">
+        <p><strong>Nodo 1.1 (Consulta):</strong> ¿El prestador no recibió el correo de activación o no puede ingresar a la plataforma?</p>
+        <p><strong>Diagnóstico y Playbook:</strong> El correo de confirmación de alta en el Sistema de Gestión de Turnos puede encontrarse en la bandeja de spam o correo no deseado.</p>
+        <p><strong>Acción Autónoma:</strong> Indicar el acceso directo a <code>https://consultoriodigital2.osde.com.ar/</code> utilizando las credenciales habituales de Extranet.</p>
+        <p><strong>Validación de Requisitos:</strong> Verificar que cumpla con ser prestador físico, publicar agenda en la cartilla online y aceptar los términos y condiciones. Si configuró su agenda, la opción se habilita al siguiente día hábil. En caso contrario, gestionar vía Extranet (<em>Herramientas &gt; Mis Trámites &gt; Trámites disponibles &gt; Envío de consultas &gt; Consultorio Digital</em>).</p>
+        <p><strong>Escalamiento N2:</strong> Si persiste el bloqueo de usuario o credenciales de acceso general a Extranet.</p>
+      </div>
+    </div>
+
+    <!-- ÁRBOL 2 -->
+    <div class="tree-row no-break" style="margin-top: 10px;">
+      <div class="tree-row-header">
+        <span class="tree-row-badge">ÁRBOL 2</span>
+        <span class="tree-row-title">Validación de Pacientes, Tokens y Transacciones</span>
+      </div>
+      <div class="tree-row-body">
+        <p><strong>Nodo 2.1 (Consulta):</strong> La validación del paciente figura rechazada (indicador en color naranja o alerta de validación).</p>
+        <p><strong>Diagnóstico y Playbook:</strong> Motivos posibles: (a) Ingreso incorrecto del token de 3 dígitos de la credencial digital; (b) Paciente sin cobertura vigente o no apto.</p>
+        <p><strong>Acción Autónoma:</strong> Instruir al profesional para que desplace el cursor sobre la etiqueta naranja y verifique el código de rechazo exacto (idéntico al de la <em>herramienta POS</em>). Solicitar el reingreso del token durante la consulta. Si se trató de un error de tipeo y el socio está apto, la transacción se confirma de inmediato.</p>
+        <p><strong>Gestión de Copagos y Saldos:</strong> La plataforma muestra automáticamente el saldo disponible de sesiones y el valor del copago actualizado mediante etiqueta neutra informativa. El cobro del coseguro queda a criterio del profesional.</p>
+      </div>
+    </div>
+
+    <!-- ÁRBOL 3 -->
+    <div class="tree-row no-break" style="margin-top: 10px;">
+      <div class="tree-row-header">
+        <span class="tree-row-badge">ÁRBOL 3</span>
+        <span class="tree-row-title">Estado de Registraciones y Geolocalización Presencial</span>
+      </div>
+      <div class="tree-row-body">
+        <p><strong>Nodo 3.1 (Consulta):</strong> Control y gestión de atenciones registradas o error en atenciones presenciales.</p>
+        <p><strong>Acción Autónoma:</strong> Guiar al prestador hacia la opción <em>Registraciones</em> en el menú principal para consultar el estado en tiempo real. La herramienta permite anular o reintentar la registración ante cualquier incidencia operativa.</p>
+        <p><strong>Requisito Presencial:</strong> Recordar que el uso de Consultorio Digital en atenciones presenciales exige activar la geolocalización del navegador configurándola en <em>"Permitir siempre"</em>.</p>
+      </div>
+    </div>
+
+    <div class="doc-footer">
+      <span>Quantux ServiceDesk Enterprise &bull; OSDE Consultorio Digital</span>
+      <span>Sección 3 &bull; Árboles de Decisión Técnico-Operativos (Ramas 1 a 3)</span>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       PÁGINA 4: SECCIÓN 3 CONT. - ÁRBOLES 4, 5, 6 Y 7
+       ========================================================================= -->
+  <div class="page">
+    <div class="doc-header">
+      <div class="header-logo-group">
+        <div class="header-q-badge">Q</div>
+        <span class="header-title-text">Quantux ServiceDesk Enterprise</span>
+      </div>
+      <span class="header-subtitle-text">DOC-N1-OSDE-2026 &bull; PÁG. 4</span>
+    </div>
+
+    <!-- ÁRBOL 4 -->
+    <div class="tree-row no-break">
+      <div class="tree-row-header">
+        <span class="tree-row-badge">ÁRBOL 4</span>
+        <span class="tree-row-title">Prescripción Electrónica, Vademécum y Matrícula SISA</span>
+      </div>
+      <div class="tree-row-body">
+        <p><strong>Nodo 4.1 (Consulta):</strong> No se encuentra un medicamento en el prescriptor o se visualiza alerta de matrícula.</p>
+        <p><strong>Diagnóstico y Playbook:</strong> El prescriptor nativo opera sobre el vademécum de Alfabeta (búsqueda por monodroga o presentación comercial).</p>
+        <p><strong>Acción Autónoma:</strong> Si no se localiza, emitir receta en papel (atención presencial) o prescribir reemplazo terapéutico (atención virtual). Reportar la incidencia por el canal oficial de WhatsApp de asesores técnico-funcionales (+54 9 11 4360-3800, opción 1, lunes a viernes de 8 a 20 h).</p>
+        <p><strong>Matrícula SISA:</strong> Las funciones de prescripción, certificados y notas exigen obligatoriamente matrícula validada en la Red Federal de Registros de Profesionales de la Salud (SISA). Si no está habilitada, verificar estado en <code>https://sisa.msal.gov.ar/sisa/</code>. La videoconsulta se permite, pero sin el módulo prescriptivo activo.</p>
+        <p><strong>Validación Biométrica:</strong> Obligatoria para profesionales con prescripción habilitada (Resolución 2214/2025), requiriendo DNI y dispositivo con cámara frontal por única vez mediante enlace oficial recibido por comunicación directa.</p>
+      </div>
+    </div>
+
+    <!-- ÁRBOL 5 -->
+    <div class="tree-row no-break" style="margin-top: 8px;">
+      <div class="tree-row-header">
+        <span class="tree-row-badge">ÁRBOL 5</span>
+        <span class="tree-row-title">Certificados de Reposo y Funciones Clínicas (HCE)</span>
+      </div>
+      <div class="tree-row-body">
+        <p><strong>Nodo 5.1 (Consulta):</strong> Emisión de certificados de reposo laboral y gestión de historia clínica.</p>
+        <p><strong>Acción Autónoma:</strong> Para cumplir con la Ley 27.802 y el Decreto 407/2026, la opción <em>Certificados - motivo indicación de reposo</em> exige completar obligatoriamente los campos: <em>Diagnóstico o motivo de licencia</em> y <em>Cantidad de días de reposo</em>.</p>
+        <p><strong>Adjuntos e Historial:</strong> Los pacientes pueden adjuntar hasta 10 archivos (JPG o PDF) antes o durante la videoconsulta. El profesional debe clasificarlos mediante la etiqueta <em>"Sin clasificación"</em> y presionar <em>"Guardar archivos"</em> para incorporarlos al registro de salud. Se integran además las secciones de <em>Alergias e intolerancias</em>, <em>Datos antropométricos</em> y codificación diagnóstica estandarizada bajo SNOMED CT.</p>
+      </div>
+    </div>
+
+    <!-- ÁRBOL 6 -->
+    <div class="tree-row no-break" style="margin-top: 8px;">
+      <div class="tree-row-header">
+        <span class="tree-row-badge">ÁRBOL 6</span>
+        <span class="tree-row-title">Atención de Pacientes Particulares y Repetición de Recetas</span>
+      </div>
+      <div class="tree-row-body">
+        <p><strong>Nodo 6.1 (Consulta):</strong> Gestión de pacientes con otras coberturas y agilización de recetas.</p>
+        <p><strong>Acción Autónoma:</strong> Para atender particulares, seleccionar un turno disponible en el Sistema de Gestión de Turnos de Extranet, hacer clic en <em>"Alta de paciente"</em> y completar sus datos. En la sala de espera aparecerán bajo la leyenda <em>"Otra cobertura"</em>.</p>
+        <p><strong>Repetición de Recetas:</strong> Para repetir prescripciones, acceder al historial del paciente dentro o fuera de la consulta (<em>Historial de medicamentos &gt; Repetir prescripción &gt; Confirmar</em>), generando una réplica exacta de la última emisión.</p>
+      </div>
+    </div>
+
+    <!-- ÁRBOL 7 -->
+    <div class="tree-row no-break" style="margin-top: 8px;">
+      <div class="tree-row-header">
+        <span class="tree-row-badge">ÁRBOL 7</span>
+        <span class="tree-row-title">Turnos OSDE, Configuración de Agendas y Migración (Salud Mental)</span>
+      </div>
+      <div class="tree-row-body">
+        <p><strong>Nodo 7.1 (Consulta):</strong> Configuración de consultorios, franjas horarias y publicación de turnos en cartilla.</p>
+        <p><strong>Diagnóstico y Playbook:</strong> Ingreso vía Extranet (<em>Herramientas &gt; Sistema de gestión de turnos</em> o botón <em>Turnos Online</em>). En <em>Cargar Horarios</em>, definir modalidad (Presencial/Virtual), días y duración. Clic obligatorio en <em>"Quiero publicar mis turnos en cartilla"</em> para habilitar la toma por socios.</p>
+        <p><strong>Migración de Consultorio (Filial Metropolitana):</strong> Procedimiento oficial para migrar la agenda del consultorio provisorio <em>"Prestación on line según acuerdo entre profesional y paciente"</em> al consultorio real publicado en cartilla, asegurando visibilidad institucional.</p>
+        <p><strong>Periodicidad, Sobreturnos y Bloqueos:</strong> En Psicología Adultos, opción <em>Periodicidad</em> (turnos recurrentes semanales/quincenales) y sobreturnos con clic derecho en grilla. Al bloquear agenda por licencia, cancelación masiva asistida con notificación automática por WhatsApp y correo.</p>
+      </div>
+    </div>
+
+    <div class="doc-footer">
+      <span>Quantux ServiceDesk Enterprise &bull; OSDE Consultorio Digital</span>
+      <span>Sección 3 &bull; Árboles de Decisión Técnico-Operativos (Ramas 4 a 7)</span>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       PÁGINA 5: SECCIÓN 4 - HISTORIAS DE USUARIO (UH-01 A UH-04)
+       ========================================================================= -->
+  <div class="page">
+    <div class="doc-header">
+      <div class="header-logo-group">
+        <div class="header-q-badge">Q</div>
+        <span class="header-title-text">Quantux ServiceDesk Enterprise</span>
+      </div>
+      <span class="header-subtitle-text">DOC-N1-OSDE-2026 &bull; PÁG. 5</span>
+    </div>
+
+    <h1 class="sec-title">4. Historias de Usuario (UH-01 a UH-20)</h1>
+
+    <!-- UH-01 -->
+    <div class="uh-box no-break">
+      <div class="uh-header">
+        <span class="uh-code">UH-01</span>
+        <span class="uh-title">Activación de Credenciales</span>
+      </div>
+      <div class="uh-formula">
+        <strong>COMO</strong> prestador de salud,<br>
+        <strong>NECESITO</strong> recibir asistencia automatizada para activar mi usuario de Consultorio Digital,<br>
+        <strong>PARA</strong> comenzar a operar rápidamente sin demoras operativas.
+      </div>
+      <div class="gherkin-box">
+        <strong>Criterio Gherkin:</strong><br>
+        <strong>Dado que</strong> el profesional no encuentra su correo de activación,<br>
+        <strong>Cuando</strong> ingresa al módulo de soporte y consulta por accesos,<br>
+        <strong>Entonces</strong> el sistema guía el acceso directo a <code>https://consultoriodigital2.osde.com.ar/</code> y detalla los requisitos de alta en cartilla.
+      </div>
+    </div>
+
+    <!-- UH-02 -->
+    <div class="uh-box no-break">
+      <div class="uh-header">
+        <span class="uh-code">UH-02</span>
+        <span class="uh-title">Resolución de Token Rechazado</span>
+      </div>
+      <div class="uh-formula">
+        <strong>COMO</strong> médico prestador,<br>
+        <strong>NECESITO</strong> conocer el motivo exacto por el cual la validación del paciente arroja rechazo,<br>
+        <strong>PARA</strong> subsanar un posible error de tipeo o coordinar el pago correspondiente.
+      </div>
+      <div class="gherkin-box">
+        <strong>Criterio Gherkin:</strong><br>
+        <strong>Dado que</strong> el indicador de validación muestra alerta de rechazo,<br>
+        <strong>Cuando</strong> el prestador desliza el cursor sobre la etiqueta,<br>
+        <strong>Entonces</strong> el sistema detalla el motivo codificado POS y permite reingresar el token de la credencial.
+      </div>
+    </div>
+
+    <!-- UH-03 -->
+    <div class="uh-box no-break">
+      <div class="uh-header">
+        <span class="uh-code">UH-03</span>
+        <span class="uh-title">Visualización de Copagos y Saldos</span>
+      </div>
+      <div class="uh-formula">
+        <strong>COMO</strong> profesional tratante,<br>
+        <strong>NECESITO</strong> visualizar el saldo de sesiones y el copago aplicable en pantalla,<br>
+        <strong>PARA</strong> informar con precisión al socio durante la consulta.
+      </div>
+      <div class="gherkin-box">
+        <strong>Criterio Gherkin:</strong><br>
+        <strong>Dado que</strong> se registra una atención,<br>
+        <strong>Cuando</strong> el sistema procesa la transacción,<br>
+        <strong>Entonces</strong> muestra mediante ventana emergente o etiqueta informativa el saldo disponible y el copago vigente.
+      </div>
+    </div>
+
+    <!-- UH-04 -->
+    <div class="uh-box no-break">
+      <div class="uh-header">
+        <span class="uh-code">UH-04</span>
+        <span class="uh-title">Control y Estado de Registraciones</span>
+      </div>
+      <div class="uh-formula">
+        <strong>COMO</strong> prestador,<br>
+        <strong>NECESITO</strong> consultar el estado de mis transacciones en tiempo real,<br>
+        <strong>PARA</strong> anular o reintentar registros ante cualquier eventualidad técnica.
+      </div>
+      <div class="gherkin-box">
+        <strong>Criterio Gherkin:</strong><br>
+        <strong>Dado que</strong> se requiere verificar una práctica enviada,<br>
+        <strong>Cuando</strong> el prestador accede al menú Registraciones,<br>
+        <strong>Entonces</strong> visualiza el estado actual con opciones operativas de anulación o reintento.
+      </div>
+    </div>
+
+    <!-- UH-05 -->
+    <div class="uh-box no-break">
+      <div class="uh-header">
+        <span class="uh-code">UH-05</span>
+        <span class="uh-title">Geolocalización para Atenciones Presenciales</span>
+      </div>
+      <div class="uh-formula">
+        <strong>COMO</strong> prestador físico,<br>
+        <strong>NECESITO</strong> habilitar el localizador de la plataforma,<br>
+        <strong>PARA</strong> operar correctamente en mis consultas presenciales con validación de ubicación.
+      </div>
+      <div class="gherkin-box">
+        <strong>Criterio Gherkin:</strong><br>
+        <strong>Dado que</strong> se utiliza Consultorio Digital en consultorio físico,<br>
+        <strong>Cuando</strong> el navegador solicita permisos,<br>
+        <strong>Entonces</strong> el sistema guía para pulsar "Permitir siempre" y verificar el icono de geolocalización activo.
+      </div>
+    </div>
+
+    <div class="doc-footer">
+      <span>Quantux ServiceDesk Enterprise &bull; OSDE Consultorio Digital</span>
+      <span>Sección 4 &bull; Historias de Usuario (UH-01 a UH-05)</span>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       PÁGINA 6: SECCIÓN 4 CONT. - HISTORIAS DE USUARIO (UH-06 A UH-10)
+       ========================================================================= -->
+  <div class="page">
+    <div class="doc-header">
+      <div class="header-logo-group">
+        <div class="header-q-badge">Q</div>
+        <span class="header-title-text">Quantux ServiceDesk Enterprise</span>
+      </div>
+      <span class="header-subtitle-text">DOC-N1-OSDE-2026 &bull; PÁG. 6</span>
+    </div>
+
+    <!-- UH-06 -->
+    <div class="uh-box no-break">
+      <div class="uh-header">
+        <span class="uh-code">UH-06</span>
+        <span class="uh-title">Búsqueda y Reemplazo en Vademécum Alfabeta</span>
+      </div>
+      <div class="uh-formula">
+        <strong>COMO</strong> médico prescriptor,<br>
+        <strong>NECESITO</strong> utilizar el buscador de medicamentos integrado,<br>
+        <strong>PARA</strong> emitir recetas electrónicas válidas o gestionar alternativas si un producto no figura.
+      </div>
+      <div class="gherkin-box">
+        <strong>Criterio Gherkin:</strong><br>
+        <strong>Dado que</strong> un medicamento no aparece en el prescriptor Alfabeta,<br>
+        <strong>Cuando</strong> el sistema no arroja resultados,<br>
+        <strong>Entonces</strong> sugiere emitir receta papel o reemplazo virtual y canalizar el reporte vía WhatsApp oficial.
+      </div>
+    </div>
+
+    <!-- UH-07 -->
+    <div class="uh-box no-break">
+      <div class="uh-header">
+        <span class="uh-code">UH-07</span>
+        <span class="uh-title">Verificación de Matrícula SISA</span>
+      </div>
+      <div class="uh-formula">
+        <strong>COMO</strong> profesional de la salud,<br>
+        <strong>NECESITO</strong> verificar el estado de mi habilitación prescriptiva,<br>
+        <strong>PARA</strong> asegurar el acceso completo a recetas y certificados electrónicos.
+      </div>
+      <div class="gherkin-box">
+        <strong>Criterio Gherkin:</strong><br>
+        <strong>Dado que</strong> aparece una alerta de matrícula no habilitada,<br>
+        <strong>Cuando</strong> el prestador consulta el motivo,<br>
+        <strong>Entonces</strong> el sistema dirige al portal SISA (<code>https://sisa.msal.gov.ar/sisa/</code>) para su actualización reglamentaria.
+      </div>
+    </div>
+
+    <!-- UH-08 -->
+    <div class="uh-box no-break">
+      <div class="uh-header">
+        <span class="uh-code">UH-08</span>
+        <span class="uh-title">Validación Biométrica Obligatoria</span>
+      </div>
+      <div class="uh-formula">
+        <strong>COMO</strong> profesional con capacidad de prescripción,<br>
+        <strong>NECESITO</strong> completar la validación de identidad exigida por normativa,<br>
+        <strong>PARA</strong> mantener activa mi cuenta sin bloqueos.
+      </div>
+      <div class="gherkin-box">
+        <strong>Criterio Gherkin:</strong><br>
+        <strong>Dado que</strong> se requiere cumplir con la Resolución 2214/2025,<br>
+        <strong>Cuando</strong> el prestador recibe el enlace oficial,<br>
+        <strong>Entonces</strong> completa el proceso por única vez utilizando DNI y cámara frontal.
+      </div>
+    </div>
+
+    <!-- UH-09 -->
+    <div class="uh-box no-break">
+      <div class="uh-header">
+        <span class="uh-code">UH-09</span>
+        <span class="uh-title">Emisión de Certificados de Reposo (Ley 27.802)</span>
+      </div>
+      <div class="uh-formula">
+        <strong>COMO</strong> médico tratante,<br>
+        <strong>NECESITO</strong> emitir certificados laborales con los campos normativos requeridos,<br>
+        <strong>PARA</strong> garantizar su plena validez legal.
+      </div>
+      <div class="gherkin-box">
+        <strong>Criterio Gherkin:</strong><br>
+        <strong>Dado que</strong> se emite un certificado de reposo,<br>
+        <strong>Cuando</strong> el prestador accede al módulo correspondiente,<br>
+        <strong>Entonces</strong> completa obligatoriamente el diagnóstico/motivo y la cantidad de días de reposo.
+      </div>
+    </div>
+
+    <!-- UH-10 -->
+    <div class="uh-box no-break">
+      <div class="uh-header">
+        <span class="uh-code">UH-10</span>
+        <span class="uh-title">Gestión y Clasificación de Estudios Adjuntos</span>
+      </div>
+      <div class="uh-formula">
+        <strong>COMO</strong> prestador,<br>
+        <strong>NECESITO</strong> clasificar y almacenar los informes o estudios compartidos por el paciente,<br>
+        <strong>PARA</strong> integrarlos formalmente a su registro de salud.
+      </div>
+      <div class="gherkin-box">
+        <strong>Criterio Gherkin:</strong><br>
+        <strong>Dado que</strong> el paciente adjunta archivos en la sala de espera,<br>
+        <strong>Cuando</strong> el prestador selecciona la etiqueta descriptiva sobre los archivos sin clasificar,<br>
+        <strong>Entonces</strong> presiona guardar para mantenerlos en la historia clínica.
+      </div>
+    </div>
+
+    <div class="doc-footer">
+      <span>Quantux ServiceDesk Enterprise &bull; OSDE Consultorio Digital</span>
+      <span>Sección 4 &bull; Historias de Usuario (UH-06 a UH-10)</span>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       PÁGINA 7: SECCIÓN 4 CONT. - HISTORIAS DE USUARIO (UH-11 A UH-15)
+       ========================================================================= -->
+  <div class="page">
+    <div class="doc-header">
+      <div class="header-logo-group">
+        <div class="header-q-badge">Q</div>
+        <span class="header-title-text">Quantux ServiceDesk Enterprise</span>
+      </div>
+      <span class="header-subtitle-text">DOC-N1-OSDE-2026 &bull; PÁG. 7</span>
+    </div>
+
+    <!-- UH-11 -->
+    <div class="uh-box no-break" style="margin-bottom: 6px; padding: 6px 10px;">
+      <div class="uh-header">
+        <span class="uh-code">UH-11</span>
+        <span class="uh-title">Atención de Pacientes Particulares</span>
+      </div>
+      <div class="uh-formula" style="font-size: 7.6pt; line-height: 1.35; margin-bottom: 3px;">
+        <strong>COMO</strong> prestador adherido,<br>
+        <strong>NECESITO</strong> gestionar consultas de pacientes particulares desde la misma plataforma,<br>
+        <strong>PARA</strong> centralizar toda mi agenda en un único entorno unificado.
+      </div>
+      <div class="gherkin-box" style="font-size: 7.3pt; padding: 4px 6px; line-height: 1.3;">
+        <strong>Criterio Gherkin:</strong><br>
+        <strong>Dado que</strong> se programa un turno particular,<br>
+        <strong>Cuando</strong> se utiliza la opción Alta de paciente en Extranet,<br>
+        <strong>Entonces</strong> el socio es visualizado en la sala de espera bajo la leyenda "Otra cobertura".
+      </div>
+    </div>
+
+    <!-- UH-12 -->
+    <div class="uh-box no-break" style="margin-bottom: 6px; padding: 6px 10px;">
+      <div class="uh-header">
+        <span class="uh-code">UH-12</span>
+        <span class="uh-title">Repetición Rápida de Recetas</span>
+      </div>
+      <div class="uh-formula" style="font-size: 7.6pt; line-height: 1.35; margin-bottom: 3px;">
+        <strong>COMO</strong> médico tratante,<br>
+        <strong>NECESITO</strong> reutilizar prescripciones anteriores del historial del paciente,<br>
+        <strong>PARA</strong> agilizar la emisión de tratamientos crónicos recurrentes en pocos pasos.
+      </div>
+      <div class="gherkin-box" style="font-size: 7.3pt; padding: 4px 6px; line-height: 1.3;">
+        <strong>Criterio Gherkin:</strong><br>
+        <strong>Dado que</strong> se accede al historial de medicamentos de un paciente,<br>
+        <strong>Cuando</strong> el prestador selecciona repetir prescripción y confirma,<br>
+        <strong>Entonces</strong> la receta se genera con las especificaciones de la última emisión.
+      </div>
+    </div>
+
+    <!-- UH-13 -->
+    <div class="uh-box no-break" style="margin-bottom: 6px; padding: 6px 10px;">
+      <div class="uh-header">
+        <span class="uh-code">UH-13</span>
+        <span class="uh-title">Selección de Especialidad del Prestador y Pautas de Psicología</span>
+      </div>
+      <div class="uh-formula" style="font-size: 7.6pt; line-height: 1.35; margin-bottom: 3px;">
+        <strong>COMO</strong> profesional tratante (en especial Licenciado/a en Psicología),<br>
+        <strong>NECESITO</strong> seleccionar mi especialidad en el portal y que el sistema aplique automáticamente las directrices de mi área (saldo de sesiones y continuidad sin corte de videoconsulta),<br>
+        <strong>PARA</strong> recibir un soporte N1 ajustado al encuadre operativo y marco normativo de mi disciplina (Ley 26.657 y Ley 27.553).
+      </div>
+      <div class="gherkin-box" style="font-size: 7.3pt; padding: 4px 6px; line-height: 1.3;">
+        <strong>Criterio Gherkin:</strong><br>
+        <strong>Dado que</strong> el profesional accede al Centro de Soporte o al formulario de escalamiento,<br>
+        <strong>Cuando</strong> selecciona la opción "Psicología",<br>
+        <strong>Entonces</strong> el sistema instruye la no suspensión del acto terapéutico y precarga la telemetría correspondiente sin bloqueos farmacológicos.
+      </div>
+    </div>
+
+    <!-- UH-14 -->
+    <div class="uh-box no-break" style="margin-bottom: 6px; padding: 6px 10px;">
+      <div class="uh-header">
+        <span class="uh-code">UH-14</span>
+        <span class="uh-title">Configuración y Publicación de Agendas de Salud Mental en Cartilla</span>
+      </div>
+      <div class="uh-formula" style="font-size: 7.6pt; line-height: 1.35; margin-bottom: 3px;">
+        <strong>COMO</strong> profesional prestador/a de Salud Mental,<br>
+        <strong>NECESITO</strong> configurar mis franjas horarias de atención y publicar mis turnos en la cartilla online de OSDE,<br>
+        <strong>PARA</strong> permitir que los socios reserven sus sesiones directamente desde la cartilla web y móvil institucional.
+      </div>
+      <div class="gherkin-box" style="font-size: 7.3pt; padding: 4px 6px; line-height: 1.3;">
+        <strong>Criterio Gherkin:</strong><br>
+        <strong>Dado que</strong> el prestador accede al Sistema de Gestión de Turnos en Extranet,<br>
+        <strong>Cuando</strong> carga sus franjas habituales y pulsa "Quiero publicar mis turnos en cartilla",<br>
+        <strong>Entonces</strong> el sistema valida los T&C y activa la disponibilidad de turnos en cartilla institucional.
+      </div>
+    </div>
+
+    <!-- UH-15 -->
+    <div class="uh-box no-break" style="margin-bottom: 4px; padding: 6px 10px;">
+      <div class="uh-header">
+        <span class="uh-code">UH-15</span>
+        <span class="uh-title">Migración de Consultorio Provisional y Bloqueos con Notificación Asistida</span>
+      </div>
+      <div class="uh-formula" style="font-size: 7.6pt; line-height: 1.35; margin-bottom: 3px;">
+        <strong>COMO</strong> psicólogo/a adherido/a a Filial Metropolitana,<br>
+        <strong>NECESITO</strong> migrar mi agenda activa hacia el consultorio real en cartilla y gestionar bloqueos de agenda,<br>
+        <strong>PARA</strong> operar con todas las prestaciones reglamentarias y cancelar turnos con avisos automáticos al paciente.
+      </div>
+      <div class="gherkin-box" style="font-size: 7.3pt; padding: 4px 6px; line-height: 1.3;">
+        <strong>Criterio Gherkin:</strong><br>
+        <strong>Dado que</strong> el prestador reasigna la agenda o activa un bloqueo por licencia médica/vacaciones,<br>
+        <strong>Cuando</strong> sigue el procedimiento de 3 etapas o selecciona "Bloquear agenda",<br>
+        <strong>Entonces</strong> actualiza el domicilio oficial o cancela turnos enviando avisos por WhatsApp/correo según corresponda.
+      </div>
+    </div>
+
+    <div class="doc-footer">
+      <span>Quantux ServiceDesk Enterprise &bull; OSDE Consultorio Digital</span>
+      <span>Sección 4 &bull; Historias de Usuario (UH-11 a UH-15)</span>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       PÁGINA 8: SECCIÓN 4 CONT. - HISTORIAS DE USUARIO (UH-16 A UH-20)
+       ========================================================================= -->
+  <div class="page">
+    <div class="doc-header">
+      <div class="header-logo-group">
+        <div class="header-q-badge">Q</div>
+        <span class="header-title-text">Quantux ServiceDesk Enterprise</span>
+      </div>
+      <span class="header-subtitle-text">DOC-N1-OSDE-2026 &bull; PÁG. 8</span>
+    </div>
+
+    <!-- UH-16 -->
+    <div class="uh-box no-break" style="margin-bottom: 6px; padding: 6px 10px;">
+      <div class="uh-header">
+        <span class="uh-code">UH-16</span>
+        <span class="uh-title">Búsqueda Predictiva y Filtrado Dinámico de Árboles</span>
+      </div>
+      <div class="uh-formula" style="font-size: 7.6pt; line-height: 1.35; margin-bottom: 3px;">
+        <strong>COMO</strong> prestador que experimenta una consulta o incidencia en la plataforma,<br>
+        <strong>NECESITO</strong> contar con campos de búsqueda predictivos (typeahead >= 2 caracteres) que sugieran playbooks y filtren dinámicamente los árboles,<br>
+        <strong>PARA</strong> localizar y resolver en segundos la incidencia mediante FCR sin navegar manualmente las 7 ramas.
+      </div>
+      <div class="gherkin-box" style="font-size: 7.3pt; padding: 4px 6px; line-height: 1.3;">
+        <strong>Criterio Gherkin:</strong><br>
+        <strong>Dado que</strong> el usuario tipea >= 2 caracteres en el buscador central o superior,<br>
+        <strong>Cuando</strong> el motor indexa las coincidencias en tiempo real,<br>
+        <strong>Entonces</strong> despliega un menú predictivo con los nodos de árboles asociados y oculta las ramas que no coincidan.
+      </div>
+    </div>
+
+    <!-- UH-17 -->
+    <div class="uh-box no-break" style="margin-bottom: 6px; padding: 6px 10px;">
+      <div class="uh-header">
+        <span class="uh-code">UH-17</span>
+        <span class="uh-title">Balanceo de Carga Restringido a Tickets Asignados (Protección de Tickets en Curso)</span>
+      </div>
+      <div class="uh-formula" style="font-size: 7.6pt; line-height: 1.35; margin-bottom: 3px;">
+        <strong>COMO</strong> analista del ServiceDesk o especialista de Nivel 2,<br>
+        <strong>NECESITO</strong> que el balanceador inteligente únicamente redistribuya tickets en estado "ASIGNADO" y jamás reasigne tickets en estado "EN CURSO",<br>
+        <strong>PARA</strong> resolver incidencias con absoluta estabilidad operativa, evitando pérdida de contexto o interrupción de la atención activa.
+      </div>
+      <div class="gherkin-box" style="font-size: 7.3pt; padding: 4px 6px; line-height: 1.3;">
+        <strong>Criterio Gherkin:</strong><br>
+        <strong>Dado que</strong> un ticket se encuentra en estado "EN CURSO" (gestión activa),<br>
+        <strong>Cuando</strong> el motor de balanceo ejecuta una rutina de redistribución,<br>
+        <strong>Entonces</strong> el sistema bloquea y omite dicho ticket; reasignando únicamente los que permanezcan en estado "ASIGNADO".
+      </div>
+    </div>
+
+    <!-- UH-18 -->
+    <div class="uh-box no-break" style="margin-bottom: 6px; padding: 6px 10px;">
+      <div class="uh-header">
+        <span class="uh-code">UH-18</span>
+        <span class="uh-title">Módulo Colaborativo de Configuración de Tickets y SLAs ITIL 4</span>
+      </div>
+      <div class="uh-formula" style="font-size: 7.6pt; line-height: 1.35; margin-bottom: 3px;">
+        <strong>COMO</strong> supervisor o administrador de soporte,<br>
+        <strong>NECESITO</strong> un módulo claro y colaborativo que aplique matrices ITIL (Impacto x Urgencia) y pausas de reloj de SLA,<br>
+        <strong>PARA</strong> asegurar tiempos de respuesta predecibles, trazabilidad y co-resolución mediante notas privadas entre analistas.
+      </div>
+      <div class="gherkin-box" style="font-size: 7.3pt; padding: 4px 6px; line-height: 1.3;">
+        <strong>Criterio Gherkin:</strong><br>
+        <strong>Dado que</strong> se configura la matriz ITIL de prioridades (P1 a P4),<br>
+        <strong>Cuando</strong> un ticket pasa a estado "Esperando al Prestador" o "En Espera Externa",<br>
+        <strong>Entonces</strong> el reloj de SLA se pausa automáticamente y se reanuda ante interacción, habilitando notas privadas y @menciones.
+      </div>
+    </div>
+
+    <!-- UH-19 -->
+    <div class="uh-box no-break" style="margin-bottom: 6px; padding: 6px 10px;">
+      <div class="uh-header">
+        <span class="uh-code">UH-19</span>
+        <span class="uh-title">Justificación Obligatoria en Calificación Negativa y Rescate por Líder</span>
+      </div>
+      <div class="uh-formula" style="font-size: 7.6pt; line-height: 1.35; margin-bottom: 3px;">
+        <strong>COMO</strong> solicitante que experimentó una atención insatisfactoria,<br>
+        <strong>NECESITO</strong> ingresar obligatoriamente una nota detallando mi inconformidad y que el Líder de Soporte intervenga desde el Mando Unificado,<br>
+        <strong>PARA</strong> que mi caso sea auditado y el informe de acciones tomadas por el líder quede registrado inmutablemente en el ticket.
+      </div>
+      <div class="gherkin-box" style="font-size: 7.3pt; padding: 4px 6px; line-height: 1.3;">
+        <strong>Criterio Gherkin:</strong><br>
+        <strong>Dado que</strong> el prestador selecciona 1 o 2 estrellas (negativa),<br>
+        <strong>Cuando</strong> intenta enviar la encuesta CSAT,<br>
+        <strong>Entonces</strong> el sistema exige obligatoriamente redactar el motivo, alertando al Líder con enlace directo en Mando Unificado e inyectando su informe de rescate.
+      </div>
+    </div>
+
+    <!-- UH-20 -->
+    <div class="uh-box no-break" style="margin-bottom: 4px; padding: 6px 10px;">
+      <div class="uh-header">
+        <span class="uh-code">UH-20</span>
+        <span class="uh-title">Gestión Discreta de Incidencias Mayores y Vinculación Bidireccional Padre-Hijo</span>
+      </div>
+      <div class="uh-formula" style="font-size: 7.6pt; line-height: 1.35; margin-bottom: 3px;">
+        <strong>COMO</strong> analista de soporte que atiende incidencias derivadas de una falla masiva,<br>
+        <strong>NECESITO</strong> un cartel discreto en estilo Pizarra Neutral que me permita sumar tickets secundarios al Ticket Padre en 1 clic,<br>
+        <strong>PARA</strong> centralizar la resolución: listando los IDs asociados en el Padre y exhibiendo el ID del Padre en cada Ticket Hijo.
+      </div>
+      <div class="gherkin-box" style="font-size: 7.3pt; padding: 4px 6px; line-height: 1.3;">
+        <strong>Criterio Gherkin:</strong><br>
+        <strong>Dado que</strong> se declara una Incidencia Mayor activa (MIM),<br>
+        <strong>Cuando</strong> el analista pulsa "+ Sumar a Ticket Padre",<br>
+        <strong>Entonces</strong> el Ticket Padre exhibe los IDs asociados (#TKT-8902, #TKT-8905) y el Ticket Hijo refleja el ID del Padre con sincronización de cierre.
+      </div>
+    </div>
+
+    <div class="doc-footer">
+      <span>Quantux ServiceDesk Enterprise &bull; OSDE Consultorio Digital</span>
+      <span>Sección 4 &bull; Historias de Usuario (UH-16 a UH-20)</span>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       PÁGINA 9: SECCIÓN 5 - PROTOCOLO DE CIERRE KCS v6 & ITIL 4
+       ========================================================================= -->
+  <div class="page">
+    <div class="doc-header">
+      <div class="header-logo-group">
+        <div class="header-q-badge">Q</div>
+        <span class="header-title-text">Quantux ServiceDesk Enterprise</span>
+      </div>
+      <span class="header-subtitle-text">DOC-N1-OSDE-2026 &bull; PÁG. 9</span>
+    </div>
+
+    <h1 class="sec-title" style="font-size: 11pt; margin-bottom: 3px;">5. Protocolo Obligatorio de Cierre de Tickets y Alimentación KB (KCS® v6 & ITIL 4)</h1>
+    <p style="font-size: 7.8pt; line-height: 1.35; color: #1E293B; margin-bottom: 5px;">
+      Conforme a los estándares internacionales de calidad para soporte de TI, Quantux ServiceDesk adopta las normas <strong>KCS® (Knowledge-Centered Service) v6</strong> del <em>Consortium for Service Innovation</em>, las prácticas de <strong>Incident & Knowledge Management de ITIL® 4</strong> y los requisitos de trazabilidad de <strong>ISO/IEC 20000-1:2018</strong>.
+    </p>
+
+    <h2 class="sec-subtitle" style="margin-top: 4px; font-size: 8.8pt;">5.1. Investigación de Mercado y Marco Normativo de Calidad</h2>
+    <div class="info-box-clean" style="margin-bottom: 5px; padding: 4px 8px; font-size: 7.5pt;">
+      <ul style="margin: 0; padding-left: 14px; line-height: 1.35;">
+        <li><strong>Metodología KCS® v6 (Solve Loop & Evolve Loop):</strong> El conocimiento técnico se captura como subproducto inmediato del cierre de cada ticket. Se implementa el índice de calidad <em>Article Quality Index (AQI &ge; 98%)</em> para auto-indexación directa en la base de conocimiento de IA.</li>
+        <li><strong>Taxonomía Normalizada ITIL® 4:</strong> Exigencia obligatoria de 4 niveles taxonómicos (Módulo, Categoría, Subcategoría y Error POS), separando taxativamente el síntoma reportado de la causa raíz técnica (RCA) y alimentando la KEDB (Known Error Database).</li>
+        <li><strong>ISO/IEC 20000-1 (Cláusulas 8.2 y 8.6):</strong> Trazabilidad cronológica inmutable, registro de tiempo neto de resolución y prohibición de cierre sin esquema de conformidad.</li>
+      </ul>
+    </div>
+
+    <h2 class="sec-subtitle" style="margin-top: 4px; font-size: 8.8pt;">5.2. Estructura Mandatoria de Cierre de Ticket (Esquema KCS / JSON para Ingesta en KB)</h2>
+    <pre class="code-block" style="font-size: 6.5pt; line-height: 1.2; padding: 5px 8px; margin: 3px 0 5px 0;">{
+  "cierre_ticket_metadata": {
+    "ticket_id": "TKT-2026-XXXX",
+    "version_esquema": "KCS-v6-ITIL4",
+    "timestamp_cierre": "YYYY-MM-DDTHH:MM:SSZ",
+    "tiempo_total_resolucion_segundos": 245,
+    "agente_resolutor": { "tipo": "IA_AUTONOMA_N1 / ANALISTA_N2", "id_agente": "BOT-N1-OSDE" }
+  },
+  "clasificacion_itil": {
+    "modulo_afectado": "Consultorio Digital OSDE",
+    "categoria": "Validacion_Token_Transacciones",
+    "subcategoria": "Desincronizacion_POS_Virtual",
+    "codigo_error_sistema": "ERR-OSDE-403-TOKEN"
+  },
+  "diagnostico_causa_raiz": {
+    "problema_declarado": "El prestador no puede validar la atencion por rechazo de token de credencial digital.",
+    "causa_raiz_identificada": "Expiracion de sesion transaccional por latencia en videoconsulta externa."
+  },
+  "procedimiento_resolutivo_secuencial": [
+    "Paso 1: Verificacion de matricula y habilitacion en cartilla online de OSDE.",
+    "Paso 2: Solicitud de reingreso de token de 3 digitos durante la videollamada sin cortar la atencion.",
+    "Paso 3: Confirmacion de prestacion y asentamiento de evolucion en HCE."
+  ],
+  "articulo_kcs_candidato": {
+    "titulo_estandarizado": "Consultorio Digital: Resolucion de Token Rechazado en Videoconsulta",
+    "resumen_solucion": "Reingreso asistido de credencial durante la sesion sin suspender el acto terapeutico.",
+    "etiquetas_semanticas": ["token", "rechazo", "pos", "videoconsulta", "validador_osde"],
+    "aprobado_para_kb": true,
+    "estado_articulo": "PUBLICADO_AUTONOMO"
+  }
+}</pre>
+
+    <h2 class="sec-subtitle" style="margin-top: 4px; font-size: 8.8pt;">5.3. Módulo Colaborativo de Configuración de Tickets y SLAs ITIL 4</h2>
+    <div class="neutral-box-clean" style="padding: 4px 8px; font-size: 7.5pt; margin-bottom: 2px;">
+      <ul style="margin: 0; padding-left: 14px; line-height: 1.35;">
+        <li><strong>Matriz ITIL de Prioridad Dinámica:</strong> Cruce matricial de Impacto (Institucional, Múltiples Prestadores, Individual) &times; Urgencia (Atención activa, Diferido) determinando prioridades <strong>P1 a P4</strong>.</li>
+        <li><strong>Reglas de Pausa de Reloj SLA (SLA Clock Pausing):</strong> Detención automática ante esperas justificadas (<em>"Esperando al Prestador"</em> o <em>"En Espera Pasarela OSDE / SISA"</em>), reanudándose automáticamente ante interacción.</li>
+        <li><strong>Co-resolución Colaborativa:</strong> Notas internas privadas entre especialistas N2 y @menciones con auditoría inmutable.</li>
+      </ul>
+    </div>
+
+    <div class="doc-footer">
+      <span>Quantux ServiceDesk Enterprise &bull; OSDE Consultorio Digital</span>
+      <span>Sección 5 &bull; Protocolo de Cierre KCS v6 &bull; Esquema JSON KB &bull; Configuración ITIL</span>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       PÁGINA 10: SECCIÓN 5.4, 5.5 Y SECCIÓN 6 - CALIFICACIÓN, CICLO DE VIDA & N2
+       ========================================================================= -->
+  <div class="page">
+    <div class="doc-header">
+      <div class="header-logo-group">
+        <div class="header-q-badge">Q</div>
+        <span class="header-title-text">Quantux ServiceDesk Enterprise</span>
+      </div>
+      <span class="header-subtitle-text">DOC-N1-OSDE-2026 &bull; PÁG. 10</span>
+    </div>
+
+    <h1 class="sec-title" style="font-size: 10.5pt; margin-bottom: 2px;">5.4. Calificación Negativa y Rescate por Líder de Soporte</h1>
+    <div class="info-box-clean" style="margin-bottom: 4px; padding: 4px 8px; font-size: 7.4pt;">
+      <ul style="margin: 0; padding-left: 14px; line-height: 1.3;">
+        <li><strong>Justificación Mandatoria en Calificación Baja:</strong> Toda encuesta CSAT calificada con 1 o 2 estrellas <strong>bloquea el envío</strong> hasta ingresar obligatoriamente la nota de inconformidad.</li>
+        <li><strong>Visibilidad en el Ticket:</strong> La calificación y la nota del usuario se incrustan en la cabecera y trazabilidad del expediente.</li>
+        <li><strong>Mando Unificado del Líder de Soporte:</strong> Alerta inmediata de casos en riesgo de calidad con <strong>enlace directo al ticket</strong>.</li>
+        <li><strong>Registro Inmutable del Rescate:</strong> Tras gestionar la solución, el Líder redacta el comentario obligatorio describiendo lo ejecutado, el cual queda asentado de forma inmutable en el ticket.</li>
+      </ul>
+    </div>
+
+    <h1 class="sec-title" style="font-size: 10.5pt; margin-top: 5px; margin-bottom: 2px;">5.5. Ciclo de Vida Oficial del Ticket (7 Estados ITIL 4 con Pausas de Reloj)</h1>
+    <div class="neutral-box-clean" style="margin-bottom: 5px; padding: 4px 8px; font-size: 7.2pt;">
+      <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+          <tr style="border-bottom: 1px solid #CBD5E1; text-align: left; font-size: 7pt; color: #475569;">
+            <th style="padding: 2px 0;">Estado Oficial</th>
+            <th style="padding: 2px 0;">Comportamiento Reloj SLA</th>
+            <th style="padding: 2px 0;">Regla del Balanceador</th>
+            <th style="padding: 2px 0;">Criterio Operativo</th>
+          </tr>
+        </thead>
+        <tbody style="line-height: 1.25;">
+          <tr style="border-bottom: 1px solid #E2E8F0;">
+            <td style="padding: 2px 0;"><strong>1. NUEVO</strong></td>
+            <td><span class="badge-clean-fcr" style="font-size: 6.5pt; padding: 0 4px;">ACTIVO</span></td>
+            <td>En cola de triaje</td>
+            <td>Ingreso inicial vía portal web, chat IA o derivación Extranet.</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #E2E8F0;">
+            <td style="padding: 2px 0;"><strong>2. ASIGNADO</strong></td>
+            <td><span class="badge-clean-fcr" style="font-size: 6.5pt; padding: 0 4px;">ACTIVO</span></td>
+            <td><strong>Único elegible para balanceo</strong></td>
+            <td>Asignado a cola/especialista sin gestión activa iniciada.</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #E2E8F0;">
+            <td style="padding: 2px 0;"><strong>3. EN CURSO</strong></td>
+            <td><span class="badge-clean-fcr" style="font-size: 6.5pt; padding: 0 4px;">ACTIVO</span></td>
+            <td><strong>PROHIBIDO REDISTRIBUIR</strong></td>
+            <td>Analista trabajando activamente. No se interrumpe la atención.</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #E2E8F0;">
+            <td style="padding: 2px 0;"><strong>4. ESPERANDO AL PRESTADOR</strong></td>
+            <td><span class="badge-clean-pause" style="font-size: 6.5pt; padding: 0 4px;">EN PAUSA</span></td>
+            <td>Bloqueado en analista</td>
+            <td>En espera de datos o confirmación; reanuda automático a EN CURSO.</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #E2E8F0;">
+            <td style="padding: 2px 0;"><strong>5. EN ESPERA PASARELA OSDE/SISA</strong></td>
+            <td><span class="badge-clean-pause" style="font-size: 6.5pt; padding: 0 4px;">EN PAUSA</span></td>
+            <td>Bloqueado en analista</td>
+            <td>Corte o latencia de API externa ajena; reanuda vía webhook.</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #E2E8F0;">
+            <td style="padding: 2px 0;"><strong>6. RESUELTO</strong></td>
+            <td><span class="badge-clean-n2" style="font-size: 6.5pt; padding: 0 4px;">DETENIDO</span></td>
+            <td>No balanceable</td>
+            <td>Solución aplicada (FCR / N2) + emisión KCS JSON + encuesta CSAT.</td>
+          </tr>
+          <tr>
+            <td style="padding: 2px 0;"><strong>7. CERRADO</strong></td>
+            <td><span class="badge-clean-n2" style="font-size: 6.5pt; padding: 0 4px;">FINALIZADO</span></td>
+            <td>Expediente inmutable</td>
+            <td>Conformidad del prestador o informe de rescate firmado por Líder.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h1 class="sec-title" style="font-size: 10.5pt; margin-top: 5px; margin-bottom: 2px;">6. Trazabilidad, Balanceador Inteligente e Incidencias Mayores N2</h1>
+    <div class="info-box-clean" style="padding: 4px 8px; font-size: 7.4pt; margin-bottom: 0;">
+      <ul style="margin: 0; padding-left: 14px; line-height: 1.35;">
+        <li><strong>Protección Estricta de Tickets "EN CURSO":</strong> Prohibición taxativa de redistribuir tickets en gestión activa. El balanceador inteligente <strong>únicamente redistribuye tickets en estado "ASIGNADO"</strong>.</li>
+        <li><strong>Escalamiento Asistido N2:</strong> Resolución FCR prioritaria (&gt; 88%). Casos complejos derivados con telemetría técnica pre-cargada mediante canales oficiales (Extranet, WhatsApp oficial +54 9 11 4360-3800 y Mesa Telefónica 0810-666-6733).</li>
+        <li><strong>Incidencias Mayores (MIM) y Vinculación Padre-Hijo:</strong> Cartel discreto estilo Pizarra Neutral para asociar tickets en 1 clic. El Ticket Padre exhibe todos los IDs asociados vinculados (<code>#TKT-8902, #TKT-8905</code>) y el Ticket Hijo exhibe el ID del Padre (<code>#TKT-8900</code>) con sincronización de resolución.</li>
+      </ul>
+    </div>
+
+    <div class="doc-footer">
+      <span>Quantux ServiceDesk Enterprise &bull; OSDE Consultorio Digital</span>
+      <span>Sección 5.4, 5.5 &bull; Ciclo de Vida ITIL &bull; Sección 6 &bull; Balanceador &bull; Incidencias Mayores</span>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       PÁGINA 11: MOCKUPS NATIVOS QUANTUX - FIGURA 1
+       ========================================================================= -->
+  <div class="page">
+    <div class="doc-header">
+      <div class="header-logo-group">
+        <div class="header-q-badge">Q</div>
+        <span class="header-title-text">Quantux ServiceDesk Enterprise</span>
+      </div>
+      <span class="header-subtitle-text">DOC-N1-OSDE-2026 &bull; PÁG. 11</span>
+    </div>
+
+    <h1 class="sec-title">7. Evidencia Visual y Mockups Nativos Quantux</h1>
+    <p style="font-size: 8pt; line-height: 1.35; margin-bottom: 6px;">
+      Implementación visual certificada bajo la <strong>Regla de Oro Quantux (Densidad Silenciosa / Pizarra Neutral)</strong>: superficies claras, bordes sutiles, tipografía sobria, ausencia total de tonos rojos y cabeceras claras integradas.
+    </p>
+
+    <h2 class="sec-subtitle">Figura 1: Portal Centrado con Árbol de Decisión Técnico-Operativo</h2>
+    <div class="img-card">
+      <img src="mockup_quantux_oficial_arbol_decision.png" alt="Portal Centrado y Árbol de Decisión">
+      <div class="img-caption">
+        <span><strong>Figura 1:</strong> Portal del Solicitante con buscador predictivo de cápsula redondeada, selector limpio de especialidad y lista estructurada de Árboles en filas nativas (<code>.tree-node-row</code>).</span>
+        <span class="badge-clean-fcr">SHELL NATIVO LIGHT</span>
+      </div>
+    </div>
+
+    <div class="doc-footer">
+      <span>Quantux ServiceDesk Enterprise &bull; OSDE Consultorio Digital</span>
+      <span>Sección 7 &bull; Mockups Nativos &bull; Figura 1 (Portal Centrado)</span>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       PÁGINA 12: MOCKUPS NATIVOS QUANTUX - FIGURAS 2 Y 3
+       ========================================================================= -->
+  <div class="page">
+    <div class="doc-header">
+      <div class="header-logo-group">
+        <div class="header-q-badge">Q</div>
+        <span class="header-title-text">Quantux ServiceDesk Enterprise</span>
+      </div>
+      <span class="header-subtitle-text">DOC-N1-OSDE-2026 &bull; PÁG. 12</span>
+    </div>
+
+    <h2 class="sec-subtitle">Figura 2: Chat Stream Resolutivo Senior con Protocolo Oficial (Pág. 23)</h2>
+    <div class="img-card-compact">
+      <img src="mockup_quantux_oficial_chat_stream.png" alt="Chat Stream Resolutivo">
+      <div class="img-caption">
+        <span><strong>Figura 2:</strong> Respuesta resolutiva autónoma de IA (FCR) aplicando protocolo de Salud Mental, pauta legal Ley 27.553 y botonera 100% tipográfica sin iconos.</span>
+        <span class="badge-clean-fcr">FCR RESUELTO</span>
+      </div>
+    </div>
+
+    <h2 class="sec-subtitle">Figura 3: Modal Nativo Crear Solicitud con Telemetría Pre-cargada</h2>
+    <div class="img-card-compact">
+      <img src="mockup_quantux_oficial_modal_ticket.png" alt="Modal Nativo Crear Solicitud">
+      <div class="img-caption">
+        <span><strong>Figura 3:</strong> Modal de escalamiento oficial con telemetría técnica del sistema inyectada, diagnóstico del árbol y prioridad operativa para prestador en línea.</span>
+        <span class="badge-clean-n2">ESCALAMIENTO ASISTIDO</span>
+      </div>
+    </div>
+
+    <div class="doc-footer">
+      <span>Quantux ServiceDesk Enterprise &bull; OSDE Consultorio Digital</span>
+      <span>Sección 7 &bull; Mockups Nativos &bull; Figuras 2 y 3 (Stream & Modal Ticket)</span>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       PÁGINA 13: MOCKUPS NATIVOS QUANTUX - FIGURAS 4 Y 5
+       ========================================================================= -->
+  <div class="page">
+    <div class="doc-header">
+      <div class="header-logo-group">
+        <div class="header-q-badge">Q</div>
+        <span class="header-title-text">Quantux ServiceDesk Enterprise</span>
+      </div>
+      <span class="header-subtitle-text">DOC-N1-OSDE-2026 &bull; PÁG. 13</span>
+    </div>
+
+    <h2 class="sec-subtitle">Figura 4: Historial de Mis Solicitudes con Estados del Ciclo de Vida ITIL 4</h2>
+    <div class="img-card-compact">
+      <img src="mockup_quantux_oficial_mis_solicitudes.png" alt="Mis Solicitudes">
+      <div class="img-caption">
+        <span><strong>Figura 4:</strong> Modal de seguimiento con tabla limpia, trazabilidad de tickets FCR, casos EN CURSO y expedientes en espera (Esperando al Prestador y En Espera Pasarela).</span>
+        <span class="badge-clean-fcr">HISTORIAL DE TICKETS</span>
+      </div>
+    </div>
+
+    <h2 class="sec-subtitle">Figura 5: Detalle N2 con Cartel de Incidencia Mayor, Padre-Hijo y Acciones de Estado</h2>
+    <div class="img-card-compact">
+      <img src="mockup_quantux_oficial_detalle_escalado.png" alt="Detalle Ticket N2 con MIM y Padre-Hijo">
+      <div class="img-caption">
+        <span><strong>Figura 5:</strong> Ficha de ticket escalado con Cartel Discreto de Incidencia Mayor, vinculación bidireccional Padre-Hijo, acciones del ciclo de vida ITIL y canal oficial WhatsApp OSDE.</span>
+        <span class="badge-clean-n2">GESTIÓN ASISTIDA N2</span>
+      </div>
+    </div>
+
+    <div class="doc-footer">
+      <span>Quantux ServiceDesk Enterprise &bull; OSDE Consultorio Digital</span>
+      <span>Sección 7 &bull; Mockups Nativos &bull; Figuras 4 y 5 (Mis Solicitudes & Detalle N2)</span>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       PÁGINA 14: MOCKUPS NATIVOS QUANTUX - FIGURAS 6 Y 7
+       ========================================================================= -->
+  <div class="page">
+    <div class="doc-header">
+      <div class="header-logo-group">
+        <div class="header-q-badge">Q</div>
+        <span class="header-title-text">Quantux ServiceDesk Enterprise</span>
+      </div>
+      <span class="header-subtitle-text">DOC-N1-OSDE-2026 &bull; PÁG. 14</span>
+    </div>
+
+    <h2 class="sec-subtitle">Figura 6: Mando Unificado del Líder de Soporte (Rescate CSAT)</h2>
+    <div class="img-card-compact">
+      <img src="mockup_quantux_oficial_mando_lider_rescate.png" alt="Mando Unificado del Líder de Soporte">
+      <div class="img-caption">
+        <span><strong>Figura 6:</strong> Consola de supervisión con alerta de calificación deficiente, justificación obligatoria del prestador, enlace directo al ticket e informe inmutable de rescate del líder.</span>
+        <span class="badge-clean-fcr">RESCATE DE CALIDAD</span>
+      </div>
+    </div>
+
+    <h2 class="sec-subtitle">Figura 7: Módulo Colaborativo de Configuración de Tickets, Ciclo de Vida y SLAs ITIL 4</h2>
+    <div class="img-card-compact">
+      <img src="mockup_quantux_oficial_config_tickets_itil.png" alt="Configuración de Tickets y SLAs ITIL">
+      <div class="img-caption">
+        <span><strong>Figura 7:</strong> Ciclo de Vida Oficial del Ticket (7 Estados ITIL 4), Matriz de Prioridad, reglas del balanceador (solo tickets ASIGNADO) y pausas de reloj SLA.</span>
+        <span class="badge-clean-n2">ESTÁNDAR ITIL 4</span>
+      </div>
+    </div>
+
+    <div class="doc-footer">
+      <span>Quantux ServiceDesk Enterprise &bull; OSDE Consultorio Digital</span>
+      <span>Sección 7 &bull; Mockups Nativos &bull; Figuras 6 y 7 (Mando Líder & Configuración ITIL)</span>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       PÁGINA 15: CONFORMIDAD Y CIERRE FORMAL
+       ========================================================================= -->
+  <div class="page">
+    <div class="doc-header">
+      <div class="header-logo-group">
+        <div class="header-q-badge">Q</div>
+        <span class="header-title-text">Quantux ServiceDesk Enterprise</span>
+      </div>
+      <span class="header-subtitle-text">DOC-N1-OSDE-2026 &bull; PÁG. 15</span>
+    </div>
+
+    <h1 class="sec-title">8. Matriz de Cumplimiento Técnico y Cierre Formal</h1>
+    <p style="font-size: 8pt; line-height: 1.35; margin-bottom: 6px;">
+      El Módulo de Soporte N1 para Consultorio Digital OSDE cumple taxativamente con todos los estándares funcionales, normativos, de seguridad informática y de diseño aprobados por el comité:
+    </p>
+
+    <div class="info-box-clean">
+      <table style="width: 100%; border-collapse: collapse; font-size: 7.7pt;">
+        <thead>
+          <tr style="border-bottom: 1px solid #CBD5E1; text-align: left;">
+            <th style="padding: 4px 0;">Dimensión Evaluada</th>
+            <th style="padding: 4px 0;">Criterio Técnico Oficial</th>
+            <th style="padding: 4px 0;">Estado de Conformidad</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom: 1px solid #E2E8F0;">
+            <td style="padding: 4px 0;"><strong>Paleta Pizarra Neutral</strong></td>
+            <td>Superficies claras (#FFFFFF, #F8FAFC), escala de grises, cero colores rojos ni fondos oscuros.</td>
+            <td><span class="badge-clean-fcr">100% CUMPLIDO</span></td>
+          </tr>
+          <tr style="border-bottom: 1px solid #E2E8F0;">
+            <td style="padding: 4px 0;"><strong>Componentes Nativos</strong></td>
+            <td>Filas estructuradas (.tree-node-row), botonera tipográfica sin iconos, cero cards ni grillas pesadas.</td>
+            <td><span class="badge-clean-fcr">100% CUMPLIDO</span></td>
+          </tr>
+          <tr style="border-bottom: 1px solid #E2E8F0;">
+            <td style="padding: 4px 0;"><strong>Árboles Técnico-Operativos</strong></td>
+            <td>7 ramas oficiales exhaustivas basadas en la documentación de Consultorio Digital OSDE.</td>
+            <td><span class="badge-clean-fcr">100% CUMPLIDO</span></td>
+          </tr>
+          <tr style="border-bottom: 1px solid #E2E8F0;">
+            <td style="padding: 4px 0;"><strong>Historias de Usuario</strong></td>
+            <td>20 Historias de Usuario completas con fórmula estándar y criterios Gherkin Dado / Cuando / Entonces.</td>
+            <td><span class="badge-clean-fcr">100% CUMPLIDO</span></td>
+          </tr>
+          <tr style="border-bottom: 1px solid #E2E8F0;">
+            <td style="padding: 4px 0;"><strong>Estándar KCS v6 & Cierre KB</strong></td>
+            <td>Formato estricto para auto-alimentación de Base de Conocimiento con esquema JSON estructurado.</td>
+            <td><span class="badge-clean-fcr">100% CUMPLIDO</span></td>
+          </tr>
+          <tr style="border-bottom: 1px solid #E2E8F0;">
+            <td style="padding: 4px 0;"><strong>Rescate CSAT y Mando Líder</strong></td>
+            <td>Justificación obligatoria en calificación baja, enlace en Mando Unificado e informe inmutable de rescate.</td>
+            <td><span class="badge-clean-fcr">100% CUMPLIDO</span></td>
+          </tr>
+          <tr style="border-bottom: 1px solid #E2E8F0;">
+            <td style="padding: 4px 0;"><strong>Incidencia Mayor & Padre-Hijo</strong></td>
+            <td>Cartel discreto Pizarra Neutral, listado de IDs en ticket Padre y referencia vinculada en ticket Hijo.</td>
+            <td><span class="badge-clean-fcr">100% CUMPLIDO</span></td>
+          </tr>
+          <tr style="border-bottom: 1px solid #E2E8F0;">
+            <td style="padding: 4px 0;"><strong>Balanceador Inteligente</strong></td>
+            <td>Restricción estricta activa: prohibido redistribuir tickets EN CURSO, solo toma tickets ASIGNADO.</td>
+            <td><span class="badge-clean-fcr">100% CUMPLIDO</span></td>
+          </tr>
+          <tr>
+            <td style="padding: 4px 0;"><strong>Ciclo de Vida Oficial del Ticket</strong></td>
+            <td>7 estados ITIL 4 formales (incluye Esperando al Prestador y En Espera Pasarela con pausa de SLA).</td>
+            <td><span class="badge-clean-fcr">100% CUMPLIDO</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="margin-top: 25px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+      <div style="border-top: 1px solid #CBD5E1; padding-top: 8px;">
+        <p style="font-weight: 700; color: #0F172A; margin: 0; font-size: 8.5pt;">Comité Evaluador de Producto / Cliente</p>
+        <p style="font-size: 7.5pt; color: #64748B; margin: 2px 0 0 0;">OSDE &bull; Dirección Médica &bull; Gerencia de Sistemas</p>
+        <p style="font-size: 7.5pt; color: #64748B; margin-top: 25px; font-family: 'JetBrains Mono', monospace;">Firma Digital &bull; Fecha: ____ / ____ / 2026</p>
+      </div>
+      <div style="border-top: 1px solid #CBD5E1; padding-top: 8px;">
+        <p style="font-weight: 700; color: #0F172A; margin: 0; font-size: 8.5pt;">Arquitectura de Software &bull; Quantux</p>
+        <p style="font-size: 7.5pt; color: #008F80; margin: 2px 0 0 0;">Quantux DevOps &bull; UX Senior HealthTech Team</p>
+        <p style="font-size: 7.5pt; color: #008F80; margin-top: 25px; font-family: 'JetBrains Mono', monospace;">Estado: APROBADO PARA PRODUCCIÓN</p>
+      </div>
+    </div>
+
+    <div class="doc-footer">
+      <span>Quantux ServiceDesk Enterprise &bull; OSDE Consultorio Digital</span>
+      <span>Sección 8 &bull; Cierre Formal &bull; Fin de Documento</span>
+    </div>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,4138 @@
+# -*- coding: utf-8 -*-
+"""
+Generador Maestro del Tablero Scrumban Multi-Tipo, Multi-Vista con Roadmap,
+Métricas, Backlog Jerárquico, Sprints Agrupados y Registro de Issues en Sprint Backlog.
+"""
+import os
+import json
+
+HTML_OUTPUT_PATH = r"C:\Users\FERO_ADM\.gemini\antigravity\scratch\quantux-v4-dev\docs\00_Tablero_Scrumban_Quantux.html"
+CSV_OUTPUT_PATH = r"C:\Users\FERO_ADM\.gemini\antigravity\scratch\quantux-v4-dev\docs\Backlog_HealthDesk_Quantux.csv"
+
+def generate_scrumban_board():
+    # 1. Épicas
+    epics = [
+        {"id": "EP-01", "name": "Acceso, Roles y Permisos Básicos", "sp": 7, "progress": 100, "status": "Completada", "timebox": "Sprint 1 - 2", "desc": "Autenticación, perfiles Solicitante/Operador/Admin y selector rápido de roles."},
+        {"id": "EP-02", "name": "Tickets y Datos de Solicitud", "sp": 37, "progress": 100, "status": "Completada", "timebox": "Sprint 2 - 3", "desc": "Formularios de alta sin fricción, campos homologados, catálogos y persistencia."},
+        {"id": "EP-03", "name": "Bandeja de Entrada y Asignación", "sp": 29, "progress": 100, "status": "Completada", "timebox": "Sprint 2 - 3", "desc": "Cockpit operativo en 3 columnas, filtros instantáneos y asignación dinámica."},
+        {"id": "EP-04", "name": "Ciclo de Estados y Registro de Solución", "sp": 42, "progress": 100, "status": "Completada", "timebox": "Sprint 2 - 4", "desc": "Máquina de estados FSM de 5 pasos, validaciones y notas de resolución."},
+        {"id": "EP-05", "name": "Seguimiento, Notificaciones e Historial", "sp": 21, "progress": 100, "status": "Completada", "timebox": "Sprint 4", "desc": "Línea de tiempo de auditoría inmutable, alertas visuales y trazabilidad."},
+        {"id": "EP-06", "name": "Administración y Operación Centralizada", "sp": 60, "progress": 100, "status": "Completada", "timebox": "Sprint 2 - 5", "desc": "Gestión de plataformas, clientes, usuarios y panel de control."},
+        {"id": "EP-07", "name": "Gobernanza PMI+IA, Blindaje OJO & Calidad", "sp": 57, "progress": 55, "status": "En Curso (Sprint 6 Actual)", "timebox": "Sprint 6 (28-sep al 02-oct)", "desc": "Marco de adaptación PMI en 4 pasos, compuertas TDD pre-commit y resolución de no-conformidades."},
+        {"id": "EP-08", "name": "Reemplazo N1, Triage IA & Portal Solicitante", "sp": 52, "progress": 0, "status": "Planificada", "timebox": "Sprint 7 (05-oct al 16-oct)", "desc": "Clasificación asistida por IA, chat predictivo y automatización de mesa N1."},
+        {"id": "EP-09", "name": "Telemetría Enterprise, SLAs & HL7", "sp": 45, "progress": 0, "status": "Planificada", "timebox": "Sprint 8 (19-oct al 30-oct)", "desc": "SLAs dinámicos predictivos, interoperabilidad con estándares sanitarios y telemetría."}
+    ]
+
+    # 2. Sprints
+    sprints = [
+        {"id": "Sprint 1", "name": "Sprint 1: Arquitectura Base & Planificación", "sp": 30, "status": "Completado", "dates": "24/08/2026 - 28/08/2026", "desc": "Línea base documental, modelos SQLite y diseño de interfaces."},
+        {"id": "Sprint 2", "name": "Sprint 2: Backend Core, Persistencia & FSM", "sp": 32, "status": "Completado", "dates": "31/08/2026 - 04/09/2026", "desc": "Servicios REST FastAPI, persistencia SQLAlchemy y circuito de 5 estados."},
+        {"id": "Sprint 3", "name": "Sprint 3: Cockpit 3 Columnas & Selector Roles", "sp": 43, "status": "Completado", "dates": "07/09/2026 - 11/09/2026", "desc": "Bandeja unificada, cockpit operativo y selector de perfiles sin recargar."},
+        {"id": "Sprint 4", "name": "Sprint 4: Integración E2E, Notas & Auditoría", "sp": 46, "status": "Completado", "dates": "14/09/2026 - 18/09/2026", "desc": "Circuito E2E, notas internas privadas y timeline inmutable de cambios."},
+        {"id": "Sprint 5", "name": "Sprint 5: Estabilización, Certificación UAT & Release v1.0", "sp": 14, "status": "Completado", "dates": "21/09/2026 - 25/09/2026", "desc": "Pase a producción, dataset de 14 clientes y cierre de línea base MVP."},
+        {"id": "Sprint 6", "name": "⚡ Sprint 6: Gobernanza PMI+IA, Blindaje OJO & Pre-commit Gates", "sp": 36, "status": "ACTIVO / EN CURSO", "dates": "28/09/2026 - 02/10/2026", "desc": "Formalización PMI, calidad TDD, resolución de issues y contratos OpenAPI."},
+        {"id": "Sprint 7", "name": "Sprint 7: Reemplazo N1 & Omnicanalidad", "sp": 35, "status": "Planificado", "dates": "05/10/2026 - 16/10/2026", "desc": "Triage inteligente y asistencia de primer nivel para prestadores."},
+        {"id": "Sprint 8", "name": "Sprint 8: Telemetría Enterprise & HL7", "sp": 40, "status": "Planificado", "dates": "19/10/2026 - 30/10/2026", "desc": "Integración avanzada, métricas en tiempo real y conectividad hospitalaria."}
+    ]
+
+    # 3. Milestones
+    milestones = [
+        {"id": "M1", "date": "28-Ago-2026", "title": "Aprobación de Arquitectura y Especificación Base (DOC-REQ-002)", "status": "done", "badge": "Completado"},
+        {"id": "M2", "date": "04-Sep-2026", "title": "Core Backend REST y FSM de 5 Estados Operativa", "status": "done", "badge": "Completado"},
+        {"id": "M3", "date": "11-Sep-2026", "title": "Cockpit Centralizado en 3 Columnas Operativo", "status": "done", "badge": "Completado"},
+        {"id": "M4", "date": "18-Sep-2026", "title": "Circuito E2E Integrado con Trazabilidad de Auditoría", "status": "done", "badge": "Completado"},
+        {"id": "M5", "date": "25-Sep-2026", "title": "Liberación Certificada Release v1.0 MVP Quantux Salud", "status": "done", "badge": "Completado"},
+        {"id": "M6", "date": "02-Oct-2026", "title": "Sprint 6: Gobernanza PMI+IA, Calidad OJO & Pre-commit Gates", "status": "current", "badge": "ACTIVO / EN CURSO"},
+        {"id": "M7", "date": "16-Oct-2026", "title": "Release v1.1 Reemplazo N1 y Contratos OpenAPI Homologados", "status": "planned", "badge": "Planificado"},
+        {"id": "M8", "date": "30-Oct-2026", "title": "Release v2.0 Enterprise Omnicanal & Telemetría", "status": "planned", "badge": "Planificado"}
+    ]
+
+    # 4. Items del Backlog
+    tasks = [
+        {
+                "id": "UH-01",
+                "title": "Autenticación de Usuarios por Rol",
+                "epic": "EP-01: Acceso, Roles y Permisos Básicos",
+                "sp": 2,
+                "sprint": "Sprint 1",
+                "status": "done",
+                "discipline": "Backend / Auth & RBAC",
+                "type": "UH",
+                "priority": "P3",
+                "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#uh-01",
+                "doc_title": "DOC-SPEC-002 (UH-01)",
+                "doc_desc": "Requerimiento funcional oficial del MVP Quantux Salud (EP-01: Acceso, Roles y Permisos Básicos).",
+                "narrative": {
+                        "as_a": "usuario de Quantux Salud",
+                        "i_want": "ingresar con mis credenciales seleccionando mi rol (Solicitante, Soporte, Administrador)",
+                        "so_that": "acceder a las funciones de mi perfil"
+                },
+                "acceptance_criteria": [
+                        "**Dado** un usuario registrado, **cuando** ingresa credenciales válidas, **entonces** accede a su bandeja principal.",
+                        "**Dado** credenciales inválidas, **cuando** intenta ingresar, **entonces** el sistema muestra error y no permite el acceso."
+                ]
+        },
+        {
+                "id": "UH-02",
+                "title": "Control de Permisos por Perfil",
+                "epic": "EP-01: Acceso, Roles y Permisos Básicos",
+                "sp": 2,
+                "sprint": "Sprint 1",
+                "status": "done",
+                "discipline": "Backend / Auth & RBAC",
+                "type": "UH",
+                "priority": "P3",
+                "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#uh-02",
+                "doc_title": "DOC-SPEC-002 (UH-02)",
+                "doc_desc": "Requerimiento funcional oficial del MVP Quantux Salud (EP-01: Acceso, Roles y Permisos Básicos).",
+                "narrative": {
+                        "as_a": "Administrador",
+                        "i_want": "restringir las acciones del sistema según el rol del usuario",
+                        "so_that": "evitar modificaciones no autorizadas en tickets o tablas maestras"
+                },
+                "acceptance_criteria": [
+                        "**Dado** un Solicitante, **cuando** consulta el sistema, **entonces** solo ve y crea sus propios tickets.",
+                        "**Dado** un Operador de Soporte, **cuando** opera, **entonces** puede gestionar tickets pero no administrar usuarios ni tablas maestras."
+                ]
+        },
+        {
+                "id": "UH-03",
+                "title": "Auditoría Básica de Acceso",
+                "epic": "EP-01: Acceso, Roles y Permisos Básicos",
+                "sp": 2,
+                "sprint": "Sprint 1",
+                "status": "done",
+                "discipline": "Backend / Auth & RBAC",
+                "type": "UH",
+                "priority": "P3",
+                "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#uh-03",
+                "doc_title": "DOC-SPEC-002 (UH-03)",
+                "doc_desc": "Requerimiento funcional oficial del MVP Quantux Salud (EP-01: Acceso, Roles y Permisos Básicos).",
+                "narrative": {
+                        "as_a": "Administrador",
+                        "i_want": "registrar los inicios de sesión",
+                        "so_that": "mantener la trazabilidad de seguridad"
+                },
+                "acceptance_criteria": [
+                        "**Dado** un login exitoso, **cuando** el usuario entra, **entonces** se guarda usuario, fecha, hora y rol en la bitácora."
+                ]
+        },
+        {
+                "id": "UH-04",
+                "title": "Cierre de Sesión Seguro",
+                "epic": "EP-01: Acceso, Roles y Permisos Básicos",
+                "sp": 1,
+                "sprint": "Sprint 1",
+                "status": "done",
+                "discipline": "Backend / Auth & RBAC",
+                "type": "UH",
+                "priority": "P3",
+                "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#uh-04",
+                "doc_title": "DOC-SPEC-002 (UH-04)",
+                "doc_desc": "Requerimiento funcional oficial del MVP Quantux Salud (EP-01: Acceso, Roles y Permisos Básicos).",
+                "narrative": {
+                        "as_a": "usuario autenticado",
+                        "i_want": "cerrar mi sesión en 1 clic",
+                        "so_that": "proteger mi cuenta al desocupar la estación de trabajo"
+                },
+                "acceptance_criteria": [
+                        "**Dado** un usuario con sesión abierta, **cuando** presiona \"Cerrar Sesión\", **entonces** se limpia la sesión activa y regresa al login. ---"
+                ]
+        },
+        {
+                "id": "UH-05",
+                "title": "Formulario Unificado de Alta de Ticket",
+                "epic": "EP-02: Tickets y Datos de Solicitud",
+                "sp": 3,
+                "sprint": "Sprint 2",
+                "status": "done",
+                "discipline": "Fullstack / Formularios",
+                "type": "UH",
+                "priority": "P2",
+                "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#uh-05",
+                "doc_title": "DOC-SPEC-002 (UH-05)",
+                "doc_desc": "Requerimiento funcional oficial del MVP Quantux Salud (EP-02: Tickets y Datos de Solicitud).",
+                "narrative": {
+                        "as_a": "Solicitante u Operador de Soporte",
+                        "i_want": "cargar un ticket con título, descripción y datos de contacto",
+                        "so_that": "reportar una solicitud formalmente"
+                },
+                "acceptance_criteria": [
+                        "**Dado** el formulario de alta, **cuando** se completan los campos obligatorios, **entonces** se genera el ticket en estado `Nuevo` con identificador único."
+                ]
+        },
+        {
+                "id": "UH-06",
+                "title": "Selección de Plataforma / Categoría",
+                "epic": "EP-02: Tickets y Datos de Solicitud",
+                "sp": 2,
+                "sprint": "Sprint 2",
+                "status": "done",
+                "discipline": "Fullstack / Formularios",
+                "type": "UH",
+                "priority": "P3",
+                "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#uh-06",
+                "doc_title": "DOC-SPEC-002 (UH-06)",
+                "doc_desc": "Requerimiento funcional oficial del MVP Quantux Salud (EP-02: Tickets y Datos de Solicitud).",
+                "narrative": {
+                        "as_a": "Solicitante",
+                        "i_want": "elegir la plataforma afectada de entre las 9 oficiales",
+                        "so_that": "canalizar el ticket al equipo especialista correcto"
+                },
+                "acceptance_criteria": [
+                        "**Dado** el selector de plataformas, **cuando** el usuario elige una opción, **entonces** el ticket queda asociado a su código de catálogo (ej. `CAT_RECETA`)."
+                ]
+        },
+        {
+                "id": "UH-07",
+                "title": "Vinculación con Cliente Institucional",
+                "epic": "EP-02: Tickets y Datos de Solicitud",
+                "sp": 2,
+                "sprint": "Sprint 2",
+                "status": "done",
+                "discipline": "Fullstack / Formularios",
+                "type": "UH",
+                "priority": "P3",
+                "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#uh-07",
+                "doc_title": "DOC-SPEC-002 (UH-07)",
+                "doc_desc": "Requerimiento funcional oficial del MVP Quantux Salud (EP-02: Tickets y Datos de Solicitud).",
+                "narrative": {
+                        "as_a": "Operador de Soporte",
+                        "i_want": "asociar el ticket a uno de los 14 clientes institucionales",
+                        "so_that": "identificar el impacto sobre la entidad de salud"
+                },
+                "acceptance_criteria": [
+                        "**Dado** el campo cliente, **cuando** se guarda el ticket, **entonces** queda registrada la institución (ej. OSDE, Swiss Medical, Finochietto)."
+                ]
+        },
+        {
+                "id": "UH-08",
+                "title": "Tipificación de la Solicitud",
+                "epic": "EP-02: Tickets y Datos de Solicitud",
+                "sp": 2,
+                "sprint": "Sprint 2",
+                "status": "done",
+                "discipline": "Fullstack / Formularios",
+                "type": "UH",
+                "priority": "P3",
+                "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#uh-08",
+                "doc_title": "DOC-SPEC-002 (UH-08)",
+                "doc_desc": "Requerimiento funcional oficial del MVP Quantux Salud (EP-02: Tickets y Datos de Solicitud).",
+                "narrative": {
+                        "as_a": "Operador de Soporte N1",
+                        "i_want": "clasificar el ticket como Incidente, Requerimiento o Consulta",
+                        "so_that": "aplicar las pautas de atención correspondientes"
+                },
+                "acceptance_criteria": [
+                        "**Dado** un ticket en triage, **cuando** se asigna el tipo, **entonces** queda visible en el detalle y listado."
+                ]
+        },
+        {
+                "id": "UH-09",
+                "title": "Asignación de Prioridad ($P = I \times U$)",
+                "epic": "EP-02: Tickets y Datos de Solicitud",
+                "sp": 3,
+                "sprint": "Sprint 2",
+                "status": "done",
+                "discipline": "Fullstack / Formularios",
+                "type": "UH",
+                "priority": "P2",
+                "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#uh-09",
+                "doc_title": "DOC-SPEC-002 (UH-09)",
+                "doc_desc": "Requerimiento funcional oficial del MVP Quantux Salud (EP-02: Tickets y Datos de Solicitud).",
+                "narrative": {
+                        "as_a": "Operador de Soporte",
+                        "i_want": "definir el Impacto y la Urgencia",
+                        "so_that": "que el sistema determine la Prioridad (P1 a P5)"
+                },
+                "acceptance_criteria": [
+                        "**Dado** Impacto Alto y Urgencia Alta, **cuando** se registran los valores, **entonces** el sistema establece Prioridad P1 (Crítica)."
+                ]
+        },
+        {
+                "id": "UH-10",
+                "title": "Adjunto de Evidencias",
+                "epic": "EP-02: Tickets y Datos de Solicitud",
+                "sp": 2,
+                "sprint": "Sprint 2",
+                "status": "done",
+                "discipline": "Fullstack / Formularios",
+                "type": "UH",
+                "priority": "P3",
+                "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#uh-10",
+                "doc_title": "DOC-SPEC-002 (UH-10)",
+                "doc_desc": "Requerimiento funcional oficial del MVP Quantux Salud (EP-02: Tickets y Datos de Solicitud).",
+                "narrative": {
+                        "as_a": "Solicitante",
+                        "i_want": "adjuntar capturas o enlaces del error",
+                        "so_that": "que soporte pueda reproducir la falla rápidamente"
+                },
+                "acceptance_criteria": [
+                        "**Dado** un archivo o URL, **cuando** se adjunta al ticket, **entonces** queda accesible en la vista de detalle."
+                ]
+        },
+        {
+                "id": "UH-11",
+                "title": "Consulta y Edición Básica de Ticket",
+                "epic": "EP-02: Tickets y Datos de Solicitud",
+                "sp": 1,
+                "sprint": "Sprint 2",
+                "status": "done",
+                "discipline": "Fullstack / Formularios",
+                "type": "UH",
+                "priority": "P3",
+                "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#uh-11",
+                "doc_title": "DOC-SPEC-002 (UH-11)",
+                "doc_desc": "Requerimiento funcional oficial del MVP Quantux Salud (EP-02: Tickets y Datos de Solicitud).",
+                "narrative": {
+                        "as_a": "Solicitante",
+                        "i_want": "consultar el estado y editar los datos mientras el ticket esté en `Nuevo`",
+                        "so_that": "corregir omisiones antes del inicio de la atención"
+                },
+                "acceptance_criteria": [
+                        "**Dado** un ticket en estado `Nuevo`, **cuando** el creador edita el texto, **entonces** los cambios se guardan y se registra la edición en el historial. ---"
+                ]
+        },
+        {
+                "id": "UH-12",
+                "title": "Bandeja de Entrada de Solicitudes",
+                "epic": "EP-03: Bandeja de Atención y Asignación de Responsable",
+                "sp": 3,
+                "sprint": "Sprint 3",
+                "status": "done",
+                "discipline": "Frontend / Cockpit UI",
+                "type": "UH",
+                "priority": "P2",
+                "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#uh-12",
+                "doc_title": "DOC-SPEC-002 (UH-12)",
+                "doc_desc": "Requerimiento funcional oficial del MVP Quantux Salud (EP-03: Bandeja de Atención y Asignación de Responsable).",
+                "narrative": {
+                        "as_a": "Operador de Soporte N1",
+                        "i_want": "ver todos los tickets sin asignar en tiempo real",
+                        "so_that": "revisarlos y distribuirlos al equipo correspondiente"
+                },
+                "acceptance_criteria": [
+                        "**Dado** un ticket en estado `Nuevo`, **cuando** el operador abre la bandeja, **entonces** aparece ordenado y destacado por su prioridad."
+                ]
+        },
+        {
+                "id": "UH-13",
+                "title": "Asignación de Responsable de Soporte",
+                "epic": "EP-03: Bandeja de Atención y Asignación de Responsable",
+                "sp": 2,
+                "sprint": "Sprint 3",
+                "status": "done",
+                "discipline": "Frontend / Cockpit UI",
+                "type": "UH",
+                "priority": "P3",
+                "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#uh-13",
+                "doc_title": "DOC-SPEC-002 (UH-13)",
+                "doc_desc": "Requerimiento funcional oficial del MVP Quantux Salud (EP-03: Bandeja de Atención y Asignación de Responsable).",
+                "narrative": {
+                        "as_a": "Supervisor u Operador N1",
+                        "i_want": "asignar un ticket a un responsable de soporte",
+                        "so_that": "pasar el ticket a `Asignado`"
+                },
+                "acceptance_criteria": [
+                        "**Dado** un ticket `Nuevo`, **cuando** se selecciona un responsable de soporte, **entonces** el estado cambia a `Asignado` y se guarda el usuario asignado."
+                ]
+        },
+        {
+                "id": "UH-14",
+                "title": "Autoasignación Directa (\"Tomar Ticket\")",
+                "epic": "EP-03: Bandeja de Atención y Asignación de Responsable",
+                "sp": 1,
+                "sprint": "Sprint 3",
+                "status": "done",
+                "discipline": "Frontend / Cockpit UI",
+                "type": "UH",
+                "priority": "P3",
+                "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#uh-14",
+                "doc_title": "DOC-SPEC-002 (UH-14)",
+                "doc_desc": "Requerimiento funcional oficial del MVP Quantux Salud (EP-03: Bandeja de Atención y Asignación de Responsable).",
+                "narrative": {
+                        "as_a": "Operador de Soporte",
+                        "i_want": "autoasignarme un ticket con un solo clic",
+                        "so_that": "comenzar la atención de inmediato"
+                },
+                "acceptance_criteria": [
+                        "**Dado** un ticket sin asignar, **cuando** el operador presiona \"Tomar Ticket\", **entonces** queda asignado a su usuario y pasa a `Asignado`."
+                ]
+        },
+        {
+                "id": "UH-15",
+                "title": "Derivación a Nivel de Soporte Especializado",
+                "epic": "EP-03: Bandeja de Atención y Asignación de Responsable",
+                "sp": 2,
+                "sprint": "Sprint 3",
+                "status": "done",
+                "discipline": "Frontend / Cockpit UI",
+                "type": "UH",
+                "priority": "P3",
+                "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#uh-15",
+                "doc_title": "DOC-SPEC-002 (UH-15)",
+                "doc_desc": "Requerimiento funcional oficial del MVP Quantux Salud (EP-03: Bandeja de Atención y Asignación de Responsable).",
+                "narrative": {
+                        "as_a": "Operador de Soporte",
+                        "i_want": "escalar el ticket a N2 o N3",
+                        "so_that": "que intervenga un especialista técnico o de infraestructura"
+                },
+                "acceptance_criteria": [
+                        "**Dado** un ticket en atención, **cuando** se cambia el nivel de soporte, **entonces** se registra el escalamiento y queda disponible para el nuevo grupo."
+                ]
+        },
+        {
+                "id": "UH-16",
+                "title": "Reasignación de Responsable",
+                "epic": "EP-03: Bandeja de Atención y Asignación de Responsable",
+                "sp": 2,
+                "sprint": "Sprint 3",
+                "status": "done",
+                "discipline": "Frontend / Cockpit UI",
+                "type": "UH",
+                "priority": "P3",
+                "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#uh-16",
+                "doc_title": "DOC-SPEC-002 (UH-16)",
+                "doc_desc": "Requerimiento funcional oficial del MVP Quantux Salud (EP-03: Bandeja de Atención y Asignación de Responsable).",
+                "narrative": {
+                        "as_a": "Supervisor",
+                        "i_want": "reasignar un ticket indicando una justificación",
+                        "so_that": "balancear la carga operativa o cubrir ausencias"
+                },
+                "acceptance_criteria": [
+                        "**Dado** un cambio de responsable, **cuando** se guarda con motivo, **entonces** el historial refleja el usuario anterior, el nuevo y la razón. ---"
+                ]
+        },
+        {
+                "id": "UH-17",
+                "title": "Transición de Estado a \"En Curso\"",
+                "epic": "EP-04: Ciclo de Estados y Registro de Solución",
+                "sp": 2,
+                "sprint": "Sprint 4",
+                "status": "done",
+                "discipline": "Backend / FSM & Transiciones",
+                "type": "UH",
+                "priority": "P3",
+                "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#uh-17",
+                "doc_title": "DOC-SPEC-002 (UH-17)",
+                "doc_desc": "Requerimiento funcional oficial del MVP Quantux Salud (EP-04: Ciclo de Estados y Registro de Solución).",
+                "narrative": {
+                        "as_a": "Operador asignado",
+                        "i_want": "cambiar el estado a `En Curso`",
+                        "so_that": "indicar que el análisis técnico ha comenzado activamente"
+                },
+                "acceptance_criteria": [
+                        "**Dado** un ticket en `Asignado`, **cuando** el operador inicia el trabajo, **entonces** el estado pasa a `En Curso` y se registra la fecha/hora."
+                ]
+        },
+        {
+                "id": "UH-18",
+                "title": "Pausa de Gestión por Información Pendiente",
+                "epic": "EP-04: Ciclo de Estados y Registro de Solución",
+                "sp": 2,
+                "sprint": "Sprint 4",
+                "status": "done",
+                "discipline": "Backend / FSM & Transiciones",
+                "type": "UH",
+                "priority": "P3",
+                "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#uh-18",
+                "doc_title": "DOC-SPEC-002 (UH-18)",
+                "doc_desc": "Requerimiento funcional oficial del MVP Quantux Salud (EP-04: Ciclo de Estados y Registro de Solución).",
+                "narrative": {
+                        "as_a": "Operador de Soporte",
+                        "i_want": "marcar el ticket en espera de información adicional",
+                        "so_that": "documentar que está detenido por causas externas"
+                },
+                "acceptance_criteria": [
+                        "**Dado** un ticket `En Curso`, **cuando** se solicita más información al usuario, **entonces** el ticket refleja la espera y se registra el comentario correspondiente."
+                ]
+        },
+        {
+                "id": "UH-19",
+                "title": "Registro Obligatorio de Solución",
+                "epic": "EP-04: Ciclo de Estados y Registro de Solución",
+                "sp": 3,
+                "sprint": "Sprint 4",
+                "status": "done",
+                "discipline": "Backend / FSM & Transiciones",
+                "type": "UH",
+                "priority": "P2",
+                "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#uh-19",
+                "doc_title": "DOC-SPEC-002 (UH-19)",
+                "doc_desc": "Requerimiento funcional oficial del MVP Quantux Salud (EP-04: Ciclo de Estados y Registro de Solución).",
+                "narrative": {
+                        "as_a": "Operador de Soporte",
+                        "i_want": "documentar la resolución técnica aplicada",
+                        "so_that": "que el usuario conozca la respuesta y quede archivada"
+                },
+                "acceptance_criteria": [
+                        "**Dado** un ticket `En Curso`, **cuando** se carga la solución, **entonces** el texto de resolución es obligatorio para habilitar el paso a `Resuelto`."
+                ]
+        },
+        {
+                "id": "UH-20",
+                "title": "Registro de Solución Provisoria / Alternativa",
+                "epic": "EP-04: Ciclo de Estados y Registro de Solución",
+                "sp": 3,
+                "sprint": "Sprint 4",
+                "status": "done",
+                "discipline": "Backend / FSM & Transiciones",
+                "type": "UH",
+                "priority": "P2",
+                "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#uh-20",
+                "doc_title": "DOC-SPEC-002 (UH-20)",
+                "doc_desc": "Requerimiento funcional oficial del MVP Quantux Salud (EP-04: Ciclo de Estados y Registro de Solución).",
+                "narrative": {
+                        "as_a": "Operador de Soporte N2",
+                        "i_want": "registrar si la solución fue provisoria (procedimiento alternativo)",
+                        "so_that": "restablecer el servicio asistencial mientras N3 resuelve la causa de fondo"
+                },
+                "acceptance_criteria": [
+                        "**Dado** un incidente operativo, **cuando** se aplica una solución temporal, **entonces** se guarda la descripción del procedimiento y la marca de solución provisoria."
+                ]
+        },
+        {
+                "id": "UH-21",
+                "title": "Transición a Estado \"Resuelto\"",
+                "epic": "EP-04: Ciclo de Estados y Registro de Solución",
+                "sp": 2,
+                "sprint": "Sprint 4",
+                "status": "done",
+                "discipline": "Backend / FSM & Transiciones",
+                "type": "UH",
+                "priority": "P3",
+                "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#uh-21",
+                "doc_title": "DOC-SPEC-002 (UH-21)",
+                "doc_desc": "Requerimiento funcional oficial del MVP Quantux Salud (EP-04: Ciclo de Estados y Registro de Solución).",
+                "narrative": {
+                        "as_a": "Operador de Soporte",
+                        "i_want": "marcar el ticket como `Resuelto`",
+                        "so_that": "informar que la atención técnica ha finalizado exitosamente"
+                },
+                "acceptance_criteria": [
+                        "**Dado** un ticket con solución registrada, **cuando** se confirma la acción, **entonces** el estado cambia a `Resuelto` y se notifica al solicitante."
+                ]
+        },
+        {
+                "id": "UH-22",
+                "title": "Transición a Estado \"Cerrado\"",
+                "epic": "EP-04: Ciclo de Estados y Registro de Solución",
+                "sp": 2,
+                "sprint": "Sprint 4",
+                "status": "done",
+                "discipline": "Backend / FSM & Transiciones",
+                "type": "UH",
+                "priority": "P3",
+                "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#uh-22",
+                "doc_title": "DOC-SPEC-002 (UH-22)",
+                "doc_desc": "Requerimiento funcional oficial del MVP Quantux Salud (EP-04: Ciclo de Estados y Registro de Solución).",
+                "narrative": {
+                        "as_a": "Solicitante o Administrador",
+                        "i_want": "validar la conformidad y pasar el ticket a `Cerrado`",
+                        "so_that": "archivar el ciclo de atención de forma inmutable"
+                },
+                "acceptance_criteria": [
+                        "**Dado** un ticket `Resuelto`, **cuando** se confirma el cierre, **entonces** pasa a `Cerrado` y se bloquea cualquier edición posterior. ---"
+                ]
+        },
+        {
+                "id": "UH-23",
+                "title": "Comentarios Públicos de Seguimiento",
+                "epic": "EP-05: Seguimiento, Notificaciones e Historial",
+                "sp": 2,
+                "sprint": "Sprint 4",
+                "status": "done",
+                "discipline": "Backend / Notificaciones & Auditoría",
+                "type": "UH",
+                "priority": "P3",
+                "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#uh-23",
+                "doc_title": "DOC-SPEC-002 (UH-23)",
+                "doc_desc": "Requerimiento funcional oficial del MVP Quantux Salud (EP-05: Seguimiento, Notificaciones e Historial).",
+                "narrative": {
+                        "as_a": "Solicitante u Operador",
+                        "i_want": "intercambiar mensajes públicos en el hilo del ticket",
+                        "so_that": "mantener una comunicación fluida sobre el avance del caso"
+                },
+                "acceptance_criteria": [
+                        "**Dado** un nuevo mensaje público, **cuando** se envía, **entonces** queda visible en el hilo del ticket para todos los involucrados."
+                ]
+        },
+        {
+                "id": "UH-24",
+                "title": "Notas Internas para el Equipo de Soporte",
+                "epic": "EP-05: Seguimiento, Notificaciones e Historial",
+                "sp": 2,
+                "sprint": "Sprint 4",
+                "status": "done",
+                "discipline": "Backend / Notificaciones & Auditoría",
+                "type": "UH",
+                "priority": "P3",
+                "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#uh-24",
+                "doc_title": "DOC-SPEC-002 (UH-24)",
+                "doc_desc": "Requerimiento funcional oficial del MVP Quantux Salud (EP-05: Seguimiento, Notificaciones e Historial).",
+                "narrative": {
+                        "as_a": "Operador de Soporte",
+                        "i_want": "escribir notas técnicas internas invisibles para el solicitante",
+                        "so_that": "coordinar diagnósticos entre técnicos"
+                },
+                "acceptance_criteria": [
+                        "**Dado** una nota marcada como privada, **cuando** un Solicitante consulta el ticket, **entonces** la nota no es visible en su pantalla."
+                ]
+        },
+        {
+                "id": "UH-25",
+                "title": "Avisos Básicos por Asignación y Cambio de Estado",
+                "epic": "EP-05: Seguimiento, Notificaciones e Historial",
+                "sp": 2,
+                "sprint": "Sprint 4",
+                "status": "done",
+                "discipline": "Backend / Notificaciones & Auditoría",
+                "type": "UH",
+                "priority": "P3",
+                "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#uh-25",
+                "doc_title": "DOC-SPEC-002 (UH-25)",
+                "doc_desc": "Requerimiento funcional oficial del MVP Quantux Salud (EP-05: Seguimiento, Notificaciones e Historial).",
+                "narrative": {
+                        "as_a": "usuario del sistema",
+                        "i_want": "recibir avisos visuales ante cambios de estado o asignaciones",
+                        "so_that": "enterarme en tiempo real"
+                },
+                "acceptance_criteria": [
+                        "**Dado** un cambio en un ticket propio, **cuando** ocurre la acción, **entonces** aparece una alerta en pantalla con el detalle de la actualización."
+                ]
+        },
+        {
+                "id": "UH-26",
+                "title": "Aviso Destacado de Ticket Resuelto",
+                "epic": "EP-05: Seguimiento, Notificaciones e Historial",
+                "sp": 1,
+                "sprint": "Sprint 4",
+                "status": "done",
+                "discipline": "Backend / Notificaciones & Auditoría",
+                "type": "UH",
+                "priority": "P3",
+                "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#uh-26",
+                "doc_title": "DOC-SPEC-002 (UH-26)",
+                "doc_desc": "Requerimiento funcional oficial del MVP Quantux Salud (EP-05: Seguimiento, Notificaciones e Historial).",
+                "narrative": {
+                        "as_a": "Solicitante",
+                        "i_want": "ver claramente cuando mi ticket es marcado como `Resuelto`",
+                        "so_that": "verificar la solución antes de cerrar"
+                },
+                "acceptance_criteria": [
+                        "**Dado** el pase a `Resuelto`, **cuando** el solicitante entra al sistema, **entonces** ve un aviso destacado de confirmación de solución."
+                ]
+        },
+        {
+                "id": "UH-27",
+                "title": "Historial y Trazabilidad de Cambios Relevantes",
+                "epic": "EP-05: Seguimiento, Notificaciones e Historial",
+                "sp": 2,
+                "sprint": "Sprint 4",
+                "status": "done",
+                "discipline": "Backend / Notificaciones & Auditoría",
+                "type": "UH",
+                "priority": "P3",
+                "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#uh-27",
+                "doc_title": "DOC-SPEC-002 (UH-27)",
+                "doc_desc": "Requerimiento funcional oficial del MVP Quantux Salud (EP-05: Seguimiento, Notificaciones e Historial).",
+                "narrative": {
+                        "as_a": "Administrador o Auditor",
+                        "i_want": "ver la cronología completa de cambios con fecha, hora y responsable",
+                        "so_that": "garantizar la total transparencia del ciclo"
+                },
+                "acceptance_criteria": [
+                        "**Dado** cualquier cambio en un ticket, **cuando** se consulta el historial, **entonces** se listan todas las mutaciones sin posibilidad de ser borradas. ---"
+                ]
+        },
+        {
+                "id": "UH-28",
+                "title": "Interfaz Centralizada de Operación en Pantalla Única",
+                "epic": "EP-06: Administración y Operación Centralizada",
+                "sp": 6,
+                "sprint": "Sprint 5",
+                "status": "done",
+                "discipline": "Frontend / Pantalla Única",
+                "type": "UH",
+                "priority": "P2",
+                "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#uh-28",
+                "doc_title": "DOC-SPEC-002 (UH-28)",
+                "doc_desc": "Requerimiento funcional oficial del MVP Quantux Salud (EP-06: Administración y Operación Centralizada).",
+                "narrative": {
+                        "as_a": "Operador de Soporte",
+                        "i_want": "operar en una sola pantalla con Filtros (Col 1), Bandeja (Col 2) y Detalle/Gestión (Col 3)",
+                        "so_that": "resolver tickets rápidamente sin recargar la página"
+                },
+                "acceptance_criteria": [
+                        "**Dado** el ingreso al sistema, **cuando** el operador hace clic en un ticket de la lista, **entonces** el detalle y las acciones se abren inmediatamente en la tercera columna."
+                ]
+        },
+        {
+                "id": "UH-29",
+                "title": "Selector Rápido de Rol de Usuario",
+                "epic": "EP-06: Administración y Operación Centralizada",
+                "sp": 3,
+                "sprint": "Sprint 5",
+                "status": "done",
+                "discipline": "Frontend / Pantalla Única",
+                "type": "UH",
+                "priority": "P2",
+                "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#uh-29",
+                "doc_title": "DOC-SPEC-002 (UH-29)",
+                "doc_desc": "Requerimiento funcional oficial del MVP Quantux Salud (EP-06: Administración y Operación Centralizada).",
+                "narrative": {
+                        "as_a": "evaluador o usuario de pruebas",
+                        "i_want": "alternar entre los roles de Solicitante, Soporte y Admin con un botón en la barra superior",
+                        "so_that": "validar la experiencia de cada perfil en segundos durante la demo"
+                },
+                "acceptance_criteria": [
+                        "**Dado** el selector en el encabezado, **cuando** se elige otro rol, **entonces** la interfaz adapta los permisos y vistas instantáneamente."
+                ]
+        },
+        {
+                "id": "UH-30",
+                "title": "Listado, Búsqueda y Filtros Básicos",
+                "epic": "EP-06: Administración y Operación Centralizada",
+                "sp": 4,
+                "sprint": "Sprint 5",
+                "status": "done",
+                "discipline": "Frontend / Pantalla Única",
+                "type": "UH",
+                "priority": "P2",
+                "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#uh-30",
+                "doc_title": "DOC-SPEC-002 (UH-30)",
+                "doc_desc": "Requerimiento funcional oficial del MVP Quantux Salud (EP-06: Administración y Operación Centralizada).",
+                "narrative": {
+                        "as_a": "Operador de Soporte",
+                        "i_want": "filtrar la bandeja por estado, plataforma, cliente o buscar por palabra clave",
+                        "so_that": "localizar cualquier ticket en menos de 2 segundos"
+                },
+                "acceptance_criteria": [
+                        "**Dado** un criterio de búsqueda, **cuando** el usuario escribe o selecciona un filtro, **entonces** la lista se actualiza al instante."
+                ]
+        },
+        {
+                "id": "UH-31",
+                "title": "Administración de Usuarios y Asignación de Roles",
+                "epic": "EP-06: Administración y Operación Centralizada",
+                "sp": 4,
+                "sprint": "Sprint 5",
+                "status": "done",
+                "discipline": "Frontend / Pantalla Única",
+                "type": "UH",
+                "priority": "P2",
+                "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#uh-31",
+                "doc_title": "DOC-SPEC-002 (UH-31)",
+                "doc_desc": "Requerimiento funcional oficial del MVP Quantux Salud (EP-06: Administración y Operación Centralizada).",
+                "narrative": {
+                        "as_a": "Administrador",
+                        "i_want": "listar, crear y asignar roles a los usuarios",
+                        "so_that": "gestionar el personal operativo de Quantux Salud"
+                },
+                "acceptance_criteria": [
+                        "**Dado** el módulo de administración, **cuando** se crea un usuario, **entonces** queda habilitado para operar según su perfil asignado."
+                ]
+        },
+        {
+                "id": "UH-32",
+                "title": "Administración de Categorías y Prioridades",
+                "epic": "EP-06: Administración y Operación Centralizada",
+                "sp": 3,
+                "sprint": "Sprint 5",
+                "status": "done",
+                "discipline": "Frontend / Pantalla Única",
+                "type": "UH",
+                "priority": "P2",
+                "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#uh-32",
+                "doc_title": "DOC-SPEC-002 (UH-32)",
+                "doc_desc": "Requerimiento funcional oficial del MVP Quantux Salud (EP-06: Administración y Operación Centralizada).",
+                "narrative": {
+                        "as_a": "Administrador",
+                        "i_want": "administrar las plataformas, tipos de ticket y niveles de prioridad",
+                        "so_that": "mantener el sistema alineado a la evolución del catálogo corporativo"
+                },
+                "acceptance_criteria": [
+                        "**Dado** el panel de configuración, **cuando** se edita una categoría, **entonces** los formularios de alta y filtros reflejan los cambios de forma consistente. ---"
+                ]
+        },
+        {
+                "id": "ISSUE-07",
+                "title": "[P1 - ALTA PRIORIDAD] Erradicación de Terminología Médica/Hospitalaria en Mensajes y Estados del Sistema de TI",
+                "epic": "EP-08: Reemplazo N1, Triage IA & Portal Solicitante",
+                "sp": 3,
+                "sprint": "Sprint 6",
+                "status": "qa",
+                "discipline": "Frontend / UX Writing & ITIL",
+                "type": "ISSUE",
+                "priority": "P1",
+                "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#issue-07",
+                "doc_title": "DOC-SPEC-002 (ISSUE-07)",
+                "doc_desc": "Sustitución integral de terminología médica espuria ('Guardia Médica', 'Guardia Técnica', 'Transcripción Clínica', 'Asunto Clínico', 'Síntoma Médico') por terminología estándar de Mesa de Ayuda TI / Service Desk.",
+                "attachment_image": "assets/capturas/ISSUE-07_terminologia_medica_guardia.png",
+                "issue_details": {
+                        "severity": "P1 — Alta Prioridad / Dominio Conceptual y Vocabulario",
+                        "component": "frontend/index.html (navbar, placeholders), frontend/js/app.js (openRequesterTicketDetail, renderRequesterChatStream, getLocalAiClinicalResponse)",
+                        "description": "El sistema utiliza terminología de la medicina asistencial ('Estado de Guardia Técnica', 'Transcripción clínica completa', 'Asunto Clínico Registrado', 'Conversación y Contexto Asistencial Transferido', 'Centro de Ayuda & Guardia Médica', 'Escribe tu consulta o síntoma médico') para describir procesos y estados que corresponden estrictamente al soporte técnico de software TI. El Solution Owner ha establecido taxativamente: 'no deben haber en el producto términos similares a los usados en la terminología médica'.",
+                        "root_cause": "Uso inadecuado de metáforas hospitalarias en la capa de presentación (UX Writing) y templates de strings en JavaScript y HTML, generando confusión entre la labor médica del usuario y el funcionamiento de la Mesa de Ayuda de TI.",
+                        "solution": "1. 'ESTADO DE GUARDIA TÉCNICA:' -> 'ESTADO DE LA SOLICITUD DE SOPORTE:'\\n2. 'transcripción clínica completa' -> 'diagnóstico y detalle técnico transferido'\\n3. 'ASUNTO CLÍNICO REGISTRADO:' -> 'ASUNTO DE LA SOLICITUD:'\\n4. 'CONVERSACIÓN Y CONTEXTO ASISTENCIAL TRANSFERIDO:' -> 'HISTORIAL Y CONTEXTO DE LA CONSULTA:'\\n5. 'Centro de Ayuda & Guardia Médica' (Navbar) -> 'Centro de Ayuda & Mesa de Soporte'\\n6. Placeholder del chat: 'Escribe tu consulta sobre Consultorio Digital (ej: matrícula provincial, error en receta, cambio de cuit)...'\\n7. 'Guardia N1/N2' -> 'Soporte N1/N2'",
+                        "acceptance_criteria": [
+                                "Escenario 1 (Cero Términos Médicos en Estados de Soporte): DADO el modal de solicitud y el chat del solicitante, CUANDO se visualizan los estados, ENTONCES no figura la palabra 'Guardia', 'Clínico' o 'Asistencial' para referirse a tickets, operadores o sistemas TI.",
+                                "Escenario 2 (Vocabulario Preciso de Service Desk): DADO cualquier mensaje generado por el sistema, CUANDO describe el flujo de soporte, ENTONCES emplea vocabulario estándar de Service Desk ('Solicitud de Soporte', 'Detalle Técnico', 'Mesa de Ayuda').",
+                                "Escenario 3 (Trazabilidad Visual): DADO el issue registrado en el tablero, CUANDO se abre la tarjeta, ENTONCES presenta la captura con el recuadro verde 'ESTADO DE GUARDIA TÉCNICA' como evidencia."
+                        ]
+                }
+        },
+        {
+                "id": "UH-68",
+                "title": "[P1 - ALTA PRIORIDAD] Remoción de Métricas y Etiquetas de SLA en el Portal del Solicitante / Médico",
+                "epic": "EP-08: Reemplazo N1, Triage IA & Portal Solicitante",
+                "sp": 2,
+                "sprint": "Sprint 6",
+                "status": "qa",
+                "discipline": "Frontend / UX & Limpieza",
+                "type": "UH",
+                "priority": "P1",
+                "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#uh-68",
+                "doc_title": "DOC-REQ-002 (UH-68)",
+                "doc_desc": "Eliminación de las menciones de SLA de atención en el modal de detalle del solicitante y en el stream de escalamiento N2.",
+                "attachment_image": "assets/capturas/UH-68_quitar_sla_solicitante.png",
+                "narrative": {
+                        "as_a": "Profesional Médico Solicitante",
+                        "i_want": "que el sistema no exhiba tiempos ni etiquetas de compromisos de SLA internos de TI en mi vista ni en mis comprobantes de solicitud",
+                        "so_that": "la interfaz esté libre de métricas burocráticas internas que nadie solicitó y que no aportan valor asistencial a mi práctica clínica."
+                },
+                "acceptance_criteria": [
+                        "Escenario 1 (Remoción en Modal de Detalle): DADO el modal de detalle de solicitud del solicitante, CUANDO se visualiza el asunto clínico, ENTONCES no figura la etiqueta '⏱️ SLA de Atención: < 15 min'.",
+                        "Escenario 2 (Remoción en Stream de Escalamiento): DADO un incidente escalado a Soporte N2 en el chat, CUANDO se renderiza la tarjeta de confirmación, ENTONCES no figura la línea '• SLA de Atención N2: < 15 minutos en cola prioritaria'.",
+                        "Escenario 3 (Conservación en Vistas Analista ITIL): DADO el acceso de analistas N2, supervisores y líderes en la Mesa de Ayuda y Tableros ITIL, CUANDO se gestionan los tickets, ENTONCES los cálculos y monitores de SLA permanecen plenamente operativos para la gestión operativa interna."
+                ],
+                "adaptation_criteria": [
+                        "Paso 1: Simplificación y despojo de ruidos burocráticos hacia el usuario final asistencial.",
+                        "Paso 2: Respeto a las directivas del Solution Owner: 'quita el sla, nadie lo pidió'.",
+                        "Paso 3: Verificación de no regresión en endpoints backend de cálculo SLA ITIL.",
+                        "Paso 4: Trazabilidad con captura original en el backlog."
+                ]
+        },
+        {
+                "id": "UH-67",
+                "title": "[P1 - ALTA PRIORIDAD] Subniveles Interactivos de Navegación en Árbol N1 y Separación de Capas Médico vs Soporte",
+                "epic": "EP-08: Reemplazo N1, Triage IA & Portal Solicitante",
+                "sp": 5,
+                "sprint": "Sprint 6",
+                "status": "rework",
+                "discipline": "Analista Funcional / UX & Frontend",
+                "type": "UH",
+                "priority": "P1",
+                "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#uh-67",
+                "doc_title": "DOC-REQ-002 (UH-67)",
+                "doc_desc": "Optimización de usabilidad del Asistente N1 eliminando el doble bloque confuso y añadiendo subniveles interactivos con separación de capas (médico vs analista).",
+                "attachment_image": "assets/capturas/UH-67_doble_informacion_subniveles_arbol.png",
+                "so_feedback": {
+                        "status": "RECHAZADO / NO IMPLEMENTADO",
+                        "observation": "El desarrollo no se implementó conforme a lo solicitado en la tarjeta. Falla persistente: no existen subniveles interactivos de navegación en el árbol N1 ni separación entre la indicación inmediata para el médico y el fundamento técnico profundo.",
+                        "date": "2026-09-26",
+                        "reviewer": "Solution Owner (Humano)"
+                },
+                "narrative": {
+                        "as_a": "Profesional de la Salud (Médico Solicitante) y Analista de Soporte N2",
+                        "i_want": "que el Asistente N1 presente subniveles interactivos de navegación en el árbol de decisión y diferencie con claridad el paso resolutivo inmediato del marco normativo/técnico profundo",
+                        "so_that": "pueda resolver mi consulta clínica en segundos sin confusión entre directivas internas y procedimientos de autogestión, manteniendo toda la información técnica accesible bajo demanda."
+                },
+                "acceptance_criteria": [
+                        "Escenario 1 (Subniveles de Navegación Interactivos): DADO un tema con múltiples ramificaciones operativas (ej: 'Prescripción, Vademécum y Matrícula SISA'), CUANDO el Asistente N1 clasifica la consulta, ENTONCES presenta chips o botones de subnivel específicos ('Matrícula SISA', 'Vademécum Alfabeta', 'Biometría', 'Contingencia') para que el usuario elija su caso puntual.",
+                        "Escenario 2 (Separación de Capas Funcionales): DADO el diagnóstico seleccionado, CUANDO se muestra la respuesta, ENTONCES presenta en primer término la 'Indicación Resolutiva Inmediata para el Médico' (en lenguaje clínico sin tecnicismos de BD o CRM) y en un acordeón desplegable secundario el 'Fundamento Normativo y Técnico Oficial'.",
+                        "Escenario 3 (Renderizado Tipográfico Limpio): DADO cualquier texto generado por el Asistente N1 o base de conocimiento, CUANDO se visualiza en el stream de chat, ENTONCES interpreta adecuadamente el formato markdown (negritas, viñetas, saltos) erradicando asteriscos crudos (**texto**).",
+                        "Escenario 4 (Trazabilidad Visual Permanente): DADO el registro de la UH en el tablero y backlog, CUANDO se consulta el detalle de la tarjeta, ENTONCES muestra la captura original adjunta que fundamentó la necesidad."
+                ],
+                "adaptation_criteria": [
+                        "Paso 1: Análisis Funcional en conjunto con UX — Progressive Disclosure (divulgación progresiva) y jerarquización de contenidos.",
+                        "Paso 2: Cumplimiento de restricciones institucionales OJO (cero cards desalineadas, paleta Slate/Teal corporativa).",
+                        "Paso 3: Definición de subniveles en catálogo JSON de árboles de decisión en frontend/js/typeahead.js y app.js.",
+                        "Paso 4: Trazabilidad inmutable en suite documental y registro de evidencia visual en docs/assets/capturas/."
+                ]
+        },
+        {
+                "id": "ISSUE-04",
+                "title": "[P1 - ALTA PRIORIDAD] Imposibilidad de scroll en desplegable de temas oficiales homologados (Typeahead)",
+                "epic": "EP-08: Reemplazo N1, Triage IA & Portal Solicitante",
+                "sp": 3,
+                "sprint": "Sprint 6",
+                "status": "sprint",
+                "discipline": "Frontend / UX & CSS",
+                "type": "ISSUE",
+                "priority": "P1",
+                "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#issue-04",
+                "doc_title": "DOC-SPEC-002 (ISSUE-04)",
+                "doc_desc": "Desbordamiento vertical de #requester-typeahead-dropdown que corta los temas oficiales y bloquea el scroll.",
+                "attachment_image": "assets/capturas/ISSUE-04_scroll_typeahead.png",
+                "issue_details": {
+                        "severity": "P1 — Alta Prioridad / Bloqueante de Navegación",
+                        "component": "frontend/index.html (#view-requester-portal, #requester-clinical-portal, #requester-typeahead-dropdown), frontend/js/typeahead.js",
+                        "description": "Al ingresar texto en el buscador del portal del solicitante (ej: 'matricul'), se despliega la lista con los Temas Oficiales Homologados de Consultorio Digital 2. Debido a que los contenedores superiores (.app-view y #requester-clinical-portal) tienen height: 100% y overflow: hidden, el desplegable se extiende fuera del límite inferior de la pantalla sin habilitar barra de scroll, impidiendo al usuario ver y seleccionar los resultados inferiores.",
+                        "root_cause": "Falta de overflow-y: auto en el contenedor principal de la vista y ausencia de max-height proporcional con scroll nativo (overscroll-behavior: contain) en el contenedor del dropdown predictivo.",
+                        "solution": "1. Habilitar scroll vertical en #requester-clinical-portal con overflow-y: auto !important;\n2. Ajustar #requester-typeahead-dropdown con max-height: calc(100vh - 420px); min-height: 180px; overflow-y: auto !important; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;\n3. Asegurar barra de desplazamiento visible estilizada para facilitar interacción táctil o mouse.",
+                        "acceptance_criteria": [
+                                "Escenario 1 (Scroll Fluido): DADO el buscador con resultados coincidentes (ej: 'matricul'), CUANDO el usuario interactúa con la lista, ENTONCES puede scrollear verticalmente viendo el 100% de los temas disponibles.",
+                                "Escenario 2 (No Truncamiento en Viewport): DADO cualquier tamaño de pantalla estándar (1366x768 hasta 1920x1080), CUANDO se despliega el typeahead, ENTONCES permanece contenido dentro del área visible sin desbordar el pie de página.",
+                                "Escenario 3 (Selección Exitosa): DADO un tema ubicado en la parte inferior tras el scroll, CUANDO el usuario hace clic, ENTONCES se selecciona correctamente y dispara la consulta sin errores de foco."
+                        ]
+                }
+        },
+        {
+                "id": "ISSUE-05",
+                "title": "[P1 - ALTA PRIORIDAD] Botón 'Hacer otra consulta' no oculta ni reinicia el historial de consultas anteriores",
+                "epic": "EP-08: Reemplazo N1, Triage IA & Portal Solicitante",
+                "sp": 2,
+                "sprint": "Sprint 6",
+                "status": "sprint",
+                "discipline": "Frontend / JS & UX",
+                "type": "ISSUE",
+                "priority": "P1",
+                "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#issue-05",
+                "doc_title": "DOC-SPEC-002 (ISSUE-05)",
+                "doc_desc": "El botón 'Hacer otra consulta' solo ejecuta foco en el input sin ocultar el stream de chat ni restaurar el hero de inicio.",
+                "attachment_image": "assets/capturas/ISSUE-05_hacer_otra_consulta.png",
+                "issue_details": {
+                        "severity": "P1 — Alta Prioridad / Experiencia de Usuario",
+                        "component": "frontend/js/app.js (renderRequesterChatStream, clearRequesterChat), frontend/index.html",
+                        "description": "Tras recibir una respuesta del Asistente N1 o emitirse una Constancia FCR 100%, el usuario presiona el botón o enlace 'Hacer otra consulta' esperando una interfaz limpia para una nueva solicitud. No obstante, el sistema mantiene en pantalla todo el historial de mensajes anterior y solo cambia el placeholder a 'Escribe tu siguiente pregunta en este mismo hilo...'.",
+                        "root_cause": "Los botones 'Hacer otra consulta' en app.js (líneas 2876, 2896, 2909) tienen asignado onclick='focusRequesterChatInput()', el cual no oculta #requester-inline-chat-stream ni restaura #requester-chat-hero.",
+                        "solution": "1. Vincular los botones 'Hacer otra consulta' a clearRequesterChat();\n2. En clearRequesterChat(), resetear el array requesterChatMessages = [], ocultar el stream con display: none, restaurar el hero centrado con display: block y centrar el contenedor verticalmente;\n3. Mantener el registro de tickets previos accesible en 'Mis Solicitudes' sin contaminar el espacio de trabajo.",
+                        "acceptance_criteria": [
+                                "Escenario 1 (Ocultamiento Inmediato): DADO un chat con respuestas previas, CUANDO el usuario pulsa 'Hacer otra consulta', ENTONCES el historial de mensajes se oculta de inmediato y se despliega la pantalla inicial limpia con el buscador centrado ('¿En qué podemos asistirte hoy?').",
+                                "Escenario 2 (Input Limpio y Enfocado): DADO el reseteo del chat, CUANDO la vista vuelve al reposo, ENTONCES el input queda en blanco con su placeholder por defecto y autofocus activo.",
+                                "Escenario 3 (Persistencia Histórica): DADO que el stream actual se limpia, CUANDO el usuario consulta 'Mis Solicitudes', ENTONCES las constancias emitidas previamente siguen perfectamente registradas en la base de datos."
+                        ]
+                }
+        },
+        {
+                "id": "ISSUE-06",
+                "title": "[P1 - ALTA PRIORIDAD] Falla en visualización de Constancia de Resolución Inmediata y campo/toast fantasma sin texto",
+                "epic": "EP-08: Reemplazo N1, Triage IA & Portal Solicitante",
+                "sp": 3,
+                "sprint": "Sprint 6",
+                "status": "sprint",
+                "discipline": "Frontend / UX & CSS",
+                "type": "ISSUE",
+                "priority": "P1",
+                "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#issue-06",
+                "doc_title": "DOC-SPEC-002 (ISSUE-06)",
+                "doc_desc": "La constancia FCR no despliega el comprobante formal en 'Mis Solicitudes' y el toast blanco sobre blanco simula un campo vacío.",
+                "attachment_image": "assets/capturas/ISSUE-06_constancia_fcr_toast.png",
+                "issue_details": {
+                        "severity": "P1 — Alta Prioridad / Calidad Visual & FCR",
+                        "component": "frontend/js/app.js (requesterAiResolve, openRequesterHistoryModal), frontend/css/styles.css (.toast, .toast-container)",
+                        "description": "1. Al resolverse la consulta y pulsar 'Ver en Mis Solicitudes' o el badge FCR, el sistema abre la bandeja genérica sin destacar ni abrir la Constancia de Resolución Inmediata con su certificado formal.\n2. En la parte inferior derecha de la pantalla aparece un rectángulo blanco flotante sin texto legible, desconcertando al usuario.",
+                        "root_cause": "1. La función de historial no tiene anclaje ni apertura automática de la constancia individual generada.\n2. La clase CSS .toast tiene fondo #F8FAFC y color de texto #FFFFFF (texto blanco puro sobre fondo blanco hueso), tornando el mensaje '✓ Constancia FCR 100% registrada' completamente invisible, asemejándose a un campo residual vacío.",
+                        "solution": "1. Corregir estilos de .toast en styles.css para que utilice fondo oscuro corporativo (background: #0F172A; color: #FFFFFF;) o alert estilizado con texto legible;\n2. Implementar modal o vista de Constancia Formal de Resolución Inmediata (Certificado FCR) al hacer clic en 'Ver en Mis Solicitudes' o en la tarjeta de FCR, mostrando el ticket #TKT-2026-0348 con sello oficial de validación y datos del profesional.",
+                        "acceptance_criteria": [
+                                "Escenario 1 (Constancia FCR Visible y Completa): DADO un incidente resuelto con FCR 100%, CUANDO el profesional presiona 'Ver en Mis Solicitudes', ENTONCES se abre el comprobante formal con número de ticket, fecha, hora, diagnóstico y sello de resolución inmediata.",
+                                "Escenario 2 (Eliminación de Campo Fantasma): DADO cualquier evento que dispare un toast, CUANDO se visualiza en pantalla, ENTONCES presenta contraste 100% legible (fondo #0F172A, texto #FFFFFF) erradicando cajas vacías o sin texto.",
+                                "Escenario 3 (Trazabilidad FCR): DADO el registro del ticket FCR, CUANDO se consulta el historial de solicitudes, ENTONCES figura con badge verde de resuelto y acceso directo a su constancia imprimible."
+                        ]
+                }
+        },
+        {
+                "id": "UH-66",
+                "title": "[P1 - ALTA PRIORIDAD] Depuración de Componentes de Debug, Subtítulo Redundante y Limpieza Zen del Portal",
+                "epic": "EP-08: Reemplazo N1, Triage IA & Portal Solicitante",
+                "sp": 3,
+                "sprint": "Sprint 6",
+                "status": "sprint",
+                "discipline": "Frontend / UI & Limpieza Zen",
+                "type": "UH",
+                "priority": "P1",
+                "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#uh-66",
+                "doc_title": "DOC-REQ-002 (UH-66)",
+                "doc_desc": "Eliminación de barra de mockups de debug, subtítulo redundante en hero y corrección de desborde en cabecera.",
+                "attachment_image": "assets/capturas/UH-66_limpieza_zen_debug.png",
+                "narrative": {
+                        "as_a": "Profesional Médico y Solicitante del Centro de Ayuda",
+                        "i_want": "un portal de soporte técnico completamente limpio y sin ruido visual de desarrollo (sin botones de mockups 1 a 7, sin subtítulo redundante y sin elementos desbordados)",
+                        "so_that": "pueda concentrarme exclusivamente en resolver mi consulta operativa sin distracciones ni botones ajenos a mi rol asistencial."
+                },
+                "acceptance_criteria": [
+                        "Escenario 1 (Remoción de Pastillas de Mockup): DADO el ingreso al sistema, CUANDO se visualiza la barra de navegación superior (#app-top-navbar), ENTONCES no existe el contenedor de debug #nav-mockup-pills (1. Portal, 2. Chat Stream, 3. Modal Ticket, etc.).",
+                        "Escenario 2 (Hero Central Zen): DADO el estado inicial del Portal del Solicitante, CUANDO se renderiza el Hero centrado, ENTONCES únicamente se muestra el isotipo, el título '¿En qué podemos asistirte hoy?' y la barra de búsqueda, habiéndose eliminado el párrafo subtítulo de texto.",
+                        "Escenario 3 (Cabecera Equilibrada sin Desbordes): DADO el extremo derecho de la cabecera, CUANDO se visualizan los accesos (+ Crear Solicitud, Mis Solicitudes, Chip de Perfil), ENTONCES se presentan completos, alineados y sin truncamiento ni botones espurios cortados [M...]."
+                ],
+                "adaptation_criteria": [
+                        "Paso 1: Diseño centrado en el usuario y reducción de carga cognitiva.",
+                        "Paso 2: Respeto estricto a la Regla OJO de cero elementos fuera de especificación.",
+                        "Paso 3: Verificación visual libre de desbordes horizontales.",
+                        "Paso 4: Trazabilidad en suite documental y tablero Scrumban."
+                ]
+        },
+        {
+                "id": "GAP-01",
+                "title": "Formalización del Marco PMI+IA y Protocolo de Calidad en Suite Documental",
+                "epic": "EP-07: Gobernanza PMI+IA, Blindaje OJO & Calidad",
+                "sp": 5,
+                "sprint": "Sprint 6",
+                "status": "done",
+                "discipline": "AF / Gobernanza",
+                "type": "GAP",
+                "priority": "P2",
+                "doc_link": "08_MARCO_DE_TRABAJO_PMI_IA_Y_GOBERNANZA_CALIDAD.md",
+                "doc_title": "DOC-GOV-008",
+                "doc_desc": "Incorporación de los 4 pasos de adaptación PMI, delimitación de roles y protocolo TDD.",
+                "narrative": {
+                        "as_a": "Solution Owner de HealthDesk Quantux",
+                        "i_want": "formalizar la integración de los 4 pasos del proceso de adaptación del PMI (PMBOK® 7ª Edición) con el ciclo de desarrollo asistido por IA generativa en la suite documental",
+                        "so_that": "erradicar la degradación de calidad por instrucciones en lenguaje natural libre, evitar la deriva de contexto y asegurar respaldo contractual."
+                },
+                "acceptance_criteria": [
+                        "Escenario 1: Existencia de DOC-GOV-008 en Markdown y HTML registrado en Plan de Gestión DOC-MGT-001.",
+                        "Escenario 2: Matriz RACI delimitando que el Solution Owner (Humano) aprueba alcance y la IA ejecuta técnicamente sin autovalidarse.",
+                        "Escenario 3: Registro mandatorio en Product/Sprint Backlog antes de tocar código de producción."
+                ],
+                "adaptation_criteria": [
+                        "Paso 1: Enfoque Híbrido Estricto — Requerimientos predictivos cerrados + micro-sprints adaptativos.",
+                        "Paso 2: Cumplimiento de restricciones institucionales OJO (cero cards, cero rojos).",
+                        "Paso 3: Desglose atómico en UH con criterios Gherkin accionables en CLI.",
+                        "Paso 4: Mejora continua en Product Backlog e incorporación retroactiva en GEMINI.md."
+                ]
+        },
+        {
+                "id": "MEJ-02",
+                "title": "Soporte Nativo de Enlaces Documentales, Tipos de Item y Modal en Tablero Scrumban",
+                "epic": "EP-07: Gobernanza PMI+IA, Blindaje OJO & Calidad",
+                "sp": 3,
+                "sprint": "Sprint 6",
+                "status": "qa",
+                "discipline": "Frontend / UX",
+                "type": "MEJORA",
+                "priority": "P2",
+                "doc_link": "00_Tablero_Scrumban_Quantux.html",
+                "doc_title": "Tablero Scrumban",
+                "doc_desc": "Visualización de documentación, tipos de item, roadmap interactivo y modales universales.",
+                "narrative": {
+                        "as_a": "Solution Owner y miembro del Comité Evaluador",
+                        "i_want": "visualizar en el tablero Scrumban los badges tipológicos, enlaces directos, vistas de Roadmap y modales de detalle adaptativos",
+                        "so_that": "gestionar el proyecto con transparencia total, auditar los requerimientos y tomar decisiones informadas de priorización."
+                },
+                "acceptance_criteria": [
+                        "Escenario 1: Tarjetas con badges tipológicos, ID, SP y caja de enlace documental.",
+                        "Escenario 2: Modales específicos según tipo (UH, Issue, Tarea, Épica, Gap).",
+                        "Escenario 3: Pestañas para alternar entre Tablero Scrumban, Roadmap, Métricas y Backlog Jerárquico."
+                ],
+                "adaptation_criteria": [
+                        "Paso 1: Progressive disclosure ágil.",
+                        "Paso 2: Respeto visual a la paleta institucional Quantux.",
+                        "Paso 3: JavaScript Vanilla sin dependencias pesadas.",
+                        "Paso 4: Exportación sincronizada a CSV."
+                ]
+        },
+        {
+                "id": "MEJ-01",
+                "title": "Automatización de Bucle TDD y Pre-commit Hooks para Validadores OJO",
+                "epic": "EP-07: Gobernanza PMI+IA, Blindaje OJO & Calidad",
+                "sp": 5,
+                "sprint": "Sprint 6",
+                "status": "qa",
+                "discipline": "DevOps / QA",
+                "type": "MEJORA",
+                "priority": "P2",
+                "doc_link": "08_MARCO_DE_TRABAJO_PMI_IA_Y_GOBERNANZA_CALIDAD.md#seccion-3",
+                "doc_title": "DOC-GOV-008 (Sec 3.2)",
+                "doc_desc": "Hook pre-commit para ejecutar validate_ojo_compliance.py y tests DOM secuencialmente.",
+                "narrative": {
+                        "as_a": "Facilitador Técnico y QA Lead de HealthDesk Quantux",
+                        "i_want": "instrumentar un hook de pre-commit y un script de verificación automatizada secuencial",
+                        "so_that": "impedir mecánicamente que el Agente IA introduzca cards flotantes, fondos oscuros o jergas clínicas."
+                },
+                "acceptance_criteria": [
+                        "Escenario 1: Bloqueo con Exit Code 1 si se detectan violaciones OJO.",
+                        "Escenario 2: Certificación Exit Code 0 en código limpio.",
+                        "Escenario 3: Ejecución de tests demostrando fallo (rojo) antes de la solución mínima (verde)."
+                ],
+                "adaptation_criteria": [
+                        "Paso 1: Quality gates predictivos.",
+                        "Paso 2: Regla OJO de cero tolerancia a desviaciones.",
+                        "Paso 3: Tests automatizados en CLI local.",
+                        "Paso 4: Registro forense de no-conformidades."
+                ]
+        },
+        {
+                "id": "ISSUE-01",
+                "title": "Remoción de términos clínicos hospitalarios ('guardia', 'asistencial') en app.js",
+                "epic": "EP-07: Gobernanza PMI+IA, Blindaje OJO & Calidad",
+                "sp": 3,
+                "sprint": "Sprint 6",
+                "status": "progress",
+                "discipline": "Frontend / QA",
+                "type": "ISSUE",
+                "priority": "P2",
+                "doc_link": "validate_ojo_compliance.py",
+                "doc_title": "Script de Validación OJO",
+                "doc_desc": "Corrección de términos hospitalarios no autorizados para soporte técnico.",
+                "issue_details": {
+                        "severity": "P2 — Alta / No Conformidad de Estilo",
+                        "component": "frontend/js/app.js",
+                        "description": "El script de validación forense validate_ojo_compliance.py reporta incidencias por uso de términos clínicos asistenciales en el código fuente de frontend.",
+                        "root_cause": "Legado de prototipos que utilizaban jergas de guardia médica en lugar de terminología técnica de soporte a consultorios.",
+                        "solution": "Refactorizar las variables y cadenas de texto hacia 'Soporte Técnico Especializado' y 'Consultorio Digital'.",
+                        "acceptance_criteria": [
+                                "Escenario 1: Cero apariciones de términos prohibidos en validación.",
+                                "Escenario 2: Preservación de toda la funcionalidad operativa existente."
+                        ]
+                }
+        },
+        {
+                "id": "ISSUE-02",
+                "title": "Sustitución de colores rojos no autorizados (#DC2626, #EF4444) por paleta Slate/Teal",
+                "epic": "EP-07: Gobernanza PMI+IA, Blindaje OJO & Calidad",
+                "sp": 3,
+                "sprint": "Sprint 6",
+                "status": "progress",
+                "discipline": "Frontend / CSS",
+                "type": "ISSUE",
+                "priority": "P2",
+                "doc_link": "validate_ojo_compliance.py",
+                "doc_title": "Script de Validación OJO",
+                "doc_desc": "Sustitución de códigos hex rojos por advertencias neutrales en ámbar o slate.",
+                "issue_details": {
+                        "severity": "P2 — Alta / Restricción de Paleta Quantux",
+                        "component": "frontend/css/styles.css, frontend/js/app.js",
+                        "description": "Se detectaron colores rojos intensos utilizados en badges de urgencia que violan la regla OJO de entorno no punitivo.",
+                        "root_cause": "Uso directo de clases utilitarias con colores de alerta estándar de Tailwind.",
+                        "solution": "Reemplazar por escala neutra Slate con acento ámbar suave (#D97706 / #FEF3C7) aprobado institucionalmente.",
+                        "acceptance_criteria": [
+                                "Escenario 1: Cero códigos hex rojos detectados por validate_ojo_compliance.py.",
+                                "Escenario 2: Correcta diferenciación visual de prioridades críticas sin tonos estridentes."
+                        ]
+                }
+        },
+        {
+                "id": "TASK-01",
+                "title": "Script de Hook Git Pre-commit y Wrapper CLI de Pruebas Continuas",
+                "epic": "EP-07: Gobernanza PMI+IA, Blindaje OJO & Calidad",
+                "sp": 3,
+                "sprint": "Sprint 6",
+                "status": "sprint",
+                "discipline": "DevOps / Calidad",
+                "type": "TASK",
+                "priority": "P3",
+                "doc_link": "08_MARCO_DE_TRABAJO_PMI_IA_Y_GOBERNANZA_CALIDAD.md",
+                "doc_title": "DOC-GOV-008",
+                "doc_desc": "Creación del hook .git/hooks/pre-commit para compuerta determinista local.",
+                "task_details": {
+                        "scope": "Crear un runner en Python que encapsule validate_ojo_compliance.py y test_dom_visual_compliance.py asegurando rechazo automático de commits no conformes.",
+                        "deliverables": [
+                                "tools/pre_commit_runner.py",
+                                "Configuración en .git/hooks/pre-commit",
+                                "Salida formateada con semáforo en terminal"
+                        ],
+                        "dod": "El hook intercepta cualquier commit y aborta si la validación falla con código 1."
+                }
+        },
+        {
+                "id": "OM-01",
+                "title": "Trazabilidad Bidireccional de Tickets hacia Contratos OpenAPI y Esquemas DDL",
+                "epic": "17. Arquitectura & APIs",
+                "sp": 8,
+                "sprint": "Sprint 6",
+                "status": "sprint",
+                "discipline": "Backend / Arq",
+                "type": "OPORTUNIDAD",
+                "priority": "P2",
+                "doc_link": "API_CONTRACTS.md",
+                "doc_title": "API_CONTRACTS.md",
+                "doc_desc": "Validación de esquema OpenAPI 3.0 y modelos Pydantic contra BD.",
+                "narrative": {
+                        "as_a": "Arquitecto de Software de HealthDesk Quantux",
+                        "i_want": "vincular cada endpoint de FastAPI con la especificación contractual en docs/API_CONTRACTS.md",
+                        "so_that": "asegurar consistencia 100% de esquemas y prevenir alucinaciones de modelos."
+                },
+                "acceptance_criteria": [
+                        "Escenario 1: Paridad exacta entre /openapi.json y API_CONTRACTS.md.",
+                        "Escenario 2: Modelos DDL sin atributos espurios.",
+                        "Escenario 3: Rechazo automático de cambios no documentados en compuerta de arquitectura."
+                ],
+                "adaptation_criteria": [
+                        "Paso 1: Spec-Driven Development (SDD).",
+                        "Paso 2: Trazabilidad en entidades de soporte.",
+                        "Paso 3: Verificación con Pydantic.",
+                        "Paso 4: Versionado semántico."
+                ]
+        },
+        {
+                "id": "GAP-02",
+                "title": "Blindaje de Integridad de Contexto para Auditorías TQM y Cero Scope Creep",
+                "epic": "EP-07: Gobernanza PMI+IA, Blindaje OJO & Calidad",
+                "sp": 5,
+                "sprint": "Sprint 6",
+                "status": "sprint",
+                "discipline": "QA / Metodología",
+                "type": "GAP",
+                "priority": "P2",
+                "doc_link": "04_INFORME_DE_PRUEBAS_Y_EVIDENCIAS.md",
+                "doc_title": "DOC-QA-004",
+                "doc_desc": "Checklist ejecutable de auditoría contra alucinaciones y omisiones pre-entrega.",
+                "narrative": {
+                        "as_a": "Auditor de Calidad TQM de Quantux Salud",
+                        "i_want": "un protocolo determinista de verificación de contexto y cotejo de observaciones",
+                        "so_that": "erradicar el olvido de especificaciones, evitar el scope creep y asegurar evidencia en DOC-QA-004."
+                },
+                "acceptance_criteria": [
+                        "Escenario 1: Matriz de cobertura explícita sin omisiones.",
+                        "Escenario 2: Logs reales de terminal y aserciones registradas en DOC-QA-004.",
+                        "Escenario 3: Consulta aclaratoria mandatoria al Solution Owner ante dudas."
+                ],
+                "adaptation_criteria": [
+                        "Paso 1: Dual-Loop Validation.",
+                        "Paso 2: Inmunización en GEMINI.md.",
+                        "Paso 3: Checklists binarios pre-vuelo.",
+                        "Paso 4: Retroalimentación continua al backlog."
+                ]
+        },
+        {
+                "id": "OM-02",
+                "title": "Caché de Consultas y Optimización de Carga del Cockpit en Memoria",
+                "epic": "17. Arquitectura & APIs",
+                "sp": 8,
+                "sprint": "Product Backlog",
+                "status": "backlog",
+                "discipline": "Backend / Perf",
+                "type": "OPORTUNIDAD",
+                "priority": "P3",
+                "doc_link": "03_ARQUITECTURA_Y_DISENO_TECNICO.md",
+                "doc_title": "DOC-ARC-003",
+                "doc_desc": "Estrategia de caching LRU y compresión gzip para respuesta de bandeja en < 150ms."
+        },
+        {
+                "id": "OM-03",
+                "title": "[P3 - BAJA PRIORIDAD] Parametrización y Filtros Avanzados para la Exportación de Datos en Formato CSV",
+                "epic": "EP-07: Gobernanza PMI+IA, Blindaje OJO & Calidad",
+                "sp": 3,
+                "sprint": "Product Backlog",
+                "status": "backlog",
+                "discipline": "Frontend / Data Export",
+                "type": "OPORTUNIDAD",
+                "priority": "P3",
+                "doc_link": "03_ARQUITECTURA_Y_DISENO_TECNICO.md#om-03",
+                "doc_title": "DOC-ARC-003 (OM-03)",
+                "doc_desc": "Modal de parametrización para el botón de exportación CSV (selección de columnas, filtros por estado/sprint y delimitadores).",
+                "attachment_image": "assets/capturas/OPP-03_parametrizacion_exportar_csv.png",
+                "narrative": {
+                        "as_a": "Líder de Soporte / Solution Owner",
+                        "i_want": "que el botón 'Exportar CSV' me permita parametrizar los campos, estados, sprints y formato del archivo antes de la descarga",
+                        "so_that": "pueda generar reportes a medida sin tener que depurar manualmente columnas innecesarias o archivos no filtrados."
+                },
+                "acceptance_criteria": [
+                        "Escenario 1 (Modal de Configuración Previa): DADO el botón 'Exportar CSV' en la barra de herramientas, CUANDO el usuario hace clic, ENTONCES se abre un modal de configuración que permite marcar/desmarcar columnas (ID, Título, Estado, Prioridad, SP, Criterios, Evidencias).",
+                        "Escenario 2 (Filtros por Estado y Sprint): DADO el modal de exportación, CUANDO el usuario selecciona un subconjunto (ej: solo ítems 'En Revisión' del Sprint 6), ENTONCES el archivo descargado contiene únicamente los registros que coinciden con los filtros.",
+                        "Escenario 3 (Trazabilidad Visual): DADO el registro de la oportunidad en el tablero, CUANDO se consulta el detalle de la tarjeta, ENTONCES exhibe la captura con el botón 'Exportar CSV' como evidencia original."
+                ]
+        },
+        {
+                "id": "TASK-05",
+                "title": "Generador de Reportes de Cumplimiento TQM y Certificación PDF Automática",
+                "epic": "EP-07: Gobernanza PMI+IA, Blindaje OJO & Calidad",
+                "sp": 5,
+                "sprint": "Product Backlog",
+                "status": "backlog",
+                "discipline": "QA / DevOps",
+                "type": "TASK",
+                "priority": "P3",
+                "doc_link": "04_INFORME_DE_PRUEBAS_Y_EVIDENCIAS.md",
+                "doc_title": "DOC-QA-004",
+                "doc_desc": "Script que compila evidencias, capturas y métricas de calidad en PDF imprimible."
+        },
+        {
+                "id": "UH-33",
+                "title": "Vinculación Jerárquica a Ticket Padre (Incidente Masivo)",
+                "epic": "1. Incidentes Masivos",
+                "sp": 5,
+                "sprint": "Sprint 1",
+                "status": "done",
+                "discipline": "Backend / FSM",
+                "type": "UH",
+                "priority": "P2"
+        },
+        {
+                "id": "UH-34",
+                "title": "Resolución y Cierre Automatizado en Cascada",
+                "epic": "1. Incidentes Masivos",
+                "sp": 4,
+                "sprint": "Sprint 1",
+                "status": "done",
+                "discipline": "Backend / FSM",
+                "type": "UH",
+                "priority": "P2"
+        },
+        {
+                "id": "UH-35",
+                "title": "Desvinculación por Excepción de Ticket Padre",
+                "epic": "1. Incidentes Masivos",
+                "sp": 3,
+                "sprint": "Sprint 1",
+                "status": "done",
+                "discipline": "Backend / FSM",
+                "type": "UH",
+                "priority": "P3"
+        },
+        {
+                "id": "UH-36",
+                "title": "Catálogo y Asociación de Versiones de Release",
+                "epic": "2. Releases y Despliegues",
+                "sp": 5,
+                "sprint": "Sprint 1",
+                "status": "done",
+                "discipline": "DevOps / Releases",
+                "type": "UH",
+                "priority": "P2"
+        },
+        {
+                "id": "UH-37",
+                "title": "Cierre Automático por Despliegue en Producción",
+                "epic": "2. Releases y Despliegues",
+                "sp": 3,
+                "sprint": "Sprint 1",
+                "status": "done",
+                "discipline": "DevOps / Releases",
+                "type": "UH",
+                "priority": "P3"
+        },
+        {
+                "id": "UH-38",
+                "title": "Paginación Server-Side y Filtros en Bandeja",
+                "epic": "3. Bandeja General & Paginación",
+                "sp": 5,
+                "sprint": "Sprint 1",
+                "status": "done",
+                "discipline": "Backend / DB",
+                "type": "UH",
+                "priority": "P2"
+        },
+        {
+                "id": "UH-39",
+                "title": "Búsqueda Full-Text Multi-Atributo",
+                "epic": "3. Bandeja General & Paginación",
+                "sp": 4,
+                "sprint": "Sprint 1",
+                "status": "done",
+                "discipline": "Frontend / UX",
+                "type": "UH",
+                "priority": "P2"
+        },
+        {
+                "id": "UH-40",
+                "title": "Layout Zen de Edición sin Distracciones",
+                "epic": "4. Workspace Zen",
+                "sp": 6,
+                "sprint": "Sprint 2",
+                "status": "done",
+                "discipline": "Frontend / UI",
+                "type": "UH",
+                "priority": "P2"
+        },
+        {
+                "id": "UH-41",
+                "title": "Gestión de Notas Internas Privadas",
+                "epic": "4. Workspace Zen",
+                "sp": 5,
+                "sprint": "Sprint 2",
+                "status": "done",
+                "discipline": "Backend / Auth",
+                "type": "UH",
+                "priority": "P2"
+        },
+        {
+                "id": "UH-42",
+                "title": "Acciones Rápidas con Teclado (Shortcuts)",
+                "epic": "4. Workspace Zen",
+                "sp": 5,
+                "sprint": "Sprint 2",
+                "status": "done",
+                "discipline": "Frontend / Accesibilidad",
+                "type": "UH",
+                "priority": "P3"
+        },
+        {
+                "id": "UH-43",
+                "title": "Formulario de Alta Progresivo en 3 Pasos",
+                "epic": "5. Alta Sin Ruido",
+                "sp": 5,
+                "sprint": "Sprint 2",
+                "status": "done",
+                "discipline": "Frontend / UX",
+                "type": "UH",
+                "priority": "P2"
+        },
+        {
+                "id": "UH-44",
+                "title": "Validación Preventiva y Sugerencias de KB",
+                "epic": "5. Alta Sin Ruido",
+                "sp": 5,
+                "sprint": "Sprint 2",
+                "status": "done",
+                "discipline": "Frontend / AI",
+                "type": "UH",
+                "priority": "P2"
+        },
+        {
+                "id": "UH-45",
+                "title": "Multi-Tenancy y Configuración por Cliente",
+                "epic": "6. Generalización Enterprise",
+                "sp": 6,
+                "sprint": "Sprint 2",
+                "status": "done",
+                "discipline": "Arquitectura / DB",
+                "type": "UH",
+                "priority": "P1"
+        },
+        {
+                "id": "UH-46",
+                "title": "Widgets de Control Operativo y SLAs",
+                "epic": "7. Tablero de Control Zen",
+                "sp": 5,
+                "sprint": "Sprint 3",
+                "status": "done",
+                "discipline": "Frontend / Analytics",
+                "type": "UH",
+                "priority": "P2"
+        },
+        {
+                "id": "UH-47",
+                "title": "Filtro Rápido por Período y Exportación",
+                "epic": "7. Tablero de Control Zen",
+                "sp": 4,
+                "sprint": "Sprint 3",
+                "status": "done",
+                "discipline": "Backend / Reporting",
+                "type": "UH",
+                "priority": "P3"
+        },
+        {
+                "id": "UH-48",
+                "title": "Directorio de Usuarios y Estado de Operadores",
+                "epic": "8. Directorio de Usuarios Zen",
+                "sp": 5,
+                "sprint": "Sprint 3",
+                "status": "done",
+                "discipline": "Backend / IAM",
+                "type": "UH",
+                "priority": "P2"
+        },
+        {
+                "id": "UH-49",
+                "title": "Gestión de Habilidades y Asignación Automática",
+                "epic": "8. Directorio de Usuarios Zen",
+                "sp": 5,
+                "sprint": "Sprint 3",
+                "status": "done",
+                "discipline": "Backend / Algoritmos",
+                "type": "UH",
+                "priority": "P2"
+        },
+        {
+                "id": "UH-50",
+                "title": "Ingesta Automática de Tickets vía Email",
+                "epic": "9. Ingesta Email Omnicanal",
+                "sp": 6,
+                "sprint": "Sprint 3",
+                "status": "done",
+                "discipline": "Backend / Integración",
+                "type": "UH",
+                "priority": "P2"
+        },
+        {
+                "id": "UH-51",
+                "title": "Parsing de Adjuntos y Respuestas por Correo",
+                "epic": "9. Ingesta Email Omnicanal",
+                "sp": 6,
+                "sprint": "Sprint 3",
+                "status": "done",
+                "discipline": "Backend / Parser",
+                "type": "UH",
+                "priority": "P3"
+        },
+        {
+                "id": "UH-52",
+                "title": "Encuesta de Satisfacción (CSAT) Post-Resolución",
+                "epic": "10. Cierre & CSAT",
+                "sp": 6,
+                "sprint": "Sprint 3",
+                "status": "done",
+                "discipline": "Frontend / UX",
+                "type": "UH",
+                "priority": "P2"
+        },
+        {
+                "id": "UH-53",
+                "title": "Reporte de Calidad Percibida por Operador",
+                "epic": "10. Cierre & CSAT",
+                "sp": 6,
+                "sprint": "Sprint 3",
+                "status": "done",
+                "discipline": "Backend / BI",
+                "type": "UH",
+                "priority": "P3"
+        },
+        {
+                "id": "UH-54",
+                "title": "Administración Dinámica del Catálogo de Servicios",
+                "epic": "11. Catálogo Zen",
+                "sp": 6,
+                "sprint": "Sprint 4",
+                "status": "done",
+                "discipline": "Backend / Admin",
+                "type": "UH",
+                "priority": "P2"
+        },
+        {
+                "id": "UH-55",
+                "title": "Matriz de Tipificaciones y SLAs Asociados",
+                "epic": "11. Catálogo Zen",
+                "sp": 5,
+                "sprint": "Sprint 4",
+                "status": "done",
+                "discipline": "Arquitectura / Reglas",
+                "type": "UH",
+                "priority": "P2"
+        },
+        {
+                "id": "UH-56",
+                "title": "Vista de Torre de Control y Carga de Equipo",
+                "epic": "12. Team Leader & Torre",
+                "sp": 5,
+                "sprint": "Sprint 4",
+                "status": "done",
+                "discipline": "Frontend / Realtime",
+                "type": "UH",
+                "priority": "P1"
+        },
+        {
+                "id": "UH-57",
+                "title": "Reasignación Masiva y Balanceo de Carga",
+                "epic": "12. Team Leader & Torre",
+                "sp": 5,
+                "sprint": "Sprint 4",
+                "status": "done",
+                "discipline": "Backend / Optimización",
+                "type": "UH",
+                "priority": "P2"
+        },
+        {
+                "id": "UH-58",
+                "title": "Portal de Soporte a Consultorios Digitales",
+                "epic": "EP-08: Reemplazo N1, Triage IA & Portal Solicitante",
+                "sp": 7,
+                "sprint": "Sprint 4",
+                "status": "done",
+                "discipline": "Frontend / Especializado",
+                "type": "UH",
+                "priority": "P1"
+        },
+        {
+                "id": "UH-59",
+                "title": "Typeahead Predictivo de Temas Homologados CD2",
+                "epic": "EP-08: Reemplazo N1, Triage IA & Portal Solicitante",
+                "sp": 6,
+                "sprint": "Sprint 4",
+                "status": "done",
+                "discipline": "Frontend / Búsqueda",
+                "type": "UH",
+                "priority": "P1"
+        },
+        {
+                "id": "UH-60",
+                "title": "Integración con Base de Casos Operativos SISA/Matrículas",
+                "epic": "EP-08: Reemplazo N1, Triage IA & Portal Solicitante",
+                "sp": 6,
+                "sprint": "Sprint 4",
+                "status": "done",
+                "discipline": "Backend / Conocimiento",
+                "type": "UH",
+                "priority": "P2"
+        },
+        {
+                "id": "UH-61",
+                "title": "Formulario Exprés de Contingencia para Médicos",
+                "epic": "EP-08: Reemplazo N1, Triage IA & Portal Solicitante",
+                "sp": 6,
+                "sprint": "Sprint 4",
+                "status": "done",
+                "discipline": "Frontend / Accesibilidad",
+                "type": "UH",
+                "priority": "P2"
+        },
+        {
+                "id": "UH-62",
+                "title": "Rediseño de Sidebar Ergonómico Colapsable",
+                "epic": "15. Sidebar Zen & Ergonomía",
+                "sp": 4,
+                "sprint": "Sprint 5",
+                "status": "done",
+                "discipline": "Frontend / CSS",
+                "type": "UH",
+                "priority": "P3"
+        },
+        {
+                "id": "UH-63",
+                "title": "Navegación Rápida por Teclas Numéricas",
+                "epic": "15. Sidebar Zen & Ergonomía",
+                "sp": 3,
+                "sprint": "Sprint 5",
+                "status": "done",
+                "discipline": "Frontend / JS",
+                "type": "UH",
+                "priority": "P3"
+        },
+        {
+                "id": "UH-64",
+                "title": "Indicadores de Carga y Tooltips Informativos",
+                "epic": "15. Sidebar Zen & Ergonomía",
+                "sp": 3,
+                "sprint": "Sprint 5",
+                "status": "done",
+                "discipline": "Frontend / UI",
+                "type": "UH",
+                "priority": "P4"
+        },
+        {
+                "id": "UH-65",
+                "title": "Certificación UAT y Cierre de Línea Base v4.0",
+                "epic": "15. Sidebar Zen & Ergonomía",
+                "sp": 4,
+                "sprint": "Sprint 5",
+                "status": "done",
+                "discipline": "QA / Certificación",
+                "type": "UH",
+                "priority": "P1"
+        },
+        {
+                "id": "MEJ-03",
+                "title": "[P1 - ALTA PRIORIDAD] Rediseño Visual Estilo Quantux y Densidad Informativa de Tickets en Vista Jerárquica WBS",
+                "epic": "EP-07: Gobernanza PMI+IA, Blindaje OJO & Calidad",
+                "sp": 3,
+                "sprint": "Sprint 6",
+                "status": "qa",
+                "discipline": "Frontend / UX Design System & WBS",
+                "type": "MEJ",
+                "priority": "P1",
+                "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#mej-03",
+                "doc_title": "DOC-SPEC-002 (MEJ-03)",
+                "doc_desc": "Transformación de filas planas en tarjetas enriquecidas corporativas con tokens Quantux, tipografías Outfit / JetBrains Mono, chips de prioridad y previsualización de evidencias.",
+                "attachment_image": "assets/capturas/MEJ-03_wbs_estilo_quantux.png",
+                "narrative": {
+                        "as_a": "Líder Técnico y Solution Owner",
+                        "i_want": "que los tickets dentro de cada épica en la vista Árbol WBS se visualicen con el diseño corporativo completo de Quantux (tarjetas estructuradas, badges, métricas y enlaces interactivos)",
+                        "so_that": "la estructura de desglose del trabajo refleje la misma calidad visual, densidad de información y profesionalismo que el tablero Scrumban."
+                },
+                "acceptance_criteria": [
+                        "Escenario 1 (Estilo Quantux en WBS): DADO el visor de jerarquía WBS, CUANDO se despliega cualquier épica, ENTONCES los tickets se presentan en un grid de tarjetas con bordes coloreados por prioridad, tipografía Outfit y monospace.",
+                        "Escenario 2 (Interactividad Total): DADO un ticket en la vista WBS, CUANDO se hace clic en 'Ver Detalle' o en el documento, ENTONCES se abre el modal correspondiente o la especificación sin perder el contexto.",
+                        "Escenario 3 (Trazabilidad Visual): DADO el requerimiento, CUANDO se consulta en el tablero, ENTONCES presenta la captura original como evidencia visual inmutable."
+                ]
+        },
+        {
+                "id": "ISSUE-08",
+                "title": "[P2 - MEDIA PRIORIDAD] Gobernanza Definition of Done: Prohibición de Transición a Resuelto sin Implementación Técnica Verificada (Quality Gate PMI)",
+                "epic": "EP-07: Gobernanza PMI+IA, Blindaje OJO & Calidad",
+                "sp": 3,
+                "sprint": "Sprint 6",
+                "status": "qa",
+                "discipline": "Gobernanza / Quality Gate PMI & QA",
+                "type": "ISSUE",
+                "priority": "P2",
+                "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#issue-08",
+                "doc_title": "DOC-SPEC-002 (ISSUE-08)",
+                "doc_desc": "Control de calidad pericial que impide marcar una tarjeta o épica como 'Completada' si no posee un fix técnico implementado y verificado en código o suite de tests.",
+                "attachment_image": "assets/capturas/ISSUE-08_resolucion_sin_fix_verificado.png",
+                "issue_details": {
+                        "severity": "P2 — Media / Gobernanza y Aseguramiento de Calidad",
+                        "component": "Tablero Scrumban, scripts/build_full_scrumban_board.py, frontend/js/app.js",
+                        "description": "Una tarjeta del tablero kanban tenía todas sus tareas hijas marcadas como resueltas en apariencia, pero el fix técnico no se había implementado en el producto real. El Solution Owner exige blindar el sistema para evitar resoluciones ficticias.",
+                        "root_cause": "Falta de validación bidireccional entre el estado declarado en el backlog y la verificación tangible de artefactos de código o pruebas automatizadas.",
+                        "solution": "1. Implementar regla estricta de Quality Gate DoD: una épica calcula su estado dinámicamente sumando hijos reales y solo alcanza 100% cuando todos sus entregables existen.\n2. Alertas visuales en el tablero cuando un ítem no tiene fix verificado.",
+                        "acceptance_criteria": [
+                                "Escenario 1 (Cálculo Dinámico de Épica): DADO el visor de épicas, CUANDO una épica tiene ítems pendientes, ENTONCES jamás puede mostrarse como 'Completada' o 100%.",
+                                "Escenario 2 (Quality Gate en Drag & Drop): DADO el movimiento de tarjetas a 'Done', CUANDO no hay evidencia técnica registrada, ENTONCES el sistema solicita confirmación formal de verificación."
+                        ]
+                }
+        },
+        {
+                "id": "ISSUE-09",
+                "title": "[P1 - ALTA PRIORIDAD] Contraste y Visibilidad de Notificaciones Toast en Pantalla (Texto Blanco sobre Fondo Blanco)",
+                "epic": "EP-07: Gobernanza PMI+IA, Blindaje OJO & Calidad",
+                "sp": 2,
+                "sprint": "Sprint 6",
+                "status": "qa",
+                "discipline": "Frontend / Accesibilidad & CSS",
+                "type": "ISSUE",
+                "priority": "P1",
+                "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#issue-09",
+                "doc_title": "DOC-SPEC-002 (ISSUE-09)",
+                "doc_desc": "Corrección de contraste severo en notificaciones toast emergentes donde el texto blanco sobre fondo claro resultaba invisible al tildar pastillas en la Matriz Multi-Tenant.",
+                "attachment_image": "assets/capturas/ISSUE-09_toast_pastilla_sin_texto.png",
+                "issue_details": {
+                        "severity": "P1 — Alta Prioridad / Accesibilidad y Feedback Operativo",
+                        "component": "frontend/css/styles.css (.toast), frontend/js/app.js (showToast)",
+                        "description": "Al conmutar una pastilla de módulo en la Matriz Multi-Tenant, se mostraba un emergente abajo a la derecha completamente blanco, con texto ilegible o sin información perceptible.",
+                        "root_cause": "Regla CSS con background: #F8FAFC y color: #FFFFFF (blanco sobre blanco casi idéntico).",
+                        "solution": "Rediseño de .toast con fondo Navy corporativo (#0F172A), texto nítido blanco (#F8FAFC), borde izquierdo Teal (#00C4B4), iconos descriptivos y animación fluida.",
+                        "acceptance_criteria": [
+                                "Escenario 1 (Alto Contraste): DADO cualquier toast emitido por el sistema, CUANDO aparece en pantalla, ENTONCES cumple ratio de contraste WCAG AAA sobre fondo Navy con texto nítido.",
+                                "Escenario 2 (Mensaje Informativo Claro): DADO el clic en una pastilla de habilitación, CUANDO se genera el toast, ENTONCES exhibe claramente: 'Módulo [X] Habilitado/Suspendido para [Institución]'."
+                        ]
+                }
+        },
+        {
+                "id": "ISSUE-10",
+                "title": "[P1 - CRÍTICA] Fallo de Apertura e Interacción en Tarjeta de Organización OSDE",
+                "epic": "EP-06: Administración y Operación Centralizada",
+                "sp": 3,
+                "sprint": "Sprint 6",
+                "status": "qa",
+                "discipline": "Frontend / Navegabilidad & Resiliencia",
+                "type": "ISSUE",
+                "priority": "P1",
+                "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#issue-10",
+                "doc_title": "DOC-SPEC-002 (ISSUE-10)",
+                "doc_desc": "Restauración de eventos de clic y resiliencia en la tarjeta de OSDE y en la tabla de solicitudes para garantizar apertura inmediata del detalle.",
+                "attachment_image": "assets/capturas/ISSUE-10_tarjeta_osde_no_abre.png",
+                "issue_details": {
+                        "severity": "P1 — Crítica / Bloqueante de Navegación",
+                        "component": "frontend/js/app.js (openInstitutionDetailModal, renderRequesterModalHistory)",
+                        "description": "Al hacer clic en la tarjeta o fila correspondiente a la organización OSDE, el sistema no respondía ni abría la ventana modal de detalle.",
+                        "root_cause": "Falta de listener de evento clic en la fila completa y ausencia de datos predeterminados de contingencia en caso de sincronización diferida del backend.",
+                        "solution": "1. Asignar onclick a la fila completa de la tabla de solicitudes.\n2. Incorporar fallback robusto en openInstitutionDetailModal para inicializar catálogo si el array en memoria está vacío.",
+                        "acceptance_criteria": [
+                                "Escenario 1 (Apertura Inmediata): DADO el catálogo de instituciones o la tabla de solicitudes, CUANDO el usuario hace clic sobre OSDE, ENTONCES el modal se abre instantáneamente con los datos completos.",
+                                "Escenario 2 (Interactividad de Fila Completa): DADO un registro de OSDE, CUANDO se hace clic en cualquier celda de la fila, ENTONCES responde con apertura sin requerir puntería en un botón milimétrico."
+                        ]
+                }
+        },
+        {
+                "id": "ISSUE-11",
+                "title": "[P1 - ALTA PRIORIDAD] Sub-vista Módulos de Software en Blanco (Falta de Inyección en Grid)",
+                "epic": "EP-06: Administración y Operación Centralizada",
+                "sp": 3,
+                "sprint": "Sprint 6",
+                "status": "qa",
+                "discipline": "Frontend / Arquitectura de Vistas",
+                "type": "ISSUE",
+                "priority": "P1",
+                "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#issue-11",
+                "doc_title": "DOC-SPEC-002 (ISSUE-11)",
+                "doc_desc": "Corrección de función renderClinicalPlatformsCards para poblar el contenedor grid-platforms-cards con tarjetas de alta densidad informativa.",
+                "attachment_image": "assets/capturas/ISSUE-11_modulos_sw_no_muestra_nada.png",
+                "issue_details": {
+                        "severity": "P1 — Alta Prioridad / Pantalla en Blanco",
+                        "component": "frontend/js/app.js (renderClinicalPlatformsCards)",
+                        "description": "La sub-pestaña 'Módulos de Software' dentro de 'Clientes & Mesas de Ayuda' se visualizaba completamente vacía, sin renderizar ninguna tarjeta ni listado.",
+                        "root_cause": "La función en JavaScript generaba filas de tabla <tr> buscando un <tbody> inexistente, omitiendo inyectar el grid de tarjetas en #grid-platforms-cards.",
+                        "solution": "Generar tarjetas ricas Quantux con icono, código, protocolo técnico (HL7 FHIR / REST), nivel ITIL de soporte, barra de cobertura en clientes y estado operativo (99.98% uptime).",
+                        "acceptance_criteria": [
+                                "Escenario 1 (Visualización de Catálogo Completo): DADO el ingreso a la pestaña 'Módulos de Software', CUANDO se carga la vista, ENTONCES se exhiben las tarjetas de todos los módulos disponibles en grid responsive.",
+                                "Escenario 2 (Métricas Operativas): DADO cada módulo, CUANDO se visualiza su tarjeta, ENTONCES indica cantidad de instituciones conectadas, nivel ITIL asignado y accesos directos a detalle y matriz."
+                        ]
+                }
+        },
+        {
+                "id": "ISSUE-12",
+                "title": "[P1 - CRÍTICA] Rediseño UX/UI y Navegabilidad Ergonómica de la Matriz Interactiva Multi-Tenant",
+                "epic": "EP-06: Administración y Operación Centralizada",
+                "sp": 5,
+                "sprint": "Sprint 6",
+                "status": "qa",
+                "discipline": "Product Design / UX & Arquitectura Multi-Tenant",
+                "type": "ISSUE",
+                "priority": "P1",
+                "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#issue-12",
+                "doc_title": "DOC-SPEC-002 (ISSUE-12)",
+                "doc_desc": "Modernización ergonómica total de la Matriz Multi-Tenant con guía interactiva explicativa, buscador en tiempo real, filtros por segmento de salud y conmutadores visuales de alto contraste.",
+                "attachment_image": "assets/capturas/ISSUE-12_redisenio_ux_matriz_multitenant.png",
+                "issue_details": {
+                        "severity": "P1 — Crítica / Usabilidad y Experiencia de Usuario",
+                        "component": "frontend/index.html (#platforms-subview-matrix), frontend/js/app.js (renderTenantMatrixTable)",
+                        "description": "La matriz de habilitación presentaba una grilla abrumadora de 168 pastillas idénticas sin jerarquía visual, títulos cortados con puntos suspensivos ('...'), sin filtros por tipo de institución y sin explicación de su propósito ni de las consecuencias de activar/desactivar un servicio.",
+                        "root_cause": "Diseño plano inicial sin divulgación progresiva (progressive disclosure), sin barra de búsqueda y sin componentes de feedback contextual.",
+                        "solution": "1. Banner desplegable '¿Cómo funciona la Matriz Multi-Tenant?': explica el aislamiento de datos, sincronización en memoria y reglas de seguridad.\n2. Buscador en vivo por nombre/código de cliente.\n3. Filtros por segmento: Todas, Prepagas, Sanatorios, Hospitales.\n4. Interruptores ergonómicos estilo iOS/Tailwind con estados claros (✓ ACTIVO / ✕ INACTIVO).\n5. Columna de cobertura porcentual con barra de progreso.\n6. Acciones masivas 'Todo/Nada' por fila de cliente.",
+                        "acceptance_criteria": [
+                                "Escenario 1 (Comprensión Inmediata): DADO un usuario que ingresa a la Matriz, CUANDO consulta la vista, ENTONCES dispone de una guía operativa clara que explica cómo funciona la habilitación multi-inquilino.",
+                                "Escenario 2 (Filtros y Búsqueda Ágiles): DADO el catálogo de 14 instituciones, CUANDO el usuario tipea o filtra por segmento, ENTONCES la tabla se actualiza instantáneamente sin recargar la página.",
+                                "Escenario 3 (Toggles Ergonómicos y Cobertura): DADO cada cliente, CUANDO se alternan sus módulos, ENTONCES el interruptor responde visualmente al instante y recalcula la barra de porcentaje de cobertura."
+                        ]
+                }
+        },
+        {
+                "id": "ISSUE-13",
+                "title": "[P1 - ALTA PRIORIDAD] Remoción de Banner de Runbook Oficial y Verdad Única (SSOT) en Respuestas del Asistente",
+                "epic": "EP-08: Reemplazo N1, Triage IA & Portal Solicitante",
+                "sp": 2,
+                "sprint": "Sprint 6",
+                "status": "qa",
+                "discipline": "Frontend / UX Writing & Limpieza Visual",
+                "type": "ISSUE",
+                "priority": "P1",
+                "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#issue-13",
+                "doc_title": "DOC-SPEC-002 (ISSUE-13)",
+                "doc_desc": "Eliminación del bloque inferior 'Runbook Oficial: MED-006... Verdad Única (SSOT)' y ajuste de textos en el asistente.",
+                "attachment_image": "assets/capturas/ISSUE-13_quitar_banner_runbook_ssot.png",
+                "issue_details": {
+                        "severity": "P1 — Alta Prioridad / Despeje de Ruido en Respuestas",
+                        "component": "frontend/js/app.js (renderKbAiResponse, typing indicator)",
+                        "description": "Al pie de las respuestas asistidas aparecía un recuadro adicional 'Runbook Oficial: MED-006: Repositorio de Medicamentos y Receta Digital - Error 500 por Jurisdicción / Verdad Única (SSOT)' que generaba sobrecarga visual y ruido informativo.",
+                        "root_cause": "Inclusión de footer redundante de runbook en la plantilla HTML del mensaje de IA.",
+                        "solution": "Remover la inserción de runbookFooterHtml y actualizar el indicador de tipeo a 'Consultando base de conocimiento y catálogo técnico de soporte...'.",
+                        "acceptance_criteria": [
+                                "Escenario 1 (Despeje de Banner Inferior): DADO cualquier mensaje generado por el asistente, CUANDO se renderiza en el chat, ENTONCES no figura el bloque 'Runbook Oficial... Verdad Única (SSOT)'.",
+                                "Escenario 2 (Trazabilidad Visual): DADO el registro del issue, CUANDO se abre la tarjeta, ENTONCES exhibe la captura adjunta como evidencia."
+                        ]
+                }
+        },
+        {
+                "id": "ISSUE-14",
+                "title": "[P2 - MEDIA PRIORIDAD] Remoción de Pastillas y Botones Redundantes sin Información en Respuestas",
+                "epic": "EP-08: Reemplazo N1, Triage IA & Portal Solicitante",
+                "sp": 2,
+                "sprint": "Sprint 6",
+                "status": "qa",
+                "discipline": "Frontend / UX Writing & Limpieza de Badges",
+                "type": "ISSUE",
+                "priority": "P2",
+                "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#issue-14",
+                "doc_title": "DOC-SPEC-002 (ISSUE-14)",
+                "doc_desc": "Eliminación de la duplicación de badges de módulo y categoría cuando contienen el mismo término ('Receta Digital' repetido dos veces consecutivas).",
+                "attachment_image": "assets/capturas/ISSUE-14_botones_redundantes_receta_digital.png",
+                "issue_details": {
+                        "severity": "P2 — Media / Redundancia Visual",
+                        "component": "frontend/js/app.js (renderKbAiResponse)",
+                        "description": "En la cabecera del mensaje de IA se mostraban dos pastillas idénticas una al lado de la otra: '[⚙️ Receta Digital] [Receta Digital]', sin aportar ninguna diferenciación útil.",
+                        "root_cause": "Renderizado incondicional simultáneo de 'subsystem' y 'articleCategory' sin comparar si comparten la misma cadena.",
+                        "solution": "Comparar ambos valores y omitir la segunda pastilla si la categoría es redundante con el subsistema.",
+                        "acceptance_criteria": [
+                                "Escenario 1 (Cero Pastillas Duplicadas): DADO un mensaje del asistente sobre Receta Digital, CUANDO se muestran los tags superiores, ENTONCES se exhibe una única pastilla '⚙️ Receta Digital' acompañada del código de procedimiento."
+                        ]
+                }
+        },
+        {
+                "id": "ISSUE-15",
+                "title": "[P1 - ALTA PRIORIDAD] Remoción de Checkboxes Inoperantes en Guía de Acción Operativa y Limpieza de Markdown",
+                "epic": "EP-08: Reemplazo N1, Triage IA & Portal Solicitante",
+                "sp": 2,
+                "sprint": "Sprint 6",
+                "status": "qa",
+                "discipline": "Frontend / UX Limpieza & Formateo",
+                "type": "ISSUE",
+                "priority": "P1",
+                "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#issue-15",
+                "doc_title": "DOC-SPEC-002 (ISSUE-15)",
+                "doc_desc": "Sustitución de checkboxes inútiles por pasos numerados limpios y erradicación de asteriscos crudos (**) en el texto.",
+                "attachment_image": "assets/capturas/ISSUE-15_quitar_checkboxes_pasos_operativos.png",
+                "issue_details": {
+                        "severity": "P1 — Alta Prioridad / Experiencia de Usuario y Tipografía",
+                        "component": "frontend/js/app.js (renderKbAiResponse)",
+                        "description": "La sección 'GUÍA DE ACCIÓN OPERATIVA (CHECKLIST EN VIVO)' incluía casillas de selección <input type=\"checkbox\"> que no cumplían ninguna función de persistencia ni lógica, además de exhibir asteriscos sin parsear (**Validación:**).",
+                        "root_cause": "Uso de controles de formulario interactivos innecesarios y falta de filtro de markdown en la cadena de texto de pasos.",
+                        "solution": "1. Eliminar checkboxes y reemplazarlos por números de paso elegantes (1, 2, 3).\n2. Limpiar asteriscos crudos y convertir negritas sintácticas.\n3. Renombrar sección a 'Guía de Acción Operativa (Pasos de Resolución):'.",
+                        "acceptance_criteria": [
+                                "Escenario 1 (Cero Checkboxes Inútiles): DADO el bloque de resolución del asistente, CUANDO se visualizan los pasos, ENTONCES no existe ningún checkbox inoperante.",
+                                "Escenario 2 (Tipografía Limpia): DADO el texto de cada paso, CUANDO se renderiza, ENTONCES no figuran asteriscos crudos (**) y la lectura es limpia y profesional."
+                        ]
+                }
+        },
+        {
+                "id": "ISSUE-16",
+                "title": "[P2 - MEDIA PRIORIDAD] Remoción de Botones de Navegación Rápida a Mockups en Top Navbar",
+                "epic": "EP-06: Administración y Operación Centralizada",
+                "sp": 2,
+                "sprint": "Sprint 6",
+                "status": "qa",
+                "discipline": "Frontend / Ergonomía UI",
+                "type": "ISSUE",
+                "priority": "P2",
+                "doc_link": "04_INFORME_DE_PRUEBAS_Y_EVIDENCIAS.md#issue-16",
+                "doc_title": "DOC-QA-004 (ISSUE-16)",
+                "doc_desc": "Eliminación de pastillas de mockup redundantes en navbar (#nav-mockup-pills) para despejar cabecera y optimizar usabilidad.",
+                "attachment_image": "assets/capturas/ISSUE-16_quitar_botones_navegacion_vistas.png",
+                "issue_details": {
+                        "severity": "P2 — Media Prioridad / Redundancia y Ergonomía de Cabecera",
+                        "component": "frontend/index.html (navbar-right, #nav-mockup-pills)",
+                        "description": "La barra superior exhibía un contenedor de botones redundantes ('1. Portal', '2. Chat Stream', '3. Modal Ticket', '4. Mis Solicitudes', '5. Detalle N2', '6. Mando Líder', '7. Config ITIL') que constituían un artefacto temporal de maquetación, consumiendo espacio visual crítico y sobrecargando la barra de navegación del usuario.",
+                        "root_cause": "Persistencia de botones de navegación directa a mockups en la vista de producción, desprovistos de utilidad para la operación real.",
+                        "solution": "1. Eliminar íntegramente el elemento '#nav-mockup-pills' de frontend/index.html.\\n2. Otorgar mayor amplitud y foco ergonómico al buscador omnicanal y a los accesos principales de cabecera.\\n3. Dejar la tarjeta en estado 'qa' (En Revisión / Aceptación Solution Owner) para que el Solution Owner verifique el contraste contra la especificación.",
+                        "acceptance_criteria": [
+                                "Escenario 1 (Eliminación de Botonera Redundante): DADO el navbar superior de la aplicación, CUANDO el usuario carga cualquier vista, ENTONCES los botones '1. Portal', '2. Chat Stream', '3. Modal Ticket', etc. no se visualizan en pantalla.",
+                                "Escenario 2 (Cabecera Despejada): DADO el espacio libre en el navbar, CUANDO se visualiza el buscador global omnicanal, ENTONCES este goza de visibilidad limpia y sin saturación de controles secundarios.",
+                                "Escenario 3 (Trazabilidad Visual): DADO el detalle de la tarjeta ISSUE-16 en el tablero Scrumban, CUANDO se abre la ficha, ENTONCES exhibe la captura adjunta con la botonera recortada como evidencia inmutable."
+                        ]
+                }
+        },
+        {
+                "id": "ISSUE-17",
+                "title": "[P1 - ALTA PRIORIDAD] Tooltips sin Información en Barra de Navegación Lateral Colapsada",
+                "epic": "EP-06: Administración y Operación Centralizada",
+                "sp": 2,
+                "sprint": "Sprint 6",
+                "status": "qa",
+                "discipline": "Frontend / Ergonomía UI",
+                "type": "ISSUE",
+                "priority": "P1",
+                "doc_link": "04_INFORME_DE_PRUEBAS_Y_EVIDENCIAS.md#issue-17",
+                "doc_title": "DOC-QA-004 (ISSUE-17)",
+                "doc_desc": "Corrección de color y contraste en tooltips flotantes del menú lateral colapsado (reemplazo de texto blanco sobre fondo blanco por Navy #0F172A y texto #F8FAFC).",
+                "attachment_image": "assets/capturas/ISSUE-17_tooltips_sin_informacion_sidebar.png",
+                "issue_details": {
+                        "severity": "P1 — Alta Prioridad / Visibilidad y Contraste de UI",
+                        "component": "frontend/css/styles.css (.app-sidebar.collapsed .win11-sidebar-nav [data-tooltip]:hover::after)",
+                        "description": "Al colocar el cursor sobre los iconos del menú de navegación lateral en modo colapsado, el tooltip emergente se renderizaba como un rectángulo blanco completamente vacío, impidiendo al usuario conocer la función de cada icono.",
+                        "root_cause": "La regla CSS definía background: #FFFFFF y color: #FFFFFF de manera concurrente, produciendo texto blanco invisible sobre fondo blanco.",
+                        "solution": "1. Corregir la regla CSS aplicando fondo Slate/Navy #0F172A con texto de alto contraste #F8FAFC.\\n2. Incorporar borde distintivo Teal Quantux (#00C4B4) y animación de entrada fluida.\\n3. Asignar estado 'qa' (En Revisión / Aceptación Solution Owner) para que el Solution Owner verifique el contraste contra la especificación.",
+                        "acceptance_criteria": [
+                                "Escenario 1 (Visibilidad Inmediata del Texto): DADO el menú lateral colapsado, CUANDO el operador posiciona el cursor sobre cualquier icono (Centro de Ayuda, Mesa de Ayuda, etc.), ENTONCES el tooltip muestra claramente el nombre del módulo en tipografía blanca sobre fondo oscuro.",
+                                "Escenario 2 (Identidad Visual Quantux): DADO el tooltip desplegado, CUANDO se visualiza en pantalla, ENTONCES presenta el acento corporativo Teal (#00C4B4) y sombra difuminada sin saturación.",
+                                "Escenario 3 (Trazabilidad Visual): DADO el registro del defecto en el tablero Scrumban, CUANDO se abre la ficha de ISSUE-17, ENTONCES exhibe la captura del tooltip vacío como evidencia inmutable."
+                        ]
+                }
+        },
+        {
+                "id": "UH-69",
+                "title": "[P1 - ALTA PRIORIDAD] Bot Gestor de Tickets Multi-Rol, Evaluación KCS v6 y Trazabilidad de Tickets Contribuyentes en Base de Conocimiento",
+                "epic": "EP-08: Reemplazo N1, Triage IA & Portal Solicitante",
+                "sp": 8,
+                "sprint": "Sprint 6",
+                "status": "qa",
+                "discipline": "Backend & Fullstack / Bot IA & KCS v6",
+                "type": "UH",
+                "priority": "P1",
+                "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#uh-69",
+                "doc_title": "DOC-SPEC-002 (UH-69)",
+                "doc_desc": "Motor autónomo multi-rol con registro de mensajes (rol y sector), evaluación KCS v6 al resolver tickets y consulta con tickets contribuyentes en Base de Conocimiento.",
+                "narrative": {
+                        "as_a": "Solution Owner, Analista de Soporte y Profesional Asistencial",
+                        "i_want": "que el Bot Gestor de Tickets avance automáticamente los casos interactuando con todos los roles y sectores institucionales, registre los diálogos con autor, rol y sector, evalúe según el negocio si el caso capitaliza conocimiento para asociarlo a la Base de Conocimiento al resolverse, y permita que al consultar la KB se visualicen los tickets que sumaron información",
+                        "so_that": "se asegure la continuidad operativa, trazabilidad conversacional y enriquecimiento continuo de la Base de Conocimiento (KCS v6) sin sobrecarga burocrática manual."
+                },
+                "acceptance_criteria": [
+                        "Escenario 1 (Avance Multi-Rol y Registro de Mensajes): DADO un ticket en cualquier estado del flujo ITIL (NUEVO, ASIGNADO, EN_CURSO), CUANDO el bot gestor procesa un paso, ENTONCES interactúa con el rol correspondiente (SOLICITANTE, SOPORTE_N1, ESPECIALISTA_N2, ADMIN_INFRAESTRUCTURA_N3, TEAM_LEADER, PASARELA_TERCEROS) y su sector (Guardia Central, Farmacia y Triage, Integraciones y Pasarelas OSDE/SISA, Infraestructura N3), registrando cada mensaje en ticket_comments con author_role y author_sector.",
+                        "Escenario 2 (Evaluación de Negocio KCS v6 al Resolver): DADO un ticket en transición a RESUELTO, CUANDO el bot evalúa la resolución, ENTONCES si es una incidencia técnica transferible (errores 500/504, caídas de pasarela, timeout SISA, nomencladores) lo asocia al artículo KB creando la entidad KBArticleContribution y marcando contributed_to_kb = True y associated_kb_id; y si es una rutina administrativa sin valor de conocimiento (reseteo simple, duplicado) lo resuelve justificando la no asociación.",
+                        "Escenario 3 (Consulta de Base de Conocimiento con Tickets Contribuyentes): DADO un usuario u operador que consulta la Base de Conocimiento por tema (vía listado /articles, detalle /articles/{id}, o /copilot-chat), CUANDO se inspecciona el artículo o se responde la consulta, ENTONCES el sistema exhibe los tickets específicos (ID, rol, sector, autor, fecha y síntesis de solución/RCA) que sumaron información al resolverse.",
+                        "Escenario 4 (Endpoints REST y Simulación en Vivo): DADO el backend FastAPI y el simulador en segundo plano live_simulator, CUANDO el bot se ejecuta o se invocan los endpoints /api/v1/tickets/bot/advance-cycle, /bot/step, /bot/advance-to-resolution y /kb-contribution, ENTONCES responden con HTTP 200 y actualizan la persistencia relacional SQLite con índices optimizados."
+                ],
+                "adaptation_criteria": [
+                        "Paso 1: Especificación predictiva de la matriz de roles, sectores y reglas de negocio KCS v6 combinada con ejecución ágil automatizada.",
+                        "Paso 2: Cumplimiento de la Pizarra Neutral Quantux (cero fondos oscuros masivos, cero rojos #DC2626 / #EF4444, acento Teal #00A896).",
+                        "Paso 3: Verificación técnica automatizada con suite de pruebas dedicada (test_ticket_manager_bot_and_kb.py: 4/4 tests OK).",
+                        "Paso 4: Trazabilidad inmutable e indexada en SQLite (ix_kb_contributions_article, ix_kb_contributions_ticket) y sincronización con el tablero Scrumban."
+                ]
+        },
+        {
+                "id": "ISSUE-18",
+                "title": "[P1 - CRÍTICA] Bloqueo de Carga de Datos en Pantalla Principal por Error de Sintaxis JavaScript",
+                "epic": "EP-06: Administración y Operación Centralizada",
+                "sp": 3,
+                "sprint": "Sprint 6",
+                "status": "qa",
+                "discipline": "Frontend / Core JS Engine",
+                "type": "ISSUE",
+                "priority": "P1",
+                "doc_link": "04_INFORME_DE_PRUEBAS_Y_EVIDENCIAS.md#issue-18",
+                "doc_title": "DOC-QA-004 (ISSUE-18)",
+                "doc_desc": "Corrección de errores sintácticos en frontend/js/app.js (bloque else huérfano y re-declaración de tenantMatrixFilterState) que impedían la carga de datos en el Mando Operativo.",
+                "attachment_image": "assets/capturas/ISSUE-18_mando_operativo_sin_datos.png",
+                "issue_details": {
+                        "severity": "P1 — Crítica / Bloqueo Total de Carga en Interfaz",
+                        "component": "frontend/js/app.js",
+                        "description": "Al ingresar al Mando Operativo Unificado, los indicadores numéricos (Total Activos, Críticos, etc.) permanecían en cero y la grilla de analistas no mostraba ningún registro. El hilo principal de JavaScript quedaba bloqueado por excepciones de sintaxis no capturadas.",
+                        "root_cause": "Presencia de un bloque else huérfano tras la remoción del banner de runbook (ISSUE-13) y una doble declaración concurrente de 'let tenantMatrixFilterState' (ISSUE-12).",
+                        "solution": "1. Supresión del bloque else huérfano y rebalanceo de llaves de cierre en app.js.\\n2. Deduplicación de funciones y variable tenantMatrixFilterState.\\n3. Verificación con el linter de sintaxis de Node.js (0 errores) y prueba e2e con Selenium confirmando 2.270 tickets y 86 analistas en pantalla.\\n4. Estado en 'qa' para validación del Solution Owner.",
+                        "acceptance_criteria": [
+                                "Escenario 1 (Carga Inmediata de Telemetría): DADO el acceso al Mando Operativo, CUANDO el frontend se inicializa, ENTONCES los Micro-KPIs reflejan el volumen real de tickets activos (2.270+) y la tabla lista los analistas operativos.",
+                                "Escenario 2 (Cero Excepciones en Consola): DADO el archivo frontend/js/app.js, CUANDO es interpretado por el navegador o validador sintáctico, ENTONCES culmina con 0 errores y exit code 0.",
+                                "Escenario 3 (Trazabilidad Visual): DADO el registro del issue en el tablero Scrumban, CUANDO se abre la ficha de ISSUE-18, ENTONCES presenta la captura con el reporte en cero remitida por el Solution Owner."
+                        ]
+                }
+        },
+        {
+                "id": "MEJ-04",
+                "title": "Eliminación de Barra Explicativa Superior en Matriz Multi-Tenant",
+                "epic": "EP-06: Administración y Operación Centralizada",
+                "sp": 2,
+                "sprint": "Sprint 6",
+                "status": "qa",
+                "discipline": "Frontend / UX Design",
+                "type": "MEJORA",
+                "priority": "P2",
+                "doc_link": "04_INFORME_DE_PRUEBAS_Y_EVIDENCIAS.md#mej-04",
+                "doc_title": "DOC-QA-004 (MEJ-04)",
+                "doc_desc": "Remoción de la barra informativa verde superior en la Matriz Multi-Tenant para maximizar el espacio vertical útil y simplificar la interfaz operativa.",
+                "attachment_image": "assets/capturas/MEJ-04_barra_explicativa_multitenant.png",
+                "issue_details": {
+                        "severity": "P2 — Mejora UX / Reducción de Ruido Visual",
+                        "component": "frontend/index.html (platforms-subview-matrix)",
+                        "description": "El Solution Owner dictaminó que la barra informativa '¿Cómo funciona la Matriz de Habilitación Multi-Tenant?' ocupaba espacio vertical valioso y no aportaba valor operativo diario ('quitar esta barra, no sirve para nada').",
+                        "root_cause": "Componente explicativo redundante que restaba visibilidad directa a la tabla de conmutación de clientes y plataformas.",
+                        "solution": "Supresión completa del contenedor verde #tenant-matrix-guide-body y su encabezado colapsable en frontend/index.html.",
+                        "acceptance_criteria": [
+                                "Escenario 1 (Espacio Vertical Limpio): DADO el acceso a la sub-vista de Habilitación Multi-Tenant, CUANDO el operador ingresa a la pantalla, ENTONCES la barra de herramientas y la matriz de plataformas son visibles inmediatamente sin banners explicativos.",
+                                "Escenario 2 (Trazabilidad Visual): DADO el detalle de MEJ-04 en el Scrumban, CUANDO se abre la ficha técnica, ENTONCES se visualiza la captura remitida por el Solution Owner."
+                        ]
+                }
+        },
+        {
+                "id": "MEJ-05",
+                "title": "Simetría y Normalización de Cápsulas Activo/Inactivo en Matriz Multi-Tenant",
+                "epic": "EP-06: Administración y Operación Centralizada",
+                "sp": 3,
+                "sprint": "Sprint 6",
+                "status": "qa",
+                "discipline": "Frontend / CSS & Layout",
+                "type": "MEJORA",
+                "priority": "P2",
+                "doc_link": "04_INFORME_DE_PRUEBAS_Y_EVIDENCIAS.md#mej-05",
+                "doc_title": "DOC-QA-004 (MEJ-05)",
+                "doc_desc": "Estandarización dimensional geométrica (82px x 26px) y tipográfica de los interruptores de conmutación por celda, eliminando el prefijo '[OK]' que generaba asimetría visual.",
+                "attachment_image": "assets/capturas/MEJ-05_capsulas_multitenant_activo_inactivo.png",
+                "issue_details": {
+                        "severity": "P2 — Inconsistencia Visual / Defecto Estético",
+                        "component": "frontend/js/app.js (renderTenantMatrixTable)",
+                        "description": "Las cápsulas de estado mostraban '[OK] ACTIVO' con salto de línea vertical, mientras que las de '✕ INACTIVO' tenían diferente altura y ancho, generando una grilla irregular.",
+                        "root_cause": "Uso de cadena con corchetes '[OK] ACTIVO' sin ancho fijo ni alineación flex centrada.",
+                        "solution": "Remoción de '[OK]', fijación de dimensiones uniformes simétricas (width: 82px, height: 26px, border-radius: 13px, display: inline-flex, align-items: center, justify-content: center, white-space: nowrap).",
+                        "acceptance_criteria": [
+                                "Escenario 1 (Dimensiones Idénticas): DADO cualquier fila o columna de la Matriz Multi-Tenant, CUANDO se comparan botones ACTIVO e INACTIVO, ENTONCES ambos presentan exactamente 82px de ancho, 26px de alto y tipografía 10px bold centrada.",
+                                "Escenario 2 (Cero Saltos de Línea): DADO el texto de la cápsula activa, CUANDO se visualiza en la tabla, ENTONCES se muestra 'ACTIVO' en una sola línea sin desbordamiento.",
+                                "Escenario 3 (Trazabilidad Visual): DADO el modal de MEJ-05, ENTONCES se adjunta la captura original de observación del Solution Owner."
+                        ]
+                }
+        },
+        {
+                "id": "MEJ-06",
+                "title": "Supresión de Botones Redundantes de Categoría en Toolbar de Matriz",
+                "epic": "EP-06: Administración y Operación Centralizada",
+                "sp": 2,
+                "sprint": "Sprint 6",
+                "status": "qa",
+                "discipline": "Frontend / UX Design",
+                "type": "MEJORA",
+                "priority": "P2",
+                "doc_link": "04_INFORME_DE_PRUEBAS_Y_EVIDENCIAS.md#mej-06",
+                "doc_title": "DOC-QA-004 (MEJ-06)",
+                "doc_desc": "Eliminación de la botonera estática de categorías (Todas, Prepagas, Sanatorios, Hospitales) para consolidar el filtrado unificado en el buscador predictivo inteligente.",
+                "attachment_image": "assets/capturas/MEJ-06_botones_categoria_multitenant_eliminar.png",
+                "issue_details": {
+                        "severity": "P2 — Optimización UX / Redundancia de Controles",
+                        "component": "frontend/index.html & frontend/js/app.js",
+                        "description": "Los botones 'Todas (14)', 'Prepagas (6)', 'Sanatorios (4)' y 'Hospitales (4)' generaban redundancia y confusión operativa frente al buscador predictivo ('quitar estos botones, no aportan nada').",
+                        "root_cause": "Controles redundantes en la barra superior que duplicaban la capacidad de filtrado del motor de búsqueda.",
+                        "solution": "Remoción de los botones de la barra HTML. El motor predictivo ahora clasifica y busca por nombre, código y segmento dinámicamente con opción dedicada de 'Mostrar Todas'.",
+                        "acceptance_criteria": [
+                                "Escenario 1 (Barra Despejada): DADO el encabezado de la Matriz, CUANDO se visualiza la barra de control, ENTONCES solo coexisten el buscador predictivo y la acción 'Mostrar Todas' junto a la exportación CSV.",
+                                "Escenario 2 (Trazabilidad Visual): DADO el modal de MEJ-06, ENTONCES se enlaza la evidencia de solicitud del Solution Owner."
+                        ]
+                }
+        },
+        {
+                "id": "ISSUE-20",
+                "title": "Buscador Predictivo con Autocompletado, Opción 'Mostrar Todas' y Supresión de Doble Lupa",
+                "epic": "EP-06: Administración y Operación Centralizada",
+                "sp": 3,
+                "sprint": "Sprint 6",
+                "status": "qa",
+                "discipline": "Frontend / UX & JS Search Engine",
+                "type": "ISSUE",
+                "priority": "P1",
+                "doc_link": "04_INFORME_DE_PRUEBAS_Y_EVIDENCIAS.md#issue-20",
+                "doc_title": "DOC-QA-004 (ISSUE-20)",
+                "doc_desc": "Corrección de doble icono de lupa y desarrollo de autocompletado predictivo con selección directa, botón ✕ de limpieza y atajo rápido 'Mostrar todas las instituciones'.",
+                "attachment_image": "assets/capturas/ISSUE-20_buscador_multitenant_doble_lupa_predictivo.png",
+                "issue_details": {
+                        "severity": "P1 — Alta Prioridad / Experiencia de Búsqueda Clave",
+                        "component": "frontend/index.html & frontend/js/app.js (onTenantMatrixSearchInput)",
+                        "description": "El campo de búsqueda presentaba dos lupas (una en el placeholder y otra en el span absoluto), carecía de sugerencias predictivas y no contaba con un acceso directo para restablecer la vista completa de 36 instituciones.",
+                        "root_cause": "Duplicación del carácter emoji en placeholder y falta de un componente dropdown reactivo de sugerencias.",
+                        "solution": "1. Eliminación del emoji 🔍 en el placeholder.\\n2. Implementación de menú flotante predictivo con coincidencias en tiempo real por nombre, código o tipo con badges.\\n3. Inclusión de botón 'Mostrar todas las instituciones' en el menú y en la barra.\\n4. Botón ✕ interactivo para limpiar búsqueda al instante.",
+                        "acceptance_criteria": [
+                                "Escenario 1 (Una Sola Lupa): DADO el input de búsqueda, CUANDO se observa en pantalla, ENTONCES presenta una única lupa integrada a la izquierda y placeholder limpio.",
+                                "Escenario 2 (Dropdown Predictivo): DADO que el usuario teclea 'OSDE' o 'Sanatorio', ENTONCES se despliegan las instituciones coincidentes con código y segmento para selección inmediata.",
+                                "Escenario 3 (Mostrar Todas): DADO un filtro aplicado, CUANDO se pulsa 'Mostrar Todas' o la opción superior del dropdown, ENTONCES se restablece la totalidad de las 36 instituciones sanitarias.",
+                                "Escenario 4 (Trazabilidad Visual): DADO el modal de ISSUE-20, ENTONCES se visualiza la captura de la doble lupa remitida por el Solution Owner."
+                        ]
+                }
+        },
+        {
+                "id": "MEJ-07",
+                "title": "Rediseño Senior UX y Nomenclatura Descriptiva de Sub-pestañas y Botones de Catálogo",
+                "epic": "EP-06: Administración y Operación Centralizada",
+                "sp": 3,
+                "sprint": "Sprint 6",
+                "status": "qa",
+                "discipline": "Frontend / UX Architecture Senior",
+                "type": "MEJORA",
+                "priority": "P1",
+                "doc_link": "04_INFORME_DE_PRUEBAS_Y_EVIDENCIAS.md#mej-07",
+                "doc_title": "DOC-QA-004 (MEJ-07)",
+                "doc_desc": "Rediseño integral de la barra de navegación de Vista 5 adoptando estándares Senior UX: renombramiento semántico asistencial, iconografía médica, badges de telemetría y jerarquía clara en botones de alta.",
+                "attachment_image": "assets/capturas/MEJ-07_subpestanias_administracion_ux_senior.png",
+                "issue_details": {
+                        "severity": "P1 — Alta Prioridad / Reestructuración de Navegabilidad",
+                        "component": "frontend/index.html & frontend/js/app.js (switchPlatformsSubTab)",
+                        "description": "Las pestañas utilizaban títulos técnicos escuetos o confusos ('Red de Instituciones', 'Módulos de Software', 'Interactivo') y los botones de acción ('+ Alta Sistema' y '+ Alta Institución') no comunicaban claramente su alcance operativo a los directores asistenciales.",
+                        "root_cause": "Nomenclatura orientada al desarrollador en lugar de una arquitectura de información centrada en el usuario de salud (Human-Centered Design).",
+                        "solution": "1. Renombramiento semántico asistencial con iconografía y badges: '🏥 Instituciones Sanitarias [14]', '💻 Módulos Clínicos [9]', '🎛️ Habilitación Multi-Tenant [En Vivo]' y '🛡️ Niveles de Soporte ITIL [N1/N2/N3]'.\\n2. Clarificación de acciones primarias y secundarias: '🧩 + Nuevo Módulo Clínico' y '🏥 + Nueva Institución Sanitaria' con tooltips descriptivos.\\n3. Actualización dinámica reactiva de contadores en el ciclo de vida de la aplicación.",
+                        "acceptance_criteria": [
+                                "Escenario 1 (Semántica Asistencial): DADO el módulo de Plataformas e Instituciones, CUANDO se observa la barra superior, ENTONCES todas las pestañas exhiben iconos, nombres semánticos claros y badges de estado.",
+                                "Escenario 2 (Acciones Claras): DADO el bloque de acciones a la derecha, CUANDO el operador sitúa el cursor, ENTONCES visualiza '🧩 + Nuevo Módulo Clínico' y '🏥 + Nueva Institución Sanitaria' con sus respectivos tooltips explicativos.",
+                                "Escenario 3 (Trazabilidad Visual): DADO el modal de MEJ-07, ENTONCES se exhibe la captura de solicitud remitida por el Solution Owner."
+                        ]
+                }
+        },
+        {
+                "id": "ISSUE-19",
+                "title": "[FUERA DE ALCANCE - BACKLOG] Inmutabilidad y Congelamiento de Botones de Transición en Tickets en Estado CERRADO",
+                "epic": "EP-01: Mando Operativo y Flujo de Tickets",
+                "sp": 3,
+                "sprint": "Backlog Futuro",
+                "status": "backlog",
+                "discipline": "Frontend / State Machine & ITIL Lifecycle",
+                "type": "ISSUE",
+                "priority": "P1",
+                "doc_link": "04_INFORME_DE_PRUEBAS_Y_EVIDENCIAS.md#issue-19",
+                "doc_title": "DOC-QA-004 (ISSUE-19)",
+                "doc_desc": "Análisis comparativo de mercado (Zendesk, Jira Service Management, ServiceNow) y propuesta de congelamiento inmutable de botones una vez que el ticket alcanza el estado CERRADO.",
+                "attachment_image": "",
+                "issue_details": {
+                        "severity": "P1 — Alta Prioridad / Definición de Ciclo de Vida ITIL",
+                        "component": "frontend/js/app.js (renderTicketModalDetail & State Machine)",
+                        "description": "El Solution Owner reportó: 'cuando el tkt pasa a cerrado los otros botones permanecen activos, como se maneja esta situación en los mejores productos del mercado, analiza y propón solución o mejora'. Conforme a la regla de gobernanza 'Alcance Cerrado', este ítem se ubica estrictamente en el Product Backlog a la espera de autorización para un próximo Sprint.",
+                        "root_cause": "Los botones de cambio de estado permanecían accesibles en el DOM sin validar si el estado actual es terminal inmutable según el ciclo de vida ITIL v4.",
+                        "solution": "Benchmarking de Mercado: En ServiceNow y Zendesk, el estado CERRADO bloquea todas las acciones de edición y transiciones ordinarias, permitiendo únicamente 'Reabrir con justificación' (si no expiró el SLA de gracia) o lectura estricta. Propuesta técnica: deshabilitar/ocultar los botones de transición y mostrar un banner inmutable '🔒 Ticket Cerrado - No Admite Transiciones Adicionales'.",
+                        "acceptance_criteria": [
+                                "Escenario 1 (Aislamiento en Product Backlog): DADO que el alcance del Sprint 6 está cerrado, CUANDO se consulta el tablero Scrumban, ENTONCES ISSUE-19 figura exclusivamente en la columna 'Product Backlog' con status 'backlog'.",
+                                "Escenario 2 (Inmutabilidad al Cerrar): DADO un ticket en estado CERRADO, CUANDO se abra en el modal (una vez autorizado e implementado en el sprint correspondiente), ENTONCES los botones de resolución/escalamiento deben aparecer deshabilitados (disabled) con tooltip de sólo lectura."
+                        ]
+                }
+        },
+        {
+                "id": "MEJ-08",
+                "title": "Supresión de Botonera de Acciones Administrativas en Toolbar del Tablero Scrumban",
+                "epic": "EP-06: Administración y Operación Centralizada",
+                "sp": 2,
+                "sprint": "Sprint 6",
+                "status": "progress",
+                "discipline": "Frontend / Scrumban Architecture",
+                "type": "MEJORA",
+                "priority": "P2",
+                "doc_link": "04_INFORME_DE_PRUEBAS_Y_EVIDENCIAS.md#mej-08",
+                "doc_title": "DOC-QA-004 (MEJ-08)",
+                "doc_desc": "Eliminación de la botonera administrativa superior (Exportar CSV, Imprimir / PDF, Restaurar Base, Guardar) en el Tablero Scrumban conforme a la instrucción directa del Solution Owner ('quita esto, pon la tarjeta en curso').",
+                "attachment_image": "assets/capturas/MEJ-08_botones_toolbar_scrumban_eliminar.png",
+                "issue_details": {
+                        "severity": "P2 — Optimización de Interfaz / Reducción de Ruido Visual",
+                        "component": "docs/00_Tablero_Scrumban_Quantux.html & scripts/build_full_scrumban_board.py",
+                        "description": "El Solution Owner identificó que los botones 'Exportar CSV', 'Imprimir / PDF', 'Restaurar Base' y 'Guardar' sobrecargaban la barra de herramientas del Tablero Scrumban e instruyó explícitamente: 'quita esto, pon la tarjeta en curso'.",
+                        "root_cause": "Controles redundantes en el toolbar superior ya que la persistencia y sincronización del tablero se gestionan de forma automática e inmediata vía eventos reactivos.",
+                        "solution": "Remoción de la botonera HTML en el generador maestro del tablero Scrumban. Registro de la tarjeta MEJ-08 formalmente en columna 'progress' (En Desarrollo / En Curso).",
+                        "acceptance_criteria": [
+                                "Escenario 1 (Toolbar Despejado): DADO el Tablero Scrumban, CUANDO se visualiza la barra de filtros, ENTONCES no se muestran los botones de exportar, imprimir, restaurar o guardar.",
+                                "Escenario 2 (Tarjeta en Curso): DADO el tablero Scrumban, CUANDO se consulta la columna 'En Desarrollo', ENTONCES figura la tarjeta MEJ-08 en estado 'progress'.",
+                                "Escenario 3 (Trazabilidad Visual): DADO el modal de detalle de MEJ-08, CUANDO se abre la ficha, ENTONCES se visualiza la captura de la botonera remitida por el Solution Owner."
+                        ]
+                }
+        },
+    ]
+
+    # Sincronización Universal de Documentos Rectores Oficiales (Para todas las tarjetas y para el futuro)
+    for t in tasks:
+        if not t.get("doc_link"):
+            t_type = (t.get("type") or "UH").upper()
+            t_id = t.get("id", "")
+            t_id_lower = t_id.lower()
+            if t_type == "ISSUE":
+                t["doc_link"] = f"04_INFORME_DE_PRUEBAS_Y_EVIDENCIAS.md#{t_id_lower}"
+                t["doc_title"] = f"DOC-QA-004 ({t_id})"
+                t["doc_desc"] = t.get("doc_desc") or f"Reporte formal de defecto y criterios de aceptación para {t_id}."
+            elif t_type == "TASK":
+                t["doc_link"] = f"03_ARQUITECTURA_Y_DISENO_TECNICO.md#{t_id_lower}"
+                t["doc_title"] = f"DOC-ARC-003 ({t_id})"
+                t["doc_desc"] = t.get("doc_desc") or f"Alcance técnico y arquitectura de componentes para {t_id}."
+            elif t_type in ("OPORTUNIDAD", "MEJORA"):
+                t["doc_link"] = f"03_ARQUITECTURA_Y_DISENO_TECNICO.md#{t_id_lower}"
+                t["doc_title"] = f"DOC-ARC-003 ({t_id})"
+                t["doc_desc"] = t.get("doc_desc") or f"Propuesta técnica y roadmap de mejora para {t_id}."
+            else:
+                t["doc_link"] = f"02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#{t_id_lower}"
+                t["doc_title"] = f"DOC-SPEC-002 ({t_id})"
+                t["doc_desc"] = t.get("doc_desc") or f"Especificación funcional y criterios Gherkin para {t_id}."
+
+    # Generar CSV
+    with open(CSV_OUTPUT_PATH, "w", encoding="utf-8") as f:
+        f.write("ID,Titulo,Tipo,Prioridad,Epica,StoryPoints,Sprint,Estado,Disciplina,Documentacion\n")
+        for t in tasks:
+            doc = t.get("doc_link", "")
+            f.write(f'"{t["id"]}","{t["title"]}","{t.get("type", "UH")}","{t.get("priority", "P3")}","{t["epic"]}",{t["sp"]},"{t["sprint"]}","{t["status"]}","{t["discipline"]}","{doc}"\n')
+    print("CSV de Backlog actualizado.")
+
+    tasks_json = json.dumps(tasks, ensure_ascii=False)
+    epics_json = json.dumps(epics, ensure_ascii=False)
+    sprints_json = json.dumps(sprints, ensure_ascii=False)
+    milestones_json = json.dumps(milestones, ensure_ascii=False)
+
+    html_content = f"""<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tablero Scrumban & Roadmap Integral — HealthDesk Quantux</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {{
+      --q-navy: #1E3A5F;
+      --q-navy-dark: #142842;
+      --q-navy-soft: #2D4B73;
+      --q-teal: #00C4B4;
+      --q-teal-hover: #00A89A;
+      --q-teal-light: #E0F7F5;
+      --q-bg: #F1F5F9;
+      --q-card-bg: #FFFFFF;
+      --q-border: #E2E8F0;
+      --q-text-main: #1E293B;
+      --q-text-muted: #64748B;
+      --q-accent-amber: #D97706;
+      --q-accent-amber-bg: #FEF3C7;
+      --q-accent-green: #16A34A;
+      --q-accent-green-bg: #DCFCE7;
+      --q-accent-blue: #2563EB;
+      --q-accent-blue-bg: #DBEAFE;
+      --q-accent-purple: #7C3AED;
+      --q-accent-purple-bg: #F3E8FF;
+    }}
+
+    * {{ box-sizing: border-box; margin: 0; padding: 0; }}
+    body {{
+      font-family: 'Inter', -apple-system, sans-serif;
+      background-color: var(--q-bg);
+      color: var(--q-text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }}
+
+    /* HEADER */
+    header {{
+      background: var(--q-navy);
+      color: #FFFFFF;
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 12px rgba(30, 58, 95, 0.15);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }}
+
+    .brand-header {{
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }}
+
+    .brand-logo {{
+      width: 38px;
+      height: 38px;
+      background: #FFFFFF;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px;
+    }}
+
+    .brand-titles h1 {{
+      font-family: 'Montserrat', sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      color: #FFFFFF;
+    }}
+
+    .brand-titles h1 span {{ color: var(--q-teal); }}
+
+    .brand-titles p {{
+      font-size: 11px;
+      color: #94A3B8;
+      font-weight: 500;
+    }}
+
+    .header-badges {{
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }}
+
+    .status-pill {{
+      font-family: 'Montserrat', sans-serif;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 12px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      background: #0284C7;
+      color: #E0F2FE;
+      border: 1px solid #38BDF8;
+    }}
+
+    .timebox-pill {{
+      font-size: 11px;
+      color: #94A3B8;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }}
+
+    /* NAVIGATION BAR FOR VIEWS */
+    .view-nav-bar {{
+      background: #1E293B;
+      padding: 6px 24px;
+      display: flex;
+      gap: 8px;
+      border-bottom: 2px solid var(--q-navy-dark);
+    }}
+
+    .nav-tab-btn {{
+      background: transparent;
+      border: none;
+      color: #94A3B8;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }}
+
+    .nav-tab-btn:hover {{
+      background: rgba(255, 255, 255, 0.06);
+      color: #FFFFFF;
+    }}
+
+    .nav-tab-btn.active {{
+      background: var(--q-teal);
+      color: var(--q-navy-dark);
+      box-shadow: 0 2px 6px rgba(0, 196, 180, 0.3);
+    }}
+
+    /* METRICS STRIP */
+    .metrics-bar {{
+      background: #FFFFFF;
+      border-bottom: 1px solid var(--q-border);
+      padding: 10px 24px;
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      overflow-x: auto;
+    }}
+
+    .metric-card {{
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid var(--q-border);
+      padding-right: 20px;
+      min-width: 130px;
+    }}
+
+    .metric-card:last-child {{ border-right: none; }}
+
+    .metric-label {{
+      font-size: 10px;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--q-text-muted);
+      letter-spacing: 0.5px;
+    }}
+
+    .metric-val {{
+      font-family: 'Montserrat', sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--q-navy);
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+    }}
+
+    .metric-val small {{
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--q-text-muted);
+    }}
+
+    /* CONTROLS & FILTERS */
+    .controls-bar {{
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      background: #F8FAFC;
+      border-bottom: 1px solid var(--q-border);
+    }}
+
+    .filters-group {{
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }}
+
+    .filter-item {{
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--q-navy);
+    }}
+
+    select, input[type="text"] {{
+      background: #FFFFFF;
+      border: 1px solid #CBD5E1;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-family: 'Inter', sans-serif;
+      color: var(--q-text-main);
+      outline: none;
+    }}
+
+    select:focus, input[type="text"]:focus {{
+      border-color: var(--q-teal);
+      box-shadow: 0 0 0 2px rgba(0, 196, 180, 0.2);
+    }}
+
+    .btn {{
+      background: var(--q-navy);
+      color: #FFFFFF;
+      border: none;
+      padding: 7px 14px;
+      border-radius: 6px;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+      font-family: 'Montserrat', sans-serif;
+    }}
+
+    .btn:hover {{ background: var(--q-navy-soft); }}
+    .btn-secondary {{
+      background: #FFFFFF;
+      color: var(--q-navy);
+      border: 1px solid #CBD5E1;
+    }}
+    .btn-secondary:hover {{ background: #F1F5F9; border-color: #94A3B8; }}
+
+    /* VIEWS CONTAINERS */
+    .view-panel {{
+      display: none;
+      flex: 1;
+      padding: 16px 24px 24px 24px;
+    }}
+
+    .view-panel.active {{
+      display: flex;
+      flex-direction: column;
+    }}
+
+    /* VISTA 1: TABLERO KANBAN */
+    .kanban-board {{
+      display: grid;
+      grid-template-columns: repeat(6, minmax(260px, 1fr));
+      gap: 16px;
+      align-items: start;
+      overflow-x: auto;
+      padding-bottom: 12px;
+    }}
+
+    .kanban-col {{
+      background: #E2E8F0;
+      border-radius: 8px;
+      border-top: 4px solid var(--q-navy);
+      display: flex;
+      flex-direction: column;
+      max-height: calc(100vh - 250px);
+    }}
+
+    .col-header {{
+      padding: 12px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #CBD5E1;
+    }}
+
+    .col-title {{
+      font-family: 'Montserrat', sans-serif;
+      font-size: 12.5px;
+      font-weight: 800;
+      color: var(--q-navy);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }}
+
+    .col-badge {{
+      background: #FFFFFF;
+      color: var(--q-navy);
+      font-size: 11px;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 10px;
+      border: 1px solid #CBD5E1;
+    }}
+
+    .col-wip {{
+      font-size: 10px;
+      color: #64748B;
+      font-weight: 600;
+    }}
+
+    .cards-list {{
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      overflow-y: auto;
+      flex: 1;
+    }}
+
+    .kanban-card {{
+      background: var(--q-card-bg);
+      border-radius: 7px;
+      padding: 12px;
+      border: 1px solid #CBD5E1;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+      cursor: grab;
+      transition: all 0.2s ease;
+      position: relative;
+    }}
+
+    .kanban-card:hover {{
+      box-shadow: 0 6px 12px rgba(30, 58, 95, 0.1);
+      transform: translateY(-2px);
+      border-color: var(--q-teal);
+    }}
+
+    .card-top {{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }}
+
+    .card-id {{
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--q-navy);
+      background: #F1F5F9;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }}
+
+    .card-sp {{
+      background: var(--q-teal-light);
+      color: var(--q-navy);
+      border: 1px solid var(--q-teal);
+      font-size: 10.5px;
+      font-weight: 800;
+      padding: 1px 7px;
+      border-radius: 10px;
+      font-family: 'Montserrat', sans-serif;
+    }}
+
+    .card-title {{
+      font-family: 'Montserrat', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--q-navy);
+      margin-bottom: 6px;
+      line-height: 1.3;
+    }}
+
+    .card-epic {{
+      font-size: 10px;
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: 8px;
+      display: inline-block;
+      background: #F8FAFC;
+      border: 1px solid var(--q-border);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }}
+
+    /* BADGES DE TIPO DE ITEM */
+    .card-badge-type {{
+      font-size: 8.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      padding: 2px 6px;
+      border-radius: 4px;
+      letter-spacing: 0.5px;
+      margin-right: 4px;
+      font-family: 'Montserrat', sans-serif;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }}
+
+    .badge-epic {{ background: #EEF2FF; color: #4338CA; border: 1px solid #C7D2FE; }}
+    .badge-uh {{ background: #E0F7F5; color: #0F766E; border: 1px solid #99F6E4; }}
+    .badge-task {{ background: #DBEAFE; color: #1D4ED8; border: 1px solid #BFDBFE; }}
+    .badge-issue {{ background: #FFE4E6; color: #BE123C; border: 1px solid #FECDD3; }}
+    .badge-gap {{ background: #FEF3C7; color: #B45309; border: 1px solid #FDE68A; }}
+    .badge-mejora {{ background: #E0F2FE; color: #0369A1; border: 1px solid #BAE6FD; }}
+    .badge-oportunidad {{ background: #F3E8FF; color: #6B21A8; border: 1px solid #E9D5FF; }}
+
+    /* BADGES DE PRIORIDAD */
+    .card-badge-priority {{
+      font-size: 8px;
+      font-weight: 800;
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-family: 'Montserrat', sans-serif;
+    }}
+    .priority-p1 {{ background: #FFE4E6; color: #9F1239; border: 1px solid #FDA4AF; }}
+    .priority-p2 {{ background: #FEF3C7; color: #92400E; border: 1px solid #FCD34D; }}
+    .priority-p3 {{ background: #E0F2FE; color: #075985; border: 1px solid #BAE6FD; }}
+    .priority-p4 {{ background: #F1F5F9; color: #475569; border: 1px solid #CBD5E1; }}
+
+    .card-doc-box {{
+      margin: 6px 0;
+      background: #F0FDFA;
+      border: 1px dashed var(--q-teal);
+      border-radius: 5px;
+      padding: 5px 8px;
+      font-size: 10px;
+    }}
+
+    .card-doc-link {{
+      color: #0D9488;
+      font-weight: 700;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-family: 'Montserrat', sans-serif;
+    }}
+
+    .card-doc-link:hover {{
+      text-decoration: underline;
+      color: #0F766E;
+    }}
+
+    .card-meta {{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 10.5px;
+      color: var(--q-text-muted);
+      border-top: 1px solid #F1F5F9;
+      padding-top: 8px;
+      margin-top: 6px;
+    }}
+
+    .card-sprint-tag {{
+      font-weight: 700;
+      color: var(--q-navy-soft);
+    }}
+
+    .card-actions {{
+      display: flex;
+      gap: 4px;
+    }}
+
+    .card-btn-move {{
+      background: #F1F5F9;
+      border: 1px solid #CBD5E1;
+      border-radius: 4px;
+      padding: 2px 6px;
+      cursor: pointer;
+      font-size: 10px;
+      color: var(--q-navy);
+      font-weight: 700;
+    }}
+
+    .card-btn-move:hover {{
+      background: var(--q-teal-light);
+      border-color: var(--q-teal);
+    }}
+
+    .card-btn-detail {{
+      width: 100%;
+      margin-top: 6px;
+      padding: 4px 8px;
+      background: #F8FAFC;
+      border: 1px solid var(--q-border);
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--q-navy);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      transition: all 0.15s ease;
+      font-family: 'Montserrat', sans-serif;
+    }}
+
+    .card-btn-detail:hover {{
+      background: var(--q-teal-light);
+      border-color: var(--q-teal);
+    }}
+
+    /* VISTA 2: ROADMAP & TIMELINE */
+    .roadmap-container {{
+      background: #FFFFFF;
+      border: 1px solid var(--q-border);
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }}
+
+    .roadmap-header-section {{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid var(--q-teal);
+      padding-bottom: 12px;
+    }}
+
+    .roadmap-header-section h2 {{
+      font-family: 'Montserrat', sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--q-navy);
+    }}
+
+    .timeline-quarters {{
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      background: #F8FAFC;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid var(--q-border);
+      text-align: center;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--q-navy);
+    }}
+
+    .timeline-quarter-col {{
+      background: #FFFFFF;
+      padding: 8px;
+      border-radius: 4px;
+      border: 1px solid #CBD5E1;
+    }}
+
+    .timeline-quarter-col.active {{
+      border-color: var(--q-teal);
+      background: #F0FDFA;
+    }}
+
+    .roadmap-section-title {{
+      font-family: 'Montserrat', sans-serif;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--q-navy);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }}
+
+    .roadmap-epics-list {{
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }}
+
+    .roadmap-epic-row {{
+      background: #F8FAFC;
+      border: 1px solid var(--q-border);
+      border-radius: 6px;
+      padding: 12px 16px;
+      display: grid;
+      grid-template-columns: 240px 1fr 140px 100px;
+      gap: 16px;
+      align-items: center;
+    }}
+
+    .roadmap-epic-row:hover {{
+      border-color: var(--q-teal);
+      background: #FFFFFF;
+    }}
+
+    .epic-meta-title {{
+      font-family: 'Montserrat', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--q-navy);
+    }}
+
+    .epic-meta-sub {{
+      font-size: 10.5px;
+      color: var(--q-text-muted);
+    }}
+
+    .progress-bar-container {{
+      background: #E2E8F0;
+      border-radius: 10px;
+      height: 12px;
+      overflow: hidden;
+      position: relative;
+    }}
+
+    .progress-bar-fill {{
+      background: linear-gradient(90deg, #00C4B4, #0284C7);
+      height: 100%;
+      border-radius: 10px;
+      transition: width 0.3s ease;
+    }}
+
+    .milestones-grid {{
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 14px;
+    }}
+
+    .milestone-card {{
+      background: #F8FAFC;
+      border: 1px solid var(--q-border);
+      border-radius: 6px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      position: relative;
+    }}
+
+    .milestone-card.current {{
+      border: 2px solid var(--q-teal);
+      background: #F0FDFA;
+    }}
+
+    .milestone-date {{
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--q-navy);
+    }}
+
+    .milestone-title {{
+      font-family: 'Montserrat', sans-serif;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--q-navy);
+    }}
+
+    /* VISTA 3: MÉTRICAS & BURNDOWN */
+    .metrics-view-grid {{
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 20px;
+    }}
+
+    .velocity-chart-card {{
+      background: #FFFFFF;
+      border: 1px solid var(--q-border);
+      border-radius: 8px;
+      padding: 20px;
+    }}
+
+    .velocity-bars {{
+      display: flex;
+      align-items: flex-end;
+      gap: 16px;
+      height: 220px;
+      padding-top: 20px;
+      border-bottom: 2px solid var(--q-border);
+    }}
+
+    .velocity-col {{
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      height: 100%;
+      justify-content: flex-end;
+    }}
+
+    .velocity-bar {{
+      width: 100%;
+      background: linear-gradient(180deg, #00C4B4, #1E3A5F);
+      border-radius: 4px 4px 0 0;
+      transition: height 0.3s ease;
+      min-height: 10px;
+    }}
+
+    .velocity-bar.active-sprint {{
+      background: linear-gradient(180deg, #F59E0B, #B45309);
+    }}
+
+    /* VISTA 4: BACKLOG JERÁRQUICO */
+    .tree-container {{
+      background: #FFFFFF;
+      border: 1px solid var(--q-border);
+      border-radius: 8px;
+      padding: 16px;
+    }}
+
+    .tree-epic-item {{
+      border: 1px solid var(--q-border);
+      border-radius: 6px;
+      margin-bottom: 10px;
+      overflow: hidden;
+    }}
+
+    .tree-epic-header {{
+      background: #F8FAFC;
+      padding: 12px 16px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 12.5px;
+      font-weight: 800;
+      color: var(--q-navy);
+    }}
+
+    .tree-epic-header:hover {{
+      background: #F1F5F9;
+    }}
+
+    .tree-epic-children {{
+      padding: 10px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      border-top: 1px solid var(--q-border);
+    }}
+
+    .tree-child-row {{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 10px;
+      background: #FFFFFF;
+      border: 1px solid var(--q-border);
+      border-radius: 4px;
+      font-size: 11.5px;
+    }}
+
+    /* MODAL UNIVERSAL */
+    .uh-modal-backdrop {{
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.45);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }}
+
+    .uh-modal-content {{
+      background: #FFFFFF;
+      border-radius: 10px;
+      width: 100%;
+      max-width: 720px;
+      max-height: 88vh;
+      overflow-y: auto;
+      border: 1px solid #CBD5E1;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      padding: 24px;
+      position: relative;
+    }}
+
+    .uh-modal-header {{
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 2px solid var(--q-teal);
+      padding-bottom: 12px;
+      margin-bottom: 16px;
+    }}
+
+    .uh-modal-close {{
+      background: #F1F5F9;
+      border: 1px solid #CBD5E1;
+      border-radius: 6px;
+      padding: 4px 10px;
+      cursor: pointer;
+      font-weight: 700;
+      color: var(--q-navy);
+      font-size: 12px;
+    }}
+
+    .uh-modal-close:hover {{ background: #E2E8F0; }}
+
+    .modal-box {{
+      background: #F8FAFC;
+      border: 1px solid var(--q-border);
+      border-radius: 6px;
+      padding: 12px;
+      margin-bottom: 12px;
+      font-size: 12px;
+      line-height: 1.5;
+    }}
+
+    .modal-box-alert {{
+      background: #FFF1F2;
+      border: 1.5px solid #FECDD3;
+    }}
+
+    .modal-box-success {{
+      background: #F0FDF4;
+      border: 1.5px solid #BBF7D0;
+    }}
+
+    .modal-subhead {{
+      font-family: 'Montserrat', sans-serif;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--q-navy);
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }}
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="brand-header">
+      <div class="brand-logo">
+        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="44" cy="44" r="38" fill="#00C4B4"/>
+          <path d="M34 34L54 54M54 34L34 54" stroke="white" stroke-width="6.5" stroke-linecap="round"/>
+          <path d="M68 68L86 86" stroke="#1E3A5F" stroke-width="11" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="brand-titles">
+        <h1>HealthDesk <span>Quantux</span> • Tablero de Control Scrumban & Roadmap</h1>
+        <p>Sistema Centralizado de Gestión de Tickets de Soporte | Gobernanza PMI + IA</p>
+      </div>
+    </div>
+
+    <div class="header-badges">
+      <span class="status-pill">● Sprint 6: Activo (Gobernanza PMI+IA & Calidad OJO)</span>
+      <span class="timebox-pill">Timebox: 28-sep al 02-oct-2026 • 36 SP Planificados</span>
+    </div>
+  </header>
+
+  <!-- VIEW NAVIGATION BAR -->
+  <nav class="view-nav-bar">
+    <button class="nav-tab-btn active" id="tab-btn-board" onclick="switchView('board')">
+      <span>📌</span> Tablero Scrumban
+    </button>
+    <button class="nav-tab-btn" id="tab-btn-roadmap" onclick="switchView('roadmap')">
+      <span>🗺️</span> Roadmap & Cronograma
+    </button>
+    <button class="nav-tab-btn" id="tab-btn-metrics" onclick="switchView('metrics')">
+      <span>📊</span> Métricas & Capacidad
+    </button>
+    <button class="nav-tab-btn" id="tab-btn-hierarchy" onclick="switchView('hierarchy')">
+      <span>📋</span> Backlog Jerárquico
+    </button>
+  </nav>
+
+  <!-- GOBERNANZA SCRUMBAN: ALCANCE CERRADO (SCOPE FREEZE) -->
+  <div style="background: #FFFBEB; border-bottom: 2px solid #FCD34D; padding: 10px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <span style="font-size: 18px;">🔒</span>
+      <div>
+        <strong style="color: #92400E; font-size: 12.5px; font-family: 'Montserrat', sans-serif; letter-spacing: 0.3px;">REGLA DE GOBERNANZA: ALCANCE CERRADO (SCOPE FREEZE)</strong>
+        <span style="color: #B45309; font-size: 11.5px; margin-left: 6px;">El alcance del Sprint se encuentra estrictamente cerrado. Todo nuevo ítem, requerimiento o mejora por fuera del alcance definido debe registrarse obligatoriamente en el <strong>Product Backlog</strong>.</span>
+      </div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <span style="background: #FEF3C7; border: 1px solid #F59E0B; color: #92400E; font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 12px;">POLÍTICA PMI + IA</span>
+      <span style="background: #E0F2FE; border: 1px solid #38BDF8; color: #0369A1; font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 12px;">ACEPTACIÓN: SOLUTION OWNER</span>
+    </div>
+  </div>
+
+  <!-- METRICS STRIP -->
+  <section class="metrics-bar">
+    <div class="metric-card">
+      <span class="metric-label">Progreso del Backlog</span>
+      <span class="metric-val" id="metric-progress" style="color: #10B981;">173 <small>/ 274 SP (63.1%)</small></span>
+    </div>
+    <div class="metric-card">
+      <span class="metric-label">Sprint 6 (Actual)</span>
+      <span class="metric-val" style="color: #0284C7;">36 SP <small>(5 SP Done, 31 SP en curso)</small></span>
+    </div>
+    <div class="metric-card">
+      <span class="metric-label">Items Totales</span>
+      <span class="metric-val" id="metric-stories">65 Items <small>(9 Épicas, 48 UHs)</small></span>
+    </div>
+    <div class="metric-card">
+      <span class="metric-label">Velocidad Promedio</span>
+      <span class="metric-val">33 SP <small>/ Sprint</small></span>
+    </div>
+    <div class="metric-card">
+      <span class="metric-label">Conformidad OJO</span>
+      <span class="metric-val" style="color: #D97706;">96% <small>2 Issues P1 en Backlog</small></span>
+    </div>
+    <div class="metric-card">
+      <span class="metric-label">Solution Owner</span>
+      <span class="metric-val" style="font-size: 13px; margin-top: 4px;">Freddy Cortés <small>(Tech Lead)</small></span>
+    </div>
+  </section>
+
+  <!-- CONTROLS & FILTERS -->
+  <section class="controls-bar">
+    <div class="filters-group">
+      <div class="filter-item">
+        <label for="filter-sprint">Sprint:</label>
+        <select id="filter-sprint" onchange="renderCurrentView()">
+          <option value="ALL" selected>Todos los Sprints y Backlog</option>
+          <option value="Sprint 6">⚡ Sprint 6 (ACTUAL): Gobernanza PMI+IA & Calidad OJO (36 SP)</option>
+          <option value="Product Backlog">📌 Product Backlog: Gaps, Mejoras y Futuros (26 SP)</option>
+          <option value="Sprint 5">✅ Sprint 5: Sidebar Zen & Ergonomía (14 SP)</option>
+          <option value="Sprint 4">✅ Sprint 4: Catálogo, Team Leader & Suite Médicos (46 SP)</option>
+          <option value="Sprint 3">✅ Sprint 3: Analytics, Directorio, Email & CSAT (43 SP)</option>
+          <option value="Sprint 2">✅ Sprint 2: Workspace Zen, Alta & Multi-Servicio (32 SP)</option>
+          <option value="Sprint 1">✅ Sprint 1: Incidentes Masivos, Releases & Bandeja (30 SP)</option>
+        </select>
+      </div>
+
+      <div class="filter-item">
+        <label for="filter-type">Tipo de Item:</label>
+        <select id="filter-type" onchange="renderCurrentView()">
+          <option value="ALL" selected>Todos los Tipos</option>
+          <option value="ISSUE">🐞 Issues / Bugs (Alta Prioridad & Defectos)</option>
+          <option value="UH">👤 Historias de Usuario (UHs)</option>
+          <option value="TASK">⚙️ Tareas Técnicas</option>
+          <option value="GAP">🔍 Gaps de Proceso / TQM</option>
+          <option value="MEJORA">⚡ Mejoras Evolutivas</option>
+          <option value="OPORTUNIDAD">💡 Oportunidades de Arquitectura</option>
+        </select>
+      </div>
+
+      <div class="filter-item">
+        <label for="filter-epic">Épica / Módulo:</label>
+        <select id="filter-epic" onchange="renderCurrentView()">
+          <option value="ALL">Todas las Épicas</option>
+          <option value="16. Gobernanza & Calidad">16. Gobernanza & Calidad (DOC-GOV-008)</option>
+          <option value="17. Arquitectura & APIs">17. Arquitectura & APIs (Contratos SDD)</option>
+          <option value="14. Suite Médicos (Guardia)">14. Suite Médicos (Portal Solicitante)</option>
+          <option value="1. Incidentes Masivos">1. Incidentes Masivos</option>
+          <option value="2. Releases y Despliegues">2. Releases y Despliegues</option>
+          <option value="3. Bandeja General & Paginación">3. Bandeja General & Paginación</option>
+          <option value="4. Workspace Zen">4. Workspace Zen</option>
+          <option value="5. Alta Sin Ruido">5. Alta Sin Ruido</option>
+          <option value="6. Generalización Enterprise">6. Generalización Enterprise</option>
+          <option value="7. Tablero de Control Zen">7. Tablero de Control Zen</option>
+          <option value="8. Directorio de Usuarios Zen">8. Directorio de Usuarios Zen</option>
+          <option value="9. Ingesta Email Omnicanal">9. Ingesta Email Omnicanal</option>
+          <option value="10. Cierre & CSAT">10. Cierre & CSAT</option>
+          <option value="11. Catálogo Zen">11. Catálogo Zen</option>
+          <option value="12. Team Leader & Torre">12. Team Leader & Torre</option>
+          <option value="15. Sidebar Zen & Ergonomía">15. Sidebar Zen & Ergonomía</option>
+        </select>
+      </div>
+
+      <div class="filter-item">
+        <label for="filter-priority">Prioridad:</label>
+        <select id="filter-priority" onchange="renderCurrentView()">
+          <option value="ALL">Todas las Prioridades</option>
+          <option value="P1">P1 — Alta Prioridad / Bloqueante</option>
+          <option value="P2">P2 — Alta</option>
+          <option value="P3">P3 — Media</option>
+          <option value="P4">P4 — Baja</option>
+        </select>
+      </div>
+
+      <div class="filter-item">
+        <input type="text" id="search-input" placeholder="Buscar ID, título o palabra clave..." oninput="renderCurrentView()">
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- VISTA 1: TABLERO SCRUMBAN (KANBAN) -->
+  <!-- ========================================== -->
+  <main class="view-panel active" id="view-board">
+    <div class="kanban-board">
+      
+      <!-- COLUMNA 1: PRODUCT BACKLOG -->
+      <div class="kanban-col" id="col-backlog" ondragover="allowDrop(event)" ondrop="drop(event, 'backlog')">
+        <div class="col-header">
+          <span class="col-title">📌 Product Backlog</span>
+          <span class="col-badge" id="count-backlog">0</span>
+        </div>
+        <div class="cards-list" id="list-backlog"></div>
+      </div>
+
+      <!-- COLUMNA 2: SPRINT BACKLOG -->
+      <div class="kanban-col" id="col-sprint" ondragover="allowDrop(event)" ondrop="drop(event, 'sprint')" style="border-top-color: #0284C7;">
+        <div class="col-header">
+          <span class="col-title">📋 Sprint Backlog</span>
+          <span class="col-badge" id="count-sprint">0</span>
+        </div>
+        <div class="cards-list" id="list-sprint"></div>
+      </div>
+
+      <!-- COLUMNA 3: EN CURSO (IN PROGRESS) -->
+      <div class="kanban-col" id="col-progress" ondragover="allowDrop(event)" ondrop="drop(event, 'progress')" style="border-top-color: #D97706;">
+        <div class="col-header">
+          <span class="col-title">⚙️ En Curso <span class="col-wip">(WIP: 4)</span></span>
+          <span class="col-badge" id="count-progress">0</span>
+        </div>
+        <div class="cards-list" id="list-progress"></div>
+      </div>
+
+      <!-- COLUMNA 4: EN REVISIÓN / ACEPTACIÓN SOLUTION OWNER -->
+      <div class="kanban-col" id="col-qa" ondragover="allowDrop(event)" ondrop="drop(event, 'qa')" style="border-top-color: #8B5CF6;">
+        <div class="col-header">
+          <span class="col-title">🔍 En Revisión (Aceptación Solution Owner)</span>
+          <span class="col-badge" id="count-qa">0</span>
+        </div>
+        <div style="font-size: 10px; color: #6D28D9; background: #F5F3FF; padding: 4px 8px; border-radius: 4px; margin-bottom: 8px; border: 1px solid #DDD6FE; font-weight: 600; line-height: 1.35;">
+          Desarrollo ejecutado listo para contrastar contra especificación. La aceptación formal la otorga el Solution Owner.
+        </div>
+        <div class="cards-list" id="list-qa"></div>
+      </div>
+
+      <!-- COLUMNA 5: EN RETRABAJO / OBSERVADO (REWORK) -->
+      <div class="kanban-col" id="col-rework" ondragover="allowDrop(event)" ondrop="drop(event, 'rework')" style="border-top-color: #E11D48;">
+        <div class="col-header">
+          <span class="col-title" style="color: #9F1239;">❌ En Retrabajo / Observado</span>
+          <span class="col-badge" id="count-rework" style="color: #9F1239; border-color: #FECDD3; background: #FFF1F2;">0</span>
+        </div>
+        <div style="font-size: 10px; color: #9F1239; background: #FFF1F2; padding: 4px 8px; border-radius: 4px; margin-bottom: 8px; border: 1px solid #FECDD3; font-weight: 600; line-height: 1.35;">
+          Devuelto por el Solution Owner por no conformidad o funcionalidad no implementada. Prioridad bloqueante.
+        </div>
+        <div class="cards-list" id="list-rework"></div>
+      </div>
+
+      <!-- COLUMNA 6: ACEPTADO Y FINALIZADO (DONE) -->
+      <div class="kanban-col" id="col-done" ondragover="allowDrop(event)" ondrop="drop(event, 'done')" style="border-top-color: #10B981;">
+        <div class="col-header">
+          <span class="col-title">✅ Aceptado y Finalizado</span>
+          <span class="col-badge" id="count-done">0</span>
+        </div>
+        <div style="font-size: 10px; color: #166534; background: #F0FDF4; padding: 4px 8px; border-radius: 4px; margin-bottom: 8px; border: 1px solid #BBF7D0; font-weight: 600; line-height: 1.35;">
+          Entregables con aceptación formal aprobada y criterios DoD verificados.
+        </div>
+        <div class="cards-list" id="list-done"></div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ========================================== -->
+  <!-- VISTA 2: ROADMAP & CRONOGRAMA INTERACTIVO -->
+  <!-- ========================================== -->
+  <main class="view-panel" id="view-roadmap">
+    <div class="roadmap-container">
+      <div class="roadmap-header-section">
+        <div>
+          <h2>🗺️ Hoja de Ruta Estratégica & Línea de Tiempo (Q3 - Q4 2026)</h2>
+          <p style="font-size: 12px; color: var(--q-text-muted); margin-top: 4px;">
+            Alineación de Épicas, Capacidad de Sprints y Milestones de Entrega bajo Metodología Híbrida PMI + IA.
+          </p>
+        </div>
+        <div>
+          <span style="background: #FEF3C7; color: #92400E; font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 4px; border: 1px solid #FCD34D;">
+            HOY: 26-Sep-2026 • Sprint 6 en Ejecución
+          </span>
+        </div>
+      </div>
+
+      <!-- CALENDARIO DE MESES -->
+      <div class="timeline-quarters">
+        <div class="timeline-quarter-col">
+          <div>AGOSTO 2026</div>
+          <small style="color: #64748B;">Sprints 1 y 2 • Base REST & FSM</small>
+        </div>
+        <div class="timeline-quarter-col active">
+          <div>SEPTIEMBRE 2026 (ACTUAL)</div>
+          <small style="color: #0D9488; font-weight: 700;">Sprints 3, 4, 5 y 6 (Gobernanza)</small>
+        </div>
+        <div class="timeline-quarter-col">
+          <div>OCTUBRE 2026</div>
+          <small style="color: #64748B;">Sprints 7 y 8 • Reemplazo N1 & HL7</small>
+        </div>
+        <div class="timeline-quarter-col">
+          <div>NOVIEMBRE 2026</div>
+          <small style="color: #64748B;">Release v2.0 Enterprise Cloud</small>
+        </div>
+      </div>
+
+      <!-- PROGRESO POR ÉPICA -->
+      <div>
+        <div class="roadmap-section-title">
+          <span>🏛️</span> Épicas del Proyecto y Estado de Avance
+        </div>
+        <div class="roadmap-epics-list" id="roadmap-epics-container"></div>
+      </div>
+
+      <!-- HITOS / MILESTONES -->
+      <div>
+        <div class="roadmap-section-title">
+          <span>🚩</span> Hitos de Entrega Clave (Milestones)
+        </div>
+        <div class="milestones-grid" id="roadmap-milestones-container"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ========================================== -->
+  <!-- VISTA 3: MÉTRICAS, BURNDOWN & CAPACIDAD -->
+  <!-- ========================================== -->
+  <main class="view-panel" id="view-metrics">
+    <div class="metrics-view-grid">
+      <div class="velocity-chart-card">
+        <div class="roadmap-section-title">
+          <span>📈</span> Velocity Chart: Story Points Entregados por Sprint
+        </div>
+        <p style="font-size: 11.5px; color: var(--q-text-muted); margin-bottom: 16px;">
+          Medición empírica de velocidad de entrega. La cadencia promedio se estabiliza en 33 SP por timebox de 1 semana.
+        </p>
+        <div class="velocity-bars" id="velocity-bars-container"></div>
+      </div>
+
+      <div class="velocity-chart-card">
+        <div class="roadmap-section-title">
+          <span>📊</span> Distribución por Tipología
+        </div>
+        <div id="type-distribution-container" style="display: flex; flex-direction: column; gap: 10px; margin-top: 14px;"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ========================================== -->
+  <!-- VISTA 4: BACKLOG JERÁRQUICO -->
+  <!-- ========================================== -->
+  <main class="view-panel" id="view-hierarchy">
+    <div class="tree-container">
+      <div class="roadmap-section-title" style="margin-bottom: 14px;">
+        <span>📋</span> Estructura Jerárquica del Proyecto: Épicas → UHs → Tareas Técnicas / Issues
+      </div>
+      <p style="font-size: 11.5px; color: var(--q-text-muted); margin-bottom: 16px;">
+        Descomposición WBS completa de requerimientos del sistema con trazabilidad bidireccional.
+      </p>
+      <div id="tree-root-container"></div>
+    </div>
+  </main>
+
+  <!-- ========================================== -->
+  <!-- MODAL UNIVERSAL ADAPTATIVO (UH / ISSUE / TASK) -->
+  <!-- ========================================== -->
+  <div class="uh-modal-backdrop" id="uh-modal">
+    <div class="uh-modal-content">
+      <div class="uh-modal-header">
+        <div>
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+            <span id="modal-item-type" class="card-badge-type"></span>
+            <span id="modal-item-id" class="card-id"></span>
+            <span id="modal-item-priority" class="card-badge-priority"></span>
+            <span id="modal-item-sp" class="card-sp"></span>
+          </div>
+          <h3 id="modal-item-title" style="font-family: 'Montserrat', sans-serif; font-size: 15px; font-weight: 800; color: var(--q-navy);"></h3>
+          <div id="modal-item-epic" style="font-size: 11px; color: #64748B; font-weight: 600; margin-top: 4px;"></div>
+        </div>
+        <button class="uh-modal-close" onclick="closeUHModal()">✕ Cerrar</button>
+      </div>
+
+      <div id="modal-body-content"></div>
+    </div>
+  </div>
+
+  <!-- SCRIPT CON DATOS Y LÓGICA INTEGRADA -->
+  <script>
+    const INITIAL_BACKLOG = {tasks_json};
+    const EPICS_DATA = {epics_json};
+    const SPRINTS_DATA = {sprints_json};
+    const MILESTONES_DATA = {milestones_json};
+
+    let tasks = [];
+    let currentView = 'board';
+
+    function getTaskDocInfo(task) {{
+      if (task.doc_link && task.doc_title) {{
+        return {{
+          link: task.doc_link,
+          title: task.doc_title,
+          desc: task.doc_desc || task.title
+        }};
+      }}
+      const type = (task.type || 'UH').toUpperCase();
+      const id = task.id || '';
+      const idLower = id.toLowerCase();
+      if (type === 'ISSUE') {{
+        return {{
+          link: '04_INFORME_DE_PRUEBAS_Y_EVIDENCIAS.md#' + idLower,
+          title: 'DOC-QA-004 (' + id + ')',
+          desc: task.doc_desc || ('Reporte formal de defecto y criterios de aceptación para ' + id + '.')
+        }};
+      }} else if (type === 'TASK') {{
+        return {{
+          link: '03_ARQUITECTURA_Y_DISENO_TECNICO.md#' + idLower,
+          title: 'DOC-ARC-003 (' + id + ')',
+          desc: task.doc_desc || ('Alcance técnico y arquitectura de componentes para ' + id + '.')
+        }};
+      }} else if (type === 'OPORTUNIDAD' || type === 'MEJORA') {{
+        return {{
+          link: '03_ARQUITECTURA_Y_DISENO_TECNICO.md#' + idLower,
+          title: 'DOC-ARC-003 (' + id + ')',
+          desc: task.doc_desc || ('Propuesta técnica y roadmap de mejora para ' + id + '.')
+        }};
+      }} else {{
+        return {{
+          link: '02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#' + idLower,
+          title: 'DOC-SPEC-002 (' + id + ')',
+          desc: task.doc_desc || ('Especificación funcional y criterios Gherkin para ' + id + '.')
+        }};
+      }}
+    }}
+
+    function openDocument(event, docLink) {{
+      if (event) {{
+        event.stopPropagation();
+        event.preventDefault();
+      }}
+      if (!docLink) return;
+      window.open(docLink, '_blank');
+    }}
+
+    function init() {{
+      const saved = localStorage.getItem('quantux_scrumban_v12_progress');
+      if (saved) {{
+        try {{
+          tasks = JSON.parse(saved);
+        }} catch(e) {{
+          tasks = JSON.parse(JSON.stringify(INITIAL_BACKLOG));
+        }}
+      }} else {{
+        tasks = JSON.parse(JSON.stringify(INITIAL_BACKLOG));
+      }}
+
+      // Sincronización universal de documentos y metadatos
+      tasks.forEach(t => {{
+        const d = getTaskDocInfo(t);
+        t.doc_link = d.link;
+        t.doc_title = d.title;
+        t.doc_desc = d.desc;
+      }});
+
+      // Asegurar que todos los items prioritarios con capturas existan y tengan sus evidencias sincronizadas
+      const priorityItems = ["UH-69", "ISSUE-07", "UH-68", "UH-67", "UH-66", "ISSUE-06", "ISSUE-05", "ISSUE-04"];
+      priorityItems.forEach(id => syncIssueInBacklog(id));
+
+      renderCurrentView();
+    }}
+
+    function syncIssueInBacklog(issueId) {{
+      const initialItem = INITIAL_BACKLOG.find(t => t.id === issueId);
+      if (!initialItem) return;
+      const idx = tasks.findIndex(t => t.id === issueId);
+      if (idx === -1) {{
+        tasks.unshift(JSON.parse(JSON.stringify(initialItem)));
+      }} else {{
+        tasks[idx].attachment_image = initialItem.attachment_image;
+        tasks[idx].title = initialItem.title;
+        tasks[idx].status = initialItem.status;
+        if (initialItem.so_feedback) tasks[idx].so_feedback = initialItem.so_feedback;
+        tasks[idx].sp = initialItem.sp;
+        tasks[idx].priority = initialItem.priority;
+        tasks[idx].discipline = initialItem.discipline;
+        tasks[idx].doc_link = initialItem.doc_link;
+        tasks[idx].doc_title = initialItem.doc_title;
+        tasks[idx].doc_desc = initialItem.doc_desc;
+        if (initialItem.narrative) tasks[idx].narrative = initialItem.narrative;
+        if (initialItem.issue_details) tasks[idx].issue_details = initialItem.issue_details;
+        if (initialItem.acceptance_criteria) tasks[idx].acceptance_criteria = initialItem.acceptance_criteria;
+        if (initialItem.adaptation_criteria) tasks[idx].adaptation_criteria = initialItem.adaptation_criteria;
+      }}
+    }}
+
+    function switchView(viewName) {{
+      currentView = viewName;
+      document.querySelectorAll('.nav-tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.view-panel').forEach(panel => panel.classList.remove('active'));
+
+      const activeBtn = document.getElementById('tab-btn-' + viewName);
+      const activePanel = document.getElementById('view-' + viewName);
+      if (activeBtn) activeBtn.classList.add('active');
+      if (activePanel) activePanel.classList.add('active');
+
+      renderCurrentView();
+    }}
+
+    function renderCurrentView() {{
+      if (currentView === 'board') renderBoard();
+      else if (currentView === 'roadmap') renderRoadmap();
+      else if (currentView === 'metrics') renderMetricsView();
+      else if (currentView === 'hierarchy') renderHierarchyView();
+    }}
+
+    function renderBoard() {{
+      const sprintFilter = document.getElementById('filter-sprint').value;
+      const typeFilter = document.getElementById('filter-type').value;
+      const epicFilter = document.getElementById('filter-epic').value;
+      const prioFilter = document.getElementById('filter-priority').value;
+      const search = (document.getElementById('search-input').value || '').toLowerCase().trim();
+
+      const lists = {{
+        backlog: document.getElementById('list-backlog'),
+        sprint: document.getElementById('list-sprint'),
+        progress: document.getElementById('list-progress'),
+        qa: document.getElementById('list-qa'),
+        rework: document.getElementById('list-rework'),
+        done: document.getElementById('list-done')
+      }};
+
+      Object.values(lists).forEach(l => l.innerHTML = '');
+      const counts = {{ backlog: 0, sprint: 0, progress: 0, qa: 0, rework: 0, done: 0 }};
+
+      tasks.forEach(task => {{
+        if (sprintFilter !== 'ALL' && task.sprint !== sprintFilter) return;
+        if (typeFilter !== 'ALL' && (task.type || 'UH') !== typeFilter) return;
+        if (epicFilter !== 'ALL' && task.epic !== epicFilter) return;
+        if (prioFilter !== 'ALL' && (task.priority || 'P3') !== prioFilter) return;
+
+        if (search) {{
+          const matchId = (task.id || '').toLowerCase().includes(search);
+          const matchTitle = (task.title || '').toLowerCase().includes(search);
+          const matchEpic = (task.epic || '').toLowerCase().includes(search);
+          if (!matchId && !matchTitle && !matchEpic) return;
+        }}
+
+        const col = task.status || 'backlog';
+        if (counts[col] !== undefined) counts[col]++;
+
+        const card = createCardElement(task);
+        if (lists[col]) lists[col].appendChild(card);
+      }});
+
+      document.getElementById('count-backlog').textContent = counts.backlog;
+      document.getElementById('count-sprint').textContent = counts.sprint;
+      document.getElementById('count-progress').textContent = counts.progress;
+      document.getElementById('count-qa').textContent = counts.qa;
+      document.getElementById('count-rework').textContent = counts.rework;
+      document.getElementById('count-done').textContent = counts.done;
+    }}
+
+    function createCardElement(task) {{
+      const div = document.createElement('div');
+      div.className = 'kanban-card';
+      div.draggable = true;
+      div.id = 'card-' + task.id;
+      div.style.cursor = 'pointer';
+      div.onclick = (e) => {{
+        if (!e.target.closest('button, a, .card-attachment-preview, .card-doc-box, .card-actions')) {{
+          openItemModal(task.id);
+        }}
+      }};
+      div.ondragstart = (e) => drag(e, task.id);
+
+      const type = task.type || 'UH';
+      const badgeClass = 'badge-' + type.toLowerCase();
+      const prio = task.priority || 'P3';
+      const prioClass = 'priority-' + prio.toLowerCase();
+
+      const docInfo = getTaskDocInfo(task);
+      const docHtml = `
+        <div class="card-doc-box" onclick="openDocument(event, '${{docInfo.link}}')" title="Abrir Documento Rector Oficial (${{docInfo.title}})">
+          <a href="${{docInfo.link}}" target="_blank" class="card-doc-link" draggable="false" onclick="event.stopPropagation();">
+            <span>📄</span> ${{docInfo.title}}
+          </a>
+          <span style="color: #0D9488; font-size: 11px; font-weight: 700; margin-left: 4px;">↗</span>
+        </div>
+      `;
+
+      let attachPreviewHtml = '';
+      if (task.attachment_image) {{
+        attachPreviewHtml = `
+          <div class="card-attachment-preview" draggable="false" style="margin: 8px 0 10px 0; border-radius: 6px; overflow: hidden; border: 1.5px solid #38BDF8; background: #0F172A; text-align: center; cursor: pointer;" onclick="event.stopPropagation(); openItemModal('${{task.id}}')" title="Clic para ampliar captura original">
+            <img src="${{task.attachment_image}}" alt="Captura asociada a ${{task.id}}" draggable="false" style="width: 100%; max-height: 115px; object-fit: cover; display: block;" />
+            <div style="font-size: 10px; font-weight: 800; color: #0284C7; background: #F0F9FF; padding: 4px 6px; display: flex; align-items: center; justify-content: center; gap: 4px; border-top: 1px solid #BAE6FD;">
+              <span>📸 Evidencia Visual Adjunta (Clic para ampliar)</span>
+            </div>
+          </div>
+        `;
+      }}
+
+      let soFeedbackCardHtml = '';
+      if (task.so_feedback) {{
+        soFeedbackCardHtml = `
+          <div style="background: #FFF1F2; border: 1.5px solid #F43F5E; border-radius: 6px; padding: 6px 8px; margin: 6px 0;">
+            <div style="color: #9F1239; font-size: 10px; font-weight: 800; display: flex; align-items: center; gap: 4px;">
+              <span>⚠️ DICTAMEN SO:</span>
+              <span>${{task.so_feedback.status}}</span>
+            </div>
+            <div style="color: #881337; font-size: 9.5px; margin-top: 2px; line-height: 1.3;">
+              ${{task.so_feedback.observation}}
+            </div>
+          </div>
+        `;
+      }}
+
+      const isBacklog = (task.status || 'backlog') === 'backlog';
+      const isDone = task.status === 'done';
+
+      div.innerHTML = `
+        <div class="card-top">
+          <div style="display: flex; align-items: center; gap: 4px;">
+            <span class="card-badge-type ${{badgeClass}}">${{type}}</span>
+            <span class="card-id">${{task.id}}</span>
+            <span class="card-badge-priority ${{prioClass}}">${{prio}}</span>
+          </div>
+          <span class="card-sp">${{task.sp}} SP</span>
+        </div>
+        <div class="card-title">${{task.title}}</div>
+        <div class="card-epic">${{task.epic}}</div>
+        ${{docHtml}}
+        ${{attachPreviewHtml}}
+        ${{soFeedbackCardHtml}}
+        <div class="card-meta">
+          <span class="card-sprint-tag">${{task.sprint}}</span>
+          <div class="card-actions">
+            <button class="card-btn-move" draggable="false" onmousedown="event.stopPropagation();" onclick="event.stopPropagation(); moveTask('${{task.id}}', -1)" title="Mover a la izquierda" ${{isBacklog ? 'disabled style="opacity: 0.3; cursor: not-allowed;"' : ''}}>◀</button>
+            <button class="card-btn-move" draggable="false" onmousedown="event.stopPropagation();" onclick="event.stopPropagation(); moveTask('${{task.id}}', 1)" title="Mover a la derecha" ${{isDone ? 'disabled style="opacity: 0.3; cursor: not-allowed;"' : ''}}>▶</button>
+          </div>
+        </div>
+        <button class="card-btn-detail" draggable="false" onmousedown="event.stopPropagation();" onclick="event.stopPropagation(); openItemModal('${{task.id}}')">
+          <span>🔍</span> Ver Detalle Completo
+        </button>
+      `;
+      return div;
+    }}
+
+    function moveTask(taskId, dir) {{
+      const cols = ['backlog', 'sprint', 'progress', 'qa', 'rework', 'done'];
+      const task = tasks.find(t => t.id === taskId);
+      if (!task) return;
+
+      let idx = cols.indexOf(task.status || 'backlog');
+      idx += dir;
+      if (idx >= 0 && idx < cols.length) {{
+        task.status = cols[idx];
+        saveState(false);
+        renderBoard();
+      }}
+    }}
+
+    function openItemModal(taskId) {{
+      const task = tasks.find(t => t.id === taskId);
+      if (!task) return;
+
+      const modal = document.getElementById('uh-modal');
+      const badgeType = document.getElementById('modal-item-type');
+      const itemId = document.getElementById('modal-item-id');
+      const itemPrio = document.getElementById('modal-item-priority');
+      const itemSp = document.getElementById('modal-item-sp');
+      const itemTitle = document.getElementById('modal-item-title');
+      const itemEpic = document.getElementById('modal-item-epic');
+      const body = document.getElementById('modal-body-content');
+
+      const type = task.type || 'UH';
+      badgeType.className = 'card-badge-type badge-' + type.toLowerCase();
+      badgeType.textContent = type;
+
+      itemId.textContent = task.id;
+      itemPrio.className = 'card-badge-priority priority-' + (task.priority || 'P3').toLowerCase();
+      itemPrio.textContent = task.priority || 'P3';
+      itemSp.textContent = task.sp + ' SP';
+      itemTitle.textContent = task.title;
+      itemEpic.textContent = 'Módulo: ' + task.epic + ' • Sprint: ' + task.sprint + ' • Disciplina: ' + task.discipline;
+
+      let content = '';
+
+      if (type === 'ISSUE' && task.issue_details) {{
+        const d = task.issue_details;
+        let acList = '';
+        (d.acceptance_criteria || []).forEach(ac => {{
+          acList += `<li style="margin-bottom: 4px;">${{ac}}</li>`;
+        }});
+
+        content = `
+          <div class="modal-box modal-box-alert">
+            <div class="modal-subhead" style="color: #BE123C;">⚠️ Severidad & Componente Afectado</div>
+            <strong>${{d.severity}}</strong>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; margin-top: 4px; color: #475569;">${{d.component}}</div>
+          </div>
+          <div class="modal-box">
+            <div class="modal-subhead">📋 Descripción del Defecto</div>
+            <p>${{d.description}}</p>
+          </div>
+          <div class="modal-box">
+            <div class="modal-subhead">🔍 Causa Raíz Técnica</div>
+            <p>${{d.root_cause}}</p>
+          </div>
+          <div class="modal-box modal-box-success">
+            <div class="modal-subhead" style="color: #15803D;">🛠️ Solución Técnica Propuesta</div>
+            <pre style="font-family: inherit; white-space: pre-wrap; margin: 0;">${{d.solution}}</pre>
+          </div>
+          <div class="modal-box">
+            <div class="modal-subhead">🧪 Criterios de Aceptación Verificables (Gherkin)</div>
+            <ul style="padding-left: 18px; margin: 0;">${{acList}}</ul>
+          </div>
+        `;
+      }} else if (task.narrative) {{
+        let acList = '';
+        (task.acceptance_criteria || []).forEach(ac => {{
+          acList += `<li style="margin-bottom: 4px;">${{ac}}</li>`;
+        }});
+
+        let adaptList = '';
+        (task.adaptation_criteria || []).forEach(ad => {{
+          adaptList += `<li style="margin-bottom: 4px;">${{ad}}</li>`;
+        }});
+
+        content = `
+          <div class="modal-box" style="background: #F0FDFA; border-color: #99F6E4;">
+            <div class="modal-subhead" style="color: #0F766E;">👤 Narrativa de Historia de Usuario</div>
+            <p><strong>COMO</strong> ${{task.narrative.as_a}},</p>
+            <p><strong>QUIERO</strong> ${{task.narrative.i_want}},</p>
+            <p><strong>PARA</strong> ${{task.narrative.so_that}}.</p>
+          </div>
+          <div class="modal-box">
+            <div class="modal-subhead">🧪 Criterios de Aceptación Gherkin</div>
+            <ul style="padding-left: 18px; margin: 0;">${{acList}}</ul>
+          </div>
+          <div class="modal-box">
+            <div class="modal-subhead">⚖️ Criterios de Adaptación Metodológica PMI (4 Pasos)</div>
+            <ul style="padding-left: 18px; margin: 0;">${{adaptList}}</ul>
+          </div>
+        `;
+      }} else if (task.task_details) {{
+        const td = task.task_details;
+        let delivList = '';
+        (td.deliverables || []).forEach(d => {{ delivList += `<li>${{d}}</li>`; }});
+
+        content = `
+          <div class="modal-box">
+            <div class="modal-subhead">⚙️ Alcance Técnico de la Tarea</div>
+            <p>${{td.scope}}</p>
+          </div>
+          <div class="modal-box">
+            <div class="modal-subhead">📦 Entregables Requeridos</div>
+            <ul style="padding-left: 18px; margin: 0;">${{delivList}}</ul>
+          </div>
+          <div class="modal-box modal-box-success">
+            <div class="modal-subhead">✅ Definition of Done (DoD)</div>
+            <p>${{td.dod}}</p>
+          </div>
+        `;
+      }} else {{
+        content = `
+          <div class="modal-box">
+            <div class="modal-subhead">📄 Resumen de Requerimiento</div>
+            <p>${{task.doc_desc || task.title}}</p>
+          </div>
+        `;
+      }}
+
+      if (task.attachment_image) {{
+        content += `
+          <div class="modal-box" style="background: #F0F9FF; border: 1.5px solid #0284C7; border-radius: 10px; padding: 16px;">
+            <div class="modal-subhead" style="color: #0369A1; font-weight: 800; display: flex; align-items: center; gap: 6px;">
+              <span>📸</span> Captura Oficial de la Necesidad (Trazabilidad Visual Inmutable)
+            </div>
+            <div style="margin-top: 10px; text-align: center;">
+              <a href="${{task.attachment_image}}" target="_blank" title="Clic para ampliar en tamaño completo en nueva pestaña">
+                <img src="${{task.attachment_image}}" alt="Captura ${{task.id}}" style="max-width: 100%; max-height: 420px; border-radius: 8px; border: 1px solid #CBD5E1; box-shadow: 0 4px 14px rgba(0,0,0,0.12); object-fit: contain;" />
+              </a>
+              <div style="font-size: 11.5px; font-weight: 600; color: #64748B; margin-top: 8px;">
+                Captura enviada por el Solution Owner • Haz clic sobre la imagen para abrirla en alta resolución
+              </div>
+            </div>
+          </div>
+        `;
+      }}
+
+      const docInfo = getTaskDocInfo(task);
+      content += `
+        <div style="margin-top: 14px; text-align: right;">
+          <a href="${{docInfo.link}}" target="_blank" class="btn btn-secondary" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px;" draggable="false" onclick="event.stopPropagation();">
+            📖 Abrir Documento Rector Oficial (${{docInfo.title}}) →
+          </a>
+        </div>
+      `;
+
+      if (task.so_feedback) {{
+        content = `
+          <div class="modal-box modal-box-alert" style="background: #FFF1F2; border: 2px solid #E11D48; border-radius: 8px; padding: 14px; margin-bottom: 14px;">
+            <div class="modal-subhead" style="color: #9F1239; font-weight: 800; font-size: 13px; display: flex; align-items: center; gap: 8px;">
+              <span>❌</span> DICTAMEN DEL SOLUTION OWNER: ${{task.so_feedback.status}}
+            </div>
+            <p style="color: #881337; font-size: 12px; margin: 6px 0 0 0; line-height: 1.45;">
+              <strong>Observación Oficial:</strong> ${{task.so_feedback.observation}}
+            </p>
+            <div style="font-size: 10.5px; color: #BE123C; margin-top: 6px; font-weight: 600;">
+              Auditoría: ${{task.so_feedback.reviewer}} • Fecha de Dictamen: ${{task.so_feedback.date}}
+            </div>
+          </div>
+        ` + content;
+      }}
+
+      body.innerHTML = content;
+      modal.style.display = 'flex';
+    }}
+
+    function closeUHModal() {{
+      document.getElementById('uh-modal').style.display = 'none';
+    }}
+
+    // VISTA 2: ROADMAP
+    function renderRoadmap() {{
+      const container = document.getElementById('roadmap-epics-container');
+      container.innerHTML = '';
+
+      EPICS_DATA.forEach(epic => {{
+        const row = document.createElement('div');
+        row.className = 'roadmap-epic-row';
+        row.innerHTML = `
+          <div>
+            <div class="epic-meta-title">${{epic.id}}: ${{epic.name}}</div>
+            <div class="epic-meta-sub">${{epic.timebox}} • ${{epic.sp}} SP</div>
+          </div>
+          <div>
+            <div class="progress-bar-container">
+              <div class="progress-bar-fill" style="width: ${{epic.progress}}%;"></div>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 10px; color: #64748B; margin-top: 3px;">
+              <span>Progreso: ${{epic.progress}}%</span>
+              <span>${{epic.status}}</span>
+            </div>
+          </div>
+          <div style="font-size: 11px; color: #475569;">
+            ${{epic.desc}}
+          </div>
+          <div style="text-align: right;">
+            <span class="status-pill" style="font-size: 9.5px; padding: 2px 8px; background: ${{epic.progress === 100 ? '#DCFCE7' : '#FEF3C7'}}; color: ${{epic.progress === 100 ? '#16A34A' : '#92400E'}}; border: none;">
+              ${{epic.progress === 100 ? 'COMPLETA' : 'EN CURSO'}}
+            </span>
+          </div>
+        `;
+        container.appendChild(row);
+      }});
+
+      const mContainer = document.getElementById('roadmap-milestones-container');
+      mContainer.innerHTML = '';
+      MILESTONES_DATA.forEach(m => {{
+        const card = document.createElement('div');
+        card.className = 'milestone-card ' + (m.status === 'current' ? 'current' : '');
+        card.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span class="milestone-date">${{m.date}}</span>
+            <span class="status-pill" style="font-size: 8.5px; padding: 1px 6px; background: ${{m.status === 'done' ? '#DCFCE7' : (m.status === 'current' ? '#FEF3C7' : '#E2E8F0')}}; color: ${{m.status === 'done' ? '#16A34A' : (m.status === 'current' ? '#92400E' : '#475569')}}; border: none;">
+              ${{m.badge}}
+            </span>
+          </div>
+          <div class="milestone-title">${{m.title}}</div>
+        `;
+        mContainer.appendChild(card);
+      }});
+    }}
+
+    // VISTA 3: MÉTRICAS
+    function renderMetricsView() {{
+      const vContainer = document.getElementById('velocity-bars-container');
+      vContainer.innerHTML = '';
+
+      SPRINTS_DATA.forEach(s => {{
+        const col = document.createElement('div');
+        col.className = 'velocity-col';
+        const heightPx = Math.round((s.sp / 50) * 180);
+        col.innerHTML = `
+          <span style="font-size: 11px; font-weight: 800; color: var(--q-navy);">${{s.sp}} SP</span>
+          <div class="velocity-bar ${{s.status.includes('ACTIVO') ? 'active-sprint' : ''}}" style="height: ${{heightPx}}px;" title="${{s.name}}: ${{s.sp}} SP"></div>
+          <span style="font-size: 10px; font-weight: 700; color: #64748B;">${{s.id}}</span>
+        `;
+        vContainer.appendChild(col);
+      }});
+
+      const tContainer = document.getElementById('type-distribution-container');
+      tContainer.innerHTML = '';
+
+      const typeCounts = {{}};
+      tasks.forEach(t => {{
+        const tp = t.type || 'UH';
+        typeCounts[tp] = (typeCounts[tp] || 0) + 1;
+      }});
+
+      Object.entries(typeCounts).forEach(([tp, count]) => {{
+        const pct = Math.round((count / tasks.length) * 100);
+        const row = document.createElement('div');
+        row.style.fontSize = '12px';
+        row.innerHTML = `
+          <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
+            <span class="card-badge-type badge-${{tp.toLowerCase()}}">${{tp}}</span>
+            <strong>${{count}} items (${{pct}}%)</strong>
+          </div>
+          <div class="progress-bar-container" style="height: 6px;">
+            <div class="progress-bar-fill" style="width: ${{pct}}%;"></div>
+          </div>
+        `;
+        tContainer.appendChild(row);
+      }});
+    }}
+
+    // VISTA 4: BACKLOG JERÁRQUICO
+    function renderHierarchyView() {{
+      const root = document.getElementById('tree-root-container');
+      if (!root) return;
+      root.innerHTML = '';
+
+      // Barra de controles WBS estilo Quantux
+      const toolbar = document.createElement('div');
+      toolbar.style.cssText = 'display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; background: #FFFFFF; padding: 12px 16px; border-radius: 10px; border: 1px solid #E2E8F0;';
+      toolbar.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <input type="text" id="wbs-search-filter" placeholder="🔍 Filtrar historias o issues en WBS..." oninput="filterWbsCards(this.value)" style="padding: 6px 12px; border: 1.5px solid #CBD5E1; border-radius: 6px; font-size: 11.5px; width: 240px; outline: none;">
+          <span style="font-size: 11px; font-weight: 700; color: #64748B;">Estructura de Desglose del Trabajo (PMI)</span>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button type="button" class="btn-sec" onclick="expandAllWbsEpics(true)" style="font-size: 11px; padding: 5px 10px; font-weight: 700; border-radius: 6px;">▾ Expandir Todas</button>
+          <button type="button" class="btn-sec" onclick="expandAllWbsEpics(false)" style="font-size: 11px; padding: 5px 10px; font-weight: 700; border-radius: 6px;">▴ Colapsar Todas</button>
+        </div>
+      `;
+      root.appendChild(toolbar);
+
+      EPICS_DATA.forEach(epic => {{
+        // Filtrar tareas que pertenecen a esta épica
+        const epicTasks = tasks.filter(t => (t.epic || '').includes(epic.id));
+        const epicSpTotal = epicTasks.reduce((sum, t) => sum + (t.sp || 0), 0);
+        const epicDoneTasks = epicTasks.filter(t => t.status === 'done');
+        const epicDoneSp = epicDoneTasks.reduce((sum, t) => sum + (t.sp || 0), 0);
+        const epicPct = epicTasks.length > 0 ? Math.round((epicDoneTasks.length / epicTasks.length) * 100) : (epic.progress || 0);
+
+        // Quality Gate: No mostrar completada si tiene tareas pendientes
+        const isStrictDone = epicTasks.length > 0 && epicTasks.every(t => t.status === 'done');
+        const epicStatusLabel = isStrictDone ? 'Completada (100%)' : (epicTasks.length === 0 ? 'Planificada' : `En Curso (${{epicPct}}%)`);
+        const epicStatusColor = isStrictDone ? '#10B981' : (epicPct > 0 ? '#0284C7' : '#64748B');
+
+        const item = document.createElement('div');
+        item.className = 'tree-epic-item';
+        item.style.cssText = 'background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 10px; margin-bottom: 14px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.02);';
+
+        let cardsGridHtml = '';
+        if (epicTasks.length === 0) {{
+          cardsGridHtml = '<div style="color: #94A3B8; font-size: 11.5px; padding: 14px; text-align: center;">No hay items asociados directamente a esta épica en el backlog actual.</div>';
+        }} else {{
+          cardsGridHtml = `
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px; padding: 14px;">
+              ${{epicTasks.map(t => {{
+                const type = t.type || 'UH';
+                const prio = t.priority || 'P3';
+                const prioBorder = prio === 'P1' ? '#E11D48' : (prio === 'P2' ? '#D97706' : (prio === 'P3' ? '#0284C7' : '#64748B'));
+                const docInfo = getTaskDocInfo(t);
+                const hasAttachment = !!t.attachment_image;
+
+                return `
+                  <div class="tree-ticket-card" style="background: #FFFFFF; border: 1px solid #E2E8F0; border-left: 4px solid ${{prioBorder}}; border-radius: 8px; padding: 12px; display: flex; flex-direction: column; justify-content: space-between; gap: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.03); transition: all 0.15s ease;" onmouseover="this.style.borderColor='#00C4B4'; this.style.boxShadow='0 4px 10px rgba(0,196,180,0.1)'" onmouseout="this.style.borderColor='#E2E8F0'; this.style.borderLeftColor='${{prioBorder}}'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.03)'">
+                    <div>
+                      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                          <span class="card-badge-type badge-${{type.toLowerCase()}}" style="font-size: 9.5px; padding: 2px 6px; border-radius: 4px; font-weight: 800;">${{type}}</span>
+                          <span class="card-id" style="font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 800; color: #0F172A;">${{t.id}}</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                          <span class="card-sp" style="font-size: 10px; font-weight: 800; background: #F1F5F9; color: #475569; padding: 1px 6px; border-radius: 4px;">⚡ ${{t.sp}} SP</span>
+                          <span style="font-size: 9.5px; font-weight: 800; color: ${{t.status === 'done' ? '#10B981' : '#0284C7'}}; background: ${{t.status === 'done' ? '#ECFDF5' : '#EFF6FF'}}; padding: 1px 6px; border-radius: 4px;">${{(t.status || 'backlog').toUpperCase()}}</span>
+                        </div>
+                      </div>
+
+                      <h5 style="margin: 0 0 6px 0; font-size: 12px; font-weight: 700; color: #0F172A; line-height: 1.4; font-family: 'Outfit', sans-serif;">
+                        ${{t.title}}
+                      </h5>
+
+                      ${{hasAttachment ? `
+                        <div style="margin-bottom: 8px; border: 1px solid #E2E8F0; border-radius: 6px; overflow: hidden; max-height: 90px; cursor: pointer; background: #F8FAFC;" onclick="openItemModal('${{t.id}}')">
+                          <img src="${{t.attachment_image}}" style="width: 100%; height: 90px; object-fit: cover; display: block;" title="Evidencia adjunta">
+                        </div>
+                      ` : ''}}
+
+                      <div style="font-size: 10.5px; color: #64748B; margin-bottom: 6px;">
+                        🏃 <strong>${{t.sprint || 'Sprint 6'}}</strong> • Prioridad: <span style="font-weight: 800; color: ${{prioBorder}};">${{prio}}</span>
+                      </div>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; align-items: center; pt: 6px; border-top: 1px solid #F1F5F9; margin-top: 4px;">
+                      <a href="${{docInfo.link}}" target="_blank" style="font-size: 10px; font-weight: 700; color: #0284C7; text-decoration: none; display: flex; align-items: center; gap: 3px;" title="Ver Documento Rector Oficial">
+                        <span>📄</span> DOC ↗
+                      </a>
+                      <button type="button" onclick="openItemModal('${{t.id}}')" style="background: #0F172A; color: #FFF; border: none; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 800; cursor: pointer;">
+                        🔍 Detalle
+                      </button>
+                    </div>
+                  </div>
+                `;
+              }}).join('')}}
+            </div>
+          `;
+        }}
+
+        item.innerHTML = `
+          <div class="tree-epic-header" onclick="toggleTreeChildren('${{epic.id}}')" style="cursor: pointer; padding: 12px 16px; background: #F8FAFC; border-bottom: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span style="font-size: 18px;">🏛️</span>
+              <div>
+                <strong style="font-size: 13px; color: #0F172A; font-family: 'Outfit', sans-serif;">${{epic.id}}: ${{epic.name}}</strong>
+                <div style="font-size: 10.5px; color: #64748B; margin-top: 2px;">
+                  ${{epicTasks.length}} ítems • ⚡ ${{epicSpTotal}} SP totales • <span style="font-weight: 800; color: ${{epicStatusColor}};">${{epicStatusLabel}}</span>
+                </div>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="width: 100px; height: 6px; background: #E2E8F0; border-radius: 999px; overflow: hidden;">
+                <div style="width: ${{epicPct}}%; height: 100%; background: ${{epicStatusColor}}; border-radius: 999px;"></div>
+              </div>
+              <span id="tree-icon-${{epic.id}}" style="font-size: 12px; color: #64748B; font-weight: 800;">▼</span>
+            </div>
+          </div>
+          <div class="tree-epic-children" id="tree-children-${{epic.id}}" style="display: none; background: #F8FAFC; border-top: 1px solid #E2E8F0;">
+            ${{cardsGridHtml}}
+          </div>
+        `;
+        root.appendChild(item);
+      }});
+    }}
+
+    function toggleTreeChildren(epicId) {{
+      const c = document.getElementById('tree-children-' + epicId);
+      const icon = document.getElementById('tree-icon-' + epicId);
+      if (c) {{
+        const isHidden = c.style.display === 'none';
+        c.style.display = isHidden ? 'block' : 'none';
+        if (icon) icon.textContent = isHidden ? '▲' : '▼';
+      }}
+    }}
+
+    function expandAllWbsEpics(expand) {{
+      EPICS_DATA.forEach(epic => {{
+        const c = document.getElementById('tree-children-' + epic.id);
+        const icon = document.getElementById('tree-icon-' + epic.id);
+        if (c) {{
+          c.style.display = expand ? 'block' : 'none';
+          if (icon) icon.textContent = expand ? '▲' : '▼';
+        }}
+      }});
+    }}
+
+    function filterWbsCards(query) {{
+      const q = (query || '').toLowerCase().trim();
+      document.querySelectorAll('.tree-ticket-card').forEach(card => {{
+        const text = card.innerText.toLowerCase();
+        card.style.display = text.includes(q) ? 'flex' : 'none';
+      }});
+    }}
+
+    // DRAG AND DROP
+    function allowDrop(e) {{ e.preventDefault(); }}
+    function drag(e, taskId) {{
+      if (e.target.closest('button, a, .card-attachment-preview, .card-doc-box, .card-actions')) {{
+        e.preventDefault();
+        return false;
+      }}
+      e.dataTransfer.setData('text/plain', taskId);
+    }}
+    function drop(e, colName) {{
+      e.preventDefault();
+      const taskId = e.dataTransfer.getData('text/plain');
+      const task = tasks.find(t => t.id === taskId);
+      if (!task) return;
+
+      if (colName === 'done' && task.status !== 'done') {{
+        const ok = confirm(`¿Confirmar Aceptación Formal del Solution Owner para la tarjeta ${{task.id}}?\\n\\nDebe contrastar el desarrollo ejecutado contra la especificación y criterios de aceptación antes de dar el visto bueno.`);
+        if (!ok) return;
+      }}
+
+      task.status = colName;
+      saveState(false);
+      renderBoard();
+    }}
+
+    function saveState(notify = true) {{
+      localStorage.setItem('quantux_scrumban_v12_progress', JSON.stringify(tasks));
+      if (notify) alert('✓ Estado del Tablero Scrumban guardado exitosamente.');
+    }}
+
+    function resetDefaultTasks() {{
+      if (confirm('¿Restaurar la base de datos oficial del tablero?')) {{
+        localStorage.removeItem('quantux_scrumban_v12_progress');
+        tasks = JSON.parse(JSON.stringify(INITIAL_BACKLOG));
+        tasks.forEach(t => {{
+          const d = getTaskDocInfo(t);
+          t.doc_link = d.link;
+          t.doc_title = d.title;
+          t.doc_desc = d.desc;
+        }});
+        renderCurrentView();
+      }}
+    }}
+
+    function exportToCSV() {{
+      let csv = "ID,Titulo,Tipo,Prioridad,Epica,StoryPoints,Sprint,Estado,Disciplina,Documentacion\\n";
+      tasks.forEach(t => {{
+        const doc = t.doc_link || '';
+        csv += `"${{t.id}}","${{t.title}}","${{t.type || 'UH'}}","${{t.priority || 'P3'}}","${{t.epic}}",${{t.sp}},"${{t.sprint}}","${{t.status}}","${{t.discipline}}","${{doc}}"\\n`;
+      }});
+      const blob = new Blob([csv], {{ type: 'text/csv;charset=utf-8;' }});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = "Backlog_HealthDesk_Quantux.csv";
+      a.click();
+    }}
+
+    document.addEventListener('keydown', (e) => {{
+      if (e.key === 'Escape') closeUHModal();
+    }});
+
+    window.addEventListener('DOMContentLoaded', () => {{
+      const modalEl = document.getElementById('uh-modal');
+      if (modalEl) {{
+        modalEl.onclick = (e) => {{
+          if (e.target === modalEl) closeUHModal();
+        }};
+      }}
+    }});
+
+    window.onload = init;
+  </script>
+</body>
+</html>
+"""
+
+    with open(HTML_OUTPUT_PATH, "w", encoding="utf-8") as f:
+        f.write(html_content)
+
+    print(f"Tablero Scrumban generado exitosamente en: {HTML_OUTPUT_PATH}")
+
+if __name__ == "__main__":
+    generate_scrumban_board()

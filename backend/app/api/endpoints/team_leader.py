@@ -21,6 +21,7 @@ class TLRescueRequest(BaseModel):
     resolution_notes: Optional[str] = None
     team_leader_username: Optional[str] = "cdaneri"
     rescued_by_username: Optional[str] = None
+    rescue_status: Optional[str] = "RESCATADO_CON_CONFORMIDAD"
 
 class TLCustomRebalanceRequest(BaseModel):
     analyst_usernames: List[str]
@@ -174,14 +175,14 @@ def custom_rebalance_workload(req: TLCustomRebalanceRequest, session: Session = 
             change_reason="[Rebalanceo Táctico TL] Asignación a analista seleccionado de menor carga"
         ))
 
-    # Iterative leveling until delta is at most 1, or max safe iterations (2000)
+    # Nivelación iterativa considerando ÚNICAMENTE tickets en estado ASIGNADO (prohibido tocar EN_CURSO)
     for _ in range(2000):
         max_user = max(user_keys, key=lambda u: workload[u])
         min_user = min(user_keys, key=lambda u: workload[u])
         if workload[max_user] - workload[min_user] >= 2:
-            candidate = next((t for t in active_tickets if t.assignee_username == max_user and t.priority != PriorityLevel.P1), None)
+            candidate = next((t for t in active_tickets if t.assignee_username == max_user and t.status == TicketStatus.ASIGNADO and t.priority != PriorityLevel.P1), None)
             if not candidate:
-                candidate = next((t for t in active_tickets if t.assignee_username == max_user), None)
+                candidate = next((t for t in active_tickets if t.assignee_username == max_user and t.status == TicketStatus.ASIGNADO), None)
             if candidate:
                 candidate.assignee_username = min_user
                 candidate.updated_at = datetime.utcnow()
@@ -244,10 +245,10 @@ def auto_rebalance_workload(session: Session = Depends(get_session)):
             field_changed="assignee_username",
             old_value="Sin Asignar",
             new_value=min_user,
-            change_reason="[Auto-Balanceo Algorítmico] Asignación equitativa por menor carga de guardia"
+            change_reason="[Auto-Balanceo Algorítmico] Asignación equitativa por menor carga operativa de soporte"
         ))
 
-    # 2. Balanceo multi-nivel por soporte (N1, N2, N3)
+    # 2. Balanceo multi-nivel por soporte (N1, N2, N3) - ÚNICAMENTE TICKETS EN ESTADO ASIGNADO
     tier_groups = {}
     for u in support_users:
         lvl = u.support_level.value if hasattr(u.support_level, 'value') and u.support_level else "N1"
@@ -260,9 +261,9 @@ def auto_rebalance_workload(session: Session = Depends(get_session)):
                 max_u = sorted_tier[0]
                 min_u = sorted_tier[-1]
                 if workload[max_u] - workload[min_u] >= 2:
-                    candidate = next((t for t in active_tickets if t.assignee_username == max_u and t.priority != PriorityLevel.P1), None)
+                    candidate = next((t for t in active_tickets if t.assignee_username == max_u and t.status == TicketStatus.ASIGNADO and t.priority != PriorityLevel.P1), None)
                     if not candidate:
-                        candidate = next((t for t in active_tickets if t.assignee_username == max_u), None)
+                        candidate = next((t for t in active_tickets if t.assignee_username == max_u and t.status == TicketStatus.ASIGNADO), None)
                     if candidate:
                         candidate.assignee_username = min_u
                         candidate.updated_at = datetime.utcnow()
@@ -283,16 +284,16 @@ def auto_rebalance_workload(session: Session = Depends(get_session)):
                 else:
                     break
 
-    # 3. Nivelación global residual si aún persisten asimetrías severas
+    # 3. Nivelación global residual si aún persisten asimetrías severas (SOLO TICKETS ASIGNADO)
     if len(support_users) > 1:
         for _ in range(1000):
             sorted_users = sorted(workload.keys(), key=lambda u: workload[u], reverse=True)
             max_user = sorted_users[0]
             min_user = sorted_users[-1]
             if workload[max_user] - workload[min_user] >= 3:
-                candidate = next((t for t in active_tickets if t.assignee_username == max_user and t.priority != PriorityLevel.P1), None)
+                candidate = next((t for t in active_tickets if t.assignee_username == max_user and t.status == TicketStatus.ASIGNADO and t.priority != PriorityLevel.P1), None)
                 if not candidate:
-                    candidate = next((t for t in active_tickets if t.assignee_username == max_user), None)
+                    candidate = next((t for t in active_tickets if t.assignee_username == max_user and t.status == TicketStatus.ASIGNADO), None)
                 if candidate:
                     candidate.assignee_username = min_user
                     candidate.updated_at = datetime.utcnow()
@@ -314,7 +315,7 @@ def auto_rebalance_workload(session: Session = Depends(get_session)):
                 break
 
     session.commit()
-    msg = f"Auto-balanceo completado: {reassigned_count} solicitudes reasignadas equitativamente entre los operadores de guardia." if reassigned_count > 0 else "La guardia ya se encuentra balanceada de forma óptima entre todos los analistas."
+    msg = f"Auto-balanceo completado: {reassigned_count} solicitudes reasignadas equitativamente entre los analistas de soporte." if reassigned_count > 0 else "La mesa de ayuda ya se encuentra balanceada de forma óptima entre todos los analistas."
     return {
         "status": "success",
         "message": msg,
@@ -365,12 +366,16 @@ def rescue_ticket_complaint(ticket_id: str, req: TLRescueRequest, session: Sessi
     if not ticket:
         raise HTTPException(status_code=404, detail="Solicitud no encontrada.")
         
-    ticket.requires_service_recovery = False
-    ticket.updated_at = datetime.utcnow()
-    session.add(ticket)
-    
     notes = req.rescue_notes or req.resolution_notes or "Rescate de satisfacción registrado con éxito."
     actor = req.rescued_by_username or req.team_leader_username or "cdaneri"
+    status_rescue = getattr(req, "rescue_status", None) or "RESCATADO_CON_CONFORMIDAD"
+
+    ticket.requires_service_recovery = False
+    ticket.rescue_leader_username = actor
+    ticket.rescue_notes = notes
+    ticket.rescue_status = status_rescue
+    ticket.updated_at = datetime.utcnow()
+    session.add(ticket)
     
     session.add(TicketAuditLog(
         ticket_id=ticket.id,
@@ -379,6 +384,13 @@ def rescue_ticket_complaint(ticket_id: str, req: TLRescueRequest, session: Sessi
         old_value="True",
         new_value="False",
         change_reason=f"[Torre de Control TL - Rescate CSAT] {notes}"
+    ))
+
+    from app.models.entities import TicketComment
+    session.add(TicketComment(
+        ticket_id=ticket.id,
+        author_username=actor,
+        message=f"[INFORME DE RESCATE CSAT DEL LÍDER DE SOPORTE]\n{notes}\nEstado: {status_rescue}"
     ))
     
     session.commit()

@@ -14,9 +14,11 @@ class TicketStatus(str, Enum):
     NUEVO = "NUEVO"
     ASIGNADO = "ASIGNADO"
     EN_CURSO = "EN_CURSO"
-    EN_ESPERA = "EN_ESPERA"
+    ESPERANDO_AL_PRESTADOR = "ESPERANDO_AL_PRESTADOR"
+    EN_ESPERA_PASARELA_OSDE_SISA = "EN_ESPERA_PASARELA_OSDE_SISA"
     RESUELTO = "RESUELTO"
     CERRADO = "CERRADO"
+    EN_ESPERA = "ESPERANDO_AL_PRESTADOR"
 
 class TicketType(str, Enum):
     INCIDENTE = "INCIDENTE"
@@ -135,7 +137,16 @@ class Ticket(SQLModel, table=True):
     # v4.2.0 Ingeniería N3: Git & DevOps Metadata
     git_branch: Optional[str] = Field(default=None, nullable=True)
     git_pr: Optional[str] = Field(default=None, nullable=True)
-    git_commit: Optional[str] = Field(default=None, nullable=True)
+    # v4.3.0 Módulo N1 Reemplazo Integral (KCS v6, Rescate CSAT y Pausa SLA)
+    kcs_data: Optional[str] = Field(default=None, nullable=True)  # Esquema JSON KCS/KB
+    rescue_leader_username: Optional[str] = Field(default=None, nullable=True)
+    rescue_notes: Optional[str] = Field(default=None, nullable=True)
+    rescue_status: Optional[str] = Field(default=None, nullable=True)
+    sla_paused: bool = Field(default=False)
+    sla_paused_at: Optional[datetime] = Field(default=None, nullable=True)
+    # v4.3.1 Bot Gestor de Tickets & Contribución KCS a Base de Conocimiento
+    associated_kb_id: Optional[int] = Field(default=None, nullable=True, index=True)
+    contributed_to_kb: bool = Field(default=False)
     created_at: datetime = Field(default_factory=datetime.utcnow, index=True)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
     resolved_at: Optional[datetime] = Field(default=None, nullable=True, index=True)
@@ -159,7 +170,22 @@ class TicketComment(SQLModel, table=True):
     author_username: str = Field(foreign_key="users.username")
     message: str
     is_internal: bool = Field(default=False)
+    author_role: Optional[str] = Field(default="SOPORTE", nullable=True)
+    author_sector: Optional[str] = Field(default="Mesa de Ayuda", nullable=True)
     created_at: datetime = Field(default_factory=datetime.utcnow)
+
+class KBArticleContribution(SQLModel, table=True):
+    __tablename__ = "kb_article_contributions"
+    id: Optional[int] = Field(default=None, primary_key=True)
+    article_id: int = Field(foreign_key="kb_articles.id", index=True)
+    ticket_id: str = Field(foreign_key="tickets.id", index=True)
+    ticket_title: Optional[str] = Field(default=None, nullable=True)
+    contribution_summary: str
+    contributor_username: str = Field(default="soporte")
+    contributor_role: str = Field(default="SOPORTE_N1")  # SOLICITANTE, SOPORTE_N1, ESPECIALISTA_N2, TEAM_LEADER, ADMIN
+    contributor_sector: str = Field(default="Mesa de Ayuda")
+    solution_steps: Optional[str] = Field(default=None, nullable=True)
+    created_at: datetime = Field(default_factory=datetime.utcnow, index=True)
 
 class TicketAuditLog(SQLModel, table=True):
     __tablename__ = "ticket_audit_log"

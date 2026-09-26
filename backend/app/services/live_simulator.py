@@ -148,85 +148,12 @@ def run_simulation_cycle():
                 session.add(audit)
                 session.commit()
 
-            # 3. Avanzar 1 ticket de NUEVO a ASIGNADO
-            new_t = session.exec(select(Ticket).where(Ticket.status == TicketStatus.NUEVO)).first()
-            if new_t and random.random() < 0.5:
-                op = random.choice(OPERATORS)
-                new_t.status = TicketStatus.ASIGNADO
-                new_t.assignee_username = op
-                new_t.support_level = SupportLevel.N1
-                new_t.updated_at = now
-                session.add(new_t)
-                session.add(TicketAuditLog(
-                    ticket_id=new_t.id,
-                    changed_by_username="sistema_triage",
-                    field_changed="assignee_username",
-                    old_value="",
-                    new_value=op,
-                    change_reason=f"Asignación automática a especialista de guardia ({op}).",
-                    created_at=now
-                ))
-                session.commit()
-
-            # 4. Avanzar 1 ticket de ASIGNADO a EN_CURSO
-            assigned_t = session.exec(select(Ticket).where(Ticket.status == TicketStatus.ASIGNADO)).first()
-            if assigned_t and random.random() < 0.5:
-                assigned_t.status = TicketStatus.EN_CURSO
-                assigned_t.updated_at = now
-                session.add(assigned_t)
-                session.add(TicketAuditLog(
-                    ticket_id=assigned_t.id,
-                    changed_by_username=assigned_t.assignee_username or "soporte",
-                    field_changed="status",
-                    old_value="ASIGNADO",
-                    new_value="EN_CURSO",
-                    change_reason="Inicio de análisis técnico y diagnóstico de servicio.",
-                    created_at=now
-                ))
-                session.commit()
-
-            # 5. Resolver 1 ticket en EN_CURSO
-            in_progress_t = session.exec(select(Ticket).where(Ticket.status == TicketStatus.EN_CURSO)).first()
-            if in_progress_t and random.random() < 0.35:
-                in_progress_t.status = TicketStatus.RESUELTO
-                in_progress_t.resolved_at = now
-                in_progress_t.updated_at = now
-                in_progress_t.resolved_by = in_progress_t.assignee_username or "soporte"
-                in_progress_t.resolution_notes = "Se aplicó corrección en la pasarela asistencial y se verificó disponibilidad con el personal de guardia."
-                in_progress_t.is_workaround = False
-                session.add(in_progress_t)
-                session.add(TicketAuditLog(
-                    ticket_id=in_progress_t.id,
-                    changed_by_username=in_progress_t.resolved_by,
-                    field_changed="status",
-                    old_value="EN_CURSO",
-                    new_value="RESUELTO",
-                    change_reason="Resolución técnica verificada en producción.",
-                    created_at=now
-                ))
-                session.commit()
-
-            # 6. Cerrar 1 ticket en RESUELTO con CSAT
-            resolved_t = session.exec(select(Ticket).where(Ticket.status == TicketStatus.RESUELTO)).first()
-            if resolved_t and random.random() < 0.3:
-                resolved_t.status = TicketStatus.CERRADO
-                resolved_t.closed_at = now
-                resolved_t.updated_at = now
-                resolved_t.closed_by = resolved_t.requester_username or "solicitante"
-                resolved_t.rating_stars = random.choice([4, 5])
-                resolved_t.rating_kudos = random.choice(["Rapidez", "Excelente Trato", "Claridad Técnica", "Resolución Definitiva"])
-                resolved_t.rating_feedback = "Excelente atención y rápida respuesta de la guardia técnica."
-                session.add(resolved_t)
-                session.add(TicketAuditLog(
-                    ticket_id=resolved_t.id,
-                    changed_by_username=resolved_t.closed_by,
-                    field_changed="status",
-                    old_value="RESUELTO",
-                    new_value="CERRADO",
-                    change_reason=f"Conformidad del solicitante con CSAT {resolved_t.rating_stars} estrellas.",
-                    created_at=now
-                ))
-                session.commit()
+            # 3. Avanzar tickets con el Bot Gestor de Tickets (diálogo multi-rol, sectores y aporte a KB)
+            try:
+                from app.services.ticket_manager_bot import TicketManagerBot
+                TicketManagerBot.run_automation_cycle(session, max_tickets=2)
+            except Exception as bot_err:
+                print(f"[LiveDemoSimulator Bot Error]: {bot_err}")
 
     except Exception as e:
         print(f"[LiveDemoSimulator Error]: {e}")

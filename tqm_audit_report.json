@@ -1,0 +1,121 @@
+[
+  {
+    "category": "FRONTEND-DOM",
+    "name": "Typeahead: Despliegue hacia abajo (top: 100%)",
+    "passed": false,
+    "details": "El dropdown predictivo tiene 'bottom: 100%', abriéndose hacia arriba y cortándose",
+    "severity": "CRITICAL"
+  },
+  {
+    "category": "FRONTEND-DOM",
+    "name": "Pizarra Neutral: Ausencia de cartel rojo #DC2626/#B91C1C",
+    "passed": false,
+    "details": "Detectado modal #modal-link-children con fondo degradado rojo saturado en index.html",
+    "severity": "CRITICAL"
+  },
+  {
+    "category": "FRONTEND-DOM",
+    "name": "Árboles de Decisión: 7 playbooks estructurados en el DOM",
+    "passed": false,
+    "details": "No existen filas .tree-node-row en frontend/index.html",
+    "severity": "CRITICAL"
+  },
+  {
+    "category": "FRONTEND-DOM",
+    "name": "Ticket UX: Modal de previsualización y edición antes de generar",
+    "passed": false,
+    "details": "No existe modal de pre-edición en index.html (creación ciega directa)",
+    "severity": "CRITICAL"
+  },
+  {
+    "category": "FRONTEND-DOM",
+    "name": "Resolución KCS v6: Formulario estructurado en index.html",
+    "passed": false,
+    "details": "Modal de resolución no contempla esquema KCS v6 de 4 niveles",
+    "severity": "CRITICAL"
+  },
+  {
+    "category": "RESTRICCIONES-OJO",
+    "name": "Léxico No-Clínico y SLA en index.html",
+    "passed": false,
+    "details": "Términos prohibidos encontrados: ['Guardia Médica 24/7', 'Buscar por código o síntoma', 'solicitudes clínicas', 'Quantux Asistencia Médica']",
+    "severity": "CRITICAL"
+  },
+  {
+    "category": "JAVASCRIPT",
+    "name": "Función handleRequesterTypeahead implementada",
+    "passed": false,
+    "details": "handleRequesterTypeahead NO definida en app.js (causa ReferenceError al tipear)",
+    "severity": "CRITICAL"
+  },
+  {
+    "category": "JAVASCRIPT",
+    "name": "Flujo de creación: Pre-edición invocada antes de enviar",
+    "passed": false,
+    "details": "requesterAiEscalate envía ticket directamente a la API sin permitir edición previa",
+    "severity": "CRITICAL"
+  },
+  {
+    "category": "JAVASCRIPT",
+    "name": "Base de Conocimiento: Botón de transferir solución al ticket",
+    "passed": false,
+    "details": "La KB solo muestra checkboxes pasivos sin botón para aplicar solución al ticket",
+    "severity": "CRITICAL"
+  },
+  {
+    "category": "JAVASCRIPT",
+    "name": "Base de Conocimiento: Botón de vincular artículo al ticket",
+    "passed": false,
+    "details": "No existe función para asociar el artículo KB al ticket en curso",
+    "severity": "CRITICAL"
+  },
+  {
+    "category": "JAVASCRIPT",
+    "name": "Ciclo de Vida ITIL 4: 7 Estados seleccionables en la UI",
+    "passed": false,
+    "details": "app.js no incluye ESPERANDO_AL_PRESTADOR ni EN_ESPERA_PASARELA_OSDE_SISA en la botonera de acciones del ticket",
+    "severity": "CRITICAL"
+  },
+  {
+    "category": "JAVASCRIPT",
+    "name": "Pausa de SLA: Píldora indicadora visual en el detalle del ticket",
+    "passed": false,
+    "details": "No existe indicador visual de pausa de SLA en el render del ticket en app.js",
+    "severity": "CRITICAL"
+  },
+  {
+    "category": "API-CLIENT",
+    "name": "Cliente API: Consumo de POST /api/v1/tickets/{id}/kcs-close",
+    "passed": false,
+    "details": "El frontend no tiene conectado el endpoint kcs-close",
+    "severity": "CRITICAL"
+  },
+  {
+    "category": "API-CLIENT",
+    "name": "Cliente API: Consumo de POST /api/v1/tickets/{id}/link-parent",
+    "passed": false,
+    "details": "El frontend no tiene conectado el endpoint link-parent para MIM",
+    "severity": "CRITICAL"
+  },
+  {
+    "category": "API-CLIENT",
+    "name": "Cliente API: Consumo de POST /api/v1/tickets/{id}/rescue",
+    "passed": true,
+    "details": "OK: Conectado",
+    "severity": "CRITICAL"
+  },
+  {
+    "category": "BACKEND-LIVE",
+    "name": "Servidor FastAPI activo en http://localhost:8000",
+    "passed": true,
+    "details": "OK: Saludable",
+    "severity": "CRITICAL"
+  },
+  {
+    "category": "BACKEND-CORE",
+    "name": "FSM: 7 Estados ITIL 4 definidos en entidades",
+    "passed": false,
+    "details": "Estados encontrados: ['NUEVO', 'ASIGNADO', 'EN_CURSO', 'ESPERANDO_AL_PRESTADOR', 'EN_ESPERA_PASARELA_OSDE_SISA', 'RESUELTO', 'CERRADO', 'EN_ESPERA']",
+    "severity": "CRITICAL"
+  }
+]

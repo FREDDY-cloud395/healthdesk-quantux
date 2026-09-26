@@ -90,6 +90,8 @@ def main():
     
     print("\n[3/3] Iniciando Servidor Uvicorn...")
     print(f"  * Cockpit Operativo:  {cockpit_url}")
+    print(f"  * Reemplazo N1 UI:    http://localhost:{port}/reemplazo-n1")
+    print(f"  * Propuesta Doc N1:   http://localhost:{port}/propuesta-n1")
     print(f"  * Swagger API Docs:   {docs_url}")
     print(f"  * Configuracion ITIL: {cockpit_url}#config")
     print("\nPresione CTRL+C para detener el servicio.\n" + "-" * 76)

@@ -207,6 +207,61 @@ const API = {
     return res.json();
   },
 
+  // CAMBIO DE ESTADO (7 ESTADOS ITIL 4 INCLUYENDO ESPERAS Y PAUSA DE SLA)
+  async changeTicketStatus(ticketId, status, note = null) {
+    const res = await fetch(`${API_BASE}/api/v1/tickets/${ticketId}/status`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status, note })
+    });
+    if (!res.ok) throw await res.json();
+    return res.json();
+  },
+
+  // CIERRE ESTRUCTURADO KCS v6
+  async kcsCloseTicket(ticketId, payload) {
+    const res = await fetch(`${API_BASE}/api/v1/tickets/${ticketId}/kcs-close`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw await res.json();
+    return res.json();
+  },
+
+  // VINCULAR A INCIDENTE MAESTRO (PADRE)
+  async linkParentTicket(ticketId, parentTicketId) {
+    const res = await fetch(`${API_BASE}/api/v1/tickets/${ticketId}/link-parent`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ parent_ticket_id: parentTicketId })
+    });
+    if (!res.ok) throw await res.json();
+    return res.json();
+  },
+
+  // VINCULAR HIJOS A INCIDENTE MAESTRO
+  async linkChildrenTickets(ticketId, childTicketIds) {
+    const res = await fetch(`${API_BASE}/api/v1/tickets/${ticketId}/link-children`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ child_ticket_ids: childTicketIds })
+    });
+    if (!res.ok) throw await res.json();
+    return res.json();
+  },
+
+  // RESCATE DIRECTO CSAT
+  async rescueTicket(ticketId, payload) {
+    const res = await fetch(`${API_BASE}/api/v1/tickets/${ticketId}/rescue`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw await res.json();
+    return res.json();
+  },
+
   // COMENTARIOS Y NOTAS
   async addComment(ticketId, payload) {
     const res = await fetch(`${API_BASE}/api/v1/tickets/${ticketId}/comments`, {
@@ -271,6 +326,52 @@ const API = {
 
   async getCategoriesCount() {
     const res = await fetch(`${API_BASE}/api/v1/articles/categories-count`);
+    if (!res.ok) throw await res.json();
+    return res.json();
+  },
+
+  async getArticleContributingTickets(articleId) {
+    const res = await fetch(`${API_BASE}/api/v1/articles/${articleId}/contributing-tickets`);
+    if (!res.ok) throw await res.json();
+    return res.json();
+  },
+
+  async queryKBCopilot(query, ticketId = null) {
+    const res = await fetch(`${API_BASE}/api/v1/articles/copilot-chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query, ticket_id: ticketId })
+    });
+    if (!res.ok) throw await res.json();
+    return res.json();
+  },
+
+  async botAdvanceCycle(count = 3) {
+    const res = await fetch(`${API_BASE}/api/v1/tickets/bot/advance-cycle?count=${count}`, {
+      method: 'POST'
+    });
+    if (!res.ok) throw await res.json();
+    return res.json();
+  },
+
+  async botStepTicket(ticketId) {
+    const res = await fetch(`${API_BASE}/api/v1/tickets/${ticketId}/bot/step`, {
+      method: 'POST'
+    });
+    if (!res.ok) throw await res.json();
+    return res.json();
+  },
+
+  async botAdvanceToResolution(ticketId) {
+    const res = await fetch(`${API_BASE}/api/v1/tickets/${ticketId}/bot/advance-to-resolution`, {
+      method: 'POST'
+    });
+    if (!res.ok) throw await res.json();
+    return res.json();
+  },
+
+  async getTicketKBContribution(ticketId) {
+    const res = await fetch(`${API_BASE}/api/v1/tickets/${ticketId}/kb-contribution`);
     if (!res.ok) throw await res.json();
     return res.json();
   },
@@ -536,15 +637,18 @@ const API = {
     return res.json();
   },
 
-  // 12. V4.0.0 IA ASISTENCIAL & AUTOGESTIÓN CLÍNICA (PORTAL SOLICITANTE)
-  async aiTriage(payload) {
-    const res = await fetch(`${API_BASE}/api/v1/ai/triage`, {
+  // 12. V4.0.0 IA Y AUTOGESTIÓN TÉCNICA (PORTAL SOLICITANTE)
+  async aiClassify(payload) {
+    const res = await fetch(`${API_BASE}/api/v1/ai/classify`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
     if (!res.ok) throw await res.json();
     return res.json();
+  },
+  async aiTriage(payload) {
+    return this.aiClassify(payload);
   },
 
   async aiResolveIncident(payload) {

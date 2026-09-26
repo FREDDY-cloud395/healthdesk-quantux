@@ -72,6 +72,7 @@ def generate_ticket_id(session: Session) -> str:
         seq = 1
     return f"{prefix}{seq:04d}"
 
+@router.post("/classify")
 @router.post("/triage")
 def perform_triage(req: TriageRequest) -> Dict[str, Any]:
     """
