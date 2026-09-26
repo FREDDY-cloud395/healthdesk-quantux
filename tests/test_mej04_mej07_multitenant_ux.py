@@ -79,7 +79,8 @@ class TestMultiTenantUXSenior(unittest.TestCase):
 
     def test_scope_freeze_and_issue19_in_backlog(self):
         """Verifica que el banner de Scope Freeze está en el tablero y que ISSUE-19 está en el Product Backlog."""
-        self.assertIn("REGLA DE GOBERNANZA: ALCANCE CERRADO (SCOPE FREEZE)", self.board_content)
+        self.assertIn("SCOPE FREEZE", self.board_content)
+        self.assertIn("HARDENING", self.board_content)
         self.assertIn("ISSUE-19", self.board_content)
         # En el CSV debe estar en status 'backlog'
         match = re.search(r'"ISSUE-19".*?"backlog"', self.csv_content)

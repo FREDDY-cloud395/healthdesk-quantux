@@ -3045,8 +3045,8 @@ def generate_scrumban_board():
     </div>
 
     <div class="header-badges">
-      <span class="status-pill">● Sprint 6: Activo (Gobernanza PMI+IA & Calidad OJO)</span>
-      <span class="timebox-pill">Timebox: 28-sep al 02-oct-2026 • 36 SP Planificados</span>
+      <span class="status-pill" style="background: #FEF3C7; color: #92400E; border: 1px solid #FCD34D;">● FASE: Hardening & Estabilización (Code Freeze)</span>
+      <span class="timebox-pill" style="background: #E0F2FE; color: #0369A1; border: 1px solid #BAE6FD;">🎯 Presentación al Comité Evaluador: 01-Oct-2026</span>
     </div>
   </header>
 
@@ -3066,18 +3066,18 @@ def generate_scrumban_board():
     </button>
   </nav>
 
-  <!-- GOBERNANZA SCRUMBAN: ALCANCE CERRADO (SCOPE FREEZE) -->
+  <!-- GOBERNANZA SCRUMBAN: FASE DE HARDENING & ESTABILIZACIÓN (SCOPE FREEZE) -->
   <div style="background: #FFFBEB; border-bottom: 2px solid #FCD34D; padding: 10px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
     <div style="display: flex; align-items: center; gap: 10px;">
       <span style="font-size: 18px;">🔒</span>
       <div>
-        <strong style="color: #92400E; font-size: 12.5px; font-family: 'Montserrat', sans-serif; letter-spacing: 0.3px;">REGLA DE GOBERNANZA: ALCANCE CERRADO (SCOPE FREEZE)</strong>
-        <span style="color: #B45309; font-size: 11.5px; margin-left: 6px;">El alcance del Sprint se encuentra estrictamente cerrado. Todo nuevo ítem, requerimiento o mejora por fuera del alcance definido debe registrarse obligatoriamente en el <strong>Product Backlog</strong>.</span>
+        <strong style="color: #92400E; font-size: 12.5px; font-family: 'Montserrat', sans-serif; letter-spacing: 0.3px;">FASE DE HARDENING & ESTABILIZACIÓN (SCOPE FREEZE ACTIVO)</strong>
+        <span style="color: #B45309; font-size: 11.5px; margin-left: 6px;">Alcance cerrado hacia la presentación oficial del <strong>01 de Octubre de 2026</strong> ante el Comité Evaluador. Foco exclusivo en Testing, Debugging, Calidad OJO y Cierre de Retrabajos. Todo nuevo ítem debe registrarse en el <strong>Product Backlog</strong>.</span>
       </div>
     </div>
     <div style="display: flex; align-items: center; gap: 8px;">
-      <span style="background: #FEF3C7; border: 1px solid #F59E0B; color: #92400E; font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 12px;">POLÍTICA PMI + IA</span>
-      <span style="background: #E0F2FE; border: 1px solid #38BDF8; color: #0369A1; font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 12px;">ACEPTACIÓN: SOLUTION OWNER</span>
+      <span style="background: #FEF3C7; border: 1px solid #F59E0B; color: #92400E; font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 12px;">HITO: 01-OCT-2026</span>
+      <span style="background: #E0F2FE; border: 1px solid #38BDF8; color: #0369A1; font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 12px;">COMITÉ EVALUADOR</span>
     </div>
   </div>
 

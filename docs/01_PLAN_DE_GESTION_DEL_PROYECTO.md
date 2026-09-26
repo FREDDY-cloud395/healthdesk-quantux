@@ -131,8 +131,11 @@ El proyecto adopta un marco Ágil (Iterativo e Incremental) bajo la modalidad Sc
   * Entregables: Interfaz en 3 columnas y selector rápido de roles.
 * **Sprint 4 (14-sep al 18-sep):** *Integración E2E y Auditoría.*
   * Entregables: Circuito completo de 5 pasos integrado con notas e historial.
-* **Sprint 5 (21-sep al 25-sep):** *Estabilización, QA y Cierre.*
-  * Entregables: Dataset de prueba cargado, pruebas completas y **ENTREGA FINAL DEL PROYECTO**.
+* **Sprint 5 (21-sep al 25-sep):** *Auditoría Forense TQM, Adaptación Visual y Calidad OJO.*
+  * Entregables: Mitigación de gaps visuales, tablero interactivo y compliance pre-commit.
+* **Sprint 6 (26-sep al 01-oct):** *Fase de Hardening, Estabilización Final y Presentación al Comité Evaluador.*
+  * **Hito Rectivo (Scope Freeze Total):** Bloqueo total de nuevas funcionalidades. Foco exclusivo en Testing, Debugging, Calidad OJO y Cierre de Retrabajos (`UH-67`, `MEJ-08`).
+  * **Hito de Demostración Formal:** **01 de Octubre de 2026 — Presentación Ejecutiva y Evaluación Final del Producto ante el Comité Evaluador.**
 
 ---
 
