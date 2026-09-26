@@ -13,6 +13,14 @@
 
 ---
 
+### Control de Versiones y Distribución
+| Versión | Fecha | Responsable | Detalle de Modificaciones / Estado |
+| :--- | :--- | :--- | :--- |
+| **v1.0** | 28/08/2026 | Diego Martínez / Freddy Cortés | **Línea Base Técnica Oficial:** Arquitectura REST, modelo relacional SQLite/SQLModel y diseño Cockpit 3 columnas. |
+| **v2.0** | 26/09/2026 | Diego Martínez / Freddy Cortés | **Consolidación Integral Sprint 6 (Hardening):** Contratos REST v1, Quality Gates TDD, verificación OJO y estabilidad para demo del 01-Oct. |
+
+---
+
 ## 1. STACK TECNOLÓGICO Y FUNDAMENTACIÓN DE NEGOCIO
 
 | Capa y Tecnología | Rol Funcional en la Operación | Justificación Técnica y Beneficio para el Negocio |

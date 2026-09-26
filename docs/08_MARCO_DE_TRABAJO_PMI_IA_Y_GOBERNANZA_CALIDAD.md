@@ -1,9 +1,9 @@
 # 📑 DOCUMENTO 8: MARCO DE TRABAJO PMI + IA, PROCESO DE ADAPTACIÓN Y ASEGURAMIENTO DE CALIDAD
-**Código:** DOC-GOV-008 (Versión 1.0 Oficial)  
+**Código:** DOC-GOV-008 (Versión 1.1 Oficial)  
 **Proyecto:** HealthDesk Quantux — Sistema Centralizado de Gestión de Tickets de Soporte  
 **Organización:** Quantux Salud  
 **Solution Owner:** Freddy Cortés (Analista Funcional)  
-**Fecha:** 26 de Septiembre de 2026  
+**Fecha de Línea Base:** 26 de Septiembre de 2026 | **Fecha de Versión 1.1:** 26 de Septiembre de 2026  
 **Comité Evaluador:**  
 • Paula Sbarbati (Referente Funcional)  
 • Diego Martínez (Facilitador Técnico)  
@@ -15,7 +15,8 @@
 ### Control de Versiones y Distribución
 | Versión | Fecha | Responsable | Detalle de Modificaciones / Estado |
 | :--- | :--- | :--- | :--- |
-| **v1.0** | 26/09/2026 | Freddy Cortés | **Versión Oficial de Gobernanza PMI + IA, Adaptación Metodológica, Delimitación de Roles y Gestión de Mejoras/Gaps en Scrumban.** |
+| **v1.0** | 26/09/2026 | Freddy Cortés | **Versión Oficial de Gobernanza PMI + IA:** Adaptación Metodológica, Delimitación de Roles y Gestión de Mejoras/Gaps en Scrumban. |
+| **v1.1** | 26/09/2026 | Freddy Cortés | **Fase de Hardening, Pre-commit Quality Gates, Política de Scope Freeze y Blindaje de Tiempos hacia la Demo del 01-Oct-2026.** |
 
 ---
 
@@ -327,6 +328,31 @@ Ninguna tarjeta del Product Backlog podrá ser promovida al estado `Done` sin cu
 1. **Verificación de Criterios de Aceptación:** Ejecución de pruebas demostrables en terminal según los escenarios Gherkin.
 2. **Auditoría de Restricciones OJO:** Ejecución obligatoria de `python validate_ojo_compliance.py` con Exit Code 0.
 3. **Firma de Conformidad del Solution Owner:** Aprobación explícita por parte del usuario (Freddy Cortés).
+
+---
+
+### 8. Fase de Hardening, Quality Gates Pre-Commit y Scope Freeze (01-Octubre)
+
+Con vistas a la presentación final del **01 de Octubre de 2026** ante el Comité Evaluador, el proyecto ha entrado formalmente en su **Fase de Hardening y Estabilización (Sprint 6)** bajo las siguientes reglas de aseguramiento:
+
+#### 8.1. Política de Scope Freeze (Alcance Cerrado)
+* El alcance funcional está 100% cerrado en las 48 UHs de la línea base.
+* Toda nueva propuesta, requerimiento accesorio o idea emergente (ej. `ISSUE-19`) se desvía de forma obligatoria a la columna `📋 Product Backlog` con estado `backlog`.
+* La labor técnica se circunscribe con exclusividad a:
+  1. Cierre de retrabajos observados por el Solution Owner (`UH-67`, `MEJ-08`).
+  2. Cobertura de pruebas unitarias y de integración (TDD).
+  3. Verificación de cero regresiones en la interfaz y en el backend.
+
+#### 8.2. Calibración de Tiempos y Blindaje para el Solution Owner
+* **Deadline Técnico Definitivo (Hardening Freeze):** **Lunes 28 de Septiembre a las 18:00 hs.**
+* **Ventana Blindada de Preparación (48 horas):** El **29 y 30 de Septiembre** quedan estrictamente reservados para que el Solution Owner ensaye el pitch, ajuste el guión de 5 pasos y procese cualquier devolución anticipada remitida por el Comité Evaluador.
+
+#### 8.3. Compuertas de Calidad Automatizadas (Pre-Commit Hooks)
+En el marco PMI + IA, la calidad no es declarativa sino comprobable mediante código:
+* **Quality Gate 1 (Regla OJO y Pizarra Neutral):** Inspección estática del DOM que bloquea cualquier violación estética o de terminología (`validate_ojo_compliance.py`).
+* **Quality Gate 2 (Cumplimiento Visual DOM):** Pruebas automatizadas sobre estructura y estilo (`test_dom_visual_compliance.py`).
+* **Quality Gate 3 (Integridad Backend & ITIL 4):** Pruebas de integración sobre modelos relacionales y FSM (`test_reemplazo_n1_suite.py`).
+* **Quality Gate 4 (Suite de Pruebas Unitarias):** 25 tests cubriendo el bot gestor, catálogos multi-tenant y mejoras operativas.
 
 ---
 **Documento Oficial aprobado para su integración inmediata a la Suite Documental de HealthDesk Quantux.**

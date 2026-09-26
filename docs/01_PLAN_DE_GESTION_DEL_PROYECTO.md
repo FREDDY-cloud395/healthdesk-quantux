@@ -18,6 +18,7 @@
 | **v0.1** | 24/08/2026 | Freddy Cortés | Estructuración inicial del alcance y relevamiento de soporte. |
 | **v0.2** | 26/08/2026 | Freddy Cortés | Calibración de roles, matriz de esfuerzo y riesgos preventivos. |
 | **v1.0** | 28/08/2026 | Freddy Cortés | **Versión Oficial de Línea Base del MVP.** |
+| **v1.1** | 26/09/2026 | Freddy Cortés | **Fase de Hardening, Scope Freeze, Deadline Técnico 28-Sep y Evaluación en Proceso & Calidad.** |
 
 ---
 
@@ -135,41 +136,82 @@ El proyecto adopta un marco Ágil (Iterativo e Incremental) bajo la modalidad Sc
   * Entregables: Mitigación de gaps visuales, tablero interactivo y compliance pre-commit.
 * **Sprint 6 (26-sep al 01-oct):** *Fase de Hardening, Estabilización Final y Presentación al Comité Evaluador.*
   * **Hito Rectivo (Scope Freeze Total):** Bloqueo total de nuevas funcionalidades. Foco exclusivo en Testing, Debugging, Calidad OJO y Cierre de Retrabajos (`UH-67`, `MEJ-08`).
+  * **Corte Técnico Definitivo (Hardening Freeze):** **Lunes 28 de Septiembre de 2026 a las 18:00 hs.** A partir de este momento rige un congelamiento absoluto de código para blindar el tiempo de preparación.
+  * **Ventana de Preparación y Ensayos del Solution Owner:** **29 y 30 de Septiembre de 2026 (48 hs blindadas e ininterrumpidas)** para ajuste de diapositivas, práctica del storytelling del MVP y simulacro de preguntas del Comité.
   * **Hito de Demostración Formal:** **01 de Octubre de 2026 — Presentación Ejecutiva y Evaluación Final del Producto ante el Comité Evaluador.**
+
+#### 6.1. Desglose Operativo del Sprint 6 (Hardening hacia el 01-Oct)
+| Fecha | Foco Operativo | Entregables / Hitos Clave |
+| :--- | :--- | :--- |
+| **Sábado 26/09 (Hoy)** | Blindaje de Gobernanza y Setup | Supresión de toolbar (`MEJ-08`), Scope Freeze activo en Tablero y definición técnica de retrabajo `UH-67`. |
+| **Domingo 27/09** | Cierre de Retrabajos y Revisión SO | Implementación de `UH-67`, revisión de ítems en QA por el Solution Owner y emisión del Dossier Previo al Comité Evaluador. |
+| **Lunes 28/09 (18:00 hs)** | **DEADLINE TÉCNICO & HARDENING FREEZE** | Ejecución masiva de suites TDD, compliance OJO 100%, congelamiento total de código y base de datos SQLite respaldada. |
+| **Martes 29/09** | Ensayos del Solution Owner (Día 1) | Calibración de diapositivas ejecutivas, narrativa de los 5 pasos del MVP e integración de observaciones tempranas del Comité. |
+| **Miércoles 30/09** | Ensayo General / Dry Run (Día 2) | Simulacro de pitch cronometrado (15 min) y preparación de respuestas sobre arquitectura y gobernanza. |
+| **Jueves 01/10** | **DÍA D: EVALUACIÓN Y DEMO FINAL** | Demostración operativa en vivo ante Paula Sbarbati, Diego Martínez, Carolina Brizuela y Nicolás Sánchez. |
 
 ---
 
 ### 7. Catálogo de Entregables del Proyecto
 1. **Paquete Documental:**
-   * Doc 01: Plan de Gestión del Proyecto.
-   * Doc 02: Especificación Funcional y Backlog.
-   * Doc 03: Arquitectura y Diseño Técnico.
-   * Doc 04: Guía de Demostración Operativa.
-   * Doc 08: Marco de Trabajo PMI + IA y Gobernanza de Calidad (DOC-GOV-008).
+   * Doc 01: Plan de Gestión del Proyecto (DOC-MGT-001 v1.1).
+   * Doc 02: Especificación Funcional y Backlog (DOC-REQ-002 v1.1).
+   * Doc 03: Arquitectura y Diseño Técnico (DOC-ARC-003 v2.0).
+   * Doc 04: Informe de Pruebas y Evidencias de Calidad (DOC-QA-004 v1.1).
+   * Doc 05: Manual Operativo y Guía de Usuario (DOC-OPS-005 v3.0).
+   * Doc 06/07: Presentación Ejecutiva y Guión de Demostración (DOC-COM-007 v1.1).
+   * Doc 08: Marco de Trabajo PMI + IA y Gobernanza de Calidad (DOC-GOV-008 v1.1).
+   * Dossier de Entrega Anticipada para el Comité Evaluador.
    * *Criterio de Aceptación:* Aprobación formal por el Comité Evaluador.
 2. **Paquete de Software:**
-   * Aplicación Backend con base de datos configurada.
-   * Frontend de operación Cockpit en pantalla única.
+   * Aplicación Backend con base de datos SQLite transaccional configurada.
+   * Frontend de operación Cockpit en pantalla única y Pizarra Neutral Quantux.
    * Dataset de prueba con las 9 plataformas y 14 clientes precargados.
    * *Criterio de Aceptación:* Ejecución funcional sin errores ni dependencias externas.
 3. **Paquete de Calidad:**
-   * Validación del circuito de estados y reglas de negocio.
-   * Historial de auditoría completo.
-   * Checklist del caso de demo (5 pasos).
-   * *Criterio de Aceptación:* Cumplimiento del criterio de éxito del MVP.
+   * Validación del circuito de estados y reglas de negocio ITIL.
+   * Historial de auditoría completo y trazabilidad de cambios.
+   * Checklist del caso de demo (5 pasos del MVP).
+   * 25 tests unitarios e integrales automatizados con salida Exit Code 0.
+   * *Criterio de Aceptación:* Cumplimiento del criterio de éxito del MVP y cero defectos bloqueantes.
 
 ---
 
 ### 8. Gestión Preventiva de Riesgos del Proyecto
 * **R-01: Desvío del Alcance (Nivel: ALTO)**
   * *Riesgo:* Incorporar funcionalidades fuera del MVP.
-  * *Mitigación:* Blindaje estricto en los puntos del MVP; lo demás queda formalmente diferido.
+  * *Mitigación:* Blindaje estricto en los puntos del MVP bajo regla de **Scope Freeze**; todo requerimiento emergente queda registrado en el Product Backlog.
 * **R-02: Interfaz Poco Intuitiva (Nivel: ALTO)**
   * *Riesgo:* Dificultad de adopción por operadores de soporte o solicitantes.
-  * *Mitigación:* Validar pantallas y usabilidad de forma temprana con el Referente Funcional.
+  * *Mitigación:* Validar pantallas y usabilidad de forma temprana con el Referente Funcional (Pizarra Neutral, Senior UX, sin saturación visual).
 * **R-03: Demoras en Integración E2E (Nivel: ALTO)**
   * *Riesgo:* Falla o demora en conectar el circuito de 5 pasos.
-  * *Mitigación:* Flujo principal conectado y probado al cierre de la Semana 3.
+  * *Mitigación:* Flujo principal conectado, probado y auditado en suite TDD con pre-commit gates activos.
 * **R-04: Modelado Inadecuado (Nivel: MEDIO)**
   * *Riesgo:* Categorías o prioridades no alineadas a las plataformas reales.
   * *Mitigación:* Parametrizar categorías y prioridades con el Referente Funcional.
+* **R-05: Déficit de Tiempo para Preparación de la Presentación (Nivel: ALTO)**
+  * *Riesgo:* Que el Solution Owner llegue a la demo del 01-Oct sin tiempo suficiente para ensayar la narrativa y dominar las transiciones.
+  * *Mitigación:* Adelantamiento mandatorio del Deadline Técnico al Lunes 28/09 a las 18:00 hs, reservando el 29 y 30 de Septiembre como ventanas 100% blindadas para preparación y ensayos.
+
+#### 8.1. Matriz de Alerta Temprana de Desvíos (Early Warning System)
+| Nivel de Alerta | Condición Disparadora | Momento de Control | Acción de Mitigación Inmediata |
+| :---: | :--- | :--- | :--- |
+| 🟢 **VERDE** | Tareas de hardening en curso normal; tests pasando al 100%. | Domingo 27/09 14:00 hs | Continuar flujo de estabilización estándar. |
+| 🟡 **AMARILLO** | Retrabajo `UH-67` presenta demoras en pruebas o ajustes. | Domingo 27/09 16:00 hs | Simplificación técnica del componente acotada exclusivamente al caso de demo sin tocar lógica profunda. |
+| 🔴 **ROJO** | Cualquier fallo técnico que persista pasadas las 14:00 hs del Lunes 28/09. | Lunes 28/09 14:00 hs | **Descope Preventivo Inmediato:** Se mueve el ítem observado al Product Backlog. **Bajo ninguna circunstancia se extiende el deadline técnico de las 18:00 hs.** |
+
+---
+
+### 9. Estrategia de Evaluación del Comité: Enfoque en Proceso de Desarrollo y Calidad
+El Comité Evaluador ha determinado priorizar la evaluación del **Proceso de Desarrollo** y el **Aseguramiento de Calidad**, constituyendo este enfoque la principal fortaleza diferencial del proyecto:
+
+1. **Fortalezas en Proceso de Desarrollo (Marco PMI + IA):**
+   * **Trazabilidad Integral Bidireccional:** Conexión estricta entre cada Historia de Usuario, su criterio Gherkin en `DOC-SPEC-002`, su tarjeta en el Tablero Scrumban y su commit versionado en Git.
+   * **Adaptación Metodológica PMBOK® 7ª Edición:** Gobernanza formal bajo estándar híbrido (`DOC-GOV-008`), delimitación estricta de roles (RACI) y política de no alucinación.
+   * **Control Visual en Tiempo Real:** Tablero Scrumban interactivo con 6 columnas, visualización de métricas de velocidad (Velocity Chart) y roadmap sincronizado.
+2. **Fortalezas en Calidad y Estabilización Técnica (Hardening):**
+   * **Compuertas de Calidad Pre-Commit (Quality Gates):** Hook automatizado en `.git/hooks/pre-commit` que bloquea commits que no superen el 100% de las pruebas o violen restricciones.
+   * **Regla OJO y Pizarra Neutral:** Validación automatizada con `validate_ojo_compliance.py` (cero tarjetas rotas, cero colores rojos invasivos, cero terminología clínica en sistemas TI).
+   * **Auditoría Forense TQM y Coherencia Visual:** Documento comparativo que certifica la fidelidad visual de la implementación frente a los mockups oficiales.
+   * **Cobertura de Pruebas Automatizadas:** 25 tests unitarios y de integración (DOM, backend ITIL, bot gestor y catálogo multi-tenant) ejecutados con éxito permanente.

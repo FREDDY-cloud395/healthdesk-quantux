@@ -16,6 +16,13 @@
 
 ---
 
+### Control de Versiones y Distribución
+| Versión | Fecha | Responsable | Detalle de Modificaciones / Estado |
+| :--- | :--- | :--- | :--- |
+| **v1.0** | 26/09/2026 | Freddy Cortés | **Emisión del Dossier de Entrega Previa:** Paquete documental consolidado en 5 módulos para el Comité Evaluador hacia la demo del 01-Oct-2026. |
+
+---
+
 ## 1. Propósito de este Documento
 
 Este dossier consolida el **paquete documental y técnico integral** de HealthDesk Quantux para su **revisión previa y evaluación anticipada** por parte de los miembros del Comité Evaluador, con el propósito de:
@@ -123,7 +130,7 @@ flowchart TD
 
 ## 4. Canales y Mecanismo para Devolución Temprana
 
-Agradecemos al Comité Evaluador remitir sus consultas, devoluciones u observaciones técnicas y funcionales con anterioridad al **30 de Septiembre de 2026** a fin de ser incorporadas en los ensayos finales del pitch:
+Agradecemos al Comité Evaluador remitir sus consultas, devoluciones u observaciones técnicas y funcionales con anterioridad al **Lunes 28 de Septiembre a las 18:00 hs** (corte técnico) o a lo largo del **Martes 29 de Septiembre** a fin de ser incorporadas y respondidas con solvencia durante los ensayos finales y la demostración oficial del 01 de Octubre:
 
 | Evaluador | Enfoque Principal de Revisión Sugerido |
 | :--- | :--- |

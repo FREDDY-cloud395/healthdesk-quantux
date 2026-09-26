@@ -13,6 +13,14 @@
 
 ---
 
+### Control de Versiones y Distribución
+| Versión | Fecha | Responsable | Detalle de Modificaciones / Estado |
+| :--- | :--- | :--- | :--- |
+| **v1.0** | 28/08/2026 | Freddy Cortés | **Línea Base Operativa:** Guía de uso de 5 pasos para médicos, personal de salud y operadores. |
+| **v3.0** | 26/09/2026 | Freddy Cortés | **Edición Amigable para Usuarios y Equipos de Salud:** Adaptación UX Senior, despojo de terminología técnica innecesaria y alineación para demo del 01-Oct. |
+
+---
+
 ## 1. BIENVENIDA Y CONCEPTOS BÁSICOS
 
 Bienvenido a **HealthDesk Quantux**, la mesa de ayuda unificada diseñada para hacer simple, ágil y transparente la atención de requerimientos e incidencias tecnológicas en tu institución de salud.

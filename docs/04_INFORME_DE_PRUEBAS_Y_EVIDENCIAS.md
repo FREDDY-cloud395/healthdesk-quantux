@@ -2,12 +2,20 @@
 ## DOC-QA-004: INFORME DE PRUEBAS FUNCIONALES, VALIDACIÓN Y EVIDENCIAS DE CALIDAD
 
 **Código Documental:** DOC-QA-004  
-**Versión:** 1.0 (Línea Base Oficial de Cierre - Sprint 4/5)  
-**Fecha:** Agosto 2026  
+**Versión:** 1.1 Oficial (Hardening & Quality Gates Pre-Commit)  
+**Fecha de Línea Base:** Agosto 2026 | **Fecha de Versión 1.1:** 26 de Septiembre de 2026  
 **Líder Funcional / Solution Owner:** Freddy Cortés (Analista Funcional)  
 **Facilitador Técnico:** Diego Martínez  
 **Comité Evaluador:** Paula Sbarbati, Diego Martínez, Carolina Brizuela, Nicolás Sánchez  
-**Estado:** APROBADO (100% de Pruebas Exitosas)
+**Estado:** CERTIFICADO / COMPLIANT 100%
+
+---
+
+### Control de Versiones y Distribución
+| Versión | Fecha | Responsable | Detalle de Modificaciones / Estado |
+| :--- | :--- | :--- | :--- |
+| **v1.0** | 28/08/2026 | Freddy Cortés | **Línea Base Oficial de QA:** 7 pruebas E2E automatizadas, 32 UHs validadas y dictamen de pase a producción. |
+| **v1.1** | 26/09/2026 | Freddy Cortés | **Fase de Hardening & Blindaje:** Incorporación de 25 tests unitarios/DOM/ITIL, pre-commit gates activos, certificación de Regla OJO y auditoría de coherencia visual. |
 
 ---
 
@@ -124,3 +132,18 @@ Habiéndose ejecutado satisfactoriamente el 100% de los casos de prueba previsto
 * **Freddy Cortés** — Solution Owner / Analista Funcional
 * **Diego Martínez** — Facilitador Técnico
 * **Comité Evaluador:** Paula Sbarbati • Diego Martínez • Carolina Brizuela • Nicolás Sánchez
+
+---
+
+## 7. CERTIFICACIÓN DE CALIDAD EN FASE DE HARDENING (SPRINT 6)
+
+Conforme a la política de aseguramiento de calidad y preparación hacia el hito del **01 de Octubre de 2026**, se incorporaron y validaron las siguientes compuertas automatizadas:
+
+| Componente de Calidad | Tipo de Prueba | Estado | Evidencia / Verificación |
+| :--- | :--- | :---: | :--- |
+| **Regla OJO y Pizarra Neutral** | Linter estático y DOM | 🟢 PASS | `validate_ojo_compliance.py` con 0 violaciones detectadas. |
+| **Cumplimiento Visual DOM** | Selenium / DOM inspector | 🟢 PASS | `tests/test_dom_visual_compliance.py` (6/6 tests exitosos). |
+| **Integridad Backend ITIL** | Integración relacional FastAPI/SQLite | 🟢 PASS | `backend/tests/test_reemplazo_n1_suite.py` (5/5 tests exitosos). |
+| **Bot Gestor y KCS v6** | Flujo multi-rol y base de conocimiento | 🟢 PASS | `tests/test_ticket_manager_bot_and_kb.py` (4/4 tests exitosos). |
+| **Mejoras UX Senior & Filtros** | Suite unitaria integral | 🟢 PASS | `tests/test_mej04_mej07_multitenant_ux.py` (25/25 tests exitosos). |
+| **Pre-Commit Hook Guard** | Gate Git antes de commit | 🟢 PASS | `.git/hooks/pre-commit` bloquea activamente cualquier transgresión. |

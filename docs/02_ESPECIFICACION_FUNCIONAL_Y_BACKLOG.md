@@ -1,10 +1,19 @@
 # 📑 DOCUMENTO 2: ESPECIFICACIÓN FUNCIONAL Y BACKLOG
-**Código:** DOC-REQ-002 (Versión 1.0 Oficial)
+**Código:** DOC-REQ-002 (Versión 1.1 Oficial)
 **Proyecto:** HealthDesk Quantux — Sistema Centralizado de Gestión de Tickets de Soporte
 **Organización:** Quantux Salud
 **Solution Owner:** Freddy Cortés (Analista Funcional)
-**Dimensión:** 6 Épicas | 32 Historias de Usuario | 75 Story Points
-**Fecha:** 28 de Agosto de 2026
+**Dimensión:** 6 Épicas | 48 Historias de Usuario Consolidadas | 148 Story Points
+**Fecha de Línea Base:** 28 de Agosto de 2026 | **Fecha de Versión 1.1:** 26 de Septiembre de 2026
+**Comité Evaluador:** Paula Sbarbati, Diego Martínez, Carolina Brizuela, Nicolás Sánchez
+
+---
+
+### Control de Versiones y Distribución
+| Versión | Fecha | Responsable | Detalle de Modificaciones / Estado |
+| :--- | :--- | :--- | :--- |
+| **v1.0** | 28/08/2026 | Freddy Cortés | **Línea Base Funcional Oficial del MVP:** 32 Historias de Usuario, 6 Épicas, circuitos de 5 estados ITIL y catálogos de 9 plataformas y 14 clientes. |
+| **v1.1** | 26/09/2026 | Freddy Cortés | **Consolidación de Backlog (48 UHs), Política de Scope Freeze y Aislamiento de Evolutivos:** Congelamiento de alcance para demo del 01-Oct-2026, incorporación de UH-33 a UH-69, y derivación mandatoria de nuevos requerimientos al Product Backlog. |
 
 ---
 
@@ -341,4 +350,18 @@ En virtud del protocolo de adaptación PMI y aseguramiento de calidad, todo gap 
     4. Trazabilidad inmutable e indexada en SQLite (`ix_kb_contributions_article`, `ix_kb_contributions_ticket`) y sincronización con el tablero Scrumban.
 
 *(El detalle completo de narrativas, escenarios Gherkin y criterios de adaptación se encuentra en el Documento DOC-GOV-008, DOC-QA-004 y en el Tablero Scrumban interactivo docs/00_Tablero_Scrumban_Quantux.html).*
+
+---
+
+### 4. Gobernanza del Backlog: Alcance Cerrado (Scope Freeze) y Trazabilidad
+
+> [!IMPORTANT]
+> **POLÍTICA MANDATORIA DE ALCANCE CERRADO (SCOPE FREEZE):**  
+> Habiéndose consolidado la especificación de las **48 Historias de Usuario (148 Story Points)**, el alcance funcional del producto para la presentación oficial del **01 de Octubre de 2026** queda formal y estrictamente cerrado.  
+> 1. Ninguna nueva historia de usuario, requerimiento de alcance o funcionalidad adicional podrá ser admitida para desarrollo en el Sprint 6 (Hardening).  
+> 2. Toda propuesta, optimización futura o requerimiento emergente (por ejemplo, el comportamiento de botones al cerrar tickets catalogado en `ISSUE-19`) será registrado exclusivamente en la columna `📋 Product Backlog` con estado `backlog`.  
+> 3. La única actividad autorizada en el ciclo actual consiste en:  
+>    * Cierre de no-conformidades y retrabajos funcionales (`UH-67`, `MEJ-08`).  
+>    * Aseguramiento de calidad TDD y cumplimiento estricto de la Regla OJO / Pizarra Neutral.  
+>    * Congelamiento técnico total el **Lunes 28 de Septiembre a las 18:00 hs**, garantizando 48 hs libres al Solution Owner para la preparación y ensayos de la demo.
 
