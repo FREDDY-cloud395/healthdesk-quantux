@@ -30,7 +30,7 @@ def generate_scrumban_board():
         {"id": "Sprint 3", "name": "Sprint 3: Cockpit 3 Columnas & Selector Roles", "sp": 43, "status": "Completado", "dates": "07/09/2026 - 11/09/2026", "desc": "Bandeja unificada, cockpit operativo y selector de perfiles sin recargar."},
         {"id": "Sprint 4", "name": "Sprint 4: Integración E2E, Notas & Auditoría", "sp": 46, "status": "Completado", "dates": "14/09/2026 - 18/09/2026", "desc": "Circuito E2E, notas internas privadas y timeline inmutable de cambios."},
         {"id": "Sprint 5", "name": "Sprint 5: Estabilización, Certificación UAT & Release v1.0", "sp": 14, "status": "Completado", "dates": "21/09/2026 - 25/09/2026", "desc": "Pase a producción, dataset de 14 clientes y cierre de línea base MVP."},
-        {"id": "Sprint 6", "name": "⚡ Sprint 6: Hardening, Estabilización & Cierre Técnico", "sp": 36, "status": "ACTIVO (HARDENING)", "dates": "26/09/2026 - 28/09/2026", "desc": "Blindaje de calidad, TDD pre-commit gates, resolución de retrabajos (UH-67, MEJ-08) y congelamiento 28-Sep."},
+        {"id": "Sprint 6", "name": "⚡ Sprint 6: Pruebas, Estabilización & Cierre de Alcance", "sp": 36, "status": "ACTIVO (PRUEBAS)", "dates": "26/09/2026 - 28/09/2026", "desc": "Gobernanza PMI+IA, blindaje OJO, resolución de retrabajos (UH-67, MEJ-08) y congelamiento 28-Sep."},
         {"id": "Sprint 7", "name": "Sprint 7: Reemplazo N1 & Omnicanalidad", "sp": 35, "status": "Planificado", "dates": "05/10/2026 - 16/10/2026", "desc": "Triage inteligente y asistencia de primer nivel para prestadores."},
         {"id": "Sprint 8", "name": "Sprint 8: Telemetría Enterprise & HL7", "sp": 40, "status": "Planificado", "dates": "19/10/2026 - 30/10/2026", "desc": "Integración avanzada, métricas en tiempo real y conectividad hospitalaria."}
     ]
@@ -42,7 +42,7 @@ def generate_scrumban_board():
         {"id": "M3", "date": "11-Sep-2026", "title": "Cockpit Centralizado en 3 Columnas Operativo", "status": "done", "badge": "Completado"},
         {"id": "M4", "date": "18-Sep-2026", "title": "Circuito E2E Integrado con Trazabilidad de Auditoría", "status": "done", "badge": "Completado"},
         {"id": "M5", "date": "25-Sep-2026", "title": "Liberación Certificada Release v1.0 MVP Quantux Salud", "status": "done", "badge": "Completado"},
-        {"id": "M6", "date": "28-Sep-2026", "title": "Deadline Técnico & Hardening Freeze (18:00 hs)", "status": "current", "badge": "HARDENING EN CURSO"},
+        {"id": "M6", "date": "28-Sep-2026", "title": "Deadline Técnico & Congelamiento de Código (18:00 hs)", "status": "current", "badge": "PRUEBAS & ESTABILIZACIÓN"},
         {"id": "M7", "date": "29 y 30-Sep", "title": "Ensayos y Preparación Pitch del Solution Owner (Blindado)", "status": "planned", "badge": "PREPARACIÓN PITCH"},
         {"id": "M8", "date": "01-Oct-2026", "title": "Presentación Oficial del Producto ante el Comité Evaluador", "status": "planned", "badge": "DEMO FINAL"},
         {"id": "M9", "date": "16-Oct-2026", "title": "Release v1.1 Reemplazo N1 y Despliegue Asistencial", "status": "planned", "badge": "Planificado"}
@@ -3046,7 +3046,7 @@ def generate_scrumban_board():
     </div>
 
     <div class="header-badges">
-      <span class="status-pill" style="background: #FEF3C7; color: #92400E; border: 1px solid #FCD34D;">● FASE: Hardening & Estabilización (Code Freeze)</span>
+      <span class="status-pill" style="background: #FEF3C7; color: #92400E; border: 1px solid #FCD34D;">● FASE: Pruebas & Estabilización</span>
       <span class="timebox-pill" style="background: #E0F2FE; color: #0369A1; border: 1px solid #BAE6FD;">🎯 Presentación al Comité Evaluador: 01-Oct-2026</span>
     </div>
   </header>
@@ -3082,103 +3082,117 @@ def generate_scrumban_board():
     </div>
   </div>
 
-  <!-- METRICS STRIP -->
-  <section class="metrics-bar">
-    <div class="metric-card">
-      <span class="metric-label">Progreso del Backlog</span>
-      <span class="metric-val" id="metric-progress" style="color: #10B981;">173 <small>/ 274 SP (63.1%)</small></span>
+  <!-- BARRA DE TOGGLE PARA COLAPSAR/DESPLEGAR MÉTRICAS Y FILTROS -->
+  <div class="top-toggle-bar" style="display: flex; justify-content: space-between; align-items: center; padding: 6px 20px; background: #F8FAFC; border-bottom: 1.5px solid #E2E8F0;">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <span style="font-size: 11px; font-weight: 800; background: #E0F2FE; color: #0369A1; border: 1px solid #BAE6FD; padding: 2px 8px; border-radius: 4px;">⚡ SPRINT 6 ACTIVO</span>
+      <span style="font-size: 11px; color: #64748B; font-weight: 500;">Filtrado por defecto en el Sprint en curso • Pruebas & Estabilización (36 SP)</span>
     </div>
-    <div class="metric-card">
-      <span class="metric-label">Sprint 6 (Actual)</span>
-      <span class="metric-val" style="color: #0284C7;">36 SP <small>(5 SP Done, 31 SP en curso)</small></span>
-    </div>
-    <div class="metric-card">
-      <span class="metric-label">Items Totales</span>
-      <span class="metric-val" id="metric-stories">65 Items <small>(9 Épicas, 48 UHs)</small></span>
-    </div>
-    <div class="metric-card">
-      <span class="metric-label">Velocidad Promedio</span>
-      <span class="metric-val">33 SP <small>/ Sprint</small></span>
-    </div>
-    <div class="metric-card">
-      <span class="metric-label">Conformidad OJO</span>
-      <span class="metric-val" style="color: #D97706;">96% <small>2 Issues P1 en Backlog</small></span>
-    </div>
-    <div class="metric-card">
-      <span class="metric-label">Solution Owner</span>
-      <span class="metric-val" style="font-size: 13px; margin-top: 4px;">Freddy Cortés <small>(Tech Lead)</small></span>
-    </div>
-  </section>
+    <button id="btn-toggle-header-panel" onclick="toggleHeaderPanel()" style="background: #FFFFFF; border: 1.5px solid #CBD5E1; color: #334155; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); font-family: 'Montserrat', sans-serif;">
+      <span id="toggle-header-icon">🔽</span> <span id="toggle-header-text">Desplegar Métricas y Filtros</span>
+    </button>
+  </div>
 
-  <!-- CONTROLS & FILTERS -->
-  <section class="controls-bar">
-    <div class="filters-group">
-      <div class="filter-item">
-        <label for="filter-sprint">Sprint:</label>
-        <select id="filter-sprint" onchange="renderCurrentView()">
-          <option value="ALL" selected>Todos los Sprints y Backlog</option>
-          <option value="Sprint 6">⚡ Sprint 6 (ACTUAL): Gobernanza PMI+IA & Calidad OJO (36 SP)</option>
-          <option value="Product Backlog">📌 Product Backlog: Gaps, Mejoras y Futuros (26 SP)</option>
-          <option value="Sprint 5">✅ Sprint 5: Sidebar Zen & Ergonomía (14 SP)</option>
-          <option value="Sprint 4">✅ Sprint 4: Catálogo, Team Leader & Suite Médicos (46 SP)</option>
-          <option value="Sprint 3">✅ Sprint 3: Analytics, Directorio, Email & CSAT (43 SP)</option>
-          <option value="Sprint 2">✅ Sprint 2: Workspace Zen, Alta & Multi-Servicio (32 SP)</option>
-          <option value="Sprint 1">✅ Sprint 1: Incidentes Masivos, Releases & Bandeja (30 SP)</option>
-        </select>
+  <!-- CONTENEDOR COLAPSABLE DE MÉTRICAS Y FILTROS (COLAPSADO POR DEFECTO) -->
+  <div id="collapsible-header-panel" style="display: none;">
+    <!-- METRICS STRIP -->
+    <section class="metrics-bar">
+      <div class="metric-card">
+        <span class="metric-label">Progreso del Backlog</span>
+        <span class="metric-val" id="metric-progress" style="color: #10B981;">173 <small>/ 274 SP (63.1%)</small></span>
       </div>
+      <div class="metric-card">
+        <span class="metric-label">Sprint 6 (Actual)</span>
+        <span class="metric-val" style="color: #0284C7;">36 SP <small>(5 SP Done, 31 SP en curso)</small></span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-label">Items Totales</span>
+        <span class="metric-val" id="metric-stories">65 Items <small>(9 Épicas, 48 UHs)</small></span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-label">Velocidad Promedio</span>
+        <span class="metric-val">33 SP <small>/ Sprint</small></span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-label">Conformidad OJO</span>
+        <span class="metric-val" style="color: #D97706;">96% <small>2 Issues P1 en Backlog</small></span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-label">Solution Owner</span>
+        <span class="metric-val" style="font-size: 13px; margin-top: 4px;">Freddy Cortés <small>(Tech Lead)</small></span>
+      </div>
+    </section>
 
-      <div class="filter-item">
-        <label for="filter-type">Tipo de Item:</label>
-        <select id="filter-type" onchange="renderCurrentView()">
-          <option value="ALL" selected>Todos los Tipos</option>
-          <option value="ISSUE">🐞 Issues / Bugs (Alta Prioridad & Defectos)</option>
-          <option value="UH">👤 Historias de Usuario (UHs)</option>
-          <option value="TASK">⚙️ Tareas Técnicas</option>
-          <option value="GAP">🔍 Gaps de Proceso / TQM</option>
-          <option value="MEJORA">⚡ Mejoras Evolutivas</option>
-          <option value="OPORTUNIDAD">💡 Oportunidades de Arquitectura</option>
-        </select>
-      </div>
+    <!-- CONTROLS & FILTERS -->
+    <section class="controls-bar">
+      <div class="filters-group">
+        <div class="filter-item">
+          <label for="filter-sprint">Sprint:</label>
+          <select id="filter-sprint" onchange="renderCurrentView()">
+            <option value="Sprint 6" selected>⚡ Sprint 6 (ACTUAL): Pruebas, Estabilización & Cierre de Alcance (36 SP)</option>
+            <option value="ALL">Todos los Sprints y Backlog</option>
+            <option value="Product Backlog">📌 Product Backlog: Gaps, Mejoras y Futuros (26 SP)</option>
+            <option value="Sprint 5">✅ Sprint 5: Sidebar Zen & Ergonomía (14 SP)</option>
+            <option value="Sprint 4">✅ Sprint 4: Catálogo, Team Leader & Suite Médicos (46 SP)</option>
+            <option value="Sprint 3">✅ Sprint 3: Analytics, Directorio, Email & CSAT (43 SP)</option>
+            <option value="Sprint 2">✅ Sprint 2: Workspace Zen, Alta & Multi-Servicio (32 SP)</option>
+            <option value="Sprint 1">✅ Sprint 1: Incidentes Masivos, Releases & Bandeja (30 SP)</option>
+          </select>
+        </div>
 
-      <div class="filter-item">
-        <label for="filter-epic">Épica / Módulo:</label>
-        <select id="filter-epic" onchange="renderCurrentView()">
-          <option value="ALL">Todas las Épicas</option>
-          <option value="16. Gobernanza & Calidad">16. Gobernanza & Calidad (DOC-GOV-008)</option>
-          <option value="17. Arquitectura & APIs">17. Arquitectura & APIs (Contratos SDD)</option>
-          <option value="14. Suite Médicos (Guardia)">14. Suite Médicos (Portal Solicitante)</option>
-          <option value="1. Incidentes Masivos">1. Incidentes Masivos</option>
-          <option value="2. Releases y Despliegues">2. Releases y Despliegues</option>
-          <option value="3. Bandeja General & Paginación">3. Bandeja General & Paginación</option>
-          <option value="4. Workspace Zen">4. Workspace Zen</option>
-          <option value="5. Alta Sin Ruido">5. Alta Sin Ruido</option>
-          <option value="6. Generalización Enterprise">6. Generalización Enterprise</option>
-          <option value="7. Tablero de Control Zen">7. Tablero de Control Zen</option>
-          <option value="8. Directorio de Usuarios Zen">8. Directorio de Usuarios Zen</option>
-          <option value="9. Ingesta Email Omnicanal">9. Ingesta Email Omnicanal</option>
-          <option value="10. Cierre & CSAT">10. Cierre & CSAT</option>
-          <option value="11. Catálogo Zen">11. Catálogo Zen</option>
-          <option value="12. Team Leader & Torre">12. Team Leader & Torre</option>
-          <option value="15. Sidebar Zen & Ergonomía">15. Sidebar Zen & Ergonomía</option>
-        </select>
-      </div>
+        <div class="filter-item">
+          <label for="filter-type">Tipo de Item:</label>
+          <select id="filter-type" onchange="renderCurrentView()">
+            <option value="ALL" selected>Todos los Tipos</option>
+            <option value="ISSUE">🐞 Issues / Bugs (Alta Prioridad & Defectos)</option>
+            <option value="UH">👤 Historias de Usuario (UHs)</option>
+            <option value="TASK">⚙️ Tareas Técnicas</option>
+            <option value="GAP">🔍 Gaps de Proceso / TQM</option>
+            <option value="MEJORA">⚡ Mejoras Evolutivas</option>
+            <option value="OPORTUNIDAD">💡 Oportunidades de Arquitectura</option>
+          </select>
+        </div>
 
-      <div class="filter-item">
-        <label for="filter-priority">Prioridad:</label>
-        <select id="filter-priority" onchange="renderCurrentView()">
-          <option value="ALL">Todas las Prioridades</option>
-          <option value="P1">P1 — Alta Prioridad / Bloqueante</option>
-          <option value="P2">P2 — Alta</option>
-          <option value="P3">P3 — Media</option>
-          <option value="P4">P4 — Baja</option>
-        </select>
-      </div>
+        <div class="filter-item">
+          <label for="filter-epic">Épica / Módulo:</label>
+          <select id="filter-epic" onchange="renderCurrentView()">
+            <option value="ALL">Todas las Épicas</option>
+            <option value="16. Gobernanza & Calidad">16. Gobernanza & Calidad (DOC-GOV-008)</option>
+            <option value="17. Arquitectura & APIs">17. Arquitectura & APIs (Contratos SDD)</option>
+            <option value="14. Suite Médicos (Guardia)">14. Suite Médicos (Portal Solicitante)</option>
+            <option value="1. Incidentes Masivos">1. Incidentes Masivos</option>
+            <option value="2. Releases y Despliegues">2. Releases y Despliegues</option>
+            <option value="3. Bandeja General & Paginación">3. Bandeja General & Paginación</option>
+            <option value="4. Workspace Zen">4. Workspace Zen</option>
+            <option value="5. Alta Sin Ruido">5. Alta Sin Ruido</option>
+            <option value="6. Generalización Enterprise">6. Generalización Enterprise</option>
+            <option value="7. Tablero de Control Zen">7. Tablero de Control Zen</option>
+            <option value="8. Directorio de Usuarios Zen">8. Directorio de Usuarios Zen</option>
+            <option value="9. Ingesta Email Omnicanal">9. Ingesta Email Omnicanal</option>
+            <option value="10. Cierre & CSAT">10. Cierre & CSAT</option>
+            <option value="11. Catálogo Zen">11. Catálogo Zen</option>
+            <option value="12. Team Leader & Torre">12. Team Leader & Torre</option>
+            <option value="15. Sidebar Zen & Ergonomía">15. Sidebar Zen & Ergonomía</option>
+          </select>
+        </div>
 
-      <div class="filter-item">
-        <input type="text" id="search-input" placeholder="Buscar ID, título o palabra clave..." oninput="renderCurrentView()">
+        <div class="filter-item">
+          <label for="filter-priority">Prioridad:</label>
+          <select id="filter-priority" onchange="renderCurrentView()">
+            <option value="ALL">Todas las Prioridades</option>
+            <option value="P1">P1 — Alta Prioridad / Bloqueante</option>
+            <option value="P2">P2 — Alta</option>
+            <option value="P3">P3 — Media</option>
+            <option value="P4">P4 — Baja</option>
+          </select>
+        </div>
+
+        <div class="filter-item">
+          <input type="text" id="search-input" placeholder="Buscar ID, título o palabra clave..." oninput="renderCurrentView()">
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
+  </div>
 
   <!-- ========================================== -->
   <!-- VISTA 1: TABLERO SCRUMBAN (KANBAN) -->
@@ -3452,6 +3466,27 @@ def generate_scrumban_board():
       const priorityItems = ["UH-69", "ISSUE-07", "UH-68", "UH-67", "UH-66", "ISSUE-06", "ISSUE-05", "ISSUE-04"];
       priorityItems.forEach(id => syncIssueInBacklog(id));
 
+      // Filtro por defecto en el Sprint 6 en curso
+      const sprintSel = document.getElementById('filter-sprint');
+      if (sprintSel) {{
+        sprintSel.value = 'Sprint 6';
+      }}
+
+      // Panel de métricas y filtros colapsado por defecto
+      const headerPanel = document.getElementById('collapsible-header-panel');
+      const toggleIcon = document.getElementById('toggle-header-icon');
+      const toggleText = document.getElementById('toggle-header-text');
+      const savedCollapsed = localStorage.getItem('quantux_header_collapsed');
+      if (savedCollapsed === 'false') {{
+        if (headerPanel) headerPanel.style.display = 'block';
+        if (toggleIcon) toggleIcon.textContent = '🔼';
+        if (toggleText) toggleText.textContent = 'Colapsar Métricas y Filtros';
+      }} else {{
+        if (headerPanel) headerPanel.style.display = 'none';
+        if (toggleIcon) toggleIcon.textContent = '🔽';
+        if (toggleText) toggleText.textContent = 'Desplegar Métricas y Filtros';
+      }}
+
       renderCurrentView();
     }}
 
@@ -3559,6 +3594,9 @@ def generate_scrumban_board():
       }};
       div.ondragstart = (e) => drag(e, task.id);
 
+      div.tabIndex = 0;
+      div.onpaste = (e) => handleCardPaste(e, task.id);
+
       const type = task.type || 'UH';
       const badgeClass = 'badge-' + type.toLowerCase();
       const prio = task.priority || 'P3';
@@ -3587,7 +3625,7 @@ def generate_scrumban_board():
       }}
 
       let soFeedbackCardHtml = '';
-      if (task.so_feedback) {{
+      if (task.so_feedback && task.status !== 'rework') {{
         soFeedbackCardHtml = `
           <div style="background: #FFF1F2; border: 1.5px solid #F43F5E; border-radius: 6px; padding: 6px 8px; margin: 6px 0;">
             <div style="color: #9F1239; font-size: 10px; font-weight: 800; display: flex; align-items: center; gap: 4px;">
@@ -3601,14 +3639,80 @@ def generate_scrumban_board():
         `;
       }}
 
+      // PANEL EXCLUSIVO DE RETRABAJO EN TARJETA: OBSERVACIONES, CAPTURAS Y BOTÓN DEMONIO
+      let reworkCardHtml = '';
+      if (task.status === 'rework') {{
+        const obsVal = task.so_feedback ? (task.so_feedback.observation || '') : '';
+        reworkCardHtml = `
+          <div class="card-rework-panel" draggable="false" style="margin: 8px 0; background: #FFF1F2; border: 1.5px solid #F43F5E; border-radius: 6px; padding: 8px; text-align: left;" onclick="event.stopPropagation();">
+            <div style="font-size: 10px; font-weight: 800; color: #9F1239; display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+              <span style="display: flex; align-items: center; gap: 4px;">
+                <span>🔥</span> DEMONIO DE CORRECCIÓN
+              </span>
+              <span style="font-size: 8.5px; color: #BE123C; background: #FFE4E6; padding: 1px 6px; border-radius: 3px; font-weight: 800;">P1 PRIORITARIO</span>
+            </div>
+
+            <!-- OBSERVACIONES DEL SO / BUG A CORREGIR -->
+            <label style="font-size: 9.5px; font-weight: 700; color: #9F1239; display: block; margin-bottom: 3px;">
+              📝 Observación / Bug a corregir:
+            </label>
+            <textarea id="card-obs-${{task.id}}" draggable="false" onmousedown="event.stopPropagation();" onclick="event.stopPropagation();" oninput="updateCardObservation('${{task.id}}', this.value)" rows="2" placeholder="Escribí aquí la observación técnica o bug a corregir..." style="width: 100%; box-sizing: border-box; border: 1.5px solid #FDA4AF; border-radius: 4px; padding: 5px 7px; font-size: 11px; font-family: inherit; resize: vertical; background: #FFFFFF; color: #1E293B; margin-bottom: 6px; outline: none;">${{obsVal}}</textarea>
+
+            <!-- CONTROLES DE CAPTURA (ADJUNTAR Y PEGAR CON CTRL+V) -->
+            <input type="file" id="card-file-${{task.id}}" accept="image/*" style="display: none;" onchange="handleCardImageUpload('${{task.id}}', event)">
+            <div style="display: flex; gap: 4px; margin-bottom: 6px;">
+              <button type="button" draggable="false" onmousedown="event.stopPropagation();" onclick="event.stopPropagation(); document.getElementById('card-file-${{task.id}}').click();" style="flex: 1; background: #FFFFFF; color: #475569; border: 1px solid #CBD5E1; border-radius: 4px; padding: 4px 6px; font-size: 10px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;" title="Adjuntar imagen desde archivo">
+                <span>📷</span> Adjuntar
+              </button>
+              <button type="button" draggable="false" onmousedown="event.stopPropagation();" onclick="event.stopPropagation(); pasteCardImageFromClipboard('${{task.id}}');" style="flex: 1; background: #EFF6FF; color: #1D4ED8; border: 1px solid #BFDBFE; border-radius: 4px; padding: 4px 6px; font-size: 10px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;" title="Pegar captura del portapapeles o presionar Ctrl+V sobre la tarjeta">
+                <span>📋</span> Pegar (Ctrl+V)
+              </button>
+              ${{task.attachment_image ? `
+                <button type="button" draggable="false" onmousedown="event.stopPropagation();" onclick="event.stopPropagation(); removeCardImage('${{task.id}}');" style="background: #FEE2E2; color: #DC2626; border: 1px solid #FCA5A5; border-radius: 4px; padding: 4px 6px; font-size: 10px; font-weight: 700; cursor: pointer;" title="Eliminar captura adjunta">
+                  🗑️
+                </button>
+              ` : ''}}
+            </div>
+
+            <!-- BOTÓN DEMONIO: SOLO DEBE LLAMARSE DEMONIO -->
+            <button type="button" class="card-btn-demon" draggable="false" onmousedown="event.stopPropagation();" onclick="event.stopPropagation(); triggerDemonRework('${{task.id}}');" style="width: 100%; background: linear-gradient(135deg, #DC2626, #991B1B); color: white; border: none; border-radius: 5px; padding: 7px 10px; font-size: 11.5px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 2px 5px rgba(220,38,38,0.3); font-family: 'Montserrat', sans-serif;">
+              <span>🔥</span> Demonio
+            </button>
+
+            <!-- BARRA DE PROGRESO DEL DEMONIO EN LA TARJETA -->
+            <div id="card-demon-progress-box-${{task.id}}" style="display: none; margin-top: 6px; background: #450A0A; border-radius: 4px; padding: 6px; border: 1px solid #DC2626;">
+              <div style="display: flex; justify-content: space-between; font-size: 9.5px; font-weight: 800; color: #FCA5A5; margin-bottom: 3px;">
+                <span>⚡ DEMONIO EN EJECUCIÓN</span>
+                <span id="card-demon-pct-${{task.id}}" style="color: #FEF08A;">0%</span>
+              </div>
+              <div style="background: #1C1917; height: 8px; border-radius: 999px; overflow: hidden;">
+                <div id="card-demon-bar-${{task.id}}" style="width: 0%; height: 100%; background: linear-gradient(90deg, #DC2626, #F97316, #FACC15); transition: width 0.2s;"></div>
+              </div>
+              <div id="card-demon-msg-${{task.id}}" style="font-size: 9.5px; color: #FEE2E2; margin-top: 3px; font-weight: 600;">
+                Iniciando corrección de bug...
+              </div>
+            </div>
+          </div>
+        `;
+      }}
+
+      // BOTONES DE EVALUACIÓN EXCLUSIVOS DE QA (EN REVISIÓN)
+      let qaCardPanelHtml = '';
+      if (task.status === 'qa') {{
+        qaCardPanelHtml = `
+          <div class="card-qa-actions" draggable="false" style="margin-top: 6px; display: flex; gap: 4px;" onclick="event.stopPropagation();">
+            <button type="button" draggable="false" onmousedown="event.stopPropagation();" onclick="event.stopPropagation(); sendToReworkFromCard('${{task.id}}');" style="flex: 1; background: #FFF1F2; color: #BE123C; border: 1.5px solid #FDA4AF; border-radius: 5px; padding: 5px 8px; font-size: 10px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; font-family: 'Montserrat', sans-serif;" title="Rechazar y enviar a Retrabajo para activar el Demonio">
+              <span>❌</span> Enviar a Retrabajo
+            </button>
+            <button type="button" draggable="false" onmousedown="event.stopPropagation();" onclick="event.stopPropagation(); approveTaskDone('${{task.id}}');" style="flex: 1; background: #ECFDF5; color: #047857; border: 1.5px solid #6EE7B7; border-radius: 5px; padding: 5px 8px; font-size: 10px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; font-family: 'Montserrat', sans-serif;" title="Aprobar formalmente y marcar como completado (Done)">
+              <span>✅</span> Aprobar (Done)
+            </button>
+          </div>
+        `;
+      }}
+
       const isBacklog = (task.status || 'backlog') === 'backlog';
       const isDone = task.status === 'done';
-      const isQa = (task.status || '') === 'qa';
-      const demonBtnHtml = isQa ? `
-        <button class="card-btn-demon" draggable="false" onmousedown="event.stopPropagation();" onclick="event.stopPropagation(); openItemModal('${{task.id}}');" style="margin-top: 6px; width: 100%; background: linear-gradient(135deg, #FFF1F2, #FFE4E6); color: #BE123C; border: 1.5px solid #FDA4AF; border-radius: 5px; padding: 5px 8px; font-size: 10.5px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; font-family: 'Montserrat', sans-serif;">
-          <span>🔥</span> Activar Demonio / Evaluar
-        </button>
-      ` : '';
 
       div.innerHTML = `
         <div class="card-top">
@@ -3624,6 +3728,8 @@ def generate_scrumban_board():
         ${{docHtml}}
         ${{attachPreviewHtml}}
         ${{soFeedbackCardHtml}}
+        ${{reworkCardHtml}}
+        ${{qaCardPanelHtml}}
         <div class="card-meta">
           <span class="card-sprint-tag">${{task.sprint}}</span>
           <div class="card-actions">
@@ -3631,7 +3737,6 @@ def generate_scrumban_board():
             <button class="card-btn-move" draggable="false" onmousedown="event.stopPropagation();" onclick="event.stopPropagation(); moveTask('${{task.id}}', 1)" title="Mover a la derecha" ${{isDone ? 'disabled style="opacity: 0.3; cursor: not-allowed;"' : ''}}>▶</button>
           </div>
         </div>
-        ${{demonBtnHtml}}
         <button class="card-btn-detail" draggable="false" onmousedown="event.stopPropagation();" onclick="event.stopPropagation(); openItemModal('${{task.id}}')">
           <span>🔍</span> Ver Detalle Completo
         </button>
@@ -3851,19 +3956,25 @@ def generate_scrumban_board():
           </div>
 
           <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; align-items: center;">
-            <button type="button" class="btn" style="background: linear-gradient(135deg, #DC2626, #991B1B); color: white; border: none; font-weight: 800; font-size: 11.5px; padding: 9px 16px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 8px rgba(220, 38, 38, 0.35);" onclick="triggerDemonRework('${{task.id}}')">
-              <span>🔥</span> Activar Demonio (Retrabajo Prioritario P1)
-            </button>
+            ${{task.status === 'rework' ? `
+              <button type="button" class="btn" style="background: linear-gradient(135deg, #DC2626, #991B1B); color: white; border: none; font-weight: 800; font-size: 11.5px; padding: 9px 16px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 8px rgba(220, 38, 38, 0.35);" onclick="triggerDemonRework('${{task.id}}')">
+                <span>🔥</span> Demonio
+              </button>
+            ` : `
+              <button type="button" class="btn" style="background: linear-gradient(135deg, #DC2626, #991B1B); color: white; border: none; font-weight: 800; font-size: 11.5px; padding: 9px 16px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;" onclick="sendToReworkFromModal('${{task.id}}')">
+                <span>❌</span> Enviar a Retrabajo
+              </button>
+            `}}
             <button type="button" class="btn" style="background: linear-gradient(135deg, #16A34A, #15803D); color: white; border: none; font-weight: 800; font-size: 11.5px; padding: 9px 16px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 8px rgba(22, 163, 74, 0.35);" onclick="approveTaskDone('${{task.id}}')">
               <span>✅</span> Aprobar y Finalizar (Done)
             </button>
           </div>
 
-          <!-- BARRA DE PROGRESO EN VIVO DEL DEMONIO ("NO ES SILENCIOSO, MUESTRA EL AVANCE") -->
+          <!-- BARRA DE PROGRESO EN VIVO DEL DEMONIO -->
           <div id="demon-progress-box-${{task.id}}" style="display: none; margin-top: 14px; background: #450A0A; color: #FEF2F2; border: 2px solid #DC2626; border-radius: 8px; padding: 12px; box-shadow: 0 4px 16px rgba(185, 28, 28, 0.3);">
             <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11.5px; font-weight: 800; margin-bottom: 6px; color: #FCA5A5;">
               <span style="display: flex; align-items: center; gap: 6px;">
-                <span>⚡</span> DEMONIO DE RETRABAJO EN EJECUCIÓN (PRIORIDAD P1)
+                <span>⚡</span> DEMONIO EN EJECUCIÓN (PRIORIDAD P1)
               </span>
               <span id="demon-pct-label-${{task.id}}" style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #FEF08A;">0%</span>
             </div>
@@ -3884,7 +3995,7 @@ def generate_scrumban_board():
       currentModalTaskId = task.id;
       currentTaskImageData = task.attachment_image || '';
 
-      // Listener para pegar capturas directamente con Ctrl + V
+      // Listener para pegar capturas directamente con Ctrl + V dentro del modal
       document.onpaste = function(event) {{
         const items = (event.clipboardData || (event.originalEvent && event.originalEvent.clipboardData)) ? (event.clipboardData || event.originalEvent.clipboardData).items : null;
         if (!items) return;
@@ -3903,6 +4014,151 @@ def generate_scrumban_board():
 
     let currentModalTaskId = null;
     let currentTaskImageData = null;
+
+    function toggleHeaderPanel() {{
+      const panel = document.getElementById('collapsible-header-panel');
+      const icon = document.getElementById('toggle-header-icon');
+      const text = document.getElementById('toggle-header-text');
+      if (!panel) return;
+      const isHidden = (panel.style.display === 'none' || getComputedStyle(panel).display === 'none');
+      if (isHidden) {{
+        panel.style.display = 'block';
+        if (icon) icon.textContent = '🔼';
+        if (text) text.textContent = 'Colapsar Métricas y Filtros';
+        localStorage.setItem('quantux_header_collapsed', 'false');
+      }} else {{
+        panel.style.display = 'none';
+        if (icon) icon.textContent = '🔽';
+        if (text) text.textContent = 'Desplegar Métricas y Filtros';
+        localStorage.setItem('quantux_header_collapsed', 'true');
+      }}
+    }}
+
+    function updateCardObservation(taskId, val) {{
+      const task = tasks.find(t => t.id === taskId);
+      if (!task) return;
+      if (!task.so_feedback) {{
+        task.so_feedback = {{
+          status: 'OBSERVADO / EN RETRABAJO',
+          observation: val,
+          reviewer: 'Freddy Cortés (Solution Owner)',
+          date: new Date().toLocaleDateString('es-AR') + ' ' + new Date().toLocaleTimeString('es-AR', {{hour: '2-digit', minute: '2-digit'}})
+        }};
+      }} else {{
+        task.so_feedback.observation = val;
+      }}
+      saveState(false);
+    }}
+
+    function handleCardPaste(event, taskId) {{
+      const items = (event.clipboardData || (event.originalEvent && event.originalEvent.clipboardData)) ? (event.clipboardData || event.originalEvent.clipboardData).items : null;
+      if (!items) return;
+      for (let i = 0; i < items.length; i++) {{
+        if (items[i].type.indexOf('image') !== -1) {{
+          event.preventDefault();
+          event.stopPropagation();
+          const blob = items[i].getAsFile();
+          const reader = new FileReader();
+          reader.onload = function(e) {{
+            setCardTaskImage(taskId, e.target.result);
+          }};
+          reader.readAsDataURL(blob);
+          break;
+        }}
+      }}
+    }}
+
+    function pasteCardImageFromClipboard(taskId) {{
+      if (navigator.clipboard && navigator.clipboard.read) {{
+        navigator.clipboard.read().then(items => {{
+          for (const item of items) {{
+            const imageType = item.types.find(type => type.startsWith('image/'));
+            if (imageType) {{
+              item.getType(imageType).then(blob => {{
+                const reader = new FileReader();
+                reader.onload = function(e) {{
+                  setCardTaskImage(taskId, e.target.result);
+                }};
+                reader.readAsDataURL(blob);
+              }});
+              return;
+            }}
+          }}
+          alert('No se encontró ninguna imagen en el portapapeles. Copiá una captura con Win + Shift + S o Ctrl + C y volvé a intentar.');
+        }}).catch(() => {{
+          alert('Presioná directamente Ctrl + V sobre la tarjeta para pegar la captura.');
+        }});
+      }} else {{
+        alert('Presioná directamente Ctrl + V sobre la tarjeta para pegar la captura.');
+      }}
+    }}
+
+    function handleCardImageUpload(taskId, event) {{
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {{
+        setCardTaskImage(taskId, e.target.result);
+      }};
+      reader.readAsDataURL(file);
+    }}
+
+    function setCardTaskImage(taskId, dataUrl) {{
+      const task = tasks.find(t => t.id === taskId);
+      if (!task) return;
+      task.attachment_image = dataUrl;
+      saveState(false);
+      renderCurrentView();
+    }}
+
+    function removeCardImage(taskId) {{
+      const task = tasks.find(t => t.id === taskId);
+      if (!task) return;
+      task.attachment_image = '';
+      saveState(false);
+      renderCurrentView();
+    }}
+
+    function sendToReworkFromCard(taskId) {{
+      const task = tasks.find(t => t.id === taskId);
+      if (!task) return;
+      const prevObs = task.so_feedback ? task.so_feedback.observation : '';
+      const obs = prompt(`Indicar el motivo o bug observado para enviar ${{task.id}} a Retrabajo:`, prevObs || 'Desvío funcional observado durante revisión QA. Se requiere corrección prioritaria conforme a especificación.');
+      if (obs === null) return;
+      task.status = 'rework';
+      task.priority = 'P1';
+      const nowStr = new Date().toLocaleDateString('es-AR') + ' ' + new Date().toLocaleTimeString('es-AR', {{hour: '2-digit', minute: '2-digit'}});
+      task.so_feedback = {{
+        status: 'OBSERVADO / EN RETRABAJO',
+        observation: obs.trim() || 'Desvío funcional observado durante revisión QA. Se requiere corrección prioritaria.',
+        reviewer: 'Freddy Cortés (Solution Owner)',
+        date: nowStr
+      }};
+      saveState(false);
+      renderCurrentView();
+    }}
+
+    function sendToReworkFromModal(taskId) {{
+      const task = tasks.find(t => t.id === taskId);
+      if (!task) return;
+      const input = document.getElementById('modal-so-obs-' + taskId);
+      const obs = (input && input.value.trim()) ? input.value.trim() : 'Desvío funcional observado durante revisión QA. Se requiere corrección prioritaria conforme a especificación.';
+      task.status = 'rework';
+      task.priority = 'P1';
+      if (currentTaskImageData !== null && currentTaskImageData !== undefined && currentTaskImageData !== '') {{
+        task.attachment_image = currentTaskImageData;
+      }}
+      const nowStr = new Date().toLocaleDateString('es-AR') + ' ' + new Date().toLocaleTimeString('es-AR', {{hour: '2-digit', minute: '2-digit'}});
+      task.so_feedback = {{
+        status: 'OBSERVADO / EN RETRABAJO',
+        observation: obs,
+        reviewer: 'Freddy Cortés (Solution Owner)',
+        date: nowStr
+      }};
+      saveState(false);
+      renderCurrentView();
+      closeUHModal();
+    }}
 
     function handleModalImageUpload(taskId, event) {{
       const file = event.target.files && event.target.files[0];
@@ -3944,42 +4200,65 @@ def generate_scrumban_board():
       const task = tasks.find(t => t.id === taskId);
       if (!task) return;
 
-      const input = document.getElementById('modal-so-obs-' + taskId);
-      const obs = (input && input.value.trim()) ? input.value.trim() : 'Desvío funcional observado durante revisión QA. Se requiere corrección técnica prioritaria conforme a especificación.';
+      // Leer la observación de la tarjeta o del modal
+      let obs = '';
+      const cardObsInput = document.getElementById('card-obs-' + taskId);
+      const modalObsInput = document.getElementById('modal-so-obs-' + taskId);
+      if (cardObsInput && cardObsInput.value.trim()) {{
+        obs = cardObsInput.value.trim();
+      }} else if (modalObsInput && modalObsInput.value.trim()) {{
+        obs = modalObsInput.value.trim();
+      }} else if (task.so_feedback && task.so_feedback.observation) {{
+        obs = task.so_feedback.observation;
+      }} else {{
+        obs = 'Desvío funcional observado durante revisión QA. Se requiere corrección técnica prioritaria conforme a especificación.';
+      }}
 
+      // Elementos de la barra en la tarjeta
+      const cardBox = document.getElementById('card-demon-progress-box-' + taskId);
+      const cardBar = document.getElementById('card-demon-bar-' + taskId);
+      const cardPct = document.getElementById('card-demon-pct-' + taskId);
+      const cardMsg = document.getElementById('card-demon-msg-' + taskId);
+      if (cardBox) cardBox.style.display = 'block';
+
+      // Elementos de la barra en el modal
       const pBox = document.getElementById('demon-progress-box-' + taskId);
       const pBar = document.getElementById('demon-progress-bar-' + taskId);
       const pPct = document.getElementById('demon-pct-label-' + taskId);
       const pMsg = document.getElementById('demon-status-msg-' + taskId);
-
       if (pBox) pBox.style.display = 'block';
 
       const steps = [
-        {{ pct: 20, msg: '🔥 Despertando Demonio de Retrabajo e interceptando tarjeta...' }},
-        {{ pct: 45, msg: '🚨 Escalando prioridad a P1 (Bloqueante) en el Backlog...' }},
-        {{ pct: 70, msg: '📸 Procesando captura adjunta y dictamen oficial de auditoría...' }},
-        {{ pct: 90, msg: '⚡ Moviendo tarjeta a columna En Retrabajo / Observado (P1)...' }},
-        {{ pct: 100, msg: '¡Demonio activado! Tarjeta lista para intervención inmediata.' }}
+        {{ pct: 20, msg: '🔥 Demonio activado: interceptando bug en tarjeta...' }},
+        {{ pct: 45, msg: '🚨 Prioridad P1 Bloqueante asignada en el tablero...' }},
+        {{ pct: 70, msg: '📸 Procesando capturas y observaciones técnicas...' }},
+        {{ pct: 90, msg: '⚡ Aplicando correcciones en código y suite de pruebas...' }},
+        {{ pct: 100, msg: '¡Demonio finalizado! Listo para re-evaluación.' }}
       ];
 
       let currentStep = 0;
       function runNextStep() {{
         if (currentStep < steps.length) {{
           const s = steps[currentStep];
+          if (cardBar) cardBar.style.width = s.pct + '%';
+          if (cardPct) cardPct.textContent = s.pct + '%';
+          if (cardMsg) cardMsg.textContent = s.msg;
+
           if (pBar) pBar.style.width = s.pct + '%';
           if (pPct) pPct.textContent = s.pct + '%';
           if (pMsg) pMsg.textContent = s.msg;
+
           currentStep++;
-          setTimeout(runNextStep, 260);
+          setTimeout(runNextStep, 250);
         }} else {{
           task.priority = 'P1';
           task.status = 'rework';
-          if (currentTaskImageData !== null && currentTaskImageData !== undefined) {{
+          if (currentTaskImageData !== null && currentTaskImageData !== undefined && currentTaskImageData !== '') {{
             task.attachment_image = currentTaskImageData;
           }}
           const nowStr = new Date().toLocaleDateString('es-AR') + ' ' + new Date().toLocaleTimeString('es-AR', {{hour: '2-digit', minute: '2-digit'}});
           task.so_feedback = {{
-            status: 'OBSERVADO / RECHAZADO',
+            status: 'OBSERVADO / EN RETRABAJO',
             observation: obs,
             reviewer: 'Freddy Cortés (Solution Owner)',
             date: nowStr
@@ -3987,16 +4266,15 @@ def generate_scrumban_board():
           saveState(false);
           renderCurrentView();
 
-          // Copiar automáticamente al portapapeles para evitar redundancia
-          const clipMsg = `🔥 DEMONIO ACTIVADO: ${{task.id}} (${{task.title}}) pasó a Retrabajo Prioritario (P1).\\nObservación: "${{obs}}"`;
+          const clipMsg = `🔥 DEMONIO ACTIVADO (${{task.id}} - ${{task.title}}): Corrección de bug prioritario (P1).\\nObservación: "${{obs}}"`;
           if (navigator.clipboard && navigator.clipboard.writeText) {{
             navigator.clipboard.writeText(clipMsg).catch(() => {{}});
           }}
 
           setTimeout(() => {{
             closeUHModal();
-            alert(`🔥 ¡DEMONIO ACTIVADO CON ÉXITO!\\n\\nTarjeta: ${{task.id}} (${{task.title}})\\nPrioridad: P1 (Bloqueante)\\nEstado: En Retrabajo / Observado\\n\\nObservación registrada: "${{obs}}"\\n${{task.attachment_image ? '📷 Captura guardada en la tarjeta.\\n' : ''}}\\n(Mensaje copiado al portapapeles listo para pegar en el chat)`);
-          }}, 150);
+            alert(`🔥 ¡DEMONIO ACTIVADO!\\n\\nTarjeta: ${{task.id}} (${{task.title}})\\nPrioridad: P1 (Bloqueante)\\nEstado: En Retrabajo\\n\\nObservación: "${{obs}}"\\n${{task.attachment_image ? '📷 Captura guardada en la tarjeta.\\n' : ''}}\\n(Orden copiada al portapapeles)`);
+          }}, 120);
         }}
       }}
       runNextStep();
