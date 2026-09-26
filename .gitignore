@@ -22,6 +22,7 @@ backend/quantux_tickets.db
 backend/quantux_v4.db
 healthdesk.db
 quantux_tickets.db
+backups/
 backups/*.zip
 backups/*.db
 
