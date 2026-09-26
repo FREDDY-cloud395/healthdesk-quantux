@@ -190,3 +190,12 @@ Siga este orden cronológico exacto frente al comité o directorio:
 
 ### Pregunta 3: *"¿Por qué la suite documental técnica solo la ve el Administrador?"*
 * **Respuesta Sugerida:** *"Implementamos un principio estricto de gobernanza de información (RBAC). El personal médico, de guardia y analistas solo necesitan el Manual de Usuario Operativo (DOC-05), el cual está disponible para todos los roles desde el menú lateral. Las especificaciones de arquitectura, planes de gestión y contratos de API (DOC-01 a DOC-04 y DOC-06) contienen detalles internos de infraestructura y quedan reservados exclusivamente para la gerencia de tecnología y administradores del sistema."*
+
+### Pregunta 4: *"¿Por qué no arrancamos con un sistema en la nube pesada desde el día 1?"*
+* **Respuesta Estratégica (Enfoque Arquitectura / Diego Martínez):** *"Porque el objetivo fundacional de este MVP es validar el circuito operativo de 5 pasos en 5 semanas sin incurrir en costos de infraestructura ociosa ni trabas burocráticas de aprovisionamiento de IT. La arquitectura modular desacoplada en capas (FastAPI + SQLModel) nos permite migrar a cualquier nube corporativa (GCP Cloud Run / AWS / Azure) y conmutar a PostgreSQL en cuestión de minutos mediante configuración de variables de entorno, reutilizando el 100% del código de dominio."*
+
+### Pregunta 5: *"¿Cómo evitamos que soporte cierre tickets 'en el aire' sin resolver el problema real?"*
+* **Respuesta Estratégica (Enfoque Calidad / Paula Sbarbati):** *"El motor de reglas de dominio (Pydantic v2 + FSM) bloquea técnicamente la transición al estado 'Resuelto' si el operador no consigna la justificación técnica obligatoria (mínimo 8 caracteres significativos) y no clasifica si es Solución Definitiva o Provisoria (Workaround). Además, la Caja Negra de auditoría registra de forma inmutable la identidad del operador y la marca temporal exacta."*
+
+### Pregunta 6: *"¿Cómo garantizamos la confidencialidad entre el Solicitante y el Soporte Interno?"*
+* **Respuesta Estratégica (Enfoque Seguridad / Nicolás Sánchez & Carolina Brizuela):** *"El modelo de datos y la API incorporan un mecanismo nativo de segregación (`is_internal`). Los comentarios públicos son visibles para profesionales de la salud e instituciones asistenciales, mientras que las notas técnicas de diagnóstico de servidores e infraestructura quedan estrictamente restringidas a los roles de Soporte y Administrador para no generar confusión ni alarma innecesaria en el personal sanitario."*

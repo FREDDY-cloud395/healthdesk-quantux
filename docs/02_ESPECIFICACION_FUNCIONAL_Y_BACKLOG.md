@@ -51,6 +51,20 @@
 * **Nivel 2 (N2) — Soporte Técnico:** Diagnóstico especializado y aplicación obligatoria de soluciones provisorias documentadas.
 * **Nivel 3 (N3) — Ingeniería y Producto:** Corrección definitiva en código fuente o infraestructura.
 
+#### 2.3. Reglas de Negocio Funcionales del Ciclo de Vida del Ticket
+1. **RN-01: Obligatoriedad de Solución Técnica para Resolución:**  
+   Para efectuar la transición de un ticket al estado `RESUELTO`, el operador de soporte debe ingresar obligatoriamente una descripción de la solución técnica aplicada (longitud mínima de 8 caracteres significativos). Asimismo, debe catalogar taxativamente si se trata de una **Solución Definitiva** o una **Solución Provisoria (Workaround)**. Sin estos dos datos, el sistema rechaza la operación.
+2. **RN-02: Segregación y Confidencialidad de Notas Internas (Privacidad por Rol):**  
+   Todo mensaje registrado dentro de un ticket se clasifica en dos categorías:
+   * **Comentario Público:** Visible para el profesional de la salud / solicitante, el equipo técnico y las instituciones involucradas. Utilizado para notificaciones de avance y comunicación directa.
+   * **Nota Interna de Diagnóstico (`is_internal = True`):** Visible exclusivamente para operadores de soporte (N1, N2, N3) y administradores. Protege análisis técnicos de servidores, trazas de error o detalles de infraestructura de modo que no causen confusión ni alarma innecesaria en el personal sanitario.
+3. **RN-03: Cierre Definitivo Basado en Conformidad del Solicitante:**  
+   Un ticket en estado `RESUELTO` no puede ser cerrado unilateralmente por el operador técnico sin la conformidad del solicitante. El usuario solicitante valida que el problema haya sido subsanado en su puesto de trabajo antes de promover el ticket a `CERRADO`.
+4. **RN-04: Inmutabilidad del Estado Terminal (Caja Negra):**  
+   Una vez alcanzado el estado `CERRADO`, la ficha del ticket se convierte en un registro histórico inmutable para fines de auditoría sanitaria y legal. No se permiten modificaciones en sus campos ni reaperturas informales (debe crearse un nuevo ticket vinculado si surge un nuevo incidente).
+5. **RN-05: Cálculo Automatizado de Prioridad Dinámica:**  
+   La prioridad del ticket ($P1$ a $P5$) se calcula en el momento del alta o reevaluación mediante la función determinística de la matriz $P = Impacto \times Urgencia$, eliminando la discrecionalidad subjetiva del operador.
+
 ---
 
 ### 3. User Story Mapping (Mapeo del Flujo de 5 Pasos del MVP)

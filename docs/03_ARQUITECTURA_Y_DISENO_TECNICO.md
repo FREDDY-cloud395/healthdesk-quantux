@@ -21,27 +21,42 @@
 
 ---
 
-## 1. STACK TECNOLÓGICO Y FUNDAMENTACIÓN DE NEGOCIO
+## 1. STACK TECNOLÓGICO Y JUSTIFICACIÓN DE INGENIERÍA
 
-| Capa y Tecnología | Rol Funcional en la Operación | Justificación Técnica y Beneficio para el Negocio |
-| :--- | :--- | :--- |
-| **Frontend UI**<br>`HTML5 / Modern JS / CSS Quantux` | **La Pantalla Web Centralizada** que operan profesionales de la salud, solicitantes y operadores de soporte. | **Cero Instalación y Despliegue Inmediato:** Abre al instante en cualquier navegador de consultorio o tablet asistencial sin requerir permisos de Administrador de IT. Diseño Cockpit en 3 columnas que evita la dispersión de pestañas. |
-| **Backend API**<br>`FastAPI / Python 3.11+` | **El Cerebro y Recepcionista** que procesa tickets, calcula prioridades y aplica reglas. | **Velocidad y Confiabilidad:** Tiempo de respuesta inferior a 10 ms (vital para incidentes críticos asistenciales). Genera automáticamente documentación interactiva (`/docs`) que permite auditar y validar cada función sin cajas negras. |
-| **Validador de Reglas**<br>`Pydantic v2` | **El Inspector de Control de Calidad** que audita cada dato antes de ingresar al sistema. | **Cero Datos Corruptos y Cierre Exigido:** Rechaza tickets sin plataforma o urgencia válida. Impide taxativamente que un operador pase un ticket a "Resuelto" sin documentar la solución técnica obligatoria (≥ 8 caracteres). |
-| **Persistencia Relacional**<br>`SQLite 3 + SQLModel ORM` | **El Archivador Digital Seguro** donde residen los tickets y la auditoría. | **Cero Costo en MVP + Escalabilidad a PostgreSQL:** Elimina costos de servidores de base de datos para las 5 semanas. Programado bajo estándar SQLModel; si el volumen crece a 100.000 tickets, se migra a PostgreSQL sin cambiar una sola línea funcional. |
+| Capa Arquitectónica | Componente & Tecnologías | Responsabilidad Técnica | Especificación de Ingeniería y Beneficio de Despliegue |
+| :--- | :--- | :--- | :--- |
+| **Capa de Presentación** | **Frontend SPA**<br>`HTML5 / ECMAScript 6+ / CSS3 Custom Properties` | Renderizado reactivo en cliente, despacho de eventos asíncronos y gestión de estado local sin frameworks pesados. | **Cero Dependencias & Carga Sub-Segundo:** Desacoplado 100% del servidor de aplicaciones. Ejecución nativa en cualquier navegador (Chrome, Edge, Firefox, Safari) sin requerir Node.js en producción ni privilegios de administrador. Arquitectura Cockpit de 3 columnas para alta densidad de información. |
+| **Capa de Servicios REST** | **Backend ASGI**<br>`FastAPI / Python 3.11+ / Uvicorn` | Enrutamiento tipado, gestión de ciclo de vida HTTP, middleware CORS, serialización JSON de alto rendimiento y documentación automática OpenAPI 3.1. | **Concurrencia Asíncrona & Baja Latencia:** Bucle de eventos no bloqueante con tiempos de respuesta p95 inferiores a 10 ms. Generación automática de especificación Swagger en `/docs` para auditoría y validación de contratos sin cajas negras. |
+| **Capa de Dominio & Validación** | **Motor de Reglas & FSM**<br>`Pydantic v2 / Tipado Estricto` | Aplicación de contratos de entrada/salida (DTOs), validación de invariantes de dominio y guardas de la Máquina de Estados Finitos (FSM). | **Integridad Referencial en Boundary:** Validación binaria de datos en memoria (Rust-core). Rechazo inmediato (HTTP 422) de transiciones ilegales o esquemas incompletos antes de interactuar con la base de datos. |
+| **Capa de Persistencia** | **Motor Relacional**<br>`SQLModel ORM / SQLAlchemy 2.0 / SQLite 3` | Gestión de sesiones transaccionales ACID, mapeo objeto-relacional y persistencia inmutable de auditoría. | **Persistencia Embebida & Portabilidad Enterprise:** Configuración con `PRAGMA journal_mode=WAL` para soporte de lecturas y escrituras concurrentes sin bloqueo. Abstracción orquestada con SQLModel que permite conmutar a PostgreSQL 16 mediante simple parametrización de `DATABASE_URL`. |
 
 ---
 
-## 2. GUÍA DE ARGUMENTACIÓN Y DEFENSA ANTE EL COMITÉ DIRECTIVO
+## 2. DECISIONES DE ARQUITECTURA DE SOFTWARE (ARCHITECTURAL DECISION RECORDS - ADR)
 
-### Pregunta 1: "¿Por qué no arrancamos con un sistema en la nube pesada desde el día 1?"
-* **Defensa Funcional:** *"Porque el objetivo de este MVP es validar el circuito operativo de 5 pasos en 5 semanas sin incurrir en costos de infraestructura ni trabas burocráticas de IT. La arquitectura modular desacoplada nos permite pasar a cualquier nube corporativa (GCP/AWS/Azure) cuando la operación lo requiera, reutilizando el 100% del código de negocio."*
+### ADR-01: Arquitectura de Monolito Modular Desacoplado vs Microservicios Distribuidos
+* **Estado:** Aceptado y Vigente.
+* **Contexto de Ingeniería:** Se requiere desplegar una plataforma robusta, auditable y con tiempo de respuesta mínimo, evitando la sobrecarga operacional de coordinar múltiples servicios de red en fases iniciales.
+* **Decisión Técnica:** Implementar una arquitectura de **Monolito Modular en Capas**. La comunicación entre subsistemas (Auth, Tickets, Auditoría, Catálogos) se resuelve in-process mediante inyección de dependencias (`fastapi.Depends`) y modelos tipados.
+* **Consecuencias:** Latencia de red interna reducida a 0 ms, simplificación de la traza de logs y transaccionalidad atómica sin necesidad de transacciones distribuidas (SAGA). Los límites de contexto (*bounded contexts*) quedan estrictamente demarcados para permitir la extracción de módulos a microservicios independientes si la escala horizontal lo demanda.
 
-### Pregunta 2: "¿Cómo evitamos que soporte cierre tickets 'en el aire' sin resolver el problema real?"
-* **Defensa Funcional:** *"El motor de reglas (Pydantic + FSM) bloquea técnicamente el paso al estado 'Resuelto' si el campo de solución técnica no está completo o tiene menos de 8 caracteres. Además, exige marcar si es solución definitiva o provisoria (Workaround) y la Caja Negra de auditoría registra la identidad del operador y la hora exacta."*
+### ADR-02: Persistencia Transaccional con Abstracción Dual (SQLite 3 WAL / PostgreSQL Enterprise)
+* **Estado:** Aceptado y Vigente.
+* **Contexto de Ingeniería:** Necesidad de garantizar persistencia transaccional ACID local para homologación inmediata sin incurrir en costos de aprovisionamiento de infraestructura de nube durante el ciclo de validación.
+* **Decisión Técnica:** Adopción de SQLite 3 con modo Write-Ahead Logging (`WAL`), serialización de escrituras con transacciones inmediatas y activación mandatoria de claves foráneas (`PRAGMA foreign_keys = ON`). La capa de acceso a datos se aísla mediante el ORM SQLModel (basado en SQLAlchemy 2.0).
+* **Consecuencias:** Cero fricción de despliegue local y portabilidad técnica inmediata: la transición a PostgreSQL 16 Enterprise para entornos hospitalarios masivos requiere únicamente modificar la variable de entorno `DATABASE_URL`, reutilizando el 100% de las entidades y consultas DDL.
 
-### Pregunta 3: "¿Cómo garantizamos la confidencialidad entre el Solicitante y el Soporte Interno?"
-* **Defensa Funcional:** *"El modelo de datos y la API incorporan un flag nativo (`is_internal`). Los comentarios públicos son visibles para profesionales de la salud e instituciones, mientras que las notas técnicas de diagnóstico quedan estrictamente restringidas a los roles de Soporte y Administrador."*
+### ADR-03: Implementación de la Máquina de Estados Finitos (FSM) y Guardas de Dominio
+* **Estado:** Aceptado y Vigente.
+* **Contexto de Ingeniería:** Prevenir transiciones de estado arbitrarias o cierres no documentados en la atención de incidentes tecnológicos.
+* **Decisión Técnica:** Implementación de un motor determinístico de FSM acoplado a esquemas de validación Pydantic v2. La transición de `EN_CURSO` a `RESUELTO` está condicionada a la inyección del payload `TicketResolveRequest`, el cual valida programáticamente una longitud mínima de 8 caracteres significativos en la solución técnica y la tipificación binaria `is_workaround`.
+* **Consecuencias:** Blindaje técnico contra "cierres en el aire". Si una petición omite la justificación o no cumple la guarda, el servidor retorna HTTP 400/422 con detalle de la violación, impidiendo la mutación en la base de datos.
+
+### ADR-04: Seguridad a Nivel de Campo (Field-Level Security) y Segregación RBAC en Serialización
+* **Estado:** Aceptado y Vigente.
+* **Contexto de Ingeniería:** Garantizar la confidencialidad de notas técnicas y diagnósticos de infraestructura frente a solicitantes y profesionales asistenciales.
+* **Decisión Técnica:** Implementación de control de acceso basado en roles (RBAC) a nivel de repositorio y serialización DTO. El atributo `is_internal` discrimina los comentarios privados; en endpoints públicos de consulta, el serializador filtra activamente los registros marcados como internos salvo que el token de sesión acredite rol `SOPORTE` o `ADMIN`.
+* **Consecuencias:** Aislamiento criptográfico y estructural de la información sensible. Se previene la fuga de detalles de servidores o contraseñas en los clientes web sanitarios.
 
 ---
 
@@ -81,39 +96,39 @@
 
 ---
 
-## 4. CIRCUITO DE 5 PASOS DEL CICLO DE VIDA DEL TICKET
+## 4. MÁQUINA DE ESTADOS FINITOS (FSM): ESPECIFICACIÓN TÉCNICA DEL CICLO DE VIDA
 
 ```
-[ PASO 1: REGISTRAR ] ──► [ PASO 2: ASIGNAR ] ──► [ PASO 3: GESTIONAR ] ──► [ PASO 4: RESOLVER ] ──► [ PASO 5: CERRAR ]
-   Estado: NUEVO            Estado: ASIGNADO        Estado: EN CURSO         Estado: RESUELTO         Estado: CERRADO
-  Calcula P1 a P5          Asigna Responsable     Diagnóstico técnico      Solución obligatoria     Conformidad final
-   según P = I × U          y Nivel N1/N2/N3       y Notas Internas         (≥ 8 caracteres)         e inmutabilidad
+[ ESTADO: NUEVO ] ────► [ ESTADO: ASIGNADO ] ────► [ ESTADO: EN_CURSO ] ────► [ ESTADO: RESUELTO ] ────► [ ESTADO: CERRADO ]
+  • Guarda: Inserción      • Guarda: Operador N1..N3  • Guarda: Diagnóstico       • Guarda: Payload ≥8 char   • Guarda: Solicitante
+    válida de ticket         registrado en DB           técnico y notas            y flag is_workaround        confirma o timeout
+  • P1..P5 automático      • Inicia SLA operativo     • Comentarios internos      • Valida FSM                • Terminal inmutable
 ```
 
 ---
 
-## 5. CATÁLOGO COMPLETO DE ENDPOINTS REST (CONTRATOS DE INTEGRACIÓN)
+## 5. CATÁLOGO DE CONTRATOS REST Y ESQUEMAS DE INTEGRACIÓN (OPENAPI SPECIFICATION)
 
-| Verbo | Ruta del Endpoint | Parámetros / Request Payload | HTTP Status | Regla de Negocio / Efecto en el Sistema |
+| Verbo HTTP | Ruta del Endpoint | Parámetros / Request Payload DTO | HTTP Status Codes | Transición de Estado & Comportamiento del Servicio |
 | :---: | :--- | :--- | :---: | :--- |
-| `POST` | `/api/v1/auth/login` | `{ username, selected_role }` | `200 / 401 / 403` | Valida credenciales. Si coincide el rol, devuelve perfil y `landing_view`. |
-| `GET` | `/api/v1/auth/switch-role/{role}` | Path: `role` (SOLICITANTE/SOPORTE/ADMIN) | `200 / 404` | Alterna en 1 clic el rol activo del usuario para pruebas y operación del Cockpit. |
-| `GET` | `/api/v1/platforms` | Ninguno | `200 OK` | Retorna el catálogo oficial de las **9 plataformas de salud** de Quantux activas. |
-| `GET` | `/api/v1/institutions` | Ninguno | `200 OK` | Retorna el listado oficial de los **14 clientes institucionales** habilitados. |
-| `GET` | `/api/v1/calculate-priority` | Query: `impact, urgency` | `200 OK` | Calcula en tiempo real la prioridad P1..P5 mediante la matriz $P = I \times U$. |
-| `GET` | `/api/v1/tickets` | Query: `status, platform, inst, search` | `200 OK` | Lista los tickets de la bandeja aplicando filtros y ordenando por prioridad (P1➔P5). |
-| `GET` | `/api/v1/tickets/{id}` | Path: `id` (TICK-YYYYMM-XXXX) | `200 / 404` | Retorna el detalle completo del ticket, sus mensajes/notas y la traza de auditoría. |
-| `POST` | `/api/v1/tickets` | **Paso 1 (Registrar):** `{ title, description, platform_code, institution_code, impact, urgency }` | `200 / 400` | Crea ticket en estado `NUEVO`, genera ID correlativo y primer registro de auditoría. |
-| `PATCH` | `/api/v1/tickets/{id}/assign` | **Paso 2 (Asignar):** `{ assignee_username, support_level, reason }` | `200 / 400` | Asigna operador. Si estaba en `NUEVO`, transiciona automáticamente a `ASIGNADO`. |
-| `PATCH` | `/api/v1/tickets/{id}/status` | **Paso 3 (Gestionar):** `{ new_status, reason, changed_by }` | `200 / 400` | Valida la FSM y avanza el estado operativo (ej. a `EN_CURSO` o pausa temporal). |
-| `POST` | `/api/v1/tickets/{id}/resolve` | **Paso 4 (Resolver):** `{ resolution_notes, is_workaround, resolved_by }` | `200 / 400` | Transiciona a `RESUELTO`. Exige notas $\ge 8$ caracteres y flag de solución temporal. |
-| `POST` | `/api/v1/tickets/{id}/close` | **Paso 5 (Cerrar):** `{ closed_by_username, feedback }` | `200 / 400` | Cierre definitivo. Valida estado previo `RESUELTO`. El ticket pasa a ser inmutable. |
-| `POST` | `/api/v1/tickets/{id}/comments` | `{ author_username, message, is_internal }` | `200 / 404` | Publica comentario en el hilo o nota privada interna para el equipo de soporte. |
-| `GET` | `/api/v1/users/operators` | Ninguno | `200 OK` | Lista los operadores de soporte disponibles para asignación en el Cockpit. |
+| `POST` | `/api/v1/auth/login` | `{ username, selected_role }` | `200 / 401 / 403` | Autenticación y emisión de contexto de rol para el cliente. |
+| `GET` | `/api/v1/auth/switch-role/{role}` | Path: `role` (SOLICITANTE/SOPORTE/ADMIN) | `200 / 404` | Alternancia de rol en sesión para pruebas e inspección RBAC. |
+| `GET` | `/api/v1/platforms` | Ninguno | `200 OK` | Retorna catálogo de las 9 plataformas de salud activas. |
+| `GET` | `/api/v1/institutions` | Ninguno | `200 OK` | Retorna listado de los 14 clientes institucionales habilitados. |
+| `GET` | `/api/v1/calculate-priority` | Query: `impact, urgency` | `200 OK` | Función determinística de prioridad $P1..P5$ vía matriz $P = I \times U$. |
+| `GET` | `/api/v1/tickets` | Query: `status, platform, inst, search` | `200 OK` | Consulta paginada con predicados de filtro e indexación por prioridad. |
+| `GET` | `/api/v1/tickets/{id}` | Path: `id` (TICK-YYYYMM-XXXX) | `200 / 404` | Detalle del agregado Ticket, colección de comentarios y log de auditoría. |
+| `POST` | `/api/v1/tickets` | `TicketCreate`: `{ title, description, platform_code, institution_code, impact, urgency }` | `200 / 400` | Inserción en tabla `tickets` con estado inicial `NUEVO` y evento en `ticket_audit_log`. |
+| `PATCH` | `/api/v1/tickets/{id}/assign` | `TicketAssign`: `{ assignee_username, support_level, reason }` | `200 / 400` | Transición `NUEVO` ➔ `ASIGNADO` y asignación de clave foránea de operador. |
+| `PATCH` | `/api/v1/tickets/{id}/status` | `TicketStatusUpdate`: `{ new_status, reason, changed_by }` | `200 / 400` | Validación de guardas FSM y actualización del campo `status`. |
+| `POST` | `/api/v1/tickets/{id}/resolve` | `TicketResolve`: `{ resolution_notes, is_workaround, resolved_by }` | `200 / 400` | Transición `EN_CURSO` ➔ `RESUELTO`. Validación obligatoria de longitud $\ge 8$. |
+| `POST` | `/api/v1/tickets/{id}/close` | `TicketClose`: `{ closed_by_username, feedback }` | `200 / 400` | Transición `RESUELTO` ➔ `CERRADO`. Congelamiento inmutable del registro. |
+| `POST` | `/api/v1/tickets/{id}/comments` | `TicketCommentCreate`: `{ author_username, message, is_internal }` | `200 / 404` | Inserción en `ticket_comments` con flag de visibilidad RBAC. |
+| `GET` | `/api/v1/users/operators` | Ninguno | `200 OK` | Consulta de operadores de soporte activos para asignación. |
 
 ---
 
-## 6. MODELO RELACIONAL DE DATOS (DICCIONARIO DE ENTIDADES 3FN)
+## 6. MODELO RELACIONAL DE DATOS (ESQUEMA FÍSICO 3FN & DDL)
 
 * **1. `users`:** `id` (PK), `username` (UK), `full_name`, `role` (SOL/SOP/ADM), `is_active`.
 * **2. `platforms` (9 Catálogos Oficiales):** `id` (PK), `code` (UK), `name`, `is_active`.
@@ -186,10 +201,10 @@ Desarrollo Asistido por IA (Quantux HealthDesk v4):
 
 ---
 
-## 10. MOTOR DE DEMOSTRACIÓN CONTINUA (LIVE DEMO ENGINE)
+## 10. MOTOR DE TELEMETRÍA Y SIMULACIÓN ASISTIDA (SIMULATION ENGINE)
 
-Para garantizar la vitalidad visual y la validez de los datos en presentaciones ejecutivas y entornos de prueba continua, el sistema cuenta con un **Live Demo Engine** en segundo plano:
-* **Generación Dinámica:** Inyecta solicitudes médicas y técnicas de guardia distribuidas en las 14 instituciones y 6 plataformas asistenciales.
-* **Progresión de Ciclo FSM:** Transiciona autónomamente tickets de `NUEVO` a `ASIGNADO` y `EN_CURSO`.
-* **Resolución y Cierre con CSAT:** Simula cierres efectivos con notas técnicas y encuestas de satisfacción de 4 a 5 estrellas.
-* **Garantía Temporal:** Mantiene siempre una masa crítica de tickets con fecha "Hoy", "Vencen Hoy", "SLA Vencido" y "Cerrados", garantizando que todos los widgets e indicadores del Tablero de Control reflejen actividad vibrante sin pantallas vacías.
+Para garantizar la integridad transaccional y la disponibilidad de datos de prueba en entornos de homologación y evaluación, el sistema incorpora un servicio de simulación asíncrono en segundo plano:
+* **Generación Sintética:** Inyecta solicitudes de soporte técnico parametrizadas sobre las 14 instituciones y las 9 plataformas digitales de salud.
+* **Progresión de Ciclo FSM:** Ejecuta transiciones programadas de `NUEVO` a `ASIGNADO` y `EN_CURSO`.
+* **Resolución y Cierre con CSAT:** Simula cierres auditables con notas técnicas estructuradas y métricas de satisfacción del usuario.
+* **Garantía de Consistencia Temporal:** Mantiene una distribución balanceada de tickets en distintos estados operativos para verificar el comportamiento de los índices relacionales y la latencia de agregación del Cockpit.
