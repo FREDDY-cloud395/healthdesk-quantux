@@ -1029,7 +1029,19 @@
         <div class="cards-list" id="list-sprint"></div>
       </div>
 
-      <!-- COLUMNA 3: EN CURSO (IN PROGRESS) -->
+      <!-- COLUMNA 3: EN RETRABAJO / OBSERVADO (REWORK - PRIORIDAD P1) -->
+      <div class="kanban-col" id="col-rework" ondragover="allowDrop(event)" ondrop="drop(event, 'rework')" style="border-top-color: #E11D48;">
+        <div class="col-header">
+          <span class="col-title" style="color: #9F1239;">❌ En Retrabajo (P1 Prioritario)</span>
+          <span class="col-badge" id="count-rework" style="color: #9F1239; border-color: #FECDD3; background: #FFF1F2;">0</span>
+        </div>
+        <div style="font-size: 10px; color: #9F1239; background: #FFF1F2; padding: 4px 8px; border-radius: 4px; margin-bottom: 8px; border: 1px solid #FECDD3; font-weight: 600; line-height: 1.35;">
+          Devuelto por el Solution Owner por no conformidad o funcionalidad no implementada. Prioridad bloqueante P1.
+        </div>
+        <div class="cards-list" id="list-rework"></div>
+      </div>
+
+      <!-- COLUMNA 4: EN CURSO (IN PROGRESS) -->
       <div class="kanban-col" id="col-progress" ondragover="allowDrop(event)" ondrop="drop(event, 'progress')" style="border-top-color: #D97706;">
         <div class="col-header">
           <span class="col-title">⚙️ En Curso <span class="col-wip">(WIP: 4)</span></span>
@@ -1038,7 +1050,7 @@
         <div class="cards-list" id="list-progress"></div>
       </div>
 
-      <!-- COLUMNA 4: EN REVISIÓN / ACEPTACIÓN SOLUTION OWNER -->
+      <!-- COLUMNA 5: EN REVISIÓN / ACEPTACIÓN SOLUTION OWNER -->
       <div class="kanban-col" id="col-qa" ondragover="allowDrop(event)" ondrop="drop(event, 'qa')" style="border-top-color: #8B5CF6;">
         <div class="col-header">
           <span class="col-title">🔍 En Revisión (Aceptación Solution Owner)</span>
@@ -1048,18 +1060,6 @@
           Desarrollo ejecutado listo para contrastar contra especificación. La aceptación formal la otorga el Solution Owner.
         </div>
         <div class="cards-list" id="list-qa"></div>
-      </div>
-
-      <!-- COLUMNA 5: EN RETRABAJO / OBSERVADO (REWORK) -->
-      <div class="kanban-col" id="col-rework" ondragover="allowDrop(event)" ondrop="drop(event, 'rework')" style="border-top-color: #E11D48;">
-        <div class="col-header">
-          <span class="col-title" style="color: #9F1239;">❌ En Retrabajo / Observado</span>
-          <span class="col-badge" id="count-rework" style="color: #9F1239; border-color: #FECDD3; background: #FFF1F2;">0</span>
-        </div>
-        <div style="font-size: 10px; color: #9F1239; background: #FFF1F2; padding: 4px 8px; border-radius: 4px; margin-bottom: 8px; border: 1px solid #FECDD3; font-weight: 600; line-height: 1.35;">
-          Devuelto por el Solution Owner por no conformidad o funcionalidad no implementada. Prioridad bloqueante.
-        </div>
-        <div class="cards-list" id="list-rework"></div>
       </div>
 
       <!-- COLUMNA 6: ACEPTADO Y FINALIZADO (DONE) -->
@@ -1334,14 +1334,14 @@
       const lists = {
         backlog: document.getElementById('list-backlog'),
         sprint: document.getElementById('list-sprint'),
+        rework: document.getElementById('list-rework'),
         progress: document.getElementById('list-progress'),
         qa: document.getElementById('list-qa'),
-        rework: document.getElementById('list-rework'),
         done: document.getElementById('list-done')
       };
 
       Object.values(lists).forEach(l => l.innerHTML = '');
-      const counts = { backlog: 0, sprint: 0, progress: 0, qa: 0, rework: 0, done: 0 };
+      const counts = { backlog: 0, sprint: 0, rework: 0, progress: 0, qa: 0, done: 0 };
 
       tasks.forEach(task => {
         if (sprintFilter !== 'ALL' && task.sprint !== sprintFilter) return;
@@ -1365,9 +1365,9 @@
 
       document.getElementById('count-backlog').textContent = counts.backlog;
       document.getElementById('count-sprint').textContent = counts.sprint;
+      document.getElementById('count-rework').textContent = counts.rework;
       document.getElementById('count-progress').textContent = counts.progress;
       document.getElementById('count-qa').textContent = counts.qa;
-      document.getElementById('count-rework').textContent = counts.rework;
       document.getElementById('count-done').textContent = counts.done;
     }
 
@@ -1428,6 +1428,12 @@
 
       const isBacklog = (task.status || 'backlog') === 'backlog';
       const isDone = task.status === 'done';
+      const isQa = (task.status || '') === 'qa';
+      const demonBtnHtml = isQa ? `
+        <button class="card-btn-demon" draggable="false" onmousedown="event.stopPropagation();" onclick="event.stopPropagation(); openItemModal('${task.id}');" style="margin-top: 6px; width: 100%; background: linear-gradient(135deg, #FFF1F2, #FFE4E6); color: #BE123C; border: 1.5px solid #FDA4AF; border-radius: 5px; padding: 5px 8px; font-size: 10.5px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; font-family: 'Montserrat', sans-serif;">
+          <span>🔥</span> Activar Demonio / Evaluar
+        </button>
+      ` : '';
 
       div.innerHTML = `
         <div class="card-top">
@@ -1450,6 +1456,7 @@
             <button class="card-btn-move" draggable="false" onmousedown="event.stopPropagation();" onclick="event.stopPropagation(); moveTask('${task.id}', 1)" title="Mover a la derecha" ${isDone ? 'disabled style="opacity: 0.3; cursor: not-allowed;"' : ''}>▶</button>
           </div>
         </div>
+        ${demonBtnHtml}
         <button class="card-btn-detail" draggable="false" onmousedown="event.stopPropagation();" onclick="event.stopPropagation(); openItemModal('${task.id}')">
           <span>🔍</span> Ver Detalle Completo
         </button>
@@ -1458,7 +1465,7 @@
     }
 
     function moveTask(taskId, dir) {
-      const cols = ['backlog', 'sprint', 'progress', 'qa', 'rework', 'done'];
+      const cols = ['backlog', 'sprint', 'rework', 'progress', 'qa', 'done'];
       const task = tasks.find(t => t.id === taskId);
       if (!task) return;
 
@@ -1625,12 +1632,226 @@
         ` + content;
       }
 
+      // PANEL DE DICTAMEN Y CONTROL DEL SOLUTION OWNER (DEMONIO DE RETRABAJO P1, CAPTURAS & APROBACIÓN)
+      const currentObs = task.so_feedback ? (task.so_feedback.observation || '') : '';
+      const demonPanelHtml = `
+        <div class="modal-box modal-so-panel" style="background: #FFFBEB; border: 2px solid #F59E0B; border-radius: 8px; padding: 14px; margin-top: 14px;">
+          <div class="modal-subhead" style="color: #B45309; font-weight: 800; font-size: 13px; display: flex; align-items: center; justify-content: space-between;">
+            <span style="display: flex; align-items: center; gap: 6px;">
+              <span>🛡️</span> DICTAMEN DEL SOLUTION OWNER (QA GATE & RETRABAJO)
+            </span>
+            <span style="font-size: 10px; background: #FEF3C7; color: #92400E; border: 1px solid #FCD34D; padding: 2px 7px; border-radius: 4px; font-weight: 800;">
+              CONTROL CALIDAD FREDDY CORTÉS
+            </span>
+          </div>
+          
+          <p style="font-size: 11px; color: #78350F; margin: 6px 0 10px 0; line-height: 1.4;">
+            Contrasta el desarrollo contra la especificación. Ingresá la observación técnica, adjuntá o pegá la captura si aplica, y activá el <strong>Demonio de Retrabajo</strong> para reubicar la tarjeta en <strong>Retrabajo Prioritario (P1)</strong>, o aprobá la entrega si cumple los criterios DoD.
+          </p>
+
+          <div style="margin-bottom: 10px;">
+            <label for="modal-so-obs-${task.id}" style="font-size: 11px; font-weight: 800; color: #92400E; display: flex; align-items: center; gap: 4px; margin-bottom: 4px;">
+              <span>📝</span> Observación Técnica / Motivo de Retrabajo:
+            </label>
+            <textarea id="modal-so-obs-${task.id}" rows="3" style="width: 100%; box-sizing: border-box; border: 1.5px solid #FCD34D; border-radius: 6px; padding: 8px 10px; font-size: 12px; font-family: inherit; resize: vertical; outline: none; background: #FFFFFF; color: #1E293B;" placeholder="Escribí aquí el detalle de lo que no cumple o debe ser corregido urgentemente...">${currentObs}</textarea>
+          </div>
+
+          <!-- ZONA DE ADJUNCIÓN / PEGADO DE CAPTURA DE PANTALLA -->
+          <input type="file" id="modal-so-file-${task.id}" accept="image/*" style="display: none;" onchange="handleModalImageUpload('${task.id}', event)">
+          <div id="modal-dropzone-${task.id}" style="border: 2px dashed #CBD5E1; border-radius: 8px; padding: 10px; text-align: center; background: #F8FAFC; cursor: pointer; margin-bottom: 10px; transition: border-color 0.2s;" onclick="document.getElementById('modal-so-file-${task.id}').click();" title="Clic para seleccionar captura o presiona Ctrl + V para pegarla directo">
+            <div style="font-size: 11.5px; font-weight: 700; color: #475569; display: flex; align-items: center; justify-content: center; gap: 6px;">
+              <span>📸</span> Clic aquí para adjuntar captura, o <strong>presioná Ctrl + V para pegarla directo</strong>
+            </div>
+            <div style="font-size: 10px; color: #94A3B8; margin-top: 2px;">
+              Soporta PNG, JPG y recortes del portapapeles (Win + Shift + S)
+            </div>
+          </div>
+
+          <div id="modal-img-preview-box-${task.id}" style="${task.attachment_image ? 'display: block;' : 'display: none;'} margin-bottom: 12px; text-align: center; background: #F1F5F9; border-radius: 8px; padding: 8px; border: 1px solid #CBD5E1; position: relative;">
+            <div style="font-size: 10.5px; font-weight: 700; color: #0284C7; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
+              <span>📷 Captura adjunta a la tarjeta:</span>
+              <button type="button" onclick="removeModalImage('${task.id}')" style="background: #FEE2E2; color: #DC2626; border: 1px solid #FCA5A5; border-radius: 4px; padding: 2px 6px; font-size: 9px; cursor: pointer; font-weight: 700;">Eliminar captura</button>
+            </div>
+            <img id="modal-preview-img-${task.id}" src="${task.attachment_image || ''}" style="max-height: 180px; max-width: 100%; border-radius: 6px; object-fit: contain; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" />
+          </div>
+
+          <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; align-items: center;">
+            <button type="button" class="btn" style="background: linear-gradient(135deg, #DC2626, #991B1B); color: white; border: none; font-weight: 800; font-size: 11.5px; padding: 9px 16px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 8px rgba(220, 38, 38, 0.35);" onclick="triggerDemonRework('${task.id}')">
+              <span>🔥</span> Activar Demonio (Retrabajo Prioritario P1)
+            </button>
+            <button type="button" class="btn" style="background: linear-gradient(135deg, #16A34A, #15803D); color: white; border: none; font-weight: 800; font-size: 11.5px; padding: 9px 16px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 8px rgba(22, 163, 74, 0.35);" onclick="approveTaskDone('${task.id}')">
+              <span>✅</span> Aprobar y Finalizar (Done)
+            </button>
+          </div>
+
+          <!-- BARRA DE PROGRESO EN VIVO DEL DEMONIO ("NO ES SILENCIOSO, MUESTRA EL AVANCE") -->
+          <div id="demon-progress-box-${task.id}" style="display: none; margin-top: 14px; background: #450A0A; color: #FEF2F2; border: 2px solid #DC2626; border-radius: 8px; padding: 12px; box-shadow: 0 4px 16px rgba(185, 28, 28, 0.3);">
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11.5px; font-weight: 800; margin-bottom: 6px; color: #FCA5A5;">
+              <span style="display: flex; align-items: center; gap: 6px;">
+                <span>⚡</span> DEMONIO DE RETRABAJO EN EJECUCIÓN (PRIORIDAD P1)
+              </span>
+              <span id="demon-pct-label-${task.id}" style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #FEF08A;">0%</span>
+            </div>
+            <div style="background: #1C1917; border-radius: 999px; height: 12px; overflow: hidden; padding: 2px; border: 1px solid #7F1D1D;">
+              <div id="demon-progress-bar-${task.id}" style="background: linear-gradient(90deg, #DC2626, #F97316, #FACC15); width: 0%; height: 100%; border-radius: 999px; transition: width 0.25s ease;"></div>
+            </div>
+            <div id="demon-status-msg-${task.id}" style="font-size: 11px; color: #FEE2E2; margin-top: 6px; font-family: 'Montserrat', sans-serif; font-weight: 600;">
+              Iniciando proceso prioritario de corrección...
+            </div>
+          </div>
+        </div>
+      `;
+      content += demonPanelHtml;
+
       body.innerHTML = content;
       modal.style.display = 'flex';
+
+      currentModalTaskId = task.id;
+      currentTaskImageData = task.attachment_image || '';
+
+      // Listener para pegar capturas directamente con Ctrl + V
+      document.onpaste = function(event) {
+        const items = (event.clipboardData || (event.originalEvent && event.originalEvent.clipboardData)) ? (event.clipboardData || event.originalEvent.clipboardData).items : null;
+        if (!items) return;
+        for (let i = 0; i < items.length; i++) {
+          if (items[i].type.indexOf('image') !== -1) {
+            const blob = items[i].getAsFile();
+            const reader = new FileReader();
+            reader.onload = function(e) {
+              setTaskImage(task.id, e.target.result);
+            };
+            reader.readAsDataURL(blob);
+          }
+        }
+      };
+    }
+
+    let currentModalTaskId = null;
+    let currentTaskImageData = null;
+
+    function handleModalImageUpload(taskId, event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        setTaskImage(taskId, e.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function setTaskImage(taskId, dataUrl) {
+      currentTaskImageData = dataUrl;
+      const pBox = document.getElementById('modal-img-preview-box-' + taskId);
+      const pImg = document.getElementById('modal-preview-img-' + taskId);
+      if (pBox && pImg) {
+        pImg.src = dataUrl;
+        pBox.style.display = 'block';
+      }
+    }
+
+    function removeModalImage(taskId) {
+      currentTaskImageData = '';
+      const pBox = document.getElementById('modal-img-preview-box-' + taskId);
+      const pImg = document.getElementById('modal-preview-img-' + taskId);
+      if (pBox && pImg) {
+        pImg.src = '';
+        pBox.style.display = 'none';
+      }
+      const task = tasks.find(t => t.id === taskId);
+      if (task) {
+        task.attachment_image = '';
+        saveState(false);
+        renderCurrentView();
+      }
+    }
+
+    function triggerDemonRework(taskId) {
+      const task = tasks.find(t => t.id === taskId);
+      if (!task) return;
+
+      const input = document.getElementById('modal-so-obs-' + taskId);
+      const obs = (input && input.value.trim()) ? input.value.trim() : 'Desvío funcional observado durante revisión QA. Se requiere corrección técnica prioritaria conforme a especificación.';
+
+      const pBox = document.getElementById('demon-progress-box-' + taskId);
+      const pBar = document.getElementById('demon-progress-bar-' + taskId);
+      const pPct = document.getElementById('demon-pct-label-' + taskId);
+      const pMsg = document.getElementById('demon-status-msg-' + taskId);
+
+      if (pBox) pBox.style.display = 'block';
+
+      const steps = [
+        { pct: 20, msg: '🔥 Despertando Demonio de Retrabajo e interceptando tarjeta...' },
+        { pct: 45, msg: '🚨 Escalando prioridad a P1 (Bloqueante) en el Backlog...' },
+        { pct: 70, msg: '📸 Procesando captura adjunta y dictamen oficial de auditoría...' },
+        { pct: 90, msg: '⚡ Moviendo tarjeta a columna En Retrabajo / Observado (P1)...' },
+        { pct: 100, msg: '¡Demonio activado! Tarjeta lista para intervención inmediata.' }
+      ];
+
+      let currentStep = 0;
+      function runNextStep() {
+        if (currentStep < steps.length) {
+          const s = steps[currentStep];
+          if (pBar) pBar.style.width = s.pct + '%';
+          if (pPct) pPct.textContent = s.pct + '%';
+          if (pMsg) pMsg.textContent = s.msg;
+          currentStep++;
+          setTimeout(runNextStep, 260);
+        } else {
+          task.priority = 'P1';
+          task.status = 'rework';
+          if (currentTaskImageData !== null && currentTaskImageData !== undefined) {
+            task.attachment_image = currentTaskImageData;
+          }
+          const nowStr = new Date().toLocaleDateString('es-AR') + ' ' + new Date().toLocaleTimeString('es-AR', {hour: '2-digit', minute: '2-digit'});
+          task.so_feedback = {
+            status: 'OBSERVADO / RECHAZADO',
+            observation: obs,
+            reviewer: 'Freddy Cortés (Solution Owner)',
+            date: nowStr
+          };
+          saveState(false);
+          renderCurrentView();
+
+          // Copiar automáticamente al portapapeles para evitar redundancia
+          const clipMsg = `🔥 DEMONIO ACTIVADO: ${task.id} (${task.title}) pasó a Retrabajo Prioritario (P1).\nObservación: "${obs}"`;
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(clipMsg).catch(() => {});
+          }
+
+          setTimeout(() => {
+            closeUHModal();
+            alert(`🔥 ¡DEMONIO ACTIVADO CON ÉXITO!\n\nTarjeta: ${task.id} (${task.title})\nPrioridad: P1 (Bloqueante)\nEstado: En Retrabajo / Observado\n\nObservación registrada: "${obs}"\n${task.attachment_image ? '📷 Captura guardada en la tarjeta.\n' : ''}\n(Mensaje copiado al portapapeles listo para pegar en el chat)`);
+          }, 150);
+        }
+      }
+      runNextStep();
+    }
+
+    function approveTaskDone(taskId) {
+      const task = tasks.find(t => t.id === taskId);
+      if (!task) return;
+
+      const ok = confirm(`¿Confirmar Aprobación Formal del Solution Owner para ${task.id}?\n\nSe marcará como Aceptado y Finalizado (Done) conforme a Definition of Done.`);
+      if (!ok) return;
+
+      task.status = 'done';
+      const nowStr = new Date().toLocaleDateString('es-AR') + ' ' + new Date().toLocaleTimeString('es-AR', {hour: '2-digit', minute: '2-digit'});
+      task.so_feedback = {
+        status: 'APROBADO CONFORME',
+        observation: 'Aprobación formal otorgada por el Solution Owner tras verificar criterios de aceptación y Definition of Done.',
+        reviewer: 'Freddy Cortés (Solution Owner)',
+        date: nowStr
+      };
+      saveState(false);
+      renderCurrentView();
+      closeUHModal();
     }
 
     function closeUHModal() {
       document.getElementById('uh-modal').style.display = 'none';
+      document.onpaste = null;
+      currentModalTaskId = null;
+      currentTaskImageData = null;
     }
 
     // VISTA 2: ROADMAP
