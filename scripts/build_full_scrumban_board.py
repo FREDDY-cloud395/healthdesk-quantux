@@ -30,7 +30,7 @@ def generate_scrumban_board():
         {"id": "Sprint 3", "name": "Sprint 3: Cockpit 3 Columnas & Selector Roles", "sp": 43, "status": "Completado", "dates": "07/09/2026 - 11/09/2026", "desc": "Bandeja unificada, cockpit operativo y selector de perfiles sin recargar."},
         {"id": "Sprint 4", "name": "Sprint 4: Integración E2E, Notas & Auditoría", "sp": 46, "status": "Completado", "dates": "14/09/2026 - 18/09/2026", "desc": "Circuito E2E, notas internas privadas y timeline inmutable de cambios."},
         {"id": "Sprint 5", "name": "Sprint 5: Estabilización, Certificación UAT & Release v1.0", "sp": 14, "status": "Completado", "dates": "21/09/2026 - 25/09/2026", "desc": "Pase a producción, dataset de 14 clientes y cierre de línea base MVP."},
-        {"id": "Sprint 6", "name": "⚡ Sprint 6: Gobernanza PMI+IA, Blindaje OJO & Pre-commit Gates", "sp": 36, "status": "ACTIVO / EN CURSO", "dates": "28/09/2026 - 02/10/2026", "desc": "Formalización PMI, calidad TDD, resolución de issues y contratos OpenAPI."},
+        {"id": "Sprint 6", "name": "⚡ Sprint 6: Hardening, Estabilización & Cierre Técnico", "sp": 36, "status": "ACTIVO (HARDENING)", "dates": "26/09/2026 - 28/09/2026", "desc": "Blindaje de calidad, TDD pre-commit gates, resolución de retrabajos (UH-67, MEJ-08) y congelamiento 28-Sep."},
         {"id": "Sprint 7", "name": "Sprint 7: Reemplazo N1 & Omnicanalidad", "sp": 35, "status": "Planificado", "dates": "05/10/2026 - 16/10/2026", "desc": "Triage inteligente y asistencia de primer nivel para prestadores."},
         {"id": "Sprint 8", "name": "Sprint 8: Telemetría Enterprise & HL7", "sp": 40, "status": "Planificado", "dates": "19/10/2026 - 30/10/2026", "desc": "Integración avanzada, métricas en tiempo real y conectividad hospitalaria."}
     ]
@@ -42,9 +42,10 @@ def generate_scrumban_board():
         {"id": "M3", "date": "11-Sep-2026", "title": "Cockpit Centralizado en 3 Columnas Operativo", "status": "done", "badge": "Completado"},
         {"id": "M4", "date": "18-Sep-2026", "title": "Circuito E2E Integrado con Trazabilidad de Auditoría", "status": "done", "badge": "Completado"},
         {"id": "M5", "date": "25-Sep-2026", "title": "Liberación Certificada Release v1.0 MVP Quantux Salud", "status": "done", "badge": "Completado"},
-        {"id": "M6", "date": "02-Oct-2026", "title": "Sprint 6: Gobernanza PMI+IA, Calidad OJO & Pre-commit Gates", "status": "current", "badge": "ACTIVO / EN CURSO"},
-        {"id": "M7", "date": "16-Oct-2026", "title": "Release v1.1 Reemplazo N1 y Contratos OpenAPI Homologados", "status": "planned", "badge": "Planificado"},
-        {"id": "M8", "date": "30-Oct-2026", "title": "Release v2.0 Enterprise Omnicanal & Telemetría", "status": "planned", "badge": "Planificado"}
+        {"id": "M6", "date": "28-Sep-2026", "title": "Deadline Técnico & Hardening Freeze (18:00 hs)", "status": "current", "badge": "HARDENING EN CURSO"},
+        {"id": "M7", "date": "29 y 30-Sep", "title": "Ensayos y Preparación Pitch del Solution Owner (Blindado)", "status": "planned", "badge": "PREPARACIÓN PITCH"},
+        {"id": "M8", "date": "01-Oct-2026", "title": "Presentación Oficial del Producto ante el Comité Evaluador", "status": "planned", "badge": "DEMO FINAL"},
+        {"id": "M9", "date": "16-Oct-2026", "title": "Release v1.1 Reemplazo N1 y Despliegue Asistencial", "status": "planned", "badge": "Planificado"}
     ]
 
     # 4. Items del Backlog
