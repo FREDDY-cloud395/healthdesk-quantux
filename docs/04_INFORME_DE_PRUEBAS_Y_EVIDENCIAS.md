@@ -304,4 +304,19 @@ Conforme a la política de aseguramiento de calidad y preparación hacia el hito
 * **Evidencia Visual:** [`assets/capturas/ISSUE-52_error_al_ejecutar_el_balanceo_automatizado.png`](file:///C:/Users/FERO_ADM/.gemini/antigravity/scratch/quantux-v4-dev/docs/assets/capturas/ISSUE-52_error_al_ejecutar_el_balanceo_automatizado.png).
 * **Dictamen:** Resuelto y Verificado. La llamada a `/api/v1/team-leader/auto-rebalance` fallaba con `sqlite3.IntegrityError: FOREIGN KEY constraint failed` al intentar auditar con el usuario `torre_control` no registrado en `users`. Se dio de alta formalmente la cuenta de servicio institucional `torre_control` en la base de datos y `seed.py`, y se parametrizó la resolución dinámica de `audit_actor_username` en `team_leader.py`. El endpoint retorna HTTP 200 con éxito reasignando más de 1.100 solicitudes operativas equitativamente sin errores. Incorporado al Sprint 6 en estado `qa`.
 
+### ISSUE-53: Erradicación Integral de la Terminología "Tenant" por "Habilitación Institucional" y Depuración de Botoneras
+* **Severidad:** P1 — Alta Prioridad / Vocabulario de Dominio Hospitalario Homologado y Ergonomía Visual.
+* **Componente:** `frontend/index.html` (Solapa `#tab-tenants`, buscador `#tenant-search-input`, catálogo institucional), `frontend/js/app.js` (toasts, tooltips, descargas de matrices).
+* **Evidencias Visuales:** [`assets/capturas/ISSUE-53_quitar_palabra_tenant_por_institucional.png`](file:///C:/Users/FERO_ADM/.gemini/antigravity/scratch/quantux-v4-dev/docs/assets/capturas/ISSUE-53_quitar_palabra_tenant_por_institucional.png).
+* **Dictamen:** Implementado y Verificado. Por indicación taxativa del Solution Owner, se reemplazó cualquier referencia visual al anglicismo de sistemas "Tenant" por "Habilitación Institucional" y "Red Sanitaria Oficial". Se suprimieron de manera definitiva los botones redundantes de filtrado (`Todas (14)`, `Prepagas (6)`, `Sanatorios (4)`, `Hospitales (4)`, `Con Incidentes`) y el selector no funcional `[ Tarjetas | Tabla ]`, dejando una barra de búsqueda predictiva limpia y un catálogo responsivo en tarjetas con estado de integración HL7/FHIR en tiempo real. Incorporado al Sprint 6 en estado `qa`.
+
+### ISSUE-54: Sincronización Universal y Enrutamiento Resiliente de Capturas y Evidencias Visuales en el Tablero Scrumban
+* **Severidad:** P1 — Alta Criticidad / Trazabilidad Visual Obligatoria para Validación del Solution Owner.
+* **Componente:** `scripts/build_full_scrumban_board.py` (`init`, `syncIssueInBacklog`, `createCardElement`, `openItemModal`), `tools/verify_all_images.py`, `backend/app/main.py`.
+* **Evidencias Visuales:** [`assets/capturas/ISSUE-35_estilo_quantux_sin_colores_oscuros.png`](file:///C:/Users/FERO_ADM/.gemini/antigravity/scratch/quantux-v4-dev/docs/assets/capturas/ISSUE-35_estilo_quantux_sin_colores_oscuros.png).
+* **Dictamen:** Resuelto y Verificado. Se identificó que las capturas de pantalla adjuntas a las tarjetas del tablero Scrumban no se renderizaban en el cliente debido a desfases entre el almacenamiento `localStorage` previo del navegador y las rutas relativas servidas por FastAPI. Se implementaron tres capas de remediación integral:
+  1. **Sincronización Incondicional en `init()`**: Se modificó `syncIssueInBacklog` para actualizar forzosamente las rutas de `attachment_image` desde `INITIAL_BACKLOG` en cada recarga de página.
+  2. **Fallback Resiliente `onerror`**: Se integró un manejador automático en todas las etiquetas `<img>` de tarjetas y modales que alterna inteligentemente entre prefijos `/assets/` y `/docs/assets/` ante cualquier variación de ruta base.
+  3. **Auditoría Exhaustiva de Assets**: Se ejecutó `tools/verify_all_images.py` certificando que el 100% (70/70) de las imágenes adjuntas existen físicamente en `docs/assets/capturas/`, en `frontend/assets/capturas/` y responden con código HTTP 200 en vivo en el servidor uvicorn. Incorporado al Sprint 6 en estado `qa`.
+
 

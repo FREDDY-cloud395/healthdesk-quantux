@@ -7788,7 +7788,7 @@ function filterInstitutionCardsByType(type) {
 
 function goToMatrixForInstitution(instCode) {
  switchPlatformsSubTab('matrix');
- showToast(`Configurando matriz multi-tenant para ${formatInstitutionName(instCode)}`, 'info');
+ showToast(`Configurando habilitación institucional para ${formatInstitutionName(instCode)}`, 'info');
 }
 
 function renderClinicalPlatformsCards() {
@@ -7867,7 +7867,7 @@ function renderClinicalPlatformsCards() {
                       : `<span style="font-size: 10.5px; font-weight: 700; color: #059669; background: #DCFCE7; padding: 2px 8px; border-radius: 4px;">🟢 Operativo (99.98%)</span>`}
                   </div>
                   <div style="display: flex; gap: 6px;">
-                    <button type="button" class="btn-sec" onclick="switchPlatformsSubTab('matrix')" style="font-size: 10.5px; padding: 4px 8px; font-weight: 700; border-radius: 6px;" title="Ver habilitación multi-tenant">
+                    <button type="button" class="btn-sec" onclick="switchPlatformsSubTab('matrix')" style="font-size: 10.5px; padding: 4px 8px; font-weight: 700; border-radius: 6px;" title="Ver habilitación institucional">
                       Matriz
                     </button>
                     <button type="button" class="btn-pri" onclick="openPlatformDetailModal('${plat.code}')" style="font-size: 10.5px; padding: 4px 10px; font-weight: 800; border-radius: 6px; background: #0F172A; color: #FFF; border: none;">
@@ -8283,11 +8283,11 @@ function exportTenantMatrixCSV() {
  const encodedUri = encodeURI(csvContent);
  const link = document.createElement("a");
  link.setAttribute("href", encodedUri);
- link.setAttribute("download", `Matriz_MultiTenant_Quantux_${new Date().toISOString().slice(0,10)}.csv`);
+ link.setAttribute("download", `Matriz_Institucional_Quantux_${new Date().toISOString().slice(0,10)}.csv`);
  document.body.appendChild(link);
  link.click();
  document.body.removeChild(link);
- showToast("Matriz de asignación multi-tenant descargada en CSV", "success");
+ showToast("Matriz de habilitación institucional descargada en CSV", "success");
 }
 
 // =============================================================================
@@ -8800,6 +8800,7 @@ function applyRolePermissions() {
   const tabConfig = document.getElementById('tab-config');
   const tabTeamLeader = document.getElementById('tab-team-leader');
   const tabKanban = document.getElementById('tab-kanban');
+  const tabUnifiedHub = document.getElementById('tab-unified-hub');
 
   const reqPortal = document.getElementById('requester-clinical-portal');
   const opBoard = document.getElementById('operator-tickets-board');
@@ -8816,6 +8817,7 @@ function applyRolePermissions() {
     if (tabConfig) tabConfig.style.display = 'none';
     if (tabTeamLeader) tabTeamLeader.style.display = 'none';
     if (tabKanban) tabKanban.style.display = 'none';
+    if (tabUnifiedHub) tabUnifiedHub.style.display = 'none'; // ISSUE-42: Ocultar Mando Operativo al Solicitante
     if (tabArticles) tabArticles.style.display = 'none'; // KB es exclusiva para Agentes de Soporte N1/N2/N3
     const tabReqPortal = document.getElementById('tab-requester-portal');
     if (tabReqPortal) tabReqPortal.style.display = 'flex';
@@ -8841,6 +8843,7 @@ function applyRolePermissions() {
     // Redirigir siempre a su Centro de Ayuda con Chat IA
     switchView('requester-portal');
   } else {
+    if (tabUnifiedHub) tabUnifiedHub.style.display = 'flex';
     if (tabArticles) tabArticles.style.display = 'flex';
     if (reqPortal) reqPortal.style.display = 'none';
     if (opBoard) opBoard.style.display = 'block';
@@ -8868,9 +8871,9 @@ function applyRolePermissions() {
       switchView('team-leader');
     }
   } else if (role.includes('SOPORTE') || role === 'SOPORTE') {
-    // Soporte N1/N2/N3 ve Dashboard, Mesa de Ayuda, Tablero Kanban N3 y Base de Conocimiento
-    if (tabTeamLeader) tabTeamLeader.style.display = 'none';
-    if (tabDash) tabDash.style.display = 'flex';
+    // Soporte N1/N2/N3: ISSUE-41 oculta Tablero de Control y Torre de Control (canalizado en Mando Operativo)
+    if (tabTeamLeader) tabTeamLeader.style.setProperty('display', 'none', 'important');
+    if (tabDash) tabDash.style.setProperty('display', 'none', 'important');
     if (tabKanban) tabKanban.style.display = 'flex';
     if (tabTickets) tabTickets.style.display = 'flex';
     if (tabUsers) tabUsers.style.display = 'none'; // Exclusivo de ADMIN
@@ -8878,8 +8881,8 @@ function applyRolePermissions() {
     if (tabPlatforms) tabPlatforms.style.display = 'none'; // Solo Admin
     if (tabConfig) tabConfig.style.display = 'none'; // Solo Admin
 
-    if (['platforms', 'config', 'team-leader', 'users'].includes(AppState.currentView)) {
-      switchView('tickets');
+    if (['platforms', 'config', 'team-leader', 'dashboard', 'users'].includes(AppState.currentView)) {
+      switchView('unified-hub');
     }
   } else if (role === 'ADMIN') {
     // Administrador General ve todos los módulos y tiene control total

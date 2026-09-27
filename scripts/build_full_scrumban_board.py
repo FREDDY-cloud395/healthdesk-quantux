@@ -3324,6 +3324,60 @@ def generate_scrumban_board():
                     "Escenario 3: La tarjeta se encuentra incorporada al Sprint 6 en estado 'qa' lista para homologación formal."
                 ]
             }
+        },
+        {
+            "id": "ISSUE-53",
+            "title": "[P1 - ALTA CRITICIDAD] Erradicación de Término 'Tenant' por Vocabulario Institucional y Supresión de Botoneras",
+            "epic": "EP-07: Gobernanza PMI+IA, Blindaje OJO & Calidad",
+            "sp": 3,
+            "sprint": "Sprint 6",
+            "status": "qa",
+            "discipline": "Frontend / UX & Dominio Sanitario",
+            "type": "ISSUE",
+            "priority": "P1",
+            "doc_link": "04_INFORME_DE_PRUEBAS_Y_EVIDENCIAS.md#issue-53",
+            "doc_title": "DOC-QA-005 (ISSUE-53)",
+            "doc_desc": "Sustitución absoluta de 'Multi-Tenant' por 'Habilitación Institucional', eliminación de filtros redundantes (Prepagas, Sanatorios) y selector tarjetas/tabla para una interfaz limpia.",
+            "attachment_image": "assets/capturas/ISSUE-53_quitar_palabra_tenant_por_institucional.png",
+            "issue_details": {
+                "severity": "P1 — Alta Criticidad / Dominio Lingüístico Sanitario",
+                "component": "frontend/index.html (#platforms-subview-institutions), frontend/js/app.js",
+                "description": "El Solution Owner ordenó categóricamente: 'esto no se entiendeeeeee, tenant no es de sistemas por lo menos no nuestro quitaloooooooooo, ejecuta ahora ya' y 'te ordene que quitaras esto botones, haszlo ahora', adjuntando capturas de la solapa 'Habilitación Multi-Tenant', la botonera de categorías y el selector tarjetas/tabla.",
+                "root_cause": "Uso de jerga arquitectónica técnica ajena al negocio de salud y persistencia de botones de filtro redundantes.",
+                "solution": "1. Renombrado integral a 'Habilitación Institucional' y 'Red Institucional' en toda la interfaz;\n2. Supresión total de la botonera de categorías (Todas, Prepagas, Sanatorios, Hospitales, Con Incidentes) y del selector Tarjetas/Tabla dejando una barra de búsqueda rápida e intuitiva;\n3. Auto-adaptación responsiva en tarjetas de catálogo sanitario.",
+                "acceptance_criteria": [
+                    "Escenario 1: En ninguna parte de la suite se observa el término 'Multi-Tenant'.",
+                    "Escenario 2: La barra superior del catálogo sanitario luce completamente limpia, con caja de búsqueda fluida y sin botones residuales.",
+                    "Escenario 3: La tarjeta se encuentra incorporada al Sprint 6 en estado 'qa' lista para homologación."
+                ]
+            }
+        },
+        {
+            "id": "ISSUE-54",
+            "title": "[P1 - ALTA CRITICIDAD] Corrección y Blindaje de Visualización de Imágenes en Tarjetas Scrumban",
+            "epic": "EP-07: Gobernanza PMI+IA, Blindaje OJO & Calidad",
+            "sp": 3,
+            "sprint": "Sprint 6",
+            "status": "qa",
+            "discipline": "Frontend / Arquitectura Web & Evidencias",
+            "type": "ISSUE",
+            "priority": "P1",
+            "doc_link": "04_INFORME_DE_PRUEBAS_Y_EVIDENCIAS.md#issue-54",
+            "doc_title": "DOC-QA-005 (ISSUE-54)",
+            "doc_desc": "Subsanación del enrutamiento estático de imágenes y resincronización de evidencias visuales en tarjetas de revisión.",
+            "attachment_image": "assets/capturas/ISSUE-35_estilo_quantux_sin_colores_oscuros.png",
+            "issue_details": {
+                "severity": "P1 — Alta Criticidad / Bloqueo de Auditoría y Aceptación",
+                "component": "backend/app/main.py (/assets, /docs/assets), docs/00_Tablero_Scrumban_Quantux.html, frontend/assets/capturas",
+                "description": "El Solution Owner reclamó: 'en ninguna de las tarjetas a revisar se ven las imagenes son de vital importancia para las vallidaciones que debo hacer, corrige de inmediato', adjuntando captura de la tarjeta ISSUE-35 con ícono de imagen rota.",
+                "root_cause": "Desincronización de recursos entre docs/assets y frontend/assets, sumado a colisiones de enrutamiento estático en FastAPI y persistencia desfasada en localStorage.",
+                "solution": "1. Sincronización completa de todas las capturas hacia frontend/assets/capturas/;\n2. Doble enrutamiento estático en FastAPI asegurando HTTP 200 en /assets y /docs/assets;\n3. Manejador dinámico onerror de fallback automático en el DOM de tarjetas y modal;\n4. Resincronización forzosa de attachment_image desde INITIAL_BACKLOG en cada carga del tablero.",
+                "acceptance_criteria": [
+                    "Escenario 1: Todas las tarjetas con evidencias adjuntas despliegan su imagen de vista previa sin íconos rotos tanto por file:// como por http://.",
+                    "Escenario 2: Al hacer clic en la evidencia o en Ver Detalle, el modal amplía la captura con nitidez total.",
+                    "Escenario 3: La tarjeta se encuentra incorporada al Sprint 6 en estado 'qa' lista para homologación."
+                ]
+            }
         }
     ]
     tasks.extend(extra_tasks)
@@ -4501,7 +4555,7 @@ def generate_scrumban_board():
     <div class="roadmap-container">
       <div class="roadmap-header-section">
         <div>
-          <h2>🗺️ Hoja de Ruta Estratégica & Línea de Tiempo (Q3 - Q4 2026)</h2>
+          <h2>Hoja de Ruta Estratégica & Línea de Tiempo (Q3 - Q4 2026)</h2>
           <p style="font-size: 12px; color: var(--q-text-muted); margin-top: 4px;">
             Alineación de Épicas, Capacidad de Sprints y Milestones de Entrega bajo Metodología Híbrida PMI + IA.
           </p>
@@ -4536,7 +4590,7 @@ def generate_scrumban_board():
       <!-- PROGRESO POR ÉPICA -->
       <div>
         <div class="roadmap-section-title">
-          <span>🏛️</span> Épicas del Proyecto y Estado de Avance
+          <span style="color: var(--q-teal); font-weight: 800; margin-right: 6px;">■</span> Épicas del Proyecto y Estado de Avance
         </div>
         <div class="roadmap-epics-list" id="roadmap-epics-container"></div>
       </div>
@@ -4544,7 +4598,7 @@ def generate_scrumban_board():
       <!-- HITOS / MILESTONES -->
       <div>
         <div class="roadmap-section-title">
-          <span>🚩</span> Hitos de Entrega Clave (Milestones)
+          <span style="color: var(--q-teal); font-weight: 800; margin-right: 6px;">■</span> Hitos de Entrega Clave (Milestones)
         </div>
         <div class="milestones-grid" id="roadmap-milestones-container"></div>
       </div>
@@ -4558,7 +4612,7 @@ def generate_scrumban_board():
     <div class="metrics-view-grid">
       <div class="velocity-chart-card">
         <div class="roadmap-section-title">
-          <span>📈</span> Velocity Chart: Story Points Entregados por Sprint
+          <span style="color: var(--q-teal); font-weight: 800; margin-right: 6px;">■</span> Velocity Chart: Story Points Entregados por Sprint
         </div>
         <p style="font-size: 11.5px; color: var(--q-text-muted); margin-bottom: 16px;">
           Medición empírica de velocidad de entrega. La cadencia promedio se estabiliza en 33 SP por timebox de 1 semana.
@@ -4568,7 +4622,7 @@ def generate_scrumban_board():
 
       <div class="velocity-chart-card">
         <div class="roadmap-section-title">
-          <span>📊</span> Distribución por Tipología
+          <span style="color: var(--q-teal); font-weight: 800; margin-right: 6px;">■</span> Distribución por Tipología
         </div>
         <div id="type-distribution-container" style="display: flex; flex-direction: column; gap: 10px; margin-top: 14px;"></div>
       </div>
@@ -4581,7 +4635,7 @@ def generate_scrumban_board():
   <main class="view-panel" id="view-hierarchy">
     <div class="tree-container">
       <div class="roadmap-section-title" style="margin-bottom: 14px;">
-        <span>📋</span> Estructura Jerárquica del Proyecto: Épicas → UHs → Tareas Técnicas / Issues
+        <span style="color: var(--q-teal); font-weight: 800; margin-right: 6px;">■</span> Estructura Jerárquica del Proyecto: Épicas → UHs → Tareas Técnicas / Issues
       </div>
       <p style="font-size: 11.5px; color: var(--q-text-muted); margin-bottom: 16px;">
         Descomposición WBS completa de requerimientos del sistema con trazabilidad bidireccional.
@@ -4671,10 +4725,32 @@ def generate_scrumban_board():
     }}
 
     function init() {{
-      renderSprintsFilter();
-      renderDisciplinesFilter();
-      renderEpicsFilter();
-      renderTypeFilter();
+      // 1. Cargar el backlog oficial con fallback a localStorage
+      const savedTasks = localStorage.getItem('quantux_scrumban_v19_progress');
+      if (savedTasks) {{
+        try {{
+          tasks = JSON.parse(savedTasks);
+        }} catch (e) {{
+          tasks = JSON.parse(JSON.stringify(INITIAL_BACKLOG));
+        }}
+      }} else {{
+        tasks = JSON.parse(JSON.stringify(INITIAL_BACKLOG));
+      }}
+
+      // Asegurar que todas las tareas del INITIAL_BACKLOG existan en tasks con metadatos actualizados
+      INITIAL_BACKLOG.forEach(initTask => {{
+        const existing = tasks.find(t => t.id === initTask.id);
+        if (!existing) {{
+          tasks.push(JSON.parse(JSON.stringify(initTask)));
+        }} else {{
+          if (initTask.doc_link) existing.doc_link = initTask.doc_link;
+          if (initTask.doc_title) existing.doc_title = initTask.doc_title;
+          if (initTask.attachment_image) existing.attachment_image = initTask.attachment_image;
+          if (initTask.issue_details) existing.issue_details = initTask.issue_details;
+          if (initTask.sp) existing.sp = initTask.sp;
+          if (initTask.sprint) existing.sprint = initTask.sprint;
+        }}
+      }});
 
       // Blindaje de Gobernanza Permanente: Conjunto Inmutable de Tarjetas Aprobadas por el Solution Owner
       const PERMANENTLY_APPROVED_BY_SO = new Set([
@@ -4717,19 +4793,10 @@ def generate_scrumban_board():
         }}
       }});
 
-      // Asegurar que todos los items prioritarios con capturas existan
-      const priorityItems = [
-        "UH-69", "ISSUE-07", "UH-68", "UH-67", "UH-66", "ISSUE-06", "ISSUE-05", "ISSUE-04",
-        "MEJ-08", "ISSUE-01", "ISSUE-02", "ISSUE-21", "ISSUE-22", "ISSUE-23",
-        "ISSUE-24", "ISSUE-25", "UH-70", "ISSUE-26", "ISSUE-27", "ISSUE-28",
-        "ISSUE-29", "MEJ-09", "MEJ-10", "ISSUE-30", "ISSUE-31", "ISSUE-32",
-        "ISSUE-33", "ISSUE-34", "ISSUE-35", "ISSUE-36", "ISSUE-37", "ISSUE-38",
-        "ISSUE-39", "ISSUE-40", "ISSUE-41", "ISSUE-42", "ISSUE-43", "ISSUE-44",
-        "ISSUE-45", "ISSUE-46", "ISSUE-47", "ISSUE-48", "ISSUE-49", "ISSUE-50", "ISSUE-51",
-        "MEJ-11", "OPP-04", "OPP-05", "OPP-06", "OPP-07", "OPP-08",
-        "OPP-09", "OPP-10", "OPP-11", "OPP-12"
-      ];
-      priorityItems.forEach(id => syncIssueInBacklog(id));
+      // Asegurar que todas las tareas en INITIAL_BACKLOG tengan sus datos, capturas y estados sincronizados
+      INITIAL_BACKLOG.forEach(initialItem => {{
+        syncIssueInBacklog(initialItem.id);
+      }});
 
       // Filtro por defecto en el Tablero: ALL para ver todos los entregables aprobados y pendientes
       const sprintSel = document.getElementById('filter-sprint');
@@ -4737,9 +4804,8 @@ def generate_scrumban_board():
         sprintSel.value = 'ALL';
       }}
 
-      saveState();
+      saveState(false);
       renderBoard();
-      renderVelocityChart();
     }}
 
     function syncIssueInBacklog(issueId) {{
@@ -4749,24 +4815,24 @@ def generate_scrumban_board():
       if (idx === -1) {{
         tasks.push(JSON.parse(JSON.stringify(initialItem)));
       }} else {{
-        if (initialItem.attachment_image && !tasks[idx].attachment_image) {{
+        if (initialItem.attachment_image) {{
           tasks[idx].attachment_image = initialItem.attachment_image;
         }}
         tasks[idx].title = initialItem.title;
-        if (!tasks[idx].status) {{
-          tasks[idx].status = initialItem.status;
+        if (tasks[idx].status !== 'done') {{
+          tasks[idx].status = initialItem.status || 'qa';
         }}
-        if (initialItem.so_feedback && !tasks[idx].so_feedback) {{
+        if (initialItem.so_feedback) {{
           tasks[idx].so_feedback = initialItem.so_feedback;
         }}
         tasks[idx].sp = initialItem.sp;
-        if (!tasks[idx].priority) tasks[idx].priority = initialItem.priority;
+        tasks[idx].priority = initialItem.priority;
         tasks[idx].discipline = initialItem.discipline;
         tasks[idx].doc_link = initialItem.doc_link;
         tasks[idx].doc_title = initialItem.doc_title;
         tasks[idx].doc_desc = initialItem.doc_desc;
         if (initialItem.narrative) tasks[idx].narrative = initialItem.narrative;
-        if (initialItem.issue_details && !tasks[idx].issue_details) tasks[idx].issue_details = initialItem.issue_details;
+        if (initialItem.issue_details) tasks[idx].issue_details = initialItem.issue_details;
         if (initialItem.acceptance_criteria) tasks[idx].acceptance_criteria = initialItem.acceptance_criteria;
         if (initialItem.adaptation_criteria) tasks[idx].adaptation_criteria = initialItem.adaptation_criteria;
       }}
@@ -4874,7 +4940,7 @@ def generate_scrumban_board():
       if (task.attachment_image) {{
         attachPreviewHtml = `
           <div class="card-attachment-preview" draggable="false" style="margin: 8px 0 10px 0; border-radius: 6px; overflow: hidden; border: 1.5px solid #38BDF8; background: #0F172A; text-align: center; cursor: pointer;" onclick="event.stopPropagation(); openItemModal('${{task.id}}')" title="Clic para ampliar captura original">
-            <img src="${{task.attachment_image}}" alt="Captura asociada a ${{task.id}}" draggable="false" style="width: 100%; max-height: 115px; object-fit: cover; display: block;" />
+            <img src="${{task.attachment_image}}" alt="Captura asociada a ${{task.id}}" draggable="false" style="width: 100%; max-height: 115px; object-fit: cover; display: block;" onerror="if(!this.dataset.retried){{this.dataset.retried=1; if(this.src.includes('/docs/assets/')){{this.src=this.src.replace('/docs/assets/','/assets/');}}else if(this.src.includes('/assets/')){{this.src=this.src.replace('/assets/','/docs/assets/');}}else if(!this.src.includes('docs/assets/')){{this.src='docs/'+this.getAttribute('src');}}}}" />
             <div style="font-size: 10px; font-weight: 800; color: #0284C7; background: #F0F9FF; padding: 4px 6px; display: flex; align-items: center; justify-content: center; gap: 4px; border-top: 1px solid #BAE6FD;">
               <span>📸 Evidencia Visual Adjunta (Clic para ampliar)</span>
             </div>
@@ -5165,7 +5231,7 @@ def generate_scrumban_board():
             </div>
             <div style="margin-top: 10px; text-align: center;">
               <a href="${{task.attachment_image}}" target="_blank" title="Clic para ampliar en tamaño completo en nueva pestaña">
-                <img src="${{task.attachment_image}}" alt="Captura ${{task.id}}" style="max-width: 100%; max-height: 420px; border-radius: 8px; border: 1px solid #CBD5E1; box-shadow: 0 4px 14px rgba(0,0,0,0.12); object-fit: contain;" />
+                <img src="${{task.attachment_image}}" alt="Captura ${{task.id}}" style="max-width: 100%; max-height: 420px; border-radius: 8px; border: 1px solid #CBD5E1; box-shadow: 0 4px 14px rgba(0,0,0,0.12); object-fit: contain;" onerror="if(!this.dataset.retried){{this.dataset.retried=1; if(this.src.includes('/docs/assets/')){{this.src=this.src.replace('/docs/assets/','/assets/');}}else if(this.src.includes('/assets/')){{this.src=this.src.replace('/assets/','/docs/assets/');}}else if(!this.src.includes('docs/assets/')){{this.src='docs/'+this.getAttribute('src');}}}}" />
               </a>
               <div style="font-size: 11.5px; font-weight: 600; color: #64748B; margin-top: 8px;">
                 Captura enviada por el Solution Owner • Haz clic sobre la imagen para abrirla en alta resolución

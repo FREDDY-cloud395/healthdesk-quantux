@@ -1710,9 +1710,9 @@
                   <span id="subtab-badge-plat" style="font-size: 9.5px; background: rgba(71,85,105,0.12); color: #334155; padding: 1px 6px; border-radius: 10px; font-weight: 800;">9</span>
                 </button>
 
-                <button type="button" class="dash-tab-btn" id="btn-subtab-matrix" onclick="switchPlatformsSubTab('matrix')" title="Conmutador de habilitación en vivo multi-tenant" style="padding: 5px 12px; font-size: 11.5px; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; white-space: nowrap;">
+                <button type="button" class="dash-tab-btn" id="btn-subtab-matrix" onclick="switchPlatformsSubTab('matrix')" title="Conmutador de habilitación institucional en vivo" style="padding: 5px 12px; font-size: 11.5px; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; white-space: nowrap;">
                   <span>🎛️</span>
-                  <span style="font-weight: 700;">Habilitación Multi-Tenant</span>
+                  <span style="font-weight: 700;">Habilitación Institucional</span>
                   <span style="font-size: 9px; background: #DCFCE7; color: #166534; padding: 1px 6px; border-radius: 10px; font-weight: 800; border: 1px solid #BBF7D0;">En Vivo</span>
                 </button>
 
@@ -1731,7 +1731,7 @@
                 <button type="button" id="btn-action-new-plat" class="btn-pri" onclick="openCreatePlatformModal()" title="Registrar un nuevo módulo clínico" style="font-size: 11px; padding: 5px 13px; font-weight: 800; border-radius: 6px; background: #00A896; border: none; color: #FFF; display: none; align-items: center; gap: 5px; cursor: pointer; box-shadow: 0 1px 3px rgba(0,168,150,0.25); white-space: nowrap;">
                   <span>💻</span> + Nuevo Módulo
                 </button>
-                <button type="button" id="btn-action-export-matrix" class="btn-sec" onclick="exportTenantMatrixCsv()" title="Exportar matriz multi-tenant a CSV" style="font-size: 11px; padding: 5px 11px; font-weight: 700; border-radius: 6px; display: none; align-items: center; gap: 5px; cursor: pointer; white-space: nowrap;">
+                <button type="button" id="btn-action-export-matrix" class="btn-sec" onclick="exportTenantMatrixCsv()" title="Exportar matriz de habilitación a CSV" style="font-size: 11px; padding: 5px 11px; font-weight: 700; border-radius: 6px; display: none; align-items: center; gap: 5px; cursor: pointer; white-space: nowrap;">
                   <span>⬇️</span> Exportar Matriz
                 </button>
               </div>
@@ -1742,29 +1742,14 @@
                  =============================================================== -->
             <div class="platforms-subview active" id="platforms-subview-institutions">
               
-              <!-- Toolbar Compacta de Búsqueda y Filtros -->
+              <!-- Toolbar Limpia de Búsqueda de Instituciones -->
               <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; background: #FFFFFF; padding: 6px 12px; border-radius: 8px; border: 1px solid #E2E8F0;">
-                <div style="position: relative; width: 220px;">
-                  <input type="text" id="filter-inst-cards-input" class="form-control" placeholder="Buscar institución..." style="padding-left: 28px; font-size: 11px; height: 28px; border-radius: 6px;" oninput="filterInstitutionCards(this.value)">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position: absolute; left: 8px; top: 8px; width: 12px; height: 12px; color: #94A3B8;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <div style="position: relative; width: 320px;">
+                  <input type="text" id="filter-inst-cards-input" class="form-control" placeholder="Buscar institución sanitaria, código o sede..." style="padding-left: 28px; font-size: 11.5px; height: 30px; border-radius: 6px; width: 100%; box-sizing: border-box;" oninput="filterInstitutionCards(this.value)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position: absolute; left: 8px; top: 9px; width: 13px; height: 13px; color: #94A3B8;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                 </div>
-
-                <div style="display: flex; gap: 4px; align-items: center; flex-wrap: wrap;">
-                  <button type="button" class="btn-clean-action active" data-inst-type-filter="all" onclick="filterInstitutionCardsByType('all')" style="padding: 3px 8px; font-size: 10.5px; font-weight: 700; border-radius: 5px;">Todas (14)</button>
-                  <button type="button" class="btn-clean-action" data-inst-type-filter="PREPAGA" onclick="filterInstitutionCardsByType('PREPAGA')" style="padding: 3px 8px; font-size: 10.5px; font-weight: 700; border-radius: 5px;">Prepagas (6)</button>
-                  <button type="button" class="btn-clean-action" data-inst-type-filter="SANATORIO" onclick="filterInstitutionCardsByType('SANATORIO')" style="padding: 3px 8px; font-size: 10.5px; font-weight: 700; border-radius: 5px;">Sanatorios (4)</button>
-                  <button type="button" class="btn-clean-action" data-inst-type-filter="HOSPITAL" onclick="filterInstitutionCardsByType('HOSPITAL')" style="padding: 3px 8px; font-size: 10.5px; font-weight: 700; border-radius: 5px;">Hospitales (4)</button>
-                  <button type="button" class="btn-clean-action" data-inst-type-filter="INCIDENTS" onclick="filterInstitutionCardsByType('INCIDENTS')" style="padding: 3px 8px; font-size: 10.5px; font-weight: 700; border-radius: 5px; color: #0F172A; border-color: #CBD5E1;">Con Incidentes</button>
-                </div>
-
-                <!-- Selector de Modo de Vista (ISSUE-39) -->
-                <div style="display: flex; background: #F1F5F9; padding: 2px; border-radius: 6px; gap: 2px; border: 1px solid #E2E8F0;">
-                  <button type="button" id="btn-view-mode-cards" class="btn-view-mode active" onclick="togglePlatformsViewMode('cards')" title="Vista en Cuadrícula" style="border: none; background: #FFFFFF; color: #0F172A; padding: 3px 10px; border-radius: 5px; font-size: 10.5px; font-weight: 800; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.08);">
-                    <span>Tarjetas</span>
-                  </button>
-                  <button type="button" id="btn-view-mode-table" class="btn-view-mode" onclick="togglePlatformsViewMode('table')" title="Vista en Tabla" style="border: none; background: transparent; color: #64748B; padding: 3px 10px; border-radius: 5px; font-size: 10.5px; font-weight: 700; cursor: pointer;">
-                    <span>Tabla</span>
-                  </button>
+                <div style="font-size: 11.5px; color: #64748B; font-weight: 600;">
+                  Red Sanitaria Oficial • 14 Instituciones Habilitadas
                 </div>
               </div>
 
@@ -2068,7 +2053,7 @@
                 <div style="background: var(--q-bg-page); border: 1px solid var(--q-border); border-radius: 8px; padding: 10px; font-size: 11px; line-height: 1.7;">
                   <div>• <strong>Backend:</strong> FastAPI (Python) - RESTful API v1</div>
                   <div>• <strong>Base de Datos:</strong> SQLite / SQLModel con transacciones ACID</div>
-                  <div>• <strong>Instituciones Multitenant:</strong> 14 Clientes con mesas personalizadas</div>
+                  <div>• <strong>Red Institucional:</strong> 14 Centros de Salud con mesas personalizadas</div>
                   <div>• <strong>Seguridad:</strong> Validación estricta de credenciales y perfiles RBAC</div>
                 </div>
               </div>
