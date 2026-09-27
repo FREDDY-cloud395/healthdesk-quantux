@@ -762,7 +762,7 @@ def generate_scrumban_board():
                 "epic": "EP-08: Reemplazo N1, Triage IA & Portal Solicitante",
                 "sp": 3,
                 "sprint": "Sprint 6",
-                "status": "done",
+                "status": "qa",
                 "discipline": "Frontend / UX Writing & ITIL",
                 "type": "ISSUE",
                 "priority": "P1",
@@ -789,7 +789,7 @@ def generate_scrumban_board():
                 "epic": "EP-08: Reemplazo N1, Triage IA & Portal Solicitante",
                 "sp": 2,
                 "sprint": "Sprint 6",
-                "status": "done",
+                "status": "qa",
                 "discipline": "Frontend / UX & Limpieza",
                 "type": "UH",
                 "priority": "P1",
@@ -820,7 +820,7 @@ def generate_scrumban_board():
                 "epic": "EP-08: Reemplazo N1, Triage IA & Portal Solicitante",
                 "sp": 5,
                 "sprint": "Sprint 6",
-                "status": "done",
+                "status": "rework",
                 "discipline": "Analista Funcional / UX & Frontend",
                 "type": "UH",
                 "priority": "P1",
@@ -829,7 +829,7 @@ def generate_scrumban_board():
                 "doc_desc": "Optimización de usabilidad del Asistente N1 eliminando el doble bloque confuso y añadiendo subniveles interactivos con separación de capas (médico vs analista).",
                 "attachment_image": "assets/capturas/UH-67_doble_informacion_subniveles_arbol.png",
                 "so_feedback": {
-                        "status": "APROBADO EN RETRABAJO / CERTIFICADO CON SUBNIVELES Y DOBLE CAPA (26/09/2026)",
+                        "status": "RECHAZADO / NO IMPLEMENTADO",
                         "observation": "El desarrollo no se implementó conforme a lo solicitado en la tarjeta. Falla persistente: no existen subniveles interactivos de navegación en el árbol N1 ni separación entre la indicación inmediata para el médico y el fundamento técnico profundo.",
                         "date": "2026-09-26",
                         "reviewer": "Solution Owner (Humano)"
@@ -858,7 +858,7 @@ def generate_scrumban_board():
                 "epic": "EP-08: Reemplazo N1, Triage IA & Portal Solicitante",
                 "sp": 3,
                 "sprint": "Sprint 6",
-                "status": "done",
+                "status": "sprint",
                 "discipline": "Frontend / UX & CSS",
                 "type": "ISSUE",
                 "priority": "P1",
@@ -885,7 +885,7 @@ def generate_scrumban_board():
                 "epic": "EP-08: Reemplazo N1, Triage IA & Portal Solicitante",
                 "sp": 2,
                 "sprint": "Sprint 6",
-                "status": "done",
+                "status": "sprint",
                 "discipline": "Frontend / JS & UX",
                 "type": "ISSUE",
                 "priority": "P1",
@@ -912,7 +912,7 @@ def generate_scrumban_board():
                 "epic": "EP-08: Reemplazo N1, Triage IA & Portal Solicitante",
                 "sp": 3,
                 "sprint": "Sprint 6",
-                "status": "done",
+                "status": "sprint",
                 "discipline": "Frontend / UX & CSS",
                 "type": "ISSUE",
                 "priority": "P1",
@@ -939,7 +939,7 @@ def generate_scrumban_board():
                 "epic": "EP-08: Reemplazo N1, Triage IA & Portal Solicitante",
                 "sp": 3,
                 "sprint": "Sprint 6",
-                "status": "done",
+                "status": "sprint",
                 "discipline": "Frontend / UI & Limpieza Zen",
                 "type": "UH",
                 "priority": "P1",
@@ -1000,7 +1000,7 @@ def generate_scrumban_board():
                 "epic": "EP-07: Gobernanza PMI+IA, Blindaje OJO & Calidad",
                 "sp": 3,
                 "sprint": "Sprint 6",
-                "status": "done",
+                "status": "qa",
                 "discipline": "Frontend / UX",
                 "type": "MEJORA",
                 "priority": "P2",
@@ -1030,7 +1030,7 @@ def generate_scrumban_board():
                 "epic": "EP-07: Gobernanza PMI+IA, Blindaje OJO & Calidad",
                 "sp": 5,
                 "sprint": "Sprint 6",
-                "status": "done",
+                "status": "qa",
                 "discipline": "DevOps / QA",
                 "type": "MEJORA",
                 "priority": "P2",
@@ -1060,7 +1060,7 @@ def generate_scrumban_board():
                 "epic": "EP-07: Gobernanza PMI+IA, Blindaje OJO & Calidad",
                 "sp": 3,
                 "sprint": "Sprint 6",
-                "status": "done",
+                "status": "progress",
                 "discipline": "Frontend / QA",
                 "type": "ISSUE",
                 "priority": "P2",
@@ -1085,7 +1085,7 @@ def generate_scrumban_board():
                 "epic": "EP-07: Gobernanza PMI+IA, Blindaje OJO & Calidad",
                 "sp": 3,
                 "sprint": "Sprint 6",
-                "status": "done",
+                "status": "progress",
                 "discipline": "Frontend / CSS",
                 "type": "ISSUE",
                 "priority": "P2",
@@ -1110,7 +1110,7 @@ def generate_scrumban_board():
                 "epic": "EP-07: Gobernanza PMI+IA, Blindaje OJO & Calidad",
                 "sp": 3,
                 "sprint": "Sprint 6",
-                "status": "done",
+                "status": "sprint",
                 "discipline": "DevOps / Calidad",
                 "type": "TASK",
                 "priority": "P3",
@@ -1133,7 +1133,7 @@ def generate_scrumban_board():
                 "epic": "17. Arquitectura & APIs",
                 "sp": 8,
                 "sprint": "Sprint 6",
-                "status": "done",
+                "status": "sprint",
                 "discipline": "Backend / Arq",
                 "type": "OPORTUNIDAD",
                 "priority": "P2",
@@ -1163,7 +1163,7 @@ def generate_scrumban_board():
                 "epic": "EP-07: Gobernanza PMI+IA, Blindaje OJO & Calidad",
                 "sp": 5,
                 "sprint": "Sprint 6",
-                "status": "done",
+                "status": "sprint",
                 "discipline": "QA / Metodología",
                 "type": "GAP",
                 "priority": "P2",
@@ -1609,7 +1609,7 @@ def generate_scrumban_board():
                 "epic": "EP-07: Gobernanza PMI+IA, Blindaje OJO & Calidad",
                 "sp": 3,
                 "sprint": "Sprint 6",
-                "status": "done",
+                "status": "qa",
                 "discipline": "Frontend / UX Design System & WBS",
                 "type": "MEJ",
                 "priority": "P1",
@@ -1634,7 +1634,7 @@ def generate_scrumban_board():
                 "epic": "EP-07: Gobernanza PMI+IA, Blindaje OJO & Calidad",
                 "sp": 3,
                 "sprint": "Sprint 6",
-                "status": "done",
+                "status": "qa",
                 "discipline": "Gobernanza / Quality Gate PMI & QA",
                 "type": "ISSUE",
                 "priority": "P2",
@@ -1660,7 +1660,7 @@ def generate_scrumban_board():
                 "epic": "EP-07: Gobernanza PMI+IA, Blindaje OJO & Calidad",
                 "sp": 2,
                 "sprint": "Sprint 6",
-                "status": "done",
+                "status": "qa",
                 "discipline": "Frontend / Accesibilidad & CSS",
                 "type": "ISSUE",
                 "priority": "P1",
@@ -1686,7 +1686,7 @@ def generate_scrumban_board():
                 "epic": "EP-06: Administración y Operación Centralizada",
                 "sp": 3,
                 "sprint": "Sprint 6",
-                "status": "done",
+                "status": "qa",
                 "discipline": "Frontend / Navegabilidad & Resiliencia",
                 "type": "ISSUE",
                 "priority": "P1",
@@ -1712,7 +1712,7 @@ def generate_scrumban_board():
                 "epic": "EP-06: Administración y Operación Centralizada",
                 "sp": 3,
                 "sprint": "Sprint 6",
-                "status": "done",
+                "status": "qa",
                 "discipline": "Frontend / Arquitectura de Vistas",
                 "type": "ISSUE",
                 "priority": "P1",
@@ -1738,7 +1738,7 @@ def generate_scrumban_board():
                 "epic": "EP-06: Administración y Operación Centralizada",
                 "sp": 5,
                 "sprint": "Sprint 6",
-                "status": "done",
+                "status": "qa",
                 "discipline": "Product Design / UX & Arquitectura Multi-Tenant",
                 "type": "ISSUE",
                 "priority": "P1",
@@ -1765,7 +1765,7 @@ def generate_scrumban_board():
                 "epic": "EP-08: Reemplazo N1, Triage IA & Portal Solicitante",
                 "sp": 2,
                 "sprint": "Sprint 6",
-                "status": "done",
+                "status": "qa",
                 "discipline": "Frontend / UX Writing & Limpieza Visual",
                 "type": "ISSUE",
                 "priority": "P1",
@@ -1791,7 +1791,7 @@ def generate_scrumban_board():
                 "epic": "EP-08: Reemplazo N1, Triage IA & Portal Solicitante",
                 "sp": 2,
                 "sprint": "Sprint 6",
-                "status": "done",
+                "status": "qa",
                 "discipline": "Frontend / UX Writing & Limpieza de Badges",
                 "type": "ISSUE",
                 "priority": "P2",
@@ -1816,7 +1816,7 @@ def generate_scrumban_board():
                 "epic": "EP-08: Reemplazo N1, Triage IA & Portal Solicitante",
                 "sp": 2,
                 "sprint": "Sprint 6",
-                "status": "done",
+                "status": "qa",
                 "discipline": "Frontend / UX Limpieza & Formateo",
                 "type": "ISSUE",
                 "priority": "P1",
@@ -1842,7 +1842,7 @@ def generate_scrumban_board():
                 "epic": "EP-06: Administración y Operación Centralizada",
                 "sp": 2,
                 "sprint": "Sprint 6",
-                "status": "done",
+                "status": "qa",
                 "discipline": "Frontend / Ergonomía UI",
                 "type": "ISSUE",
                 "priority": "P2",
@@ -1869,7 +1869,7 @@ def generate_scrumban_board():
                 "epic": "EP-06: Administración y Operación Centralizada",
                 "sp": 2,
                 "sprint": "Sprint 6",
-                "status": "done",
+                "status": "qa",
                 "discipline": "Frontend / Ergonomía UI",
                 "type": "ISSUE",
                 "priority": "P1",
@@ -1896,7 +1896,7 @@ def generate_scrumban_board():
                 "epic": "EP-08: Reemplazo N1, Triage IA & Portal Solicitante",
                 "sp": 8,
                 "sprint": "Sprint 6",
-                "status": "done",
+                "status": "qa",
                 "discipline": "Backend & Fullstack / Bot IA & KCS v6",
                 "type": "UH",
                 "priority": "P1",
@@ -1927,7 +1927,7 @@ def generate_scrumban_board():
                 "epic": "EP-06: Administración y Operación Centralizada",
                 "sp": 3,
                 "sprint": "Sprint 6",
-                "status": "done",
+                "status": "qa",
                 "discipline": "Frontend / Core JS Engine",
                 "type": "ISSUE",
                 "priority": "P1",
@@ -1954,7 +1954,7 @@ def generate_scrumban_board():
                 "epic": "EP-06: Administración y Operación Centralizada",
                 "sp": 2,
                 "sprint": "Sprint 6",
-                "status": "done",
+                "status": "qa",
                 "discipline": "Frontend / UX Design",
                 "type": "MEJORA",
                 "priority": "P2",
@@ -1980,7 +1980,7 @@ def generate_scrumban_board():
                 "epic": "EP-06: Administración y Operación Centralizada",
                 "sp": 3,
                 "sprint": "Sprint 6",
-                "status": "done",
+                "status": "qa",
                 "discipline": "Frontend / CSS & Layout",
                 "type": "MEJORA",
                 "priority": "P2",
@@ -2007,7 +2007,7 @@ def generate_scrumban_board():
                 "epic": "EP-06: Administración y Operación Centralizada",
                 "sp": 2,
                 "sprint": "Sprint 6",
-                "status": "done",
+                "status": "qa",
                 "discipline": "Frontend / UX Design",
                 "type": "MEJORA",
                 "priority": "P2",
@@ -2033,7 +2033,7 @@ def generate_scrumban_board():
                 "epic": "EP-06: Administración y Operación Centralizada",
                 "sp": 3,
                 "sprint": "Sprint 6",
-                "status": "done",
+                "status": "qa",
                 "discipline": "Frontend / UX & JS Search Engine",
                 "type": "ISSUE",
                 "priority": "P1",
@@ -2061,7 +2061,7 @@ def generate_scrumban_board():
                 "epic": "EP-06: Administración y Operación Centralizada",
                 "sp": 3,
                 "sprint": "Sprint 6",
-                "status": "done",
+                "status": "qa",
                 "discipline": "Frontend / UX Architecture Senior",
                 "type": "MEJORA",
                 "priority": "P1",
@@ -2114,7 +2114,7 @@ def generate_scrumban_board():
                 "epic": "EP-06: Administración y Operación Centralizada",
                 "sp": 2,
                 "sprint": "Sprint 6",
-                "status": "done",
+                "status": "progress",
                 "discipline": "Frontend / Scrumban Architecture",
                 "type": "MEJORA",
                 "priority": "P2",
@@ -2141,7 +2141,7 @@ def generate_scrumban_board():
                 "epic": "EP-01: Mando Operativo y Flujo de Tickets",
                 "sp": 2,
                 "sprint": "Sprint 6",
-                "status": "done",
+                "status": "qa",
                 "discipline": "Frontend / UX Workspace",
                 "type": "ISSUE",
                 "priority": "P1",
@@ -2169,7 +2169,7 @@ def generate_scrumban_board():
                 "epic": "EP-01: Mando Operativo y Flujo de Tickets",
                 "sp": 3,
                 "sprint": "Sprint 6",
-                "status": "done",
+                "status": "qa",
                 "discipline": "Frontend / Telemetry & Interoperability",
                 "type": "ISSUE",
                 "priority": "P1",
@@ -2197,7 +2197,7 @@ def generate_scrumban_board():
                 "epic": "EP-01: Mando Operativo y Flujo de Tickets",
                 "sp": 1,
                 "sprint": "Sprint 6",
-                "status": "done",
+                "status": "qa",
                 "discipline": "Frontend / UI Timeline",
                 "type": "ISSUE",
                 "priority": "P1",
@@ -2224,7 +2224,7 @@ def generate_scrumban_board():
                 "epic": "EP-08: Reemplazo N1, Triage IA & Portal Solicitante",
                 "sp": 1,
                 "sprint": "Sprint 6",
-                "status": "done",
+                "status": "qa",
                 "discipline": "Frontend / IA Asistencial",
                 "type": "ISSUE",
                 "priority": "P1",
@@ -2250,7 +2250,7 @@ def generate_scrumban_board():
                 "epic": "EP-07: Gobernanza PMI+IA, Blindaje OJO & Calidad",
                 "sp": 2,
                 "sprint": "Sprint 6",
-                "status": "done",
+                "status": "qa",
                 "discipline": "Frontend / Ergonomía Scrumban",
                 "type": "ISSUE",
                 "priority": "P1",
@@ -2277,7 +2277,7 @@ def generate_scrumban_board():
                 "epic": "EP-06: Administración y Operación Centralizada",
                 "sp": 2,
                 "sprint": "Sprint 6",
-                "status": "done",
+                "status": "qa",
                 "discipline": "Frontend / Arquitectura de Menú",
                 "type": "UH",
                 "priority": "P1",
@@ -2302,7 +2302,7 @@ def generate_scrumban_board():
                 "epic": "EP-06: Administración y Operación Centralizada",
                 "sp": 3,
                 "sprint": "Sprint 6",
-                "status": "done",
+                "status": "qa",
                 "discipline": "Frontend / UX Senior",
                 "type": "ISSUE",
                 "priority": "P1",
@@ -2329,7 +2329,7 @@ def generate_scrumban_board():
                 "epic": "EP-01: Mando Operativo y Flujo de Tickets",
                 "sp": 2,
                 "sprint": "Sprint 6",
-                "status": "done",
+                "status": "qa",
                 "discipline": "Frontend / UI Agent Workspace",
                 "type": "ISSUE",
                 "priority": "P1",
@@ -2356,7 +2356,7 @@ def generate_scrumban_board():
                 "epic": "EP-08: Reemplazo N1, Triage IA & Portal Solicitante",
                 "sp": 3,
                 "sprint": "Sprint 6",
-                "status": "done",
+                "status": "qa",
                 "discipline": "Fullstack / KCS v6 & Base de Conocimiento",
                 "type": "ISSUE",
                 "priority": "P1",
@@ -3710,7 +3710,7 @@ def generate_scrumban_board():
     }}
 
     function init() {{
-      const saved = localStorage.getItem('quantux_scrumban_v16_progress');
+      const saved = localStorage.getItem('quantux_scrumban_v17_progress');
       if (saved) {{
         try {{
           tasks = JSON.parse(saved);
@@ -3732,7 +3732,8 @@ def generate_scrumban_board():
       // Asegurar que todos los items prioritarios con capturas existan y tengan sus evidencias sincronizadas
       const priorityItems = [
         "UH-69", "ISSUE-07", "UH-68", "UH-67", "UH-66", "ISSUE-06", "ISSUE-05", "ISSUE-04",
-        "MEJ-08", "ISSUE-01", "ISSUE-02", "ISSUE-21", "ISSUE-22", "ISSUE-23"
+        "MEJ-08", "ISSUE-01", "ISSUE-02", "ISSUE-21", "ISSUE-22", "ISSUE-23",
+        "ISSUE-24", "ISSUE-25", "UH-70", "ISSUE-26", "ISSUE-27", "ISSUE-28"
       ];
       priorityItems.forEach(id => syncIssueInBacklog(id));
 
@@ -3824,7 +3825,8 @@ def generate_scrumban_board():
       const counts = {{ backlog: 0, sprint: 0, rework: 0, progress: 0, qa: 0, done: 0 }};
 
       tasks.forEach(task => {{
-        if (sprintFilter !== 'ALL' && task.sprint !== sprintFilter) return;
+        const col = task.status || 'backlog';
+        if (col !== 'backlog' && sprintFilter !== 'ALL' && task.sprint !== sprintFilter) return;
         if (typeFilter !== 'ALL' && (task.type || 'UH') !== typeFilter) return;
         if (epicFilter !== 'ALL' && task.epic !== epicFilter) return;
         if (prioFilter !== 'ALL' && (task.priority || 'P3') !== prioFilter) return;
@@ -3836,7 +3838,6 @@ def generate_scrumban_board():
           if (!matchId && !matchTitle && !matchEpic) return;
         }}
 
-        const col = task.status || 'backlog';
         if (counts[col] !== undefined) counts[col]++;
 
         const card = createCardElement(task);
@@ -4848,13 +4849,13 @@ def generate_scrumban_board():
     }}
 
     function saveState(notify = true) {{
-      localStorage.setItem('quantux_scrumban_v16_progress', JSON.stringify(tasks));
+      localStorage.setItem('quantux_scrumban_v17_progress', JSON.stringify(tasks));
       if (notify) alert('✓ Estado del Tablero Scrumban guardado exitosamente.');
     }}
 
     function resetDefaultTasks() {{
       if (confirm('¿Restaurar la base de datos oficial del tablero?')) {{
-        localStorage.removeItem('quantux_scrumban_v16_progress');
+        localStorage.removeItem('quantux_scrumban_v17_progress');
         tasks = JSON.parse(JSON.stringify(INITIAL_BACKLOG));
         tasks.forEach(t => {{
           const d = getTaskDocInfo(t);
