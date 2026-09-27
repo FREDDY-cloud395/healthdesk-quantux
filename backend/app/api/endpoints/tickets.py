@@ -93,6 +93,7 @@ class TicketResolveRequest(BaseModel):
     resolved_by_username: Optional[str] = None
     resolved_by: Optional[str] = None
     root_cause: Optional[str] = None
+    publish_to_kb: Optional[bool] = False
 
 class TicketCloseRequest(BaseModel):
     closed_by_username: str = "solicitante"
@@ -971,7 +972,7 @@ def resolve_ticket(ticket_id: str, req: TicketResolveRequest, background_tasks: 
 
     # ACCIÓN MANDATORIA: Solución Temporal (Workaround) genera automáticamente tarjeta en el Kanban de N3 y traza
     if req.is_workaround:
-        from app.models.entities import SoftwareRelease, ReleaseStatus, SupportLevel, TicketComment
+        from app.models.entities import SoftwareRelease, ReleaseStatus, SupportLevel
         active_rel = session.exec(
             select(SoftwareRelease).where(SoftwareRelease.status != ReleaseStatus.DESPLEGADA).order_by(SoftwareRelease.created_at.desc())
         ).first()
@@ -1033,6 +1034,113 @@ def resolve_ticket(ticket_id: str, req: TicketResolveRequest, background_tasks: 
             old_value=c_old_status,
             new_value="RESUELTO",
             change_reason=f"Resolución en cascada heredada del Incidente Maestro #{ticket.id}"
+        ))
+    
+    # ACCIÓN MANDATORIA: Alimentar Base de Conocimiento (KCS / ITIL 4) si el operador lo solicita
+    if req.publish_to_kb:
+        from app.models.entities import KBArticle, KBArticleHistory, KBArticleContribution
+        category_map = {
+            "CAT_RECETA": "Receta Digital",
+            "CAT_TELEMEDICINA": "Telemedicina",
+            "CAT_CONSULTORIO_DIGITAL": "Consultorio Digital",
+            "CAT_REGISTRO_INTEROP": "Interoperabilidad",
+            "CAT_AFILIADOS_PORTAL": "Historia Clínica",
+            "CAT_RPM_MONITOREO": "Historia Clínica",
+            "CAT_COPAGOS_PAGOS": "Facturación y Pagos",
+            "CAT_INTERNACION_DOM": "Procedimientos Clínicos",
+            "CAT_CARTILLA_TURNOS": "Procedimientos Clínicos"
+        }
+        cat = "Contingencias" if req.is_workaround else category_map.get(ticket.platform_code, "Procedimientos Clínicos")
+        art_title = f"[Protocolo Homologado] {ticket.title}"
+        art_content = (
+            f"### 1. DIAGNÓSTICO Y CAUSA RAÍZ (RCA)\n"
+            f"{req.root_cause or 'Diagnóstico operativo en entorno asistencial'}\n\n"
+            f"### 2. PROCEDIMIENTO TÉCNICO RESOLUTIVO APLICADO\n"
+            f"{req.resolution_notes.strip()}\n\n"
+            f"### 3. CRITERIO DE VERIFICACIÓN Y HOMOLOGACIÓN\n"
+            f"Servicio asistencial validado para la plataforma {ticket.platform_code or 'General'} en la institución {ticket.institution_code or 'Red asistencial'}.\n\n"
+            f"### 4. TRAZABILIDAD ITIL / KCS\n"
+            f"Alimentado automáticamente desde la resolución exitosa del Ticket #{ticket.id} por {resolver_user}."
+        )
+
+        art = session.exec(select(KBArticle).where(KBArticle.source_ticket_id == ticket.id)).first()
+        if not art:
+            art = KBArticle(
+                title=art_title,
+                category=cat,
+                content=art_content,
+                author_username=resolver_user,
+                tags=f"{ticket.id.lower()},{ticket.platform_code.lower() if ticket.platform_code else 'general'},itil,resolucion,kcs",
+                version="v1.0",
+                changelog=f"Artículo creado y alimentado desde Ticket #{ticket.id}",
+                source_ticket_id=ticket.id,
+                view_count=1,
+                is_published=True,
+                created_at=datetime.utcnow(),
+                updated_at=datetime.utcnow()
+            )
+            session.add(art)
+            session.flush()
+
+            hist = KBArticleHistory(
+                article_id=art.id,
+                version="v1.0",
+                title=art.title,
+                category=art.category,
+                content=art.content,
+                author_username=resolver_user,
+                tags=art.tags,
+                changelog=f"Publicación inicial homologada desde Ticket #{ticket.id}",
+                source_ticket_id=ticket.id,
+                created_at=datetime.utcnow()
+            )
+            session.add(hist)
+        else:
+            art.content = art_content
+            art.category = cat
+            art.updated_at = datetime.utcnow()
+            session.add(art)
+            session.flush()
+
+        contrib = session.exec(
+            select(KBArticleContribution).where(
+                KBArticleContribution.article_id == art.id,
+                KBArticleContribution.ticket_id == ticket.id
+            )
+        ).first()
+        if not contrib:
+            contrib = KBArticleContribution(
+                article_id=art.id,
+                ticket_id=ticket.id,
+                ticket_title=ticket.title,
+                contribution_summary=f"Causa raíz: {req.root_cause or 'Diagnóstico operativo'} — Solución: {req.resolution_notes.strip()[:140]}",
+                contributor_username=resolver_user,
+                contributor_role="ESPECIALISTA",
+                contributor_sector=ticket.platform_code or "SOPORTE_ASISTENCIAL",
+                solution_steps=req.resolution_notes.strip(),
+                created_at=datetime.utcnow()
+            )
+            session.add(contrib)
+
+        ticket.associated_kb_id = art.id
+        ticket.contributed_to_kb = True
+        session.add(ticket)
+
+        session.add(TicketAuditLog(
+            ticket_id=ticket.id,
+            changed_by_username=resolver_user,
+            field_changed="contributed_to_kb",
+            old_value="False",
+            new_value=f"Artículo #{art.id}",
+            change_reason=f"Aporte formal a la Base de Conocimiento homologado en Artículo #{art.id} ('{art.title}')"
+        ))
+
+        session.add(TicketComment(
+            ticket_id=ticket.id,
+            author_username="bot_quantux",
+            message=f"📚 [Base de Conocimiento Actualizada] Este caso alimentó formalmente el Artículo KB #{art.id} ('{art.title}') en la categoría '{art.category}'. El procedimiento queda documentado para reutilización continua.",
+            is_internal=False,
+            created_at=datetime.utcnow()
         ))
     
     session.commit()

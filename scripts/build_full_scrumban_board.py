@@ -1641,7 +1641,7 @@ def generate_scrumban_board():
                 "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#issue-08",
                 "doc_title": "DOC-SPEC-002 (ISSUE-08)",
                 "doc_desc": "Control de calidad pericial que impide marcar una tarjeta o épica como 'Completada' si no posee un fix técnico implementado y verificado en código o suite de tests.",
-                "attachment_image": "assets/capturas/ISSUE-08_resolucion_sin_fix_verificado.png",
+                "attachment_image": "",
                 "issue_details": {
                         "severity": "P2 — Media / Gobernanza y Aseguramiento de Calidad",
                         "component": "Tablero Scrumban, scripts/build_full_scrumban_board.py, frontend/js/app.js",
@@ -1719,7 +1719,7 @@ def generate_scrumban_board():
                 "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#issue-11",
                 "doc_title": "DOC-SPEC-002 (ISSUE-11)",
                 "doc_desc": "Corrección de función renderClinicalPlatformsCards para poblar el contenedor grid-platforms-cards con tarjetas de alta densidad informativa.",
-                "attachment_image": "assets/capturas/ISSUE-11_modulos_sw_no_muestra_nada.png",
+                "attachment_image": "",
                 "issue_details": {
                         "severity": "P1 — Alta Prioridad / Pantalla en Blanco",
                         "component": "frontend/js/app.js (renderClinicalPlatformsCards)",
@@ -2218,6 +2218,166 @@ def generate_scrumban_board():
                         ]
                 }
         },
+        {
+                "id": "ISSUE-24",
+                "title": "[P1 - ALTA PRIORIDAD] Remoción de Badge Innecesario 'AF-DEV' en Cabecera del Asistente IA",
+                "epic": "EP-08: Reemplazo N1, Triage IA & Portal Solicitante",
+                "sp": 1,
+                "sprint": "Sprint 6",
+                "status": "done",
+                "discipline": "Frontend / IA Asistencial",
+                "type": "ISSUE",
+                "priority": "P1",
+                "doc_link": "04_INFORME_DE_PRUEBAS_Y_EVIDENCIAS.md#issue-24",
+                "doc_title": "DOC-QA-004 (ISSUE-24)",
+                "doc_desc": "Eliminación del badge de desarrollo 'AF-DEV' que contaminaba visualmente la cabecera del Asistente IA.",
+                "attachment_image": "assets/capturas/ISSUE-24_quitar_badge_af_dev_ai.png",
+                "issue_details": {
+                        "severity": "P1 — Alta Prioridad / Ruido Visual",
+                        "component": "frontend/js/app.js (renderAIChatHeader)",
+                        "description": "El Solution Owner reportó con captura adjunta: 'issue de alta prioridad suma al sprint, debes quietar el texto del recuadro no aporta información'. La cabecera del asistente IA mostraba una píldora con el texto técnico 'AF-DEV' sin utilidad funcional.",
+                        "root_cause": "Presencia residual de una etiqueta visual conmemorativa de desarrollo 'AF-DEV' en el template de cabecera del asistente.",
+                        "solution": "Supresión del badge residual conservando exclusivamente el nombre y estado operativo del asistente.",
+                        "acceptance_criteria": [
+                                "Escenario 1 (Cabecera Zen): DADO el asistente IA, CUANDO se abre el panel de conversación, ENTONCES la cabecera no exhibe ningún badge 'AF-DEV'.",
+                                "Escenario 2 (Trazabilidad Visual): DADO el registro de ISSUE-24 en el Scrumban, CUANDO se abre la tarjeta, ENTONCES exhibe la evidencia gráfica adjunta."
+                        ]
+                }
+        },
+        {
+                "id": "ISSUE-25",
+                "title": "[P1 - ALTA PRIORIDAD] Visualización Scrumban 100vh sin Scroll Derecho y Distribución Uniforme de 6 Columnas",
+                "epic": "EP-07: Gobernanza PMI+IA, Blindaje OJO & Calidad",
+                "sp": 2,
+                "sprint": "Sprint 6",
+                "status": "done",
+                "discipline": "Frontend / Ergonomía Scrumban",
+                "type": "ISSUE",
+                "priority": "P1",
+                "doc_link": "04_INFORME_DE_PRUEBAS_Y_EVIDENCIAS.md#issue-25",
+                "doc_title": "DOC-QA-004 (ISSUE-25)",
+                "doc_desc": "Ajuste del contenedor y grilla del Scrumban para encajar al 100vh de pantalla eliminando el scroll vertical derecho del navegador.",
+                "attachment_image": "assets/capturas/ISSUE-25_scrumban_sin_scroll_derecho.png",
+                "issue_details": {
+                        "severity": "P1 — Alta Prioridad / Ergonomía de Pantalla Completa",
+                        "component": "scripts/build_full_scrumban_board.py & docs/tablero_scrumban.html",
+                        "description": "El Solution Owner solicitó: 'el scrumban debe mostrar siempre toda la información sin necesidad el scroll derecho, issue de alta prioridad, suma al sprint'. Las columnas desbordaban la altura de pantalla provocando doble barra de scroll.",
+                        "root_cause": "Falta de fijación estricta de 100vh en html/body con overflow: hidden y falta de minmax(0, 1fr) en la grilla kanban de 6 columnas.",
+                        "solution": "Fijar height: 100vh en html/body, aplicar repeat(6, minmax(0, 1fr)) a la grilla y delegar el scroll vertical únicamente a .cards-list de cada columna.",
+                        "acceptance_criteria": [
+                                "Escenario 1 (Cero Scroll Derecho en Navegador): DADO el tablero Scrumban abierto, CUANDO se visualiza en pantalla completa, ENTONCES el navegador no exhibe ninguna barra de desplazamiento vertical en el borde derecho.",
+                                "Escenario 2 (6 Columnas Visibles Simultáneas): DADO el tablero, ENTONCES las 6 columnas completas se aprecian a la vez sin recortes horizontales ni solapamientos.",
+                                "Escenario 3 (Scroll Independiente por Columna): DADO que una columna contiene más tarjetas de las que entran en pantalla, ENTONCES la lista interna de esa columna permite scroll vertical propio sin alterar la ventana."
+                        ]
+                }
+        },
+        {
+                "id": "UH-70",
+                "title": "[P1 - ALTA PRIORIDAD] Menú Lateral Zen: Ocultamiento de Accesos a Tablero de Control y Torre de Control Preservando Funcionalidad",
+                "epic": "EP-06: Administración y Operación Centralizada",
+                "sp": 2,
+                "sprint": "Sprint 6",
+                "status": "done",
+                "discipline": "Frontend / Arquitectura de Menú",
+                "type": "UH",
+                "priority": "P1",
+                "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#uh-70",
+                "doc_title": "DOC-SPEC-002 (UH-70)",
+                "doc_desc": "Ocultamiento selectivo en el menú de navegación de los botones de Tablero y Torre de Control sin alterar su funcionalidad subyacente.",
+                "attachment_image": "assets/capturas/UH-69_ocultar_tablero_torre_control_menu.png",
+                "narrative": {
+                        "as_a": "Operador Asistencial y Solution Owner",
+                        "i_want": "que el menú lateral oculte los botones de Tablero de Control y Torre de Control manteniendo el código y la capacidad analítica intacta",
+                        "so_that": "la barra de navegación lateral sea minimalista y enfocada en la atención sin ruido de accesos no utilizados en la rutina diaria."
+                },
+                "acceptance_criteria": [
+                        "Escenario 1 (Ocultamiento Estricto de Botones en Menú): DADO el menú lateral de navegación, CUANDO se renderizan los ítems principales, ENTONCES los accesos #tab-dashboard y #tab-team-leader están completamente invisibles (display: none !important).",
+                        "Escenario 2 (Preservación Absoluta de Funcionalidad): DADO el código JavaScript y backend, CUANDO se consultan las métricas o se abren las vistas programáticamente, ENTONCES todas las funciones y controladores operan normalmente.",
+                        "Escenario 3 (Trazabilidad Visual): DADO el registro en el Scrumban, CUANDO se abre la tarjeta UH-70, ENTONCES exhibe la captura de evidencia remitida por el Solution Owner."
+                ]
+        },
+        {
+                "id": "ISSUE-26",
+                "title": "[P1 - ALTA PRIORIDAD] Rediseño UX Senior: Barra de Pestañas y Acciones Multi-Tenant en Fila Única Limpia",
+                "epic": "EP-06: Administración y Operación Centralizada",
+                "sp": 3,
+                "sprint": "Sprint 6",
+                "status": "done",
+                "discipline": "Frontend / UX Senior",
+                "type": "ISSUE",
+                "priority": "P1",
+                "doc_link": "04_INFORME_DE_PRUEBAS_Y_EVIDENCIAS.md#issue-26",
+                "doc_title": "DOC-QA-004 (ISSUE-26)",
+                "doc_desc": "Rediseño ergonómico de la cabecera multi-tenant alineando sub-pestañas a la izquierda y acción contextual a la derecha en una única fila horizontal.",
+                "attachment_image": "assets/capturas/ISSUE-26_redisenio_ux_tabs_acciones_multitenant.png",
+                "issue_details": {
+                        "severity": "P1 — Alta Prioridad / Ergonomía Visual y Usabilidad",
+                        "component": "frontend/index.html & frontend/js/app.js (switchCatalogSubTab)",
+                        "description": "El Solution Owner indicó: 'USSUE, los botones del recuadro de la captura son un quilombo no se entiende nada, rediseñar y mostrar solo necesario por cada intem de módulo, actua como UX senior y rediseña los botones y su distribucipon, siempre apegado al estilo quantuz'. Había acumulación de botones heterogéneos en filas múltiples.",
+                        "root_cause": "Falta de unificación en una sola barra horizontal (toolbar unificada) con botones de acción dinámica según la pestaña activa.",
+                        "solution": "Unificar la barra en un contenedor flex justify-between de una sola fila, alojando las 3 subpestañas a la izquierda y exactamente 1 botón de acción contextual a la derecha (Nueva Institución, Vincular Módulo, etc.).",
+                        "acceptance_criteria": [
+                                "Escenario 1 (Fila Única Horizontal): DADO el catálogo multi-tenant, CUANDO se observa la cabecera superior, ENTONCES presenta una única fila con pestañas a la izquierda y botón de acción a la derecha.",
+                                "Escenario 2 (Dinamismo Contextual): DADO el cambio entre sub-pestañas (Instituciones / Módulos / Matriz), CUANDO el operador cambia de pestaña, ENTONCES el botón de acción cambia contextualmente mostrando solo lo necesario.",
+                                "Escenario 3 (Trazabilidad Visual): DADO el registro en el Scrumban, CUANDO se abre la tarjeta ISSUE-26, ENTONCES exhibe la captura de evidencia remitida por el Solution Owner."
+                        ]
+                }
+        },
+        {
+                "id": "ISSUE-27",
+                "title": "[P1 - CRÍTICA] Corrección de Botón 'Expandir Todo' en Historial y Notas del Caso en Agent Workspace",
+                "epic": "EP-01: Mando Operativo y Flujo de Tickets",
+                "sp": 2,
+                "sprint": "Sprint 6",
+                "status": "done",
+                "discipline": "Frontend / UI Agent Workspace",
+                "type": "ISSUE",
+                "priority": "P1",
+                "doc_link": "04_INFORME_DE_PRUEBAS_Y_EVIDENCIAS.md#issue-27",
+                "doc_title": "DOC-QA-004 (ISSUE-27)",
+                "doc_desc": "Corrección y robustecimiento del mecanismo de expansión total de notas e historial para desplegar el 100% del texto sin bloqueos.",
+                "attachment_image": "assets/capturas/ISSUE-27_boton_expandir_todo_no_expande.png",
+                "issue_details": {
+                        "severity": "P1 — Alta Criticidad / Operatividad de Soporte",
+                        "component": "frontend/index.html & frontend/js/app.js (expandAllWsNotes, collapseAllWsNotes)",
+                        "description": "El Solution Owner reportó con captura adjunta: 'el botón expandir no expande, issue de alta criticidad, sumar al sprint'. Al pulsar [⊞ Expandir Todo] en el modal del caso, las notas colapsadas no se desplegaban.",
+                        "root_cause": "Falta de forzado de estilo con !important (display: block !important) y falta de asociación defensiva de selectores (.ws-msg-body y [id^='ws-note-body-']) junto con la inicialización por addEventListener.",
+                        "solution": "Actualizar expandAllWsNotes y collapseAllWsNotes utilizando setProperty('display', 'block', 'important'), sincronizar flechas indicadoras a ▼, ocultar previews y enlazar listeners tanto inline como en DOMContentLoaded.",
+                        "acceptance_criteria": [
+                                "Escenario 1 (Despliegue Instantáneo en 1 Clic): DADO el modal del ticket en el workspace, CUANDO el operador pulsa [⊞ Expandir Todo], ENTONCES todas las notas, comentarios y descripciones del caso se expanden al instante revelando el 100% de su contenido.",
+                                "Escenario 2 (Colapso Simétrico): DADO que las notas están expandidas, CUANDO el operador pulsa [⊟ Colapsar Todo], ENTONCES todas las notas vuelven a su estado compacto.",
+                                "Escenario 3 (Trazabilidad Visual): DADO el registro en el Scrumban, CUANDO se abre la tarjeta ISSUE-27, ENTONCES exhibe la captura de evidencia remitida por el Solution Owner."
+                        ]
+                }
+        },
+        {
+                "id": "ISSUE-28",
+                "title": "[P1 - CRÍTICA] Alimentación y Trazabilidad Automática de la Base de Conocimiento al Resolver Ticket",
+                "epic": "EP-08: Reemplazo N1, Triage IA & Portal Solicitante",
+                "sp": 3,
+                "sprint": "Sprint 6",
+                "status": "done",
+                "discipline": "Fullstack / KCS v6 & Base de Conocimiento",
+                "type": "ISSUE",
+                "priority": "P1",
+                "doc_link": "04_INFORME_DE_PRUEBAS_Y_EVIDENCIAS.md#issue-28",
+                "doc_title": "DOC-QA-004 (ISSUE-28)",
+                "doc_desc": "Automatización e integración backend de la publicación a la Base de Conocimiento con categorización clínica, vinculación de ticket aportante y auditoría ITIL.",
+                "attachment_image": "assets/capturas/ISSUE-28_no_alimenta_base_conocimiento_al_resolver.png",
+                "issue_details": {
+                        "severity": "P1 — Alta Criticidad / Pérdida de Capital Intelectual",
+                        "component": "backend/app/api/endpoints/tickets.py, app/models/entities.py & frontend/js/app.js (resolveTicket)",
+                        "description": "El Solution Owner reportó con captura adjunta: 'no alimenta la base de conocimiento, issue de alta criticidad, sumar al sprint'. Al marcar el checkbox 'Publicar en Base de Conocimiento' en el modal de resolución, el caso no alimentaba la KB.",
+                        "root_cause": "El endpoint backend /resolve no recibía el flag publish_to_kb en el payload de solicitud y la lógica delegada en frontend se omitía silenciosamente si selectedTicket era nulo o no creaba la relación formal en KBArticleContribution.",
+                        "solution": "Incorporar publish_to_kb: Optional[bool] en TicketResolveRequest backend, crear/actualizar el artículo KB con categoría clínica mapeada desde platform_code, insertar registro formal en KBArticleContribution, actualizar ticket.associated_kb_id y ticket.contributed_to_kb = True, y registrar auditoría forense y comentario informativo.",
+                        "acceptance_criteria": [
+                                "Escenario 1 (Publicación Inmediata al Resolver): DADO el modal de resolución, CUANDO el operador marca 'Publicar en Base de Conocimiento' y confirma, ENTONCES se crea/actualiza el artículo en la KB con categoría clínica adecuada y contenido técnico estructurado (RCA, procedimiento y homologación).",
+                                "Escenario 2 (Vinculación de Ticket Aportante): DADO el artículo creado o consultado en la KB, CUANDO se examinan sus fuentes, ENTONCES el ticket resuelto figura formalmente como contribuyente con su ID, autor, fecha y síntesis de solución.",
+                                "Escenario 3 (Trazabilidad Forense ITIL): DADO el ticket resuelto, ENTONCES su historial registra el aporte a la KB en audit_logs y agrega un comentario de confirmación.",
+                                "Escenario 4 (Trazabilidad Visual): DADO el registro en el Scrumban, CUANDO se abre la tarjeta ISSUE-28, ENTONCES exhibe la captura de evidencia remitida por el Solution Owner."
+                        ]
+                }
+        },
     ]
 
     # Sincronización Universal de Documentos Rectores Oficiales (Para todas las tarjetas y para el futuro)
@@ -2289,27 +2449,31 @@ def generate_scrumban_board():
     }}
 
     * {{ box-sizing: border-box; margin: 0; padding: 0; }}
+    html, body {{
+      height: 100vh;
+      max-height: 100vh;
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
+    }}
     body {{
       font-family: 'Inter', -apple-system, sans-serif;
       background-color: var(--q-bg);
       color: var(--q-text-main);
-      min-height: 100vh;
       display: flex;
       flex-direction: column;
-      overflow-x: hidden;
     }}
 
     /* HEADER */
     header {{
       background: var(--q-navy);
       color: #FFFFFF;
-      padding: 12px 24px;
+      padding: 10px 24px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       box-shadow: 0 4px 12px rgba(30, 58, 95, 0.15);
-      position: sticky;
-      top: 0;
+      flex-shrink: 0;
       z-index: 50;
     }}
 
@@ -2381,6 +2545,7 @@ def generate_scrumban_board():
       display: flex;
       gap: 8px;
       border-bottom: 2px solid var(--q-navy-dark);
+      flex-shrink: 0;
     }}
 
     .nav-tab-btn {{
@@ -2414,11 +2579,12 @@ def generate_scrumban_board():
     .metrics-bar {{
       background: #FFFFFF;
       border-bottom: 1px solid var(--q-border);
-      padding: 10px 24px;
+      padding: 8px 24px;
       display: flex;
       gap: 20px;
       align-items: center;
       overflow-x: auto;
+      flex-shrink: 0;
     }}
 
     .metric-card {{
@@ -2457,7 +2623,7 @@ def generate_scrumban_board():
 
     /* CONTROLS & FILTERS */
     .controls-bar {{
-      padding: 12px 24px;
+      padding: 8px 24px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -2465,6 +2631,7 @@ def generate_scrumban_board():
       flex-wrap: wrap;
       background: #F8FAFC;
       border-bottom: 1px solid var(--q-border);
+      flex-shrink: 0;
     }}
 
     .filters-group {{
@@ -2527,22 +2694,34 @@ def generate_scrumban_board():
     .view-panel {{
       display: none;
       flex: 1;
-      padding: 16px 24px 24px 24px;
+      padding: 10px 16px;
+      min-height: 0;
+      overflow: hidden;
     }}
 
     .view-panel.active {{
       display: flex;
       flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+    }}
+
+    .view-panel:not(#view-board) {{
+      overflow-y: auto !important;
     }}
 
     /* VISTA 1: TABLERO KANBAN */
     .kanban-board {{
       display: grid;
-      grid-template-columns: repeat(6, minmax(260px, 1fr));
-      gap: 16px;
-      align-items: start;
-      overflow-x: auto;
-      padding-bottom: 12px;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 10px;
+      align-items: stretch;
+      overflow: hidden;
+      flex: 1;
+      min-height: 0;
+      height: 100%;
+      padding-bottom: 2px;
     }}
 
     .kanban-col {{
@@ -2551,20 +2730,23 @@ def generate_scrumban_board():
       border-top: 4px solid var(--q-navy);
       display: flex;
       flex-direction: column;
-      max-height: calc(100vh - 250px);
+      height: 100%;
+      min-height: 0;
+      overflow: hidden;
     }}
 
     .col-header {{
-      padding: 12px 14px;
+      padding: 10px 12px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       border-bottom: 1px solid #CBD5E1;
+      flex-shrink: 0;
     }}
 
     .col-title {{
       font-family: 'Montserrat', sans-serif;
-      font-size: 12.5px;
+      font-size: 11.5px;
       font-weight: 800;
       color: var(--q-navy);
       text-transform: uppercase;
@@ -2591,12 +2773,14 @@ def generate_scrumban_board():
     }}
 
     .cards-list {{
-      padding: 10px;
+      padding: 8px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
       overflow-y: auto;
+      overflow-x: hidden;
       flex: 1;
+      min-height: 0;
     }}
 
     .kanban-card {{
@@ -3526,7 +3710,7 @@ def generate_scrumban_board():
     }}
 
     function init() {{
-      const saved = localStorage.getItem('quantux_scrumban_v13_progress');
+      const saved = localStorage.getItem('quantux_scrumban_v16_progress');
       if (saved) {{
         try {{
           tasks = JSON.parse(saved);
@@ -4664,13 +4848,13 @@ def generate_scrumban_board():
     }}
 
     function saveState(notify = true) {{
-      localStorage.setItem('quantux_scrumban_v13_progress', JSON.stringify(tasks));
+      localStorage.setItem('quantux_scrumban_v16_progress', JSON.stringify(tasks));
       if (notify) alert('✓ Estado del Tablero Scrumban guardado exitosamente.');
     }}
 
     function resetDefaultTasks() {{
       if (confirm('¿Restaurar la base de datos oficial del tablero?')) {{
-        localStorage.removeItem('quantux_scrumban_v13_progress');
+        localStorage.removeItem('quantux_scrumban_v16_progress');
         tasks = JSON.parse(JSON.stringify(INITIAL_BACKLOG));
         tasks.forEach(t => {{
           const d = getTaskDocInfo(t);

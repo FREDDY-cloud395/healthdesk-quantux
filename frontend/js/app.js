@@ -5452,8 +5452,7 @@ function renderDetailTabContent(ticket) {
 function openResolveModal(ticketId) {
  const modal = document.getElementById('modal-resolve-ticket');
  if (!modal) return;
- const t = AppState.selectedTicket;
- if (!t) return;
+ const t = (AppState.tickets && AppState.tickets.find(x => String(x.id) === String(ticketId))) || AppState.selectedTicket || {};
  
  document.getElementById('resolve-ticket-id').value = ticketId;
  const disp = document.getElementById('resolve-ticket-id-display');
@@ -5467,6 +5466,9 @@ function openResolveModal(ticketId) {
  
  const workEl = document.getElementById('resolve-is-workaround');
  if (workEl) workEl.checked = t.is_workaround || false;
+
+ const pubEl = document.getElementById('resolve-publish-kb');
+ if (pubEl) pubEl.checked = true;
  
  modal.classList.add('active');
 }
@@ -5994,9 +5996,6 @@ ${escapeHtml(techNotes)}
       </span>
       <span style="font-size: 10.5px; font-weight: 700; background: #FEF3C7; color: #92400E; padding: 3px 10px; border-radius: 12px; border: 1px solid #FDE68A;">
         Escalamiento Requerido
-      </span>
-      <span style="font-size: 10px; font-weight: 800; background: #F1F5F9; color: #475569; padding: 2px 8px; border-radius: 10px; margin-left: auto;">
-        AF-DEV
       </span>
     `;
   } else {
@@ -7037,6 +7036,15 @@ function switchPlatformsSubTab(subTab) {
     if (view) view.style.display = isActive ? 'block' : 'none';
   });
 
+  // ISSUE-26: Mostrar exclusivamente la acción contextual correspondiente al sub-módulo activo
+  const btnNewInst = document.getElementById('btn-action-new-inst');
+  const btnNewPlat = document.getElementById('btn-action-new-plat');
+  const btnExportMatrix = document.getElementById('btn-action-export-matrix');
+
+  if (btnNewInst) btnNewInst.style.display = (subTab === 'institutions') ? 'inline-flex' : 'none';
+  if (btnNewPlat) btnNewPlat.style.display = (subTab === 'platforms') ? 'inline-flex' : 'none';
+  if (btnExportMatrix) btnExportMatrix.style.display = (subTab === 'matrix') ? 'inline-flex' : 'none';
+
   if (subTab === 'institutions') {
     renderInstitutionsCatalog();
   } else if (subTab === 'helpdesks') {
@@ -7924,9 +7932,16 @@ function exportTenantMatrixCSV() {
 // =============================================================================
 
 function openInstitutionDetailModal(instCode) {
- const inst = AppState.institutions.find(i => i.code === instCode);
- if (!inst) return;
- AppState.activeModalInstCode = instCode;
+  let inst = (AppState.institutions || []).find(i => i.code === instCode);
+  if (!inst) {
+    const knownInsts = {
+      'OSDE': { code: 'OSDE', name: 'OSDE Organización de Servicios Directos Empresarios', description: 'Empresa de medicina prepaga líder en Argentina.', domains: 'osde.com.ar, salud.osde.com.ar', sla_policy: 'SLA Platino VIP - 15m Respuesta', assigned_group: 'Guardia Asistencial Nivel 1' },
+      'SWISS_MEDICAL': { code: 'SWISS_MEDICAL', name: 'Swiss Medical Group', description: 'Grupo de salud y medicina privada integral.', domains: 'swissmedical.com.ar', sla_policy: 'SLA Oro - 30m Respuesta', assigned_group: 'Mesa Prestadores' },
+      'GALENO': { code: 'GALENO', name: 'Galeno Argentina', description: 'Red de sanatorios de la Trinidad e infraestructura médica privada.', domains: 'galeno.com.ar', sla_policy: 'SLA Oro - 30m Respuesta', assigned_group: 'Soporte HIS Ambulatorio' }
+    };
+    inst = knownInsts[instCode] || { code: instCode, name: instCode, description: `Institución de salud ${instCode}.` };
+  }
+  AppState.activeModalInstCode = instCode;
 
  const instConfig = AppState.tenantPlatforms[instCode] || {};
  const platforms = AppState.platforms || [];
@@ -8065,7 +8080,7 @@ function openInstitutionDetailModal(instCode) {
  <div style="padding: 12px 14px; background: #FFFFFF; border: 1px solid #E2E8F0; border-left: 4px solid #38BDF8; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; gap: 12px;">
  <div>
  <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
- <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 800; color: #0284C7;">#${t.id.slice(0, 8)}</span>
+ <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 800; color: #0284C7;">#${String(t.id).slice(0, 8)}</span>
  ${pBadge}
  <span style="font-size: 10.5px; color: #64748B;">${platIcon} ${formatPlatformName(t.platform_code)}</span>
  </div>
@@ -10155,31 +10170,28 @@ function initModalListeners() {
  root_cause: rootCause || null,
  resolution_notes: notes,
  is_workaround: isWorkaround,
- resolved_by_username: AppState.currentUser ? AppState.currentUser.username : 'admin'
+ resolved_by_username: AppState.currentUser ? AppState.currentUser.username : 'admin',
+ publish_to_kb: publishKb
  });
-
- if (publishKb && AppState.selectedTicket) {
- try {
- await API.createArticle({
- title: `[Solución] ${AppState.selectedTicket.title}`,
- category: 'General',
- content: `1. CAUSA RAÍZ:\n${rootCause || 'Diagnóstico operativo'}\n\n2. PROCEDIMIENTO TÉCNICO:\n${notes}\n\n3. RESULTADO:\nSolución confirmada y homologada.`,
- tags: `${ticketId}, resolucion, itil`,
- version: 'v1.0',
- changelog: `Creado desde ticket #${ticketId}`,
- author_username: AppState.currentUser ? AppState.currentUser.username : 'admin'
- });
- showToast(' ¡Protocolo publicado también en la Base de Conocimiento!', 'success');
- } catch (kberr) {
- console.error('Error auto-publicando KB:', kberr);
- }
- }
 
  modalResolve.classList.remove('active');
- showToast(` ¡Solicitud #${ticketId} marcada como solucionada!`, 'success');
+ if (publishKb) {
+ showToast(`✅ Solicitud #${ticketId} resuelta y publicada en la Base de Conocimiento`, 'success');
+ if (typeof loadKnowledgeBase === 'function') {
+ loadKnowledgeBase().catch(() => {});
+ }
+ } else {
+ showToast(`✅ Solicitud #${ticketId} marcada como solucionada`, 'success');
+ }
  await loadTickets();
+ if (typeof openAgentWorkspace === 'function' && document.getElementById('modal-agent-workspace')?.classList.contains('active')) {
+ await openAgentWorkspace(ticketId);
+ } else {
  await selectTicket(ticketId, true);
+ }
+ if (typeof loadDashboardMetrics === 'function') {
  await loadDashboardMetrics(AppState.currentDashInst);
+ }
  } catch (err) {
  showToast('Error al resolver solicitud: ' + (err.detail || err.message || 'Verifique los datos'), 'error');
  }
@@ -11782,22 +11794,39 @@ function toggleWsNote(idx) {
  const arrow = document.getElementById(`ws-note-arrow-${idx}`);
  const preview = document.getElementById(`ws-note-preview-${idx}`);
  if (!body) return;
- const isHidden = body.style.display === 'none';
- body.style.display = isHidden ? 'block' : 'none';
+ const isHidden = body.style.display === 'none' || window.getComputedStyle(body).display === 'none';
+ body.style.setProperty('display', isHidden ? 'block' : 'none', 'important');
  if (arrow) arrow.textContent = isHidden ? '▼' : '▶';
- if (preview) preview.style.display = isHidden ? 'none' : 'inline-block';
+ if (preview) preview.style.setProperty('display', isHidden ? 'none' : 'inline-block', 'important');
 }
 
 function expandAllWsNotes() {
- document.querySelectorAll('[id^="ws-note-body-"]').forEach(el => el.style.display = 'block');
- document.querySelectorAll('[id^="ws-note-arrow-"]').forEach(el => el.textContent = '▼');
- document.querySelectorAll('[id^="ws-note-preview-"]').forEach(el => el.style.display = 'none');
+ document.querySelectorAll('.ws-msg-body, [id^="ws-note-body-"]').forEach(el => {
+  el.style.setProperty('display', 'block', 'important');
+ });
+ document.querySelectorAll('[id^="ws-note-arrow-"]').forEach(el => {
+  el.textContent = '▼';
+ });
+ document.querySelectorAll('[id^="ws-note-preview-"]').forEach(el => {
+  el.style.setProperty('display', 'none', 'important');
+ });
+ const descEl = document.getElementById('ws-desc-text');
+ if (descEl) {
+  descEl.style.maxHeight = 'none';
+  descEl.style.webkitLineClamp = 'unset';
+ }
 }
 
 function collapseAllWsNotes() {
- document.querySelectorAll('[id^="ws-note-body-"]').forEach(el => el.style.display = 'none');
- document.querySelectorAll('[id^="ws-note-arrow-"]').forEach(el => el.textContent = '▶');
- document.querySelectorAll('[id^="ws-note-preview-"]').forEach(el => el.style.display = 'inline-block');
+ document.querySelectorAll('.ws-msg-body, [id^="ws-note-body-"]').forEach(el => {
+  el.style.setProperty('display', 'none', 'important');
+ });
+ document.querySelectorAll('[id^="ws-note-arrow-"]').forEach(el => {
+  el.textContent = '▶';
+ });
+ document.querySelectorAll('[id^="ws-note-preview-"]').forEach(el => {
+  el.style.setProperty('display', 'inline-block', 'important');
+ });
 }
 
 window.toggleWsNote = toggleWsNote;
@@ -16114,3 +16143,10 @@ window.closeEmailModal = closeEmailModal;
 window.openNativeEmailClient = openNativeEmailClient;
 window.finishEmailAndOpenRescue = finishEmailAndOpenRescue;
 window.submitRescueResolution = submitRescueResolution;
+
+document.addEventListener('DOMContentLoaded', () => {
+  const expandBtn = document.getElementById('btn-ws-expand-all');
+  if (expandBtn) expandBtn.addEventListener('click', expandAllWsNotes);
+  const collapseBtn = document.getElementById('btn-ws-collapse-all');
+  if (collapseBtn) collapseBtn.addEventListener('click', collapseAllWsNotes);
+});
