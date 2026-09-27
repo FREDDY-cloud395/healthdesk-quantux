@@ -1,10 +1,10 @@
 # 📑 DOCUMENTO 2: ESPECIFICACIÓN FUNCIONAL Y BACKLOG
-**Código:** DOC-REQ-002 (Versión 1.1 Oficial)
+**Código:** DOC-REQ-002 (Versión 1.2 Oficial - Cierre Sprint 6 & Apertura Sprint 7)
 **Proyecto:** HealthDesk Quantux — Sistema Centralizado de Gestión de Tickets de Soporte
 **Organización:** Quantux Salud
 **Solution Owner:** Freddy Cortés (Analista Funcional)
-**Dimensión:** 6 Épicas | 48 Historias de Usuario Consolidadas | 148 Story Points
-**Fecha de Línea Base:** 28 de Agosto de 2026 | **Fecha de Versión 1.1:** 26 de Septiembre de 2026
+**Dimensión:** 9 Épicas | 174 Tarjetas de Backlog Catalogadas | 100% Trazabilidad PMI+IA
+**Fecha de Línea Base:** 28 de Agosto de 2026 | **Fecha de Versión 1.2:** 27 de Septiembre de 2026
 **Comité Evaluador:** Paula Sbarbati, Diego Martínez, Carolina Brizuela, Nicolás Sánchez
 
 ---
@@ -14,6 +14,7 @@
 | :--- | :--- | :--- | :--- |
 | **v1.0** | 28/08/2026 | Freddy Cortés | **Línea Base Funcional Oficial del MVP:** 32 Historias de Usuario, 6 Épicas, circuitos de 5 estados ITIL y catálogos de 9 plataformas y 14 clientes. |
 | **v1.1** | 26/09/2026 | Freddy Cortés | **Consolidación de Backlog (48 UHs), Política de Scope Freeze y Aislamiento de Evolutivos:** Congelamiento de alcance para demo del 01-Oct-2026, incorporación de UH-33 a UH-69, y derivación mandatoria de nuevos requerimientos al Product Backlog. |
+| **v1.2** | 27/09/2026 | Freddy Cortés | **Cierre Formal Sprint 6 (93 tarjetas en Done), Activación Sprint 7 (13 tarjetas en Sprint Backlog), Integración de Pizarra Neutral Quantux y Protocolo de Resguardo Siete Llaves.** |
 
 ---
 
@@ -370,52 +371,69 @@ En virtud del protocolo de adaptación PMI y aseguramiento de calidad, todo gap 
     * **Dado** el código JavaScript y backend, **cuando** se consultan las métricas o se abren las vistas programáticamente, **entonces** todas las funciones y controladores operan normalmente sin excepciones.
     * **Dado** el registro en el Scrumban, **cuando** se abre la tarjeta UH-70, **entonces** exhibe la captura de evidencia remitida por el Solution Owner.
 
-* **MEJ-12 [P2 - 3 SP]:** Barra de Progreso Unificada en Tareas en Ejecución con Estilo Rojo Institucional `#DC2626` y Desglose de 4 Etapas Técnicas (Sprint 6, estado `qa`).
-  * *Narrativa:* **Como** Solution Owner, **quiero** que todas las tareas en ejecución muestren una barra de progreso unificada en color rojo institucional `#DC2626` en lugar de degradados verdeazulados o multicolores disonantes, **para** monitorear visualmente con precisión el avance técnico y evitar falsas percepciones de finalización inmediata.
-  * *Criterios de Aceptación Gherkin:*
-    * **Dado** una tarjeta en estado En Ejecución (`progress`), **cuando** se visualiza en el tablero, **entonces** exhibe un panel de avance con fondo `#FEF2F2`, borde `#F87171` y barra roja sólida `#DC2626`.
-    * **Dado** el botón Demonio en Retrabajo, **cuando** se ejecuta la corrección, **entonces** transita por las 4 fases técnicas (análisis, parchado, testing y certificación) con barra roja institucional `#DC2626`.
+* **MEJ-12 [P2 - 3 SP]:** Barra de Progreso Unificada en Tareas en Ejecución (Sprint 6, estado `done`).
+  * *Nota de Evolución / MEJ-16:* Conforme a la Directiva OJO de Pizarra Neutral Quantux, cualquier tinte rojizo fue erradicado y unificado en la paleta oficial Slate `#334155` y Teal `#00A896` para evitar alarmas visuales en el monitoreo.
 
-* **ISSUE-55 [P2 - 3 SP]:** Enlace Interactivo en Badge de Ticket en Constancia de Resolución FCR (Sprint 7, estado `todo`).
+* **ISSUE-55 [P1 - 2 SP]:** Enlace Interactivo en Badge de Ticket en Constancia de Resolución FCR (Sprint 7, estado `sprint`).
   * *Narrativa:* **Como** Profesional Solicitante y Auditor TI, **quiero** que el badge de ticket `#TKT-2026-0348` de la constancia emitida por el asistente virtual funcione como un enlace interactivo, **para** acceder de inmediato a la auditoría técnica y conversación completa del ticket.
   * *Criterios de Aceptación Gherkin:*
-    * **Dado** el mensaje de resolución emitido por el Asistente TI, **cuando** el usuario hace clic sobre el badge `#TKT-2026-0348`, **entonces** se abre directamente el modal con el detalle completo del ticket.
+    * **Dado** el mensaje de resolución emitido por el Asistente TI, **cuando** el usuario hace clic sobre el badge interactivo `#TICK-...`, **entonces** se abre directamente el modal con el detalle y la traza completa de la solicitud.
 
-* **ISSUE-56 [P1 - 5 SP]:** Disponibilidad y Persistencia de Ticket de Autogestión FCR en Historial del Solicitante (Sprint 7, estado `todo`).
+* **ISSUE-56 [P1 - 3 SP]:** Disponibilidad y Persistencia de Ticket de Autogestión FCR en Historial del Solicitante (Sprint 7, estado `sprint`).
   * *Narrativa:* **Como** Profesional Solicitante, **quiero** que el ticket generado como constancia de solución figure de manera garantizada en mi historial de solicitudes, **para** que nunca retorne vacío y mantenga trazabilidad para auditorías clínicas y facturación.
   * *Criterios de Aceptación Gherkin:*
-    * **Dado** un ticket cerrado por autogestión FCR, **cuando** el profesional consulta el historial, **entonces** figura listado con su código, asunto clínico, fecha y estado de resolución.
+    * **Dado** un ticket resuelto por autogestión FCR, **cuando** el profesional abre "Mis Solicitudes", **entonces** figura listado de forma inmediata con su identificador, asunto clínico, fecha y estado de resolución.
 
-* **ISSUE-57 [P1 - 3 SP]:** Subsanación Integral del Botón Demonio y Sincronización Dual Tarjeta-Modal (Sprint 6, estado `qa`).
-  * *Narrativa:* **Como** Solution Owner, **quiero** que el botón Demonio funcione infaliblemente tanto desde la tarjeta del tablero como desde el modal de detalle, **para** que al hacer clic se ejecute la corrección automática, se desactive el botón, se muestre la barra roja y la tarjeta pase al fondo de En Revisión.
+* **ISSUE-65 [P1 - 3 SP]:** Persistencia de Configuración de SLA sin Cierre de Diálogo y Actualización Reactiva en Ficha 360° del Cliente (Sprint 7, estado `sprint` - Prioridad 1).
+  * *Narrativa:* **Como** Administrador del Sistema y Solution Owner, **quiero** guardar las modificaciones en la matriz de tiempos SLA institucionales sin que se cierre intempestivamente el modal de edición de institución, **para** verificar de inmediato la persistencia correcta y observar los cambios reflejados en vivo en los 4 tiles P1-P4 de la Ficha 360°.
   * *Criterios de Aceptación Gherkin:*
-    * **Dado** una tarjeta en Retrabajo, **cuando** se presiona el botón Demonio, **entonces** se desactiva el botón, se despliega la barra roja institucional `#DC2626`, se ejecutan las 4 fases de remediación técnica y la tarjeta pasa al fondo de la columna `qa`.
+    * **Dado** el modal de Configuración Institucional, **cuando** el usuario modifica las horas de SLA y presiona "Guardar Configuración", **entonces** la petición AJAX se despacha asincrónicamente a `/api/v1/masters/organizations/{id}/settings`, se emite una notificación toast de éxito, el modal permanece abierto y la ficha 360° en segundo plano actualiza los tiles de SLA reactivamente.
 
-* **ISSUE-58 [P1 - 3 SP]:** Pérdida de Persistencia de Tarjetas en Estado Retrabajo tras Refrescar Pantalla F5 (Sprint 6, estado `qa`).
-  * *Narrativa:* **Como** Solution Owner, **quiero** que las tarjetas enviadas a Retrabajo permanezcan en dicha columna aun tras recargar la página (F5), **para** que no desaparezcan ni se reseteen involuntariamente a otras columnas.
-  * *Criterios de Aceptación Gherkin:*
-    * **Dado** una o más tarjetas enviadas a la columna Retrabajo, **cuando** el usuario refresca el navegador (F5), **entonces** la columna conserva fielmente las tarjetas en retrabajo sin vaciarse ni sobreescribir su estado.
+* **MEJ-13 [P2 - 2 SP]:** Depuración de Botones Redundantes 'Resolver Ticket' y 'Registrar Notas' (Sprint 7, estado `sprint`).
+  * *Narrativa:* **Como** Operador de Soporte, **quiero** eliminar acciones duplicadas en el panel lateral de 'Acciones del Ticket', **para** simplificar la toma de decisiones y evitar confusión entre la botonera inferior de respuesta y la barra lateral.
 
-*(El detalle completo de narrativas, escenarios Gherkin y criterios de adaptación se encuentra en el Documento DOC-GOV-008, DOC-QA-004 y en el Tablero Scrumban interactivo docs/00_Tablero_Scrumban_Quantux.html).*
+* **MEJ-14 [P2 - 2 SP]:** Visualización Permanente y Dinámica de la Descripción de Estado en Workspace (Sprint 7, estado `sprint`).
+  * *Narrativa:* **Como** Operador Asistencial, **quiero** ver de forma explícita el significado operativo del estado actual del ticket (ej. qué implica 'En Espera del Prestador'), **para** comprender de inmediato qué acción se espera sin tener que consultar la documentación externa.
+
+* **MEJ-15 [P2 - 2 SP]:** Diferenciación Cromática de Botonera Dual 'Responder' vs 'Responder y Resolver' (Sprint 7, estado `sprint`).
+  * *Narrativa:* **Como** Operador de Soporte, **quiero** una clara distinción visual entre el envío de un comentario intermedio y el cierre resolutivo de un ticket, **para** prevenir resoluciones accidentales por pulsaciones equivocadas.
+
+* **MEJ-16 [P1 - 2 SP]:** Directiva de Diseño Quantux: Erradicación de Tonos Rojizos en Barras e Interfaz (Sprint 7, estado `sprint`).
+  * *Narrativa:* **Como** Solution Owner y Auditor OJO, **quiero** asegurar la total erradicación de colores `#DC2626`, `#EF4444` y fondos rojizos en toda la interfaz, migrando a tonos Slate `#334155` y Teal Quantux `#00A896`, **para** cumplir estrictamente la política institucional de Pizarra Neutral.
+
+* **ISSUE-78 [P1 - 3 SP]:** Indicador de Estado Operativo de SLA Dinámico (Pausado / Activo con Segundos) (Sprint 7, estado `sprint`).
+  * *Narrativa:* **Como** Operador y Team Leader, **quiero** visualizar el contador de SLA con segundero en vivo y su estado formal (Activo / En Pausa por Espera de Prestador), **para** auditar el consumo exacto de tiempo sin discrepancias.
+
+* **ISSUE-79 [P2 - 2 SP]:** Depuración de Botonera Redundante de Asignación en Agent Workspace (Sprint 7, estado `sprint`).
+  * *Narrativa:* **Como** Especialista Técnico, **quiero** una única botonera limpia de autoasignación o reasignación, **para** despejar la interfaz de trabajo.
+
+* **ISSUE-80 [P1 - 3 SP]:** Evaluación Obligatoria y Renderizado Dinámico de Impacto en Producto y Negocio (Sprint 7, estado `sprint`).
+  * *Narrativa:* **Como** Auditor Sanitario y Gerencia General, **quiero** que todo ticket registre obligatoriamente su impacto operativo en el negocio de salud, **para** alimentar la priorización automática y los reportes ejecutivos.
+
+* **ISSUE-81 [P2 - 2 SP]:** Botón de Cierre 'X' Circular de Alto Contraste y Cierre por Escape en Lightbox (Sprint 7, estado `sprint`).
+  * *Narrativa:* **Como** Usuario y Operador, **quiero** cerrar fácilmente el visor modal de capturas adjuntas mediante la tecla Escape, clic en el fondo o un botón 'X' circular destacado, **para** agilizar la revisión documental.
+
+* **ISSUE-82 [P1 - 2 SP]:** Ocultamiento Total del Módulo 'Configuración' en Barra Lateral (Sprint 7, estado `sprint`).
+  * *Narrativa:* **Como** Solution Owner, **quiero** ocultar el acceso a Configuración en la barra lateral para todos los roles, **para** resguardar los parámetros globales del sistema.
+
+* **ISSUE-83 [P1 - 3 SP]:** Ocultamiento de 'Niveles ITIL' y Formalización de Parametrización por Base de Datos (Sprint 7, estado `sprint`).
+  * *Narrativa:* **Como** Arquitecto de Software y Solution Owner, **quiero** que la estructura de niveles ITIL (N1, N2, N3) se configure directamente por base de datos, **para** asegurar inmutabilidad y cumplimiento estricto con ITIL 4.
+
+* **PWA-01 [P1 - 4 SP]:** Aplicación Móvil Descargable (Progressive Web App - PWA v4.4) (Sprint 7, estado `sprint`).
+  * *Narrativa:* **Como** Médico Asistencial o Directivo en Movilidad, **quiero** instalar la aplicación HealthDesk Quantux en mi smartphone o tablet desde el navegador, **para** consultar y gestionar solicitudes de soporte con experiencia nativa y soporte offline.
 
 ---
 
-### 4. Gobernanza del Backlog: Alcance Cerrado (Scope Freeze) y Trazabilidad
+### 4. Gobernanza del Backlog: Cierre de Sprint 6 y Ciclo Operativo de Sprint 7
 
 > [!IMPORTANT]
-> **POLÍTICA MANDATORIA DE ALCANCE CERRADO (SCOPE FREEZE):**  
-> Habiéndose consolidado la especificación de las **48 Historias de Usuario (148 Story Points)**, el alcance funcional del producto para la presentación oficial del **01 de Octubre de 2026** queda formal y estrictamente cerrado.  
-> 1. Ninguna nueva historia de usuario, requerimiento de alcance o funcionalidad adicional podrá ser admitida para desarrollo en el Sprint 6 (Hardening).  
-> 2. Toda propuesta, optimización futura o requerimiento emergente (por ejemplo, el comportamiento de botones al cerrar tickets catalogado en `ISSUE-19`) será registrado exclusivamente en la columna `📋 Product Backlog` con estado `backlog`.  
-> 3. La única actividad autorizada en el ciclo actual consiste en:  
->    * Cierre de no-conformidades y retrabajos funcionales (`UH-67`, `MEJ-08`).  
->    * Aseguramiento de calidad TDD y cumplimiento estricto de la Regla OJO / Pizarra Neutral.  
->    * Congelamiento técnico total el **Lunes 28 de Septiembre a las 18:00 hs**, garantizando 48 hs libres al Solution Owner para la preparación y ensayos de la demo.
-
+> **CERTIFICACIÓN FORMAL DE CIERRE DE SPRINT 6:**  
+> Habiéndose certificado el **100% de las 93 tarjetas del Sprint 6 en estado Done**, el sistema queda blindado bajo el protocolo notarial de **Siete Llaves**.  
+> El **Sprint 7** se encuentra formalmente **ACTIVO** con 13 tarjetas priorizadas en el **Sprint Backlog (35 SP)** para ejecución inmediata, preservando como hito rector inamovible la **Demostración Final ante el Comité Evaluador el 01 de Octubre de 2026**.
 
 ---
 
-## 11. GOBERNANZA DE CONFIGURACIÓN ITIL v4 Y DESACOPLAMIENTO DE NIVELES (SPRINT 7)
+## 5. GOBERNANZA DE CONFIGURACIÓN ITIL v4 Y DESACOPLAMIENTO DE NIVELES (SPRINT 7)
 
 > ### 📌 DIRECTIVA DE ARQUITECTURA ITIL v4: PARAMETRIZACIÓN INICIAL POR BASE DE DATOS
 > En concordancia con las mejores prácticas internacionales de gestión de servicios de tecnología en salud (**ITIL v4 Service Management Framework**), la funcionalidad interactiva de edición y parametrización de **Niveles de Atención ITIL (N1 / N2 / N3)** y el módulo global de **Configuración de Sistema** se encuentran deliberadamente **ocultos y protegidos** en la interfaz de usuario para la totalidad de los roles y perfiles operativos.
@@ -424,3 +442,4 @@ En virtud del protocolo de adaptación PMI y aseguramiento de calidad, todo gap 
 > 1. **Inmutabilidad y Consistencia Operativa:** La matriz de niveles de soporte (Nivel 1 Triage Asistencial/FCR, Nivel 2 Especialistas de Plataformas Clínicas HIS/EHR/Facturación, Nivel 3 Infraestructura de Red & Pasarelas Sanitarias SISA/OSDE) se provisiona y versiona directamente a nivel de base de datos (`seed_database_v4.py` / tablas relacionales de soporte), garantizando coherencia formal ante auditorías hospitalarias.
 > 2. **Prevención de Desalineación Operativa:** Se neutraliza el riesgo de modificaciones no autorizadas o accidentales de matrices de escalamiento clínico desde la interfaz de usuario.
 > 3. **Desacoplamiento de Responsabilidades:** La política de niveles de servicio (SLA) se administra en la capa de persistencia institucional centralizada, mientras el front-end consume de forma reactiva y auditable las métricas de respuesta y resolución en tiempo real.
+

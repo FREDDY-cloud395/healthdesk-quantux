@@ -51,28 +51,32 @@ gantt
 
 ---
 
-### Domingo 27 de Septiembre de 2026 — Cierre de Retrabajo y Revisión SO
-* **Foco:** Ejecución de `UH-67`, revisión de ítems en QA por el Solution Owner y entrega anticipada al Comité.
-* **Cronograma horario:**
-  * **09:00 - 13:00 hs:** Implementación y test unitario de `UH-67` (subniveles interactivos en Asistente N1).
-  * **13:00 - 14:00 hs:** Pase de `UH-67` a columna `qa` con reporte de solución para el Solution Owner.
-  * **14:00 - 17:00 hs:** **Ventana de Aceptación del Solution Owner:** Revisión de las 5 tarjetas en QA (`MEJ-04`, `MEJ-05`, `MEJ-06`, `ISSUE-20`, `MEJ-07`).
-  * **17:00 - 19:00 hs:** **Envío formal del Dossier Anticipado al Comité Evaluador** ([`docs/DOSSIER_ENTREGA_PREVIA_COMITE_EVALUADOR.md`](file:///C:/Users/FERO_ADM/.gemini/antigravity/scratch/quantux-v4-dev/docs/DOSSIER_ENTREGA_PREVIA_COMITE_EVALUADOR.md)) para recopilar devoluciones tempranas.
+### Domingo 27 de Septiembre de 2026 — Cierre Notarial Sprint 6 y Blindaje "Siete Llaves"
+* **Foco:** Certificación formal del 100% de Sprint 6, resguardo criptográfico y despliegue continuo en la nube Render.
+* **Hitos ejecutados y certificados:**
+  * [x] **Cierre Notarial de Sprint 6:** Las 93 tareas de Sprint 6 aprobadas y certificadas en estado `done` (100%).
+  * [x] **Protocolo Siete Llaves:** Snapshot relacional `healthdesk_v4.4.0_sprint6_closed_golden.db` (PRAGMA integrity_check OK) y bóveda ZIP de 80.74 MB con hash SHA-256 (`dcc097d7023b30e2d000f840cabc901db9d89553180bcae3dfab1d6c37b94cbd`).
+  * [x] **Despliegue Continuo Cloud en Render:** Validación en producción pública (`https://healthdesk-quantux.onrender.com/`) y hotfix de compatibilidad Python 3.11.
+  * [x] **Apertura de Sprint 7:** 13 tareas activas en `sprint` (35 Story Points) listas para ejecución el Lunes 28.
+  * [x] **Actualización Integral de la Suite Documental:** DOC-MGT-001 a DOC-GOV-008 alineados a v4.4.0.
 
 ---
 
-### Lunes 28 de Septiembre de 2026 — DEADLINE TÉCNICO & HARDENING FREEZE
-* **Foco:** Cierre de compuertas, pruebas de regresión masivas y congelamiento absoluto de código.
+### Lunes 28 de Septiembre de 2026 — EJECUCIÓN SPRINT 7 & DEADLINE TÉCNICO DEFINITIVO (18:00 hs)
+* **Foco:** Ejecución y certificación de las tareas priorizadas de Sprint 7, preservando el congelamiento absoluto a las 18:00 hs.
 * **Cronograma horario:**
-  * **09:00 - 14:00 hs:** Ajustes menores de calidad estética / feedback preliminar de pruebas.
-  * **14:00 - 17:00 hs:** Auditoría final pre-commit:
+  * **09:00 - 13:00 hs:** Implementación de tareas prioritarias de Sprint 7 (`ISSUE-65` persistencia de SLA en caliente, `ISSUE-55`, `ISSUE-56`, `PWA-01`).
+  * **13:00 - 16:00 hs:** Pase a QA y certificación por el Solution Owner.
+  * **16:00 - 17:30 hs:** Auditoría final pre-commit:
     * `validate_ojo_compliance.py` (Cero violaciones a Pizarra Neutral).
     * `tests/test_dom_visual_compliance.py` (Fidelidad visual frente a Figma).
     * `backend/tests/test_reemplazo_n1_suite.py` (Integridad backend e ITIL).
+    * `backend/tests/golden_test_cd2_suite.py` (Triage asistencial sin alucinaciones).
   * **18:00 hs PUNTUAL — 🛑 CORTE TÉCNICO DEFINITIVO (CODE FREEZE TOTAL):**
     * Ningún commit de código de backend o frontend a partir de este instante.
-    * Base de datos SQLite estabilizada y respaldada (`healthdesk.db`).
-    * Tablero Scrumban consolidado con todas las tarjetas en su estado final.
+    * Base de datos SQLite estabilizada y respaldada.
+    * Despliegue final a Render Cloud y local 100% verificado.
+    * 48 horas limpias y garantizadas para la preparación exclusiva del Solution Owner.
 
 ---
 

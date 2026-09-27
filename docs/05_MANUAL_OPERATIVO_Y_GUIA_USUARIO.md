@@ -4,12 +4,12 @@
 ---
 
 **Código Documental:** DOC-MAN-005  
-**Versión:** 3.0 (Edición Amigable para Usuarios y Equipos de Salud)  
-**Fecha de Publicación:** Agosto 2026  
+**Versión:** 4.4 Oficial (Edición Amigable para Usuarios, Equipos de Salud y Operadores)  
+**Fecha de Publicación:** 27 de Septiembre de 2026  
 **Líder Funcional / Solution Owner:** Freddy Cortés  
 **Facilitador Técnico:** Diego Martínez  
 **Comité Evaluador:** Paula Sbarbati (Calidad Asistencial), Diego Martínez (Arquitectura Técnica), Carolina Brizuela (Operaciones Hospitalarias), Nicolás Sánchez (Seguridad y Gobernanza)  
-**Estado:** VIGENTE / DISTRIBUCIÓN GENERAL  
+**Estado:** VIGENTE / DISTRIBUCIÓN GENERAL / SPRINT 6 CERRADO  
 
 ---
 
@@ -18,6 +18,7 @@
 | :--- | :--- | :--- | :--- |
 | **v1.0** | 28/08/2026 | Freddy Cortés | **Línea Base Operativa:** Guía de uso de 5 pasos para médicos, personal de salud y operadores. |
 | **v3.0** | 26/09/2026 | Freddy Cortés | **Edición Amigable para Usuarios y Equipos de Salud:** Adaptación UX Senior, despojo de terminología técnica innecesaria y alineación para demo del 01-Oct. |
+| **v4.4** | 27/09/2026 | Freddy Cortés | **Actualización Integral v4.4.0:** Nuevo modal ergonómico 'Mis Solicitudes', Asistente Clínico 100% asistencial, menú lateral Zen, acceso Cloud en Render y PWA Mobile. |
 
 ---
 
@@ -97,6 +98,20 @@ La pantalla principal está organizada de forma limpia en **3 secciones sencilla
 * Verifica en tu computadora o dispositivo que el sistema funcione con normalidad.
 * En el panel derecho aparecerá un cuadro destacado con el botón **"Confirmar Solución y Cerrar"**.
 * Al hacer clic, el caso queda formalmente cerrado y archivado de manera segura.
+
+### 📋 Paso 4: Consulta de "Mis Solicitudes" (Modal Ergonómico)
+* Presiona en cualquier momento el botón **"Mis Solicitudes"** para desplegar el historial consolidado de requerimientos.
+* El nuevo diseño compacto organiza tus casos en una **tabla de distribución equilibrada**, mostrando:
+  * Código de Solicitud (ej. `#TICK-...`) con enlace interactivo directo.
+  * Asunto o síntoma reportado.
+  * Estado operativo actual (con badges cromáticos neutrales: Ámbar, Teal, Slate).
+  * Fecha de creación y última actualización.
+  * Botones de acción inmediata compactos y alineados para revisar el detalle sin desplazamientos innecesarios.
+
+### 🤖 Asistencia Inmediata por Asistente Clínico Inteligente
+* Si eres profesional médico y tienes dudas de funcionamiento (ej. bloqueo de recetario, carga de consultas o historias clínicas), puedes consultar directamente al **Asistente Virtual Asistencial**.
+* El asistente te responderá con instrucciones clínicas claras y precisas basadas en los manuales de Consultorio Digital (CD2).
+* No verás pantallas de tickets ni detalles de servidores: si el asistente resuelve tu consulta en el acto (FCR), generará automáticamente una constancia oficial con su código `#TICK-...` para que quede asentada en tu historial de solicitudes.
 
 ---
 

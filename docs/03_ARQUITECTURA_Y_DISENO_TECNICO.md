@@ -1,10 +1,10 @@
 # 📘 DOCUMENTO DE ARQUITECTURA DE SOFTWARE Y DISEÑO TÉCNICO
-**Código Documental:** DOC-ARC-003 (Versión 2.0 Definitiva Integral)  
+**Código Documental:** DOC-ARC-003 (Versión 2.1 Oficial - Cierre Sprint 6 & Apertura Sprint 7)  
 **Proyecto:** HealthDesk Quantux — Sistema Centralizado de Gestión de Tickets de Soporte  
 **Organización:** Quantux Salud  
 **Solution Owner / Líder Funcional:** Freddy Cortés (Analista Funcional)  
 **Facilitador Técnico:** Diego Martínez  
-**Fecha de Emisión:** 28 de Agosto de 2026  
+**Fecha de Emisión:** 27 de Septiembre de 2026  
 **Comité Evaluador de Aceptación y Gobernanza:**
 • Paula Sbarbati (Referente Funcional)  
 • Diego Martínez (Facilitador Técnico)  
@@ -18,6 +18,7 @@
 | :--- | :--- | :--- | :--- |
 | **v1.0** | 28/08/2026 | Diego Martínez / Freddy Cortés | **Línea Base Técnica Oficial:** Arquitectura REST, modelo relacional SQLite/SQLModel y diseño Cockpit 3 columnas. |
 | **v2.0** | 26/09/2026 | Diego Martínez / Freddy Cortés | **Consolidación Integral Sprint 6 (Hardening):** Contratos REST v1, Quality Gates TDD, verificación OJO y estabilidad para demo del 01-Oct. |
+| **v2.1** | 27/09/2026 | Diego Martínez / Freddy Cortés | **Cierre Formal Sprint 6 & Apertura Sprint 7:** ADR-07 (Pizarra Neutral OJO), ADR-08 (Triage Asistencial N3 Sanitizado), ADR-09 (Despliegue Continuo Cloud en Render & Bóveda Siete Llaves). |
 
 ---
 
@@ -57,6 +58,30 @@
 * **Contexto de Ingeniería:** Garantizar la confidencialidad de notas técnicas y diagnósticos de infraestructura frente a solicitantes y profesionales asistenciales.
 * **Decisión Técnica:** Implementación de control de acceso basado en roles (RBAC) a nivel de repositorio y serialización DTO. El atributo `is_internal` discrimina los comentarios privados; en endpoints públicos de consulta, el serializador filtra activamente los registros marcados como internos salvo que el token de sesión acredite rol `SOPORTE` o `ADMIN`.
 * **Consecuencias:** Aislamiento criptográfico y estructural de la información sensible. Se previene la fuga de detalles de servidores o contraseñas en los clientes web sanitarios.
+
+### ADR-05: Quality Gate Automatizado Pre-Commit con Regla OJO y Validación DOM/ITIL 4
+* **Estado:** Aceptado y Vigente.
+* **Contexto de Ingeniería:** Necesidad de garantizar que ningún cambio de código introduzca violaciones visuales, regresiones de ITIL o terminología inapropiada.
+* **Decisión Técnica:** Integración de un pre-commit hook de Git (`validate_ojo_compliance.py`, `tests/test_dom_visual_compliance.py`, y `backend/tests/test_reemplazo_n1_suite.py`) que bloquea automáticamente cualquier `git commit` si alguna prueba no finaliza con Exit Code 0.
+* **Consecuencias:** Tolerancia cero a regresiones; cualquier cambio que viole la Pizarra Neutral, use tarjetas tipo card o introduzca colores no autorizados es abortado antes de ingresar al repositorio.
+
+### ADR-06: Sistema de Diseño Pizarra Neutral Quantux (Erradicación de Cards y Colores de Alarma)
+* **Estado:** Aceptado y Vigente.
+* **Contexto de Ingeniería:** La sobrecarga visual provocada por sombras pronunciadas, bordes de tarjetas y contrastes agresivos (rojos `#DC2626`) eleva el estrés cognitivo del operador de soporte en jornadas de alta demanda.
+* **Decisión Técnica:** Transición a la Pizarra Neutral Quantux: eliminación de bordes y sombras de tarjetas, utilización de fondos neutros (#F8FAFC / #FFFFFF), tipografía estructurada Slate `#334155` y acentos funcionales Teal `#00A896` y Warm Amber, erradicando el uso del rojo en estados habituales de la interfaz.
+* **Consecuencias:** Reducción sustancial de la fatiga visual del operador y cumplimiento íntegro de las directivas ergonómicas del Solution Owner.
+
+### ADR-07: Sanitización Estricta del Asistente Virtual y Segregación Asistencial vs Soporte TI
+* **Estado:** Aceptado y Vigente.
+* **Contexto de Ingeniería:** El personal médico que interactúa con el asistente virtual de autogestión no debe ser expuesto a jerga de infraestructura tecnológica (e.g., tickets, N3, servidores, bases de datos), la cual genera confusión durante la práctica médica.
+* **Decisión Técnica:** Desacoplamiento y sanitización del motor cognitivo del asistente (`ai_assistant.py` / `ai_triage.py`), respondiendo con terminología puramente orientada a la práctica asistencial (Historia Clínica, Registro en Diferido, Turnos) y canalizando el ticket de soporte de manera invisible para trazabilidad de backoffice.
+* **Consecuencias:** Experiencia clínica fluida para los profesionales de la salud con persistencia y auditoría técnica transparente en segundo plano.
+
+### ADR-08: Despliegue Continuo Multi-Entorno Cloud en Render con Bóveda Siete Llaves
+* **Estado:** Aceptado y Vigente.
+* **Contexto de Ingeniería:** Se requiere disponibilidad pública para evaluación remota por parte del Comité Evaluador (`https://healthdesk-quantux.onrender.com/`), manteniendo sincronización idéntica con el entorno de ejecución local.
+* **Decisión Técnica:** Pipeline de despliegue continuo en Render mediante contenedor Python 3.11/FastAPI con base SQLite relacional pre-cargada y verificación automática de integridad (`PRAGMA integrity_check`). Bóveda de respaldo criptográfico "Bajo Siete Llaves" con hash SHA-256 para preservar cada hito formal.
+* **Consecuencias:** Alta disponibilidad multiplataforma, evaluación en vivo sin instalación previa y trazabilidad forense inmutable de versiones de entrega.
 
 ---
 

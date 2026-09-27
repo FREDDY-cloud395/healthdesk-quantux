@@ -1,10 +1,10 @@
 # GUION EJECUTIVO Y CIRCUITO DE DEMOSTRACIÓN EN VIVO (SPEECH & LIVE DEMO GUIDE)
 ## DOC-COM-007: GUION OFICIAL, ESTRUCTURA DE SLIDES Y GUÍA DE DEMO EN VIVO
 
-**Código Documental:** DOC-COM-007 (Versión 1.1 Oficial)  
+**Código Documental:** DOC-COM-007 (Versión 1.2 Oficial - Cierre Sprint 6 & Apertura Sprint 7)  
 **Proyecto:** HealthDesk Quantux — Sistema Centralizado de Gestión de Tickets de Soporte  
 **Solution Owner:** Freddy Cortés (Analista Funcional)  
-**Fecha de Línea Base:** Agosto 2026 | **Fecha de Versión 1.1:** 26 de Septiembre de 2026  
+**Fecha de Línea Base:** Agosto 2026 | **Fecha de Versión 1.2:** 27 de Septiembre de 2026  
 **Comité Evaluador:** Paula Sbarbati, Diego Martínez, Carolina Brizuela, Nicolás Sánchez  
 **Fecha de Presentación Oficial:** **01 de Octubre de 2026** (Ensayos Blindados: 29 y 30 de Septiembre)  
 
@@ -15,6 +15,7 @@
 | :--- | :--- | :--- | :--- |
 | **v1.0** | 28/08/2026 | Freddy Cortés | **Línea Base del Guión:** Estructura de 10 diapositivas, caso demo de 5 pasos y speech palabra por palabra. |
 | **v1.1** | 26/09/2026 | Freddy Cortés | **Alineación con Sprint 6 Hardening & Evaluación de Calidad/Proceso:** Incorporación de ventajas competitivas en gobernanza PMI+IA, pre-commit quality gates y defensa ante el Comité. |
+| **v1.2** | 27/09/2026 | Freddy Cortés | **Cierre Formal Sprint 6 & Certificación Cloud:** Integración de instancia Cloud en Render (https://healthdesk-quantux.onrender.com/), Pizarra Neutral OJO y resguardo Siete Llaves. |
 
 ---
 
@@ -23,9 +24,10 @@
 * **Audiencia Objetivo:** Comité Evaluador (Paula Sbarbati, Diego Martínez, Carolina Brizuela, Nicolás Sánchez) y Directorio de Quantux Salud.
 * **Tiempo Total Estimado:** 25 minutos (10 minutos Exposición de Diapositivas + 10 minutos Circuito de Demostración Interactiva + 5 minutos Preguntas).
 * **Recursos Disponibles:**
+  * **Instancia Cloud en Producción (Render):** `https://healthdesk-quantux.onrender.com/` (Acceso público 24/7).
+  * **Servidor Local de Contingencia:** `http://127.0.0.1:8000/`.
   * **Presentación PowerPoint Editable (.pptx):** [`docs/PRESENTACION_EJECUTIVA_QUANTUX_HEALTHDESK.pptx`](file:///C:/Users/FERO_ADM/.gemini/antigravity/scratch/quantux-v4-dev/docs/PRESENTACION_EJECUTIVA_QUANTUX_HEALTHDESK.pptx)
   * **Visor Web de la Presentación:** [`docs/06_Presentacion_Ejecutiva_Quantux.html`](file:///C:/Users/FERO_ADM/.gemini/antigravity/scratch/quantux-v4-dev/docs/06_Presentacion_Ejecutiva_Quantux.html)
-  * **Aplicación en Vivo (Servidor de Desarrollo):** `http://127.0.0.1:8000/`
   * **Manual Operativo de Usuario (DOC-OPS-005):** [`docs/05_MANUAL_OPERATIVO_Y_GUIA_USUARIO.md`](file:///C:/Users/FERO_ADM/.gemini/antigravity/scratch/quantux-v4-dev/docs/05_MANUAL_OPERATIVO_Y_GUIA_USUARIO.md)
   * **Suite Documental de Ingeniería:** [`docs/01_PLAN_DE_GESTION_DEL_PROYECTO.md`](file:///C:/Users/FERO_ADM/.gemini/antigravity/scratch/quantux-v4-dev/docs/01_PLAN_DE_GESTION_DEL_PROYECTO.md)
 

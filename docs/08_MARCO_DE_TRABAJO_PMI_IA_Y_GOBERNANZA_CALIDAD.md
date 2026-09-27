@@ -1,9 +1,9 @@
 # 📑 DOCUMENTO 8: MARCO DE TRABAJO PMI + IA, PROCESO DE ADAPTACIÓN Y ASEGURAMIENTO DE CALIDAD
-**Código:** DOC-GOV-008 (Versión 1.1 Oficial)  
+**Código:** DOC-GOV-008 (Versión 1.2 Oficial - Cierre Sprint 6 & Apertura Sprint 7)  
 **Proyecto:** HealthDesk Quantux — Sistema Centralizado de Gestión de Tickets de Soporte  
 **Organización:** Quantux Salud  
 **Solution Owner:** Freddy Cortés (Analista Funcional)  
-**Fecha de Línea Base:** 26 de Septiembre de 2026 | **Fecha de Versión 1.1:** 26 de Septiembre de 2026  
+**Fecha de Línea Base:** 26 de Septiembre de 2026 | **Fecha de Versión 1.2:** 27 de Septiembre de 2026  
 **Comité Evaluador:**  
 • Paula Sbarbati (Referente Funcional)  
 • Diego Martínez (Facilitador Técnico)  
@@ -17,6 +17,7 @@
 | :--- | :--- | :--- | :--- |
 | **v1.0** | 26/09/2026 | Freddy Cortés | **Versión Oficial de Gobernanza PMI + IA:** Adaptación Metodológica, Delimitación de Roles y Gestión de Mejoras/Gaps en Scrumban. |
 | **v1.1** | 26/09/2026 | Freddy Cortés | **Fase de Hardening, Pre-commit Quality Gates, Política de Scope Freeze y Blindaje de Tiempos hacia la Demo del 01-Oct-2026.** |
+| **v1.2** | 27/09/2026 | Freddy Cortés | **Cierre Formal Sprint 6 (93 tareas en Done), Protocolo Notarial Siete Llaves, Apertura Sprint 7 (13 tareas) y Gobernanza Multi-Entorno Cloud.** |
 
 ---
 

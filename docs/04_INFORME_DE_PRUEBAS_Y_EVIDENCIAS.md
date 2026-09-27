@@ -2,12 +2,12 @@
 ## DOC-QA-004: INFORME DE PRUEBAS FUNCIONALES, VALIDACIÓN Y EVIDENCIAS DE CALIDAD
 
 **Código Documental:** DOC-QA-004  
-**Versión:** 1.1 Oficial (Hardening & Quality Gates Pre-Commit)  
-**Fecha de Línea Base:** Agosto 2026 | **Fecha de Versión 1.1:** 26 de Septiembre de 2026  
+**Versión:** 1.2 Oficial (Cierre Sprint 6 al 100% & Certificación Pre-Sprint 7)  
+**Fecha de Línea Base:** Agosto 2026 | **Fecha de Versión 1.2:** 27 de Septiembre de 2026  
 **Líder Funcional / Solution Owner:** Freddy Cortés (Analista Funcional)  
 **Facilitador Técnico:** Diego Martínez  
 **Comité Evaluador:** Paula Sbarbati, Diego Martínez, Carolina Brizuela, Nicolás Sánchez  
-**Estado:** CERTIFICADO / COMPLIANT 100%
+**Estado:** CERTIFICADO / COMPLIANT 100% / SPRINT 6 CERRADO
 
 ---
 
@@ -16,6 +16,7 @@
 | :--- | :--- | :--- | :--- |
 | **v1.0** | 28/08/2026 | Freddy Cortés | **Línea Base Oficial de QA:** 7 pruebas E2E automatizadas, 32 UHs validadas y dictamen de pase a producción. |
 | **v1.1** | 26/09/2026 | Freddy Cortés | **Fase de Hardening & Blindaje:** Incorporación de 25 tests unitarios/DOM/ITIL, pre-commit gates activos, certificación de Regla OJO y auditoría de coherencia visual. |
+| **v1.2** | 27/09/2026 | Freddy Cortés | **Certificación Notarial Cierre Sprint 6 (93 tareas en Done):** Quality Gate 100% OK (Regla OJO, 6 Tests DOM, 5 Tests ITIL 4, 8 Tests Golden CD2), Despliegue Render Cloud operativo y Bóveda Siete Llaves. |
 
 ---
 
@@ -395,5 +396,45 @@ Conforme a la política de aseguramiento de calidad y preparación hacia el hito
   1. Conforme a la instrucción del Solution Owner (*"toda tarjeta que pase de revisión a retrabajo debe quedar ubicada en el fondo de pila de retrabajo, corrige ahora en este sprint"*):
   2. Se actualizó `sendToReworkFromCard()` y `sendToReworkFromModal()` para reubicar la tarjeta rechazada al final del arreglo (`tasks.push(movedTask)`), garantizando que aparezca al fondo de la columna En Retrabajo (`col-rework`).
   3. Se sincronizó el controlador `drop(e, 'rework')` para asegurar idéntico comportamiento al arrastrar tarjetas a la columna de Retrabajo.
+
+---
+
+## 9. ACTA DE CERTIFICACIÓN DE CALIDAD: CIERRE SPRINT 6 Y PRE-FLIGHT SPRINT 7
+
+Con fecha **27 de Septiembre de 2026**, se ejecutó de forma automatizada e ininterrumpida la batería completa de Quality Gates del proyecto HealthDesk Quantux v4.4.0, arrojando un resultado del **100% de Aprobación (Exit Code 0)**:
+
+```
+================================================================================
+ 🛡️  QUANTUX SERVICE DESK — QUALITY GATE PRE-COMMIT RUNNER (MEJ-01)
+================================================================================
+
+[PASO] 1. Verificación de Regla OJO y Pizarra Neutral...
+       Comando: python validate_ojo_compliance.py frontend/reemplazo-n1.html frontend/index.html frontend/js/typeahead.js frontend/js/api.js
+  ✓ [APROBADO] Regla OJO 100% Compliant (Cero cards, cero rojos, cero términos clínicos en soporte TI).
+
+[PASO] 2. Suite de Validación de Cumplimiento Visual DOM (6 Tests)...
+       Comando: python tests/test_dom_visual_compliance.py
+  ✓ [APROBADO] Suite de Validación Visual DOM: 6/6 tests exitosos.
+
+[PASO] 3. Suite de Integración Backend & ITIL 4 (5 Tests)...
+       Comando: python -m unittest backend/tests/test_reemplazo_n1_suite.py
+  ✓ [APROBADO] Suite Backend ITIL 4: 5/5 tests exitosos (Ciclo 7 estados, pausas SLA, KCS v6, CSAT, MIM).
+
+[PASO] 4. Suite Golden CD2 & Triage Cognitivo Asistencial (8 Tests)...
+       Comando: python -m unittest backend/tests/golden_test_cd2_suite.py
+  ✓ [APROBADO] Suite Golden CD2: 8/8 tests exitosos (Cero alucinaciones, diagnóstico determinista).
+
+================================================================================
+ 🚀 [QUALITY GATE EXITOSO] Todos los filtros fueron superados (Exit Code 0).
+    El commit / despliegue está autorizado conforme al Marco PMI+IA.
+================================================================================
+```
+
+### Estado de Cierre y Traspaso
+* **Sprint 6:** 93 de 93 tareas certificadas en `done` (**100% COMPLETADO**).
+* **Sprint 7:** 13 tareas activadas en `sprint` (**35 Story Points**, kickoff 28-Sep).
+* **Entorno Cloud (Render):** `https://healthdesk-quantux.onrender.com/` — **HTTP 200 OK**.
+* **Entorno Local:** `http://127.0.0.1:8000/` — **HTTP 200 OK**.
+* **Bóveda Criptográfica:** Respaldada bajo protocolo notarial de Siete Llaves con SHA-256 (`dcc097d7023b30e2d000f840cabc901db9d89553180bcae3dfab1d6c37b94cbd`).
 
 

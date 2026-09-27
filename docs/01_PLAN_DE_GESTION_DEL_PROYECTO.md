@@ -1,9 +1,9 @@
 # 📑 DOCUMENTO 1: PLAN DE GESTIÓN DEL PROYECTO
-**Código:** DOC-MGT-001 (Versión 1.0 Oficial)
+**Código:** DOC-MGT-001 (Versión 1.2 Oficial - Cierre Sprint 6 & Apertura Sprint 7)
 **Proyecto:** HealthDesk Quantux — Sistema Centralizado de Gestión de Tickets de Soporte
 **Organización:** Quantux Salud
 **Solution Owner:** Freddy Cortés (Analista Funcional)
-**Fecha:** 28 de Agosto de 2026
+**Fecha:** 27 de Septiembre de 2026
 **Comité Evaluador:**
 • Paula Sbarbati (Referente Funcional)
 • Diego Martínez (Facilitador Técnico)
@@ -19,6 +19,7 @@
 | **v0.2** | 26/08/2026 | Freddy Cortés | Calibración de roles, matriz de esfuerzo y riesgos preventivos. |
 | **v1.0** | 28/08/2026 | Freddy Cortés | **Versión Oficial de Línea Base del MVP.** |
 | **v1.1** | 26/09/2026 | Freddy Cortés | **Fase de Hardening, Scope Freeze, Deadline Técnico 28-Sep y Evaluación en Proceso & Calidad.** |
+| **v1.2** | 27/09/2026 | Freddy Cortés | **Cierre Formal Sprint 6 (100% Done, 93 tarjetas), Apertura Sprint 7 (35 SP, 13 tarjetas), Bóveda Siete Llaves y Despliegue Cloud en Render.** |
 
 ---
 
@@ -134,21 +135,23 @@ El proyecto adopta un marco Ágil (Iterativo e Incremental) bajo la modalidad Sc
   * Entregables: Circuito completo de 5 pasos integrado con notas e historial.
 * **Sprint 5 (21-sep al 25-sep):** *Auditoría Forense TQM, Adaptación Visual y Calidad OJO.*
   * Entregables: Mitigación de gaps visuales, tablero interactivo y compliance pre-commit.
-* **Sprint 6 (26-sep al 01-oct):** *Fase de Hardening, Estabilización Final y Presentación al Comité Evaluador.*
-  * **Hito Rectivo (Scope Freeze Total):** Bloqueo total de nuevas funcionalidades. Foco exclusivo en Testing, Debugging, Calidad OJO y Cierre de Retrabajos (`UH-67`, `MEJ-08`).
-  * **Corte Técnico Definitivo (Hardening Freeze):** **Lunes 28 de Septiembre de 2026 a las 18:00 hs.** A partir de este momento rige un congelamiento absoluto de código para blindar el tiempo de preparación.
-  * **Ventana de Preparación y Ensayos del Solution Owner:** **29 y 30 de Septiembre de 2026 (48 hs blindadas e ininterrumpidas)** para ajuste de diapositivas, práctica del storytelling del MVP y simulacro de preguntas del Comité.
-  * **Hito de Demostración Formal:** **01 de Octubre de 2026 — Presentación Ejecutiva y Evaluación Final del Producto ante el Comité Evaluador.**
+* **Sprint 6 (26-sep al 27-sep):** *Pruebas, Estabilización, Certificación OJO & Cierre de Alcance.*
+  * **Estado:** **COMPLETADO (100% Done).** 93 tarjetas archivadas formalmente bajo la DoD.
+  * **Entregables:** Pizarra Neutral Quantux consolidada, erradicación de rojos, optimización ergonómica del modal 'Mis Solicitudes', sanitización clínica del asistente virtual, supresión universal de accesos restringidos y resguardo bajo siete llaves en bóveda ZIP (SHA-256) y base golden SQLite.
+* **Sprint 7 (28-sep al 09-oct):** *Reemplazo N1, Triage IA, Portal Solicitante & PWA Mobile.*
+  * **Estado:** **ACTIVO (Sprint 7 Actual - 35 SP).** 13 tarjetas comprometidas en Sprint Backlog.
+  * **Alcance Prioritario:** ISSUE-65 (persistencia de configuración SLA en caliente), ISSUE-55 (enlace interactivo en badge de ticket FCR), ISSUE-56 (persistencia inmediata de tickets FCR), depuración ergonómica de botones (MEJ-13 a MEJ-16), SLA dinámico con segundos (ISSUE-78) y PWA móvil descargable.
+* **Hito de Demostración Formal:** **01 de Octubre de 2026 — Presentación Ejecutiva y Evaluación Final del Producto ante el Comité Evaluador.**
 
-#### 6.1. Desglose Operativo del Sprint 6 (Hardening hacia el 01-Oct)
+#### 6.1. Desglose Operativo hacia el 01-Oct (Hardening, Ensayos & Demo)
 | Fecha | Foco Operativo | Entregables / Hitos Clave |
 | :--- | :--- | :--- |
-| **Sábado 26/09 (Hoy)** | Blindaje de Gobernanza y Setup | Supresión de toolbar (`MEJ-08`), Scope Freeze activo en Tablero y definición técnica de retrabajo `UH-67`. |
-| **Domingo 27/09** | Cierre de Retrabajos y Revisión SO | Implementación de `UH-67`, revisión de ítems en QA por el Solution Owner y emisión del Dossier Previo al Comité Evaluador. |
-| **Lunes 28/09 (18:00 hs)** | **DEADLINE TÉCNICO & HARDENING FREEZE** | Ejecución masiva de suites TDD, compliance OJO 100%, congelamiento total de código y base de datos SQLite respaldada. |
+| **Sábado 26/09** | Blindaje de Gobernanza y Setup | Supresión de toolbar (`MEJ-08`), Scope Freeze activo en Tablero y definición técnica de retrabajo `UH-67`. |
+| **Domingo 27/09** | Cierre Formal S6 & Kickoff S7 | Cierre 100% de Sprint 6 (93 tarjetas en Done), Bóveda de Siete Llaves, despliegue continuo en la nube Render (`https://healthdesk-quantux.onrender.com/`) y activación del branch `v4.4-sprint7-dev`. |
+| **Lunes 28/09** | Ejecución Sprint 7 & Hardening Freeze | Implementación de ISSUE-65, ISSUE-55, ISSUE-56 y PWA; congelamiento final a las 18:00 hs con suites TDD al 100%. |
 | **Martes 29/09** | Ensayos del Solution Owner (Día 1) | Calibración de diapositivas ejecutivas, narrativa de los 5 pasos del MVP e integración de observaciones tempranas del Comité. |
 | **Miércoles 30/09** | Ensayo General / Dry Run (Día 2) | Simulacro de pitch cronometrado (15 min) y preparación de respuestas sobre arquitectura y gobernanza. |
-| **Jueves 01/10** | **DÍA D: EVALUACIÓN Y DEMO FINAL** | Demostración operativa en vivo ante Paula Sbarbati, Diego Martínez, Carolina Brizuela y Nicolás Sánchez. |
+| **Jueves 01/10** | **DÍA D: EVALUACIÓN Y DEMO FINAL** | Demostración operativa en vivo en la nube ante Paula Sbarbati, Diego Martínez, Carolina Brizuela y Nicolás Sánchez. |
 
 ---
 

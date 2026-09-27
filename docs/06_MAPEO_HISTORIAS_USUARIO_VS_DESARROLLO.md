@@ -1,8 +1,9 @@
 # 📊 MATRIZ DE TRAZABILIDAD Y MAPEO DE HISTORIAS DE USUARIO VS DESARROLLO
-**Código:** DOC-REQ-006 (Versión 1.0 Oficial)  
+**Código:** DOC-REQ-006 (Versión 1.2 Oficial - Cierre Sprint 6 & Apertura Sprint 7)  
 **Proyecto:** HealthDesk Quantux — Mesa de Ayuda Centralizada de Salud  
+**Fecha de Línea Base:** 28 de Agosto de 2026 | **Fecha de Versión 1.2:** 27 de Septiembre de 2026  
 **Documento Funcional Base:** DOC-REQ-002 (`02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md`)  
-**Dimensión:** 6 Épicas | 32 Historias de Usuario | 75 Story Points | 100% Cobertura  
+**Dimensión:** 9 Épicas | 174 Tarjetas de Backlog Catalogadas | 93 Sprint 6 (Done 100%) | 13 Sprint 7 (Sprint Backlog)  
 
 ---
 
@@ -268,5 +269,27 @@
 
 ---
 
-## 🎯 Conclusión del Mapeo Funcional
-El 100% de las **32 Historias de Usuario (75 Story Points)** descritas en la especificación oficial DOC-REQ-002 están implementadas, probadas y trazadas en el código fuente de Backend, Base de Datos y Frontend.
+## 🎯 Conclusión del Mapeo Funcional y Estado de Sprints
+
+### 1. Certificación de Cierre de Sprint 6 (Hardening & Resguardo)
+* **Total de Tareas Certificadas:** **93 de 93 tareas en Done (100% COMPLETADO)**.
+* **Cobertura de Alcance MVP:** El 100% de las 32 Historias de Usuario (75 Story Points) iniciales más las tareas de estabilización técnica y hardening están implementadas, probadas y trazadas.
+* **Resguardo Bajo Siete Llaves:** Base de datos congelada `healthdesk_v4.4.0_sprint6_closed_golden.db` y bóveda criptográfica SHA-256 generada.
+
+### 2. Apertura del Sprint 7 (Sprint Backlog Activo - 35 SP)
+El Sprint 7 cuenta con 13 tareas activas en el Tablero Scrumban (`docs/00_Tablero_Scrumban_Quantux.html`):
+1. **ISSUE-65 (3 SP):** Persistencia de SLA sin Cierre de Modal.
+2. **ISSUE-55 (2 SP):** Enlace Interactivo en Badge de Ticket en Constancia FCR.
+3. **ISSUE-56 (3 SP):** Persistencia de Ticket FCR en Historial del Solicitante.
+4. **MEJ-13 (2 SP):** Depuración de Botones Redundantes 'Resolver Ticket'.
+5. **MEJ-14 (2 SP):** Visualización Permanente de Descripción de Estado.
+6. **MEJ-15 (2 SP):** Diferenciación Cromática Dual 'Responder' vs 'Responder y Resolver'.
+7. **MEJ-16 (2 SP):** Erradicación de Rojos en Barras e Interfaz (Pizarra Neutral OJO).
+8. **ISSUE-78 (3 SP):** Indicador de SLA Dinámico con Segundos.
+9. **ISSUE-79 (2 SP):** Depuración de Botonera Redundante de Asignación.
+10. **ISSUE-80 (3 SP):** Evaluación Dinámica de Impacto en Producto y Negocio.
+11. **ISSUE-81 (2 SP):** Botón 'X' Circular y Cierre por Escape en Lightbox.
+12. **ISSUE-82 (2 SP):** Ocultamiento Total de Configuración en Barra Lateral.
+13. **ISSUE-83 (3 SP):** Parametrización de Niveles ITIL Directamente por BBDD.
+* **PWA-01 (4 SP):** Aplicación Descargable Móvil PWA v4.4.
+* **Hito Inamovible:** Demostración Final ante el Comité Evaluador el 01 de Octubre de 2026.
