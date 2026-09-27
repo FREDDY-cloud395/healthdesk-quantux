@@ -1,4 +1,4 @@
-﻿"""
+"""
 File Management Bot (Bot Gestor de Archivos) for Quantux HealthDesk Enterprise.
 Autonomous background agent that:
 - Inspects, classifies and stores file attachments for tickets.

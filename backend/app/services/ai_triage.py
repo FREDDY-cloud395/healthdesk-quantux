@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import annotations
 """
 Motor Pericial de Análisis Cognitivo N3 & Triage Asistencial Inteligente
 Rol: Ingeniero de Producto & Analista Funcional N3 Digitalizado
@@ -8,6 +9,7 @@ Aislamiento Estricto a Fuentes Homologadas CD2 (SSOT) - Política Estricta CERO 
 
 import re
 import unicodedata
+from typing import Dict, Any, List, Optional, Tuple, Union
 from datetime import datetime, timezone
 from sqlmodel import Session, select
 try:
