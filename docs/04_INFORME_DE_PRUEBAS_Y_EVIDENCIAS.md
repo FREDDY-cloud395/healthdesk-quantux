@@ -178,3 +178,20 @@ Conforme a la política de aseguramiento de calidad y preparación hacia el hito
 * **Componente:** `backend/app/api/endpoints/tickets.py`, `app/models/entities.py` y `frontend/js/app.js`.
 * **Dictamen:** Corregido y Verificado. Incorporación de `publish_to_kb` en `TicketResolveRequest`, persistencia automática en `KBArticle`, `KBArticleHistory`, relación formal en `KBArticleContribution`, auditoría ITIL en `TicketAuditLog` y comentario en `TicketComment`. Verificado mediante suite `backend/tests/test_kb_feeding_on_resolve.py`.
 
+### ISSUE-29: Remoción de Cabecera Superior HealthDesk/Quantux para Optimización de Espacio Vertical 100vh en Scrumban
+* **Severidad:** P1 — Alta Prioridad / Ruido Visual & Ergonomía 100vh.
+* **Componente:** `scripts/build_full_scrumban_board.py` y `docs/00_Tablero_Scrumban_Quantux.html` (`<header>`).
+* **Dictamen:** Corregido y Verificado. Eliminación completa de la cabecera superior y badges de fase conforme a solicitud del Solution Owner (`media_1790474232877.png`), liberando ~65px de altura vertical útil para que el tablero Scrumban aproveche el 100vh de pantalla sin scroll innecesario.
+
+### MEJ-09: Transición Automática de Tarjetas de Retrabajo a la Pila de Revisión al Ejecutar Demonio
+* **Severidad:** P1 — Alta Prioridad / Automatización de Ciclo de Vida Scrumban.
+* **Componente:** `scripts/build_full_scrumban_board.py` (`triggerDemonRework`) y `docs/00_Tablero_Scrumban_Quantux.html`.
+* **Dictamen:** Implementado y Verificado. Al finalizar la ejecución de la barra del Demonio (100%), la tarjeta pasa de forma reactiva e inmediata a `status: 'qa'` ("EN REVISIÓN - ACEPTACIÓN SOLUTION OWNER") y se reordena al tope de la lista para su inspección formal, con notificación explícita en pantalla.
+
+### MEJ-10: Posicionamiento Superior Inmediato ('Arriba de la Pila') al Aprobar Tarjetas a Aceptado
+* **Severidad:** P1 — Alta Prioridad / Ergonomía LIFO en Columna de Aceptación.
+* **Componente:** `scripts/build_full_scrumban_board.py` (`approveTaskDone`, `drop`, `moveTask`) y `docs/00_Tablero_Scrumban_Quantux.html`.
+* **Dictamen:** Implementado y Verificado. Toda tarjeta que transiciona a `status: 'done'` ("ACEPTADO Y FINALIZADO") es reposicionada en la cabeza (`unshift`) del vector de tareas, garantizando que quede visible en el primer lugar superior ("arriba de la pila") de la columna.
+
+
+

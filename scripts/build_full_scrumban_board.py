@@ -1060,7 +1060,7 @@ def generate_scrumban_board():
                 "epic": "EP-07: Gobernanza PMI+IA, Blindaje OJO & Calidad",
                 "sp": 3,
                 "sprint": "Sprint 6",
-                "status": "progress",
+                "status": "qa",
                 "discipline": "Frontend / QA",
                 "type": "ISSUE",
                 "priority": "P2",
@@ -1085,7 +1085,7 @@ def generate_scrumban_board():
                 "epic": "EP-07: Gobernanza PMI+IA, Blindaje OJO & Calidad",
                 "sp": 3,
                 "sprint": "Sprint 6",
-                "status": "progress",
+                "status": "qa",
                 "discipline": "Frontend / CSS",
                 "type": "ISSUE",
                 "priority": "P2",
@@ -2114,7 +2114,7 @@ def generate_scrumban_board():
                 "epic": "EP-06: Administración y Operación Centralizada",
                 "sp": 2,
                 "sprint": "Sprint 6",
-                "status": "progress",
+                "status": "qa",
                 "discipline": "Frontend / Scrumban Architecture",
                 "type": "MEJORA",
                 "priority": "P2",
@@ -2375,6 +2375,87 @@ def generate_scrumban_board():
                                 "Escenario 2 (Vinculación de Ticket Aportante): DADO el artículo creado o consultado en la KB, CUANDO se examinan sus fuentes, ENTONCES el ticket resuelto figura formalmente como contribuyente con su ID, autor, fecha y síntesis de solución.",
                                 "Escenario 3 (Trazabilidad Forense ITIL): DADO el ticket resuelto, ENTONCES su historial registra el aporte a la KB en audit_logs y agrega un comentario de confirmación.",
                                 "Escenario 4 (Trazabilidad Visual): DADO el registro en el Scrumban, CUANDO se abre la tarjeta ISSUE-28, ENTONCES exhibe la captura de evidencia remitida por el Solution Owner."
+                        ]
+                }
+        },
+        {
+                "id": "ISSUE-29",
+                "title": "[P1 - ALTA PRIORIDAD] Remoción de Cabecera Superior HealthDesk/Quantux para Optimización de Espacio Vertical 100vh en Scrumban",
+                "epic": "EP-07: Gobernanza PMI+IA, Blindaje OJO & Calidad",
+                "sp": 1,
+                "sprint": "Sprint 6",
+                "status": "qa",
+                "discipline": "Frontend / Ergonomía Scrumban",
+                "type": "ISSUE",
+                "priority": "P1",
+                "doc_link": "04_INFORME_DE_PRUEBAS_Y_EVIDENCIAS.md#issue-29",
+                "doc_title": "DOC-QA-004 (ISSUE-29)",
+                "doc_desc": "Eliminación de la cabecera superior y badges de fase conforme a captura del Solution Owner ('quita esto,'), liberando ~65px útiles para visualización 100vh sin scroll innecesario.",
+                "attachment_image": "assets/capturas/ISSUE-29_quitar_cabecera_superior_scrumban.png",
+                "issue_details": {
+                        "severity": "P1 — Alta Prioridad / Ruido Visual & Ergonomía 100vh",
+                        "component": "scripts/build_full_scrumban_board.py & docs/00_Tablero_Scrumban_Quantux.html (<header>)",
+                        "description": "El Solution Owner adjuntó captura de la cabecera superior oscura con los títulos institucionales y badges de fase con la instrucción 'quita esto,'.",
+                        "root_cause": "La cabecera superior ocupaba ~65px de altura fija que generaba scroll vertical no deseado en resoluciones comunes al consultar el tablero Kanban completo.",
+                        "solution": "Remoción íntegra del elemento <header> en la plantilla del tablero, posicionando la barra de navegación superior de vistas al tope del viewport.",
+                        "acceptance_criteria": [
+                                "Escenario 1: El tablero inicia directamente en la barra de navegación de vistas sin cabecera redundante superior.",
+                                "Escenario 2: La altura útil de las columnas Kanban se amplía aprovechando el 100vh.",
+                                "Escenario 3: La tarjeta cuenta con la captura de evidencia remitida por el Solution Owner."
+                        ]
+                }
+        },
+        {
+                "id": "MEJ-09",
+                "title": "[P1 - ALTA PRIORIDAD] Transición Automática de Tarjetas de Retrabajo a la Pila de Revisión al Ejecutar Demonio",
+                "epic": "EP-07: Gobernanza PMI+IA, Blindaje OJO & Calidad",
+                "sp": 2,
+                "sprint": "Sprint 6",
+                "status": "qa",
+                "discipline": "Frontend / Lógica de Tablero Scrumban",
+                "type": "MEJORA",
+                "priority": "P1",
+                "doc_link": "04_INFORME_DE_PRUEBAS_Y_EVIDENCIAS.md#mej-09",
+                "doc_title": "DOC-QA-004 (MEJ-09)",
+                "doc_desc": "Automatización de ciclo de vida ágil: al finalizar la barra del Demonio (100%), la tarjeta transiciona automáticamente a la columna En Revisión (Aceptación Solution Owner) posicionándose arriba de la pila.",
+                "attachment_image": "assets/capturas/MEJ-09_demonio_retrabajo_a_pila_revision.png",
+                "issue_details": {
+                        "severity": "P1 — Alta Prioridad / Automatización de Ciclo de Vida Scrumban",
+                        "component": "scripts/build_full_scrumban_board.py (triggerDemonRework) & docs/00_Tablero_Scrumban_Quantux.html",
+                        "description": "El Solution Owner instruyó explícitamente: 'cuando se ejecuta la corrección la tarjete debe pasar aujtomaticamente a la pila de revisión', adjuntando captura de la columna En Retrabajo con UH-67.",
+                        "root_cause": "Al finalizar la animación y ejecución técnica del demonio de corrección, el estado se mantenía en 'rework' en lugar de promover la tarjeta a la pila de QA/Revisión.",
+                        "solution": "Configurar task.status = 'qa', actualizar la bitácora de feedback como 'CORREGIDO POR DEMONIO / EN REVISIÓN', reposicionar la tarjeta al inicio del vector de tareas (unshift) y mostrar alerta de confirmación.",
+                        "acceptance_criteria": [
+                                "Escenario 1 (Paso Automático a Revisión): DADO que el operador ejecuta el Demonio en una tarjeta de Retrabajo, CUANDO la barra alcanza el 100%, ENTONCES la tarjeta pasa automáticamente a la columna 'EN REVISIÓN'.",
+                                "Escenario 2 (Posicionamiento Prioritario): DADO el paso a Revisión, ENTONCES la tarjeta se ubica al tope de la pila de revisión.",
+                                "Escenario 3 (Trazabilidad Visual): DADO el detalle de la tarjeta MEJ-09, ENTONCES exhibe la captura de evidencia remitida por el Solution Owner."
+                        ]
+                }
+        },
+        {
+                "id": "MEJ-10",
+                "title": "[P1 - ALTA PRIORIDAD] Posicionamiento Superior Inmediato ('Arriba de la Pila') al Aprobar Tarjetas a Aceptado",
+                "epic": "EP-07: Gobernanza PMI+IA, Blindaje OJO & Calidad",
+                "sp": 2,
+                "sprint": "Sprint 6",
+                "status": "qa",
+                "discipline": "Frontend / Ergonomía Kanban",
+                "type": "MEJORA",
+                "priority": "P1",
+                "doc_link": "04_INFORME_DE_PRUEBAS_Y_EVIDENCIAS.md#mej-10",
+                "doc_title": "DOC-QA-004 (MEJ-10)",
+                "doc_desc": "Garantía de orden LIFO/prioritario en la columna Aceptado y Finalizado: toda tarjeta aprobada por el Solution Owner se posiciona automáticamente en la parte superior ('arriba de la pila') tanto por botón como por drag-and-drop.",
+                "attachment_image": "assets/capturas/MEJ-10_tarjeta_aceptada_arriba_de_la_pila.png",
+                "issue_details": {
+                        "severity": "P1 — Alta Prioridad / Ergonomía LIFO en Columna de Aceptación",
+                        "component": "scripts/build_full_scrumban_board.py (approveTaskDone, drop, moveTask) & docs/00_Tablero_Scrumban_Quantux.html",
+                        "description": "El Solution Owner instruyó explícitamente: 'cuando paso tarjeta de este estado a aceptado la tarjeta debe quedar arriba de la pila', adjuntando captura de la columna En Revisión.",
+                        "root_cause": "Al aprobar o mover una tarjeta a 'done', se agregaba al final de la columna tras las decenas de ítems históricos previamente aprobados, obligando a scrollear hasta el fondo para verificar la acción.",
+                        "solution": "Reposicionar la tarjeta en la cabeza (index 0 / unshift) del array de tareas cada vez que transiciona a 'done' mediante botón 'Aprobar (Done)', botón modal o drag-and-drop.",
+                        "acceptance_criteria": [
+                                "Escenario 1 (Arriba de la Pila por Botón): DADO que el Solution Owner presiona 'Aprobar (Done)' en una tarjeta de Revisión, CUANDO se confirma, ENTONCES la tarjeta aparece primera arriba de todo en la columna 'ACEPTADO Y FINALIZADO'.",
+                                "Escenario 2 (Arriba de la Pila por Drag & Drop): DADO que se arrastra una tarjeta a 'Aceptado y Finalizado', CUANDO se suelta, ENTONCES queda posicionada arriba de la pila.",
+                                "Escenario 3 (Trazabilidad Visual): DADO el detalle de la tarjeta MEJ-10, ENTONCES exhibe la captura de evidencia remitida por el Solution Owner."
                         ]
                 }
         },
@@ -3296,28 +3377,6 @@ def generate_scrumban_board():
 </head>
 <body>
 
-  <!-- HEADER -->
-  <header>
-    <div class="brand-header">
-      <div class="brand-logo">
-        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="44" cy="44" r="38" fill="#00C4B4"/>
-          <path d="M34 34L54 54M54 34L34 54" stroke="white" stroke-width="6.5" stroke-linecap="round"/>
-          <path d="M68 68L86 86" stroke="#1E3A5F" stroke-width="11" stroke-linecap="round"/>
-        </svg>
-      </div>
-      <div class="brand-titles">
-        <h1>HealthDesk <span>Quantux</span> • Tablero de Control Scrumban & Roadmap</h1>
-        <p>Sistema Centralizado de Gestión de Tickets de Soporte | Gobernanza PMI + IA</p>
-      </div>
-    </div>
-
-    <div class="header-badges">
-      <span class="status-pill" style="background: #FEF3C7; color: #92400E; border: 1px solid #FCD34D;">● FASE: Pruebas & Estabilización</span>
-      <span class="timebox-pill" style="background: #E0F2FE; color: #0369A1; border: 1px solid #BAE6FD;">🎯 Presentación al Comité Evaluador: 01-Oct-2026</span>
-    </div>
-  </header>
-
   <!-- VIEW NAVIGATION BAR -->
   <nav class="view-nav-bar">
     <button class="nav-tab-btn active" id="tab-btn-board" onclick="switchView('board')">
@@ -3710,7 +3769,7 @@ def generate_scrumban_board():
     }}
 
     function init() {{
-      const saved = localStorage.getItem('quantux_scrumban_v17_progress');
+      const saved = localStorage.getItem('quantux_scrumban_v18_progress');
       if (saved) {{
         try {{
           tasks = JSON.parse(saved);
@@ -3733,7 +3792,8 @@ def generate_scrumban_board():
       const priorityItems = [
         "UH-69", "ISSUE-07", "UH-68", "UH-67", "UH-66", "ISSUE-06", "ISSUE-05", "ISSUE-04",
         "MEJ-08", "ISSUE-01", "ISSUE-02", "ISSUE-21", "ISSUE-22", "ISSUE-23",
-        "ISSUE-24", "ISSUE-25", "UH-70", "ISSUE-26", "ISSUE-27", "ISSUE-28"
+        "ISSUE-24", "ISSUE-25", "UH-70", "ISSUE-26", "ISSUE-27", "ISSUE-28",
+        "ISSUE-29", "MEJ-09", "MEJ-10"
       ];
       priorityItems.forEach(id => syncIssueInBacklog(id));
 
@@ -4024,6 +4084,11 @@ def generate_scrumban_board():
       idx += dir;
       if (idx >= 0 && idx < cols.length) {{
         task.status = cols[idx];
+        const currentIdx = tasks.findIndex(t => t.id === taskId);
+        if (currentIdx > -1) {{
+          const [movedTask] = tasks.splice(currentIdx, 1);
+          tasks.unshift(movedTask);
+        }}
         saveState(false);
         renderBoard();
       }}
@@ -4523,28 +4588,33 @@ def generate_scrumban_board():
           setTimeout(runNextStep, 250);
         }} else {{
           task.priority = 'P1';
-          task.status = 'rework';
+          task.status = 'qa';
           if (currentTaskImageData !== null && currentTaskImageData !== undefined && currentTaskImageData !== '') {{
             task.attachment_image = currentTaskImageData;
           }}
           const nowStr = new Date().toLocaleDateString('es-AR') + ' ' + new Date().toLocaleTimeString('es-AR', {{hour: '2-digit', minute: '2-digit'}});
           task.so_feedback = {{
-            status: 'OBSERVADO / EN RETRABAJO',
+            status: 'CORREGIDO POR DEMONIO / EN REVISIÓN',
             observation: obs,
-            reviewer: 'Freddy Cortés (Solution Owner)',
+            reviewer: 'Demonio de Corrección Automática',
             date: nowStr
           }};
+          const currentIdx = tasks.findIndex(t => t.id === taskId);
+          if (currentIdx > -1) {{
+            const [movedTask] = tasks.splice(currentIdx, 1);
+            tasks.unshift(movedTask);
+          }}
           saveState(false);
           renderCurrentView();
 
-          const clipMsg = `🔥 DEMONIO ACTIVADO (${{task.id}} - ${{task.title}}): Corrección de bug prioritario (P1).\\nObservación: "${{obs}}"`;
+          const clipMsg = `🔥 DEMONIO EJECUTADO (${{task.id}} - ${{task.title}}): Corrección aplicada y transferida automáticamente a En Revisión.\\nObservación: "${{obs}}"`;
           if (navigator.clipboard && navigator.clipboard.writeText) {{
             navigator.clipboard.writeText(clipMsg).catch(() => {{}});
           }}
 
           setTimeout(() => {{
             closeUHModal();
-            alert(`🔥 ¡DEMONIO ACTIVADO!\\n\\nTarjeta: ${{task.id}} (${{task.title}})\\nPrioridad: P1 (Bloqueante)\\nEstado: En Retrabajo\\n\\nObservación: "${{obs}}"\\n${{task.attachment_image ? '📷 Captura guardada en la tarjeta.\\n' : ''}}\\n(Orden copiada al portapapeles)`);
+            alert(`🔥 ¡DEMONIO EJECUTADO CON ÉXITO!\\n\\nTarjeta: ${{task.id}} (${{task.title}})\\nEstado: EN REVISIÓN (Aceptación Solution Owner)\\n\\nLa corrección fue ejecutada exitosamente y la tarjeta pasó de forma automática a la columna EN REVISIÓN (Aceptación Solution Owner), posicionándose arriba de la pila.`);
           }}, 120);
         }}
       }}
@@ -4566,6 +4636,11 @@ def generate_scrumban_board():
         reviewer: 'Freddy Cortés (Solution Owner)',
         date: nowStr
       }};
+      const currentIdx = tasks.findIndex(t => t.id === taskId);
+      if (currentIdx > -1) {{
+        const [movedTask] = tasks.splice(currentIdx, 1);
+        tasks.unshift(movedTask);
+      }}
       saveState(false);
       renderCurrentView();
       closeUHModal();
@@ -4844,18 +4919,23 @@ def generate_scrumban_board():
       }}
 
       task.status = colName;
+      const currentIdx = tasks.findIndex(t => t.id === taskId);
+      if (currentIdx > -1) {{
+        const [movedTask] = tasks.splice(currentIdx, 1);
+        tasks.unshift(movedTask);
+      }}
       saveState(false);
       renderBoard();
     }}
 
     function saveState(notify = true) {{
-      localStorage.setItem('quantux_scrumban_v17_progress', JSON.stringify(tasks));
+      localStorage.setItem('quantux_scrumban_v18_progress', JSON.stringify(tasks));
       if (notify) alert('✓ Estado del Tablero Scrumban guardado exitosamente.');
     }}
 
     function resetDefaultTasks() {{
       if (confirm('¿Restaurar la base de datos oficial del tablero?')) {{
-        localStorage.removeItem('quantux_scrumban_v17_progress');
+        localStorage.removeItem('quantux_scrumban_v18_progress');
         tasks = JSON.parse(JSON.stringify(INITIAL_BACKLOG));
         tasks.forEach(t => {{
           const d = getTaskDocInfo(t);

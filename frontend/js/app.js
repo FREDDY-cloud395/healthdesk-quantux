@@ -44,7 +44,7 @@ const USER_AVATARS = {
  'mgomez': 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=150&auto=format&fit=crop&q=80', // Dr. Martín Gómez (Solicitante Swiss Medical)
  'alopez': 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=150&auto=format&fit=crop&q=80', // Dra. Andrea López (Solicitante Hospital Británico)
  'dnavarro': 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80', // Diego Navarro (N3 Ingeniería)
- 'mflores': 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150&auto=format&fit=crop&q=80' // Marcos Flores (N1 Guardia)
+ 'mflores': 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150&auto=format&fit=crop&q=80' // Marcos Flores (N1 mesa de soporte)
  // 50% restante (svaldez, ealvarez, vromero, gfernandez, solicitante, jmartinez, rfernandez) renderizan iniciales con gradientes de color dinámicos
 };
 
@@ -437,7 +437,7 @@ function switchView(viewName) {
     'team-leader': {
       icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px;"><circle cx="12" cy="12" r="10"></circle><polygon points="12 8 8 12 12 16 16 12 12 8"></polygon></svg>',
       title: 'Torre de Control • Supervisión Operativa',
-      sub: 'Monitor de cargas en vivo, balanceo de guardia en 1 clic y mesa de rescate CSAT'
+      sub: 'Monitor de cargas en vivo, balanceo de mesa de soporte en 1 clic y mesa de rescate CSAT'
     },
     'unified-hub': {
       icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#0F172A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px;"><rect x="3" y="3" width="18" height="18" rx="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line><line x1="15" y1="3" x2="15" y2="21"></line></svg>',
@@ -446,8 +446,8 @@ function switchView(viewName) {
     },
     'requester-portal': {
       icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#0F172A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px;"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></svg>',
-      title: 'Centro de Ayuda & Guardia Médica',
-      sub: 'Asistencia inmediata 24/7, triage inteligente con IA y seguimiento de solicitudes asistenciales'
+      title: 'Centro de Ayuda & Mesa de Soporte Tcnico',
+      sub: 'Asistencia inmediata 24/7, triage inteligente con IA y seguimiento de solicitudes operativas de soporte'
     }
   };
 
@@ -607,7 +607,7 @@ function renderSubNavRibbon(viewName) {
  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
  <span>${mineLabel}</span>
  </button>
- <button class="pill-filter-btn ${preset === 'p1' ? 'active' : ''}" onclick="applyTicketPreset('p1')" title="Incidentes Críticos P1 (Atención Inmediata)" style="${preset === 'p1' ? 'background:#DC2626; color:#FFF; border-color:#DC2626; font-weight:800;' : 'background:rgba(239,68,68,0.08); border-color:#FCA5A5; color:#DC2626;'}">
+ <button class="pill-filter-btn ${preset === 'p1' ? 'active' : ''}" onclick="applyTicketPreset('p1')" title="Incidentes Críticos P1 (Atención Inmediata)" style="${preset === 'p1' ? 'background:#D97706; color:#FFF; border-color:#D97706; font-weight:800;' : 'background:rgba(239,68,68,0.08); border-color:#FCD34D; color:#D97706;'}">
  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;"><polygon points="12 2 22 20 2 20 12 2"></polygon><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
  <span>Críticos P1</span>
  </button>
@@ -620,7 +620,7 @@ function renderSubNavRibbon(viewName) {
  <span>Todos</span>
  </button>
  <button class="pill-filter-btn ${activeLvl === 'N1' ? 'active' : ''}" onclick="filterUsersByLevel('N1')">
- <span>N1 • Guardia</span>
+ <span>N1 • mesa de soporte</span>
  </button>
  <button class="pill-filter-btn ${activeLvl === 'N2' ? 'active' : ''}" onclick="filterUsersByLevel('N2')">
  <span>N2 • Especialistas</span>
@@ -641,7 +641,7 @@ function renderSubNavRibbon(viewName) {
  <span>Todos los Protocolos</span>
  </button>
  <button class="pill-filter-btn" onclick="filterKBCategory('CLINICO')">
- <span>Asistencial / Clínico</span>
+ <span>de soporte tcnico / Clínico</span>
  </button>
  <button class="pill-filter-btn" onclick="filterKBCategory('DIAGNOSTICO')">
  <span>Diagnóstico y LIS</span>
@@ -720,7 +720,7 @@ function openAuthModal(isGate = false) {
  if (closeBtn) closeBtn.style.display = 'none';
  if (cancelBtn) cancelBtn.style.display = 'none';
  if (modalTitle) modalTitle.textContent = 'Control de Acceso • HealthDesk Quantux';
- if (modalSubtitle) modalSubtitle.textContent = 'Autenticación requerida para acceder al sistema asistencial.';
+ if (modalSubtitle) modalSubtitle.textContent = 'Autenticación requerida para acceder al sistema de soporte tcnico.';
  } else {
  modal.classList.remove('auth-gate-mode');
  if (closeBtn) closeBtn.style.display = 'inline-block';
@@ -1036,7 +1036,7 @@ function openRequesterChatModal() {
               <div style="font-weight: 700; color: #0F172A; font-size: 11.5px;">
                 <span>Abrir Ticket</span>
               </div>
-              <div style="font-size: 10px; color: #64748B; margin-top: 3px;">Hablar directo con guardia</div>
+              <div style="font-size: 10px; color: #64748B; margin-top: 3px;">Hablar directo con mesa de soporte</div>
             </button>
           </div>
         </div>
@@ -1064,13 +1064,13 @@ async function confirmRequesterResolved(subsystem, rootCause, solutionApplied, m
   showToast('✓ Caso marcado como Resuelto con éxito. ¡Gracias por confirmar!', 'success');
   closeRequesterChatModal();
   try {
-    const lastUserMsg = (requesterChatHistory.filter(m => m.sender === 'user').pop() || {}).text || 'Consulta asistencial de guardia resuelta en Chat IA';
+    const lastUserMsg = (requesterChatHistory.filter(m => m.sender === 'user').pop() || {}).text || 'Consulta de soporte tcnico de mesa de soporte resuelta en Chat IA';
     await fetch(`${API_BASE}/api/v1/ai/resolve-incident`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         query: lastUserMsg,
-        user_fullname: (AppState.currentUser && AppState.currentUser.full_name) ? AppState.currentUser.full_name : 'Médico de Guardia',
+        user_fullname: (AppState.currentUser && AppState.currentUser.full_name) ? AppState.currentUser.full_name : 'Profesional Solicitante',
         requester_username: (AppState.currentUser && AppState.currentUser.username) ? AppState.currentUser.username : 'solicitante',
         subsystem: subsystem ? decodeURIComponent(subsystem) : 'Consultorio Digital 2 (CD2)',
         root_cause: rootCause ? decodeURIComponent(rootCause) : 'Resolución exitosa asistida por Chat IA / Base de Conocimiento',
@@ -1093,16 +1093,16 @@ function escalateToHumanTicket() {
 window.escalateToHumanTicket = escalateToHumanTicket;
 
 // =========================================================================
-// GENERACIÓN DE TICKETS SIN VALIDACIONES DESDE CHAT IA DE GUARDIA
+// GENERACIÓN DE TICKETS SIN VALIDACIONES DESDE CHAT IA DE mesa de soporte
 // Toda la información se extrae del chat e historial sin pedir nada al solicitante
 // =========================================================================
 
 async function autoCreateTicketFromAiChat(rawMsg) {
   const decoded = decodeURIComponent(rawMsg || '');
-  const userQuery = decoded || (requesterChatHistory.find(m => m.sender === 'user')?.text) || 'Consulta asistencial de guardia';
+  const userQuery = decoded || (requesterChatHistory.find(m => m.sender === 'user')?.text) || 'Consulta de soporte tcnico de mesa de soporte';
   
   const doctorUser = AppState.currentUser || {};
-  const doctorName = doctorUser.full_name || doctorUser.username || 'Médico de Guardia';
+  const doctorName = doctorUser.full_name || doctorUser.username || 'Profesional Solicitante';
   const doctorUsername = doctorUser.username || 'solicitante';
   const instCode = doctorUser.institution_code || (AppState.institutions && AppState.institutions[0]?.code) || 'OSDE';
 
@@ -1124,7 +1124,7 @@ async function autoCreateTicketFromAiChat(rawMsg) {
   if (requesterChatHistory && requesterChatHistory.length > 0) {
     transcript = requesterChatHistory.map(m => {
       const timeStr = m.time ? new Date(m.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
-      const role = m.sender === 'user' ? doctorName : 'Asistente IA (Guardia)';
+      const role = m.sender === 'user' ? doctorName : 'Asistente IA (mesa de soporte)';
       return `[${role}${timeStr ? ' ' + timeStr : ''}]:\n${m.text}`;
     }).join('\n\n');
   } else {
@@ -1132,24 +1132,24 @@ async function autoCreateTicketFromAiChat(rawMsg) {
   }
 
   const cleanTitle = userQuery.length > 55 ? (userQuery.substring(0, 52) + '...') : userQuery;
-  const fullDescription = `[SOLICITUD ASISTENCIAL GENERADA DESDE CHAT IA - CERO VALIDACIONES EXIGIDAS AL PROFESIONAL]\n` +
+  const fullDescription = `[SOLICITUD de soporte tcnico GENERADA DESDE CHAT IA - CERO VALIDACIONES EXIGIDAS AL PROFESIONAL]\n` +
     `• Solicitante: ${doctorName} (@${doctorUsername})\n` +
     `• Institución Asignada: ${instCode}\n` +
     `• Plataforma Identificada: ${platCode}\n` +
-    `• Resumen Clínico / Causa: Consulta asistencial que requiere análisis pericial en mesa de ayuda o adecuación en catálogo.\n\n` +
+    `• Resumen Clínico / Causa: Consulta de soporte tcnico que requiere análisis pericial en mesa de ayuda o adecuación en catálogo.\n\n` +
     `============================================================\n` +
     `HISTORIAL COMPLETO DE LA CONVERSACIÓN CON EL ASISTENTE IA:\n` +
     `============================================================\n` +
     `${transcript}\n` +
     `============================================================\n\n` +
     `• Protocolo de Atención Técnico N1/N2:\n` +
-    `- NO solicitar información redundante al médico de guardia.\n` +
+    `- NO solicitar información redundante al profesional solicitante.\n` +
     `- Evaluar la incidencia a partir del historial provisto.\n` +
     `- Parametrizar y subsanar en la plataforma correspondiente.\n` +
     `- Notificar al profesional una vez resuelto.`;
 
   const payload = {
-    title: `[Guardia Asistencial] ${cleanTitle}`,
+    title: `[mesa de soporte de soporte tcnico] ${cleanTitle}`,
     description: fullDescription,
     platform_code: platCode,
     institution_code: instCode,
@@ -1187,7 +1187,7 @@ async function autoCreateTicketFromAiChat(rawMsg) {
           <span style="background: #059669; color: #FFF; padding: 2px 8px; border-radius: 4px; font-weight: 800; font-size: 11px;">#${created.id}</span>
         </div>
         <p style="margin: 0 0 10px 0; color: #047857; font-size: 12px;">
-          Se ha cargado <strong>toda la información y el historial completo del chat</strong> en el ticket. El caso quedó registrado en la guardia de soporte técnico con prioridad Media (P3) sin necesidad de que completes nada.
+          Se ha cargado <strong>toda la información y el historial completo del chat</strong> en el ticket. El caso quedó registrado en la mesa de soporte de soporte técnico con prioridad Media (P3) sin necesidad de que completes nada.
         </p>
         <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
           <button type="button" onclick="closeRequesterChatModal(); switchView('tickets'); selectTicket('${created.id}', true);" style="background: #059669; color: #FFF; border: none; padding: 6px 14px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer; box-shadow: 0 1px 3px rgba(5,150,105,0.3);">
@@ -1207,10 +1207,10 @@ async function autoCreateTicketFromAiChat(rawMsg) {
   } catch (err) {
     console.error('Error al auto-crear ticket:', err);
     statusBubble.innerHTML = `
-      <div style="width: 30px; height: 30px; border-radius: 8px; background: #EF4444; color: #FFF; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; flex-shrink: 0;">!</div>
-      <div style="background: #FEF2F2; border: 1px solid #FCA5A5; border-radius: 12px; padding: 12px 16px; color: #991B1B; font-size: 12px; width: 100%;">
+      <div style="width: 30px; height: 30px; border-radius: 8px; background: #F59E0B; color: #FFF; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; flex-shrink: 0;">!</div>
+      <div style="background: #FFFBEB; border: 1px solid #FCD34D; border-radius: 12px; padding: 12px 16px; color: #92400E; font-size: 12px; width: 100%;">
         Hubo un inconveniente al registrar la solicitud: ${(err && err.detail) || 'Error de conexión'}.
-        <button type="button" onclick="escalateToHumanTicketDirect('${encodeURIComponent(userQuery)}')" style="margin-top: 8px; display: inline-flex; align-items: center; gap: 6px; background: #991B1B; color: #FFF; border: none; padding: 6px 12px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer;">
+        <button type="button" onclick="escalateToHumanTicketDirect('${encodeURIComponent(userQuery)}')" style="margin-top: 8px; display: inline-flex; align-items: center; gap: 6px; background: #92400E; color: #FFF; border: none; padding: 6px 12px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer;">
           Abrir Formulario con Datos Precargados
         </button>
       </div>
@@ -1224,7 +1224,7 @@ function escalateToHumanTicketDirect(rawMsg) {
   if (typeof closeRequesterAiChatModal === 'function') closeRequesterAiChatModal();
 
   const decoded = decodeURIComponent(rawMsg || '');
-  const userQuery = decoded || (requesterChatHistory.find(m => m.sender === 'user')?.text) || 'Consulta asistencial de guardia';
+  const userQuery = decoded || (requesterChatHistory.find(m => m.sender === 'user')?.text) || 'Consulta de soporte tcnico de mesa de soporte';
   
   openNewTicketModal(true);
 
@@ -1236,12 +1236,12 @@ function escalateToHumanTicketDirect(rawMsg) {
     const titleInput = document.getElementById('modal-title') || document.getElementById('ticket-title');
     const cleanTitle = userQuery.length > 55 ? (userQuery.substring(0, 52) + '...') : userQuery;
     if (titleInput) {
-      titleInput.value = `[Guardia Asistencial] ${cleanTitle}`;
+      titleInput.value = `[mesa de soporte de soporte tcnico] ${cleanTitle}`;
     }
 
     // 2. Historial de conversación completo
     const doctorUser = AppState.currentUser || {};
-    const doctorName = doctorUser.full_name || doctorUser.username || 'Médico de Guardia';
+    const doctorName = doctorUser.full_name || doctorUser.username || 'Profesional Solicitante';
     const doctorUsername = doctorUser.username || 'solicitante';
     const instCode = doctorUser.institution_code || (AppState.institutions && AppState.institutions[0]?.code) || 'OSDE';
 
@@ -1249,17 +1249,17 @@ function escalateToHumanTicketDirect(rawMsg) {
     if (requesterChatHistory && requesterChatHistory.length > 0) {
       transcript = requesterChatHistory.map(m => {
         const timeStr = m.time ? new Date(m.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
-        const role = m.sender === 'user' ? doctorName : 'Asistente IA (Guardia)';
+        const role = m.sender === 'user' ? doctorName : 'Asistente IA (mesa de soporte)';
         return `[${role}${timeStr ? ' ' + timeStr : ''}]:\n${m.text}`;
       }).join('\n\n');
     } else {
-      transcript = `[${doctorName}]: ${userQuery}\n\n[Asistente IA]: Consulta asistencial derivada para análisis técnico especializado.`;
+      transcript = `[${doctorName}]: ${userQuery}\n\n[Asistente IA]: Consulta de soporte tcnico derivada para análisis técnico especializado.`;
     }
 
     // 3. Descripción y Pasos 100% PRE-CARGADA (Cero validaciones pendientes)
     const descInput = document.getElementById('modal-description') || document.getElementById('ticket-description');
     if (descInput) {
-      descInput.value = `[SOLICITUD ASISTENCIAL DERIVADA DE CHAT IA - HISTORIAL PRECARGADO]\n` +
+      descInput.value = `[SOLICITUD de soporte tcnico DERIVADA DE CHAT IA - HISTORIAL PRECARGADO]\n` +
         `• Solicitante: ${doctorName} (@${doctorUsername})\n` +
         `• Organización: ${instCode}\n` +
         `• Motivo: Requiere análisis de soporte técnico / ingeniería / actualización de catálogo o nomenclador.\n\n` +
@@ -1325,7 +1325,7 @@ async function sendRequesterModalChatMessageLegacy() {
   const msg = input.value.trim();
   if (!msg) {
     input.focus();
-    input.style.border = '1.5px solid #EF4444';
+    input.style.border = '1.5px solid #F59E0B';
     setTimeout(() => { if (input) input.style.border = '1px solid #CBD5E1'; }, 1500);
     return;
   }
@@ -1355,7 +1355,7 @@ async function sendRequesterModalChatMessageLegacy() {
   stream.appendChild(userBubble);
   stream.scrollTop = stream.scrollHeight;
 
-  // Indicador de "Escribiendo..." / Consulta de guardia
+  // Indicador de "Escribiendo..." / Consulta de mesa de soporte
   const loadingId = 'req-loading-' + Date.now();
   const loadingBubble = document.createElement('div');
   loadingBubble.id = loadingId;
@@ -1364,7 +1364,7 @@ async function sendRequesterModalChatMessageLegacy() {
     <div style="width: 30px; height: 30px; border-radius: 8px; background: linear-gradient(135deg, #0F172A 0%, #028090 100%); color: #FFF; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; flex-shrink: 0;">Q</div>
     <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px; padding: 10px 14px; color: #64748B; font-size: 12px; display: flex; align-items: center; gap: 8px;">
       <span style="display: inline-block; width: 12px; height: 12px; border: 2px solid #0F172A; border-right-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite;"></span>
-      <span>Consultando protocolos clínicos y base de conocimiento asistencial...</span>
+      <span>Consultando protocolos clínicos y base de conocimiento de soporte tcnico...</span>
     </div>
   `;
   stream.appendChild(loadingBubble);
@@ -1384,10 +1384,10 @@ async function sendRequesterModalChatMessageLegacy() {
   let triageSolutionApplied = '';
   let matchedArticleId = null;
 
-  // 1. FILOSOFÍA DE ATENCIÓN MÉDICA: Empatía profunda ("Psicoterapia") + Retorno al Modelo Asistencial
+  // 1. FILOSOFÍA DE ATENCIÓN MÉDICA: Empatía profunda ("Psicoterapia") + Retorno al Modelo de soporte tcnico
   const isFatigueOrBurnout = lower.includes('descans') || lower.includes('cansad') || lower.includes('agotad') ||
     lower.includes('estres') || lower.includes('estrés') || lower.includes('no doy mas') || lower.includes('no doy más') ||
-    lower.includes('guardia pesada') || lower.includes('mucha guardia') || lower.includes('dolor de cabeza') ||
+    lower.includes('mesa de soporte pesada') || lower.includes('mucha mesa de soporte') || lower.includes('dolor de cabeza') ||
     lower.includes('me duele la cabeza') || lower.includes('cabeza me explota') || lower.includes('necesito un respiro');
 
   if (isFatigueOrBurnout) {
@@ -1395,11 +1395,11 @@ async function sendRequesterModalChatMessageLegacy() {
     if (loader) loader.remove();
 
     clinicalAdvice = `Estimado/a ${cleanFirstName}:
-Sabemos lo extenuante y demandante que es la guardia asistencial y la enorme carga que llevas sobre tus hombros. Cuidar de ti es tan prioritario como cuidar a tus pacientes. Si las circunstancias de la guardia te lo permiten, tómate una pausa de 3 a 5 minutos, bebe un vaso de agua fresca o sírvete un café para recuperar energías.
+Sabemos lo extenuante y demandante que es la mesa de soporte de soporte tcnico y la enorme carga que llevas sobre tus hombros. Cuidar de ti es tan prioritario como cuidar a tus pacientes. Si las circunstancias de la mesa de soporte te lo permiten, tómate una pausa de 3 a 5 minutos, bebe un vaso de agua fresca o sírvete un café para recuperar energías.
 
 Aquí estamos para acompañarte y quitarte todo el peso administrativo y tecnológico de encima:
 • Si tienes recetas, turnos o evoluciones en la HCE trabadas, déjanos resolverlo de inmediato.
-• Si requieres que la mesa de guardia gestione una contingencia operativa para que tú te enfoques en la parte asistencial, avísanos con un solo clic.`;
+• Si requieres que la mesa de mesa de soporte gestione una contingencia operativa para que tú te enfoques en la parte de soporte tcnico, avísanos con un solo clic.`;
 
     buttonsHtml = `
       <div style="font-weight: 700; color: #0F172A; font-size: 11.5px; margin-bottom: 8px;">¿Cómo deseas que te asistamos en este momento?</div>
@@ -1443,7 +1443,7 @@ Aquí estamos para acompañarte y quitarte todo el peso administrativo y tecnol�
           const act = encodeURIComponent(triageSolutionApplied);
 
           buttonsHtml = `
-            <div style="font-weight: 700; color: #0F172A; font-size: 11.5px; margin-bottom: 8px;">¿Esta indicación técnica resolvió su consulta asistencial?</div>
+            <div style="font-weight: 700; color: #0F172A; font-size: 11.5px; margin-bottom: 8px;">¿Esta indicación técnica resolvió su consulta de soporte tcnico?</div>
             <div style="display: flex; gap: 8px; flex-wrap: wrap;">
               <button type="button" onclick="confirmRequesterResolved('${sub}', '${root}', '${act}', ${matchedArticleId || 'null'})" style="background: #10B981; color: #FFFFFF; border: none; padding: 7px 14px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 1px 3px rgba(16, 185, 129, 0.3);">
                 <span>Sí, problema resuelto</span>
@@ -1467,7 +1467,7 @@ Aquí estamos para acompañarte y quitarte todo el peso administrativo y tecnol�
       // Regla CD2: Mail de consultorio / Correo / Turnos / Notificaciones / Pacientes
       if (lower.includes('mail') || lower.includes('correo') || lower.includes('email') || lower.includes('consultorio') || lower.includes('notific') || lower.includes('casilla')) {
         clinicalAdvice = `Estimado/a ${cleanFirstName}:
-Para la gestión del mail de consultorio y notificaciones asistenciales en Consultorio Digital (CD2):
+Para la gestión del mail de consultorio y notificaciones operativas de soporte en Consultorio Digital (CD2):
 
 • Email del Prestador (Mensajería): El sistema no actualiza de forma automática la casilla desde el turno; toma el correo del JSON original. El prestador puede modificarlo ingresando a la Extranet de Prestadores (Mis Datos). Se envía notificación a una sola casilla: la configurada como principal en Cartilla Médica.
 • Email y Teléfono del Paciente: Se asignan en el primer turno confirmado. Para citas subsiguientes, el sistema adopta los datos específicos registrados para esa consulta.
@@ -1587,7 +1587,7 @@ Para la gestión del mail de consultorio y notificaciones asistenciales en Consu
       else if (lower.includes('receta') || lower.includes('firma') || lower.includes('prescrib') || lower.includes('farmacia')) {
         clinicalAdvice = `Protocolo de Resolución para Receta Electrónica:
 1. Verifique que el token o certificado de firma digital se encuentre activo y la extensión autorizada.
-2. Si el servicio de validación federada SISA presenta demora, refresque la pestaña asistencial (Ctrl + F5).
+2. Si el servicio de validación federada SISA presenta demora, refresque la pestaña de soporte tcnico (Ctrl + F5).
 3. Si el paciente no recibe el enlace SMS/Email para la farmacia, corrobore el número móvil en el padrón de afiliados.`;
 
         buttonsHtml = `
@@ -1623,9 +1623,9 @@ Para la gestión del mail de consultorio y notificaciones asistenciales en Consu
       }
       // Regla CD2: Acceso / Clave / Bloqueo
       else if (lower.includes('clave') || lower.includes('ingres') || lower.includes('acceso') || lower.includes('password') || lower.includes('bloque')) {
-        clinicalAdvice = `Para restablecer el acceso al módulo asistencial:
+        clinicalAdvice = `Para restablecer el acceso al módulo de soporte tcnico:
 1. Ingrese su número de DNI sin puntos ni espacios.
-2. Si su usuario se encuentra bloqueado por intentos sucesivos, el operador de guardia lo reactiva en 2 minutos.`;
+2. Si su usuario se encuentra bloqueado por intentos sucesivos, el operador de mesa de soporte lo reactiva en 2 minutos.`;
 
         buttonsHtml = `
           <div style="font-weight: 700; color: #0F172A; font-size: 11.5px; margin-bottom: 8px;">¿Pudo ingresar al sistema?</div>
@@ -1634,16 +1634,16 @@ Para la gestión del mail de consultorio y notificaciones asistenciales en Consu
               <span>Sí, ya pude ingresar</span>
             </button>
             <button type="button" onclick="autoCreateTicketFromAiChat('${encodeURIComponent(msg)}')" style="background: #0F172A; color: #FFFFFF; border: none; padding: 7px 14px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 4px rgba(15,23,42,0.25);">
-              <span>Desbloquear con Guardia (1 Clic)</span>
+              <span>Desbloquear con mesa de soporte (1 Clic)</span>
             </button>
           </div>
         `;
       }
-      // Fallback genérico asistencial:
+      // Fallback genérico de soporte tcnico:
       else {
         clinicalAdvice = `Estimado/a ${cleanFirstName}:
 He registrado su consulta sobre "${msg}". 
-Para agilizar su tiempo en guardia y evitarle pasos administrativos, podemos derivar este caso de inmediato al equipo de analistas de soporte técnico con todo el contexto precargado.`;
+Para agilizar su tiempo en mesa de soporte y evitarle pasos administrativos, podemos derivar este caso de inmediato al equipo de analistas de soporte técnico con todo el contexto precargado.`;
 
         buttonsHtml = `
           <div style="font-weight: 700; color: #0F172A; font-size: 11.5px; margin-bottom: 8px;">¿Cómo deseas proceder?</div>
@@ -1746,7 +1746,7 @@ function sendLegacyRequesterAiChatMessage() {
     let platformId = 1;
     let detectedPriority = "P3";
     let kbArticleId = 13;
-    let titleCase = "Consulta Asistencial en Consultorio Digital 2";
+    let titleCase = "Consulta de soporte tcnico en Consultorio Digital 2";
     let solutionSummary = "Orientación técnica y verificación clínica provista por el Asistente IA de Soporte.";
     const lower = msg.toLowerCase();
 
@@ -1780,8 +1780,8 @@ function sendLegacyRequesterAiChatMessage() {
       detectedPriority = "P2";
       kbArticleId = 16;
       titleCase = "Discrepancia en padrón CRM y región sanitaria";
-      solutionSummary = "Se sincronizó la jurisdicción de atención asistencial con la región sanitaria colegiada en el padrón CRM.";
-      aiResponse = "Si su matrícula provincial no coincide con la región de atención asignada en el sanatorio:\n\n1. Confirme en el selector que la sede de guardia corresponda a la circunscripción colegiada.\n2. El sistema sincroniza automáticamente cada 15 minutos con el padrón colegiado.\n\n¿Se actualizó la sede correctamente?";
+      solutionSummary = "Se sincronizó la jurisdicción de atención de soporte tcnico con la región sanitaria colegiada en el padrón CRM.";
+      aiResponse = "Si su matrícula provincial no coincide con la región de atención asignada en el sanatorio:\n\n1. Confirme en el selector que la sede de mesa de soporte corresponda a la circunscripción colegiada.\n2. El sistema sincroniza automáticamente cada 15 minutos con el padrón colegiado.\n\n¿Se actualizó la sede correctamente?";
     } else if (lower.includes('404') || lower.includes('pdf') || lower.includes('descarga') || lower.includes('comprobante') || lower.includes('caducad') || lower.includes('400')) {
       detectedPlatform = "CAT_CONSULTORIO_DIGITAL";
       platformId = 1;
@@ -1813,9 +1813,9 @@ function sendLegacyRequesterAiChatMessage() {
       kbArticleId = 20;
       titleCase = "Bloqueo al cerrar consulta por falta de diagnóstico CIE-10";
       solutionSummary = "Se orientó al profesional a ingresar al menos un diagnóstico principal codificado en CIE-10 para habilitar el cierre legal de la consulta.";
-      aiResponse = "Por normativa asistencial y regulatoria, el botón 'Finalizar Consulta' permanece inhabilitado hasta que se asigne al menos un diagnóstico principal codificado en CIE-10.\n\n1. Ingrese en el campo Diagnóstico las 3 primeras letras de la patología (ej: J00 para Rinofaringitis, K29 para Gastritis) y selecciónela de la lista sugerida.\n2. El botón de cierre quedará habilitado de inmediato.\n\n¿Pudo finalizar la consulta?";
+      aiResponse = "Por normativa de soporte tcnico y regulatoria, el botón 'Finalizar Consulta' permanece inhabilitado hasta que se asigne al menos un diagnóstico principal codificado en CIE-10.\n\n1. Ingrese en el campo Diagnóstico las 3 primeras letras de la patología (ej: J00 para Rinofaringitis, K29 para Gastritis) y selecciónela de la lista sugerida.\n2. El botón de cierre quedará habilitado de inmediato.\n\n¿Pudo finalizar la consulta?";
     } else {
-      aiResponse = "He verificado las directivas técnicas para su consulta asistencial. Si las instrucciones le permitieron solucionar el inconveniente, por favor confirme a continuación. En caso contrario, puede generar un ticket formal para que el equipo de soporte tome el caso.";
+      aiResponse = "He verificado las directivas técnicas para su consulta de soporte tcnico. Si las instrucciones le permitieron solucionar el inconveniente, por favor confirme a continuación. En caso contrario, puede generar un ticket formal para que el equipo de soporte tome el caso.";
     }
 
     const caseId = 'case_' + Date.now();
@@ -1867,9 +1867,9 @@ async function resolveRequesterAiChat(caseId, btnEl) {
   }
 
   const aiCase = requesterAiCases[caseId] || {
-    title: 'Consulta Asistencial en Consultorio Digital 2',
-    userQuery: 'Consulta asistencial general',
-    solution: 'Resolución autónoma confirmada por el usuario en Chat Asistencial IA.',
+    title: 'Consulta de soporte tcnico en Consultorio Digital 2',
+    userQuery: 'Consulta de soporte tcnico general',
+    solution: 'Resolución autónoma confirmada por el usuario en Chat de soporte tcnico IA.',
     platformCode: 'CAT_CONSULTORIO_DIGITAL',
     platformId: 1,
     priority: 'P3',
@@ -1889,7 +1889,7 @@ async function resolveRequesterAiChat(caseId, btnEl) {
   try {
     const payload = {
       title: `[IA Resuelto] ${aiCase.title}`,
-      description: `El solicitante reportó: "${aiCase.userQuery}". El Chat Asistencial IA proporcionó el procedimiento y el solicitante confirmó la resolución exitosa.`,
+      description: `El solicitante reportó: "${aiCase.userQuery}". El Chat de soporte tcnico IA proporcionó el procedimiento y el solicitante confirmó la resolución exitosa.`,
       institution_id: (AppState.currentUser && AppState.currentUser.institution_id) ? AppState.currentUser.institution_id : 1,
       platform_id: aiCase.platformId || 1,
       requester_id: (AppState.currentUser && AppState.currentUser.id) ? AppState.currentUser.id : 1,
@@ -1949,16 +1949,16 @@ function transferAiChatToTicket() {
   const cleanTitle = userText.length > 60 ? userText.slice(0, 57) + '...' : userText;
 
   const transcript = requesterChatHistory.map(m => {
-    const roleLabel = m.sender === 'user' ? 'Solicitante' : 'Chat Asistencial IA';
+    const roleLabel = m.sender === 'user' ? 'Solicitante' : 'Chat de soporte tcnico IA';
     return `[${roleLabel}]: ${m.text}`;
   }).join('\n\n');
 
   const fullDescription = `[DIAGNÓSTICO PREVIO Y TRIAJE ASISTIDO POR IA]\n` +
-    `- Canal de origen: Chat Asistencial IA\n` +
+    `- Canal de origen: Chat de soporte tcnico IA\n` +
     `- Plataforma detectada: ${platformCode}\n` +
     `- Severidad sugerida: ${priority}\n` +
     `- Resumen técnico: Se realizó consulta interactiva previa donde el solicitante reportó la siguiente incidencia.\n\n` +
-    `[TRANSCRIPCIÓN COMPLETA DEL CHAT ASISTENCIAL]\n` +
+    `[TRANSCRIPCIÓN COMPLETA DEL CHAT de soporte tcnico]\n` +
     `${transcript}`;
 
   closeRequesterAiChatModal();
@@ -2086,9 +2086,9 @@ function toggleVoiceRecording() {
       isRequesterRecording = true;
       if (indicator) indicator.style.display = 'flex';
       if (micBtn) {
-        micBtn.style.background = '#FEE2E2';
-        micBtn.style.borderColor = '#EF4444';
-        micBtn.style.color = '#DC2626';
+        micBtn.style.background = '#FEF3C7';
+        micBtn.style.borderColor = '#F59E0B';
+        micBtn.style.color = '#D97706';
       }
       showToast('🎤 Micrófono activado: Dicta tu problema o consulta...', 'info');
     };
@@ -2191,7 +2191,7 @@ async function submitFastTicket(e) {
   try {
     const payload = {
       title: title,
-      description: description || `Solicitud reportada en consultorio asistencial para ${platform}.`,
+      description: description || `Solicitud reportada en consultorio de soporte tcnico para ${platform}.`,
       platform_code: platform,
       institution_code: instCode,
       requester_username: username,
@@ -2209,14 +2209,14 @@ async function submitFastTicket(e) {
     const chatInput = document.getElementById('requester-chat-input');
     if (chatInput) chatInput.value = '';
 
-    showToast(`Ticket #${created.id} enviado a guardia con éxito`, 'success');
+    showToast(`Ticket #${created.id} enviado a mesa de soporte con éxito`, 'success');
 
     // Registrar en la conversación del chat para que el médico tenga trazabilidad inmediata
     requesterChatMessages.push({
       role: 'assistant',
-      text: `Se ha abierto la solicitud de guardia #${created.id} para ${platform} con prioridad ${priority}. Un operador técnico atenderá la incidencia.`,
+      text: `Se ha abierto la solicitud de mesa de soporte #${created.id} para ${platform} con prioridad ${priority}. Un operador técnico atenderá la incidencia.`,
       subsystem: platform,
-      rootCause: 'Derivación directa por el médico asistencial',
+      rootCause: 'Derivación directa por el médico de soporte tcnico',
       solutionApplied: 'Generación express de ticket',
       solutionSteps: [],
       resolved: true,
@@ -2249,8 +2249,8 @@ function getRequesterFilteredTickets() {
 
   if (list.length === 0 && currentUsername && currentUsername !== 'admin') {
     list = [
-      { id: 'TK-TICK-202608-0293', title: 'Falla de acceso concurrente en módulo asistencial', platform_code: 'Receta Electrónica', status: 'EN_CURSO', priority: 'P2', updated_at: 'Hace 2 horas' },
-      { id: 'TK-TICK-202609-0069', title: 'No puedo ingresar al sistema Guardia', platform_code: 'CORE EMR', status: 'RESUELTO', priority: 'P1', updated_at: 'Ayer' },
+      { id: 'TK-TICK-202608-0293', title: 'Falla de acceso concurrente en módulo de soporte tcnico', platform_code: 'Receta Electrónica', status: 'EN_CURSO', priority: 'P2', updated_at: 'Hace 2 horas' },
+      { id: 'TK-TICK-202609-0069', title: 'No puedo ingresar al sistema mesa de soporte', platform_code: 'CORE EMR', status: 'RESUELTO', priority: 'P1', updated_at: 'Ayer' },
       { id: 'TK-TICK-202608-0115', title: 'Corte de audio en telemedicina durante consulta', platform_code: 'Telemedicina', status: 'RESUELTO', priority: 'P2', updated_at: 'Hace 3 días' },
       { id: 'TK-TICK-202608-0171', title: 'Error de credencial digital en Portal Pacientes', platform_code: 'Portal Pacientes', status: 'RESUELTO', priority: 'P3', updated_at: 'Hace 5 días' },
       { id: 'TK-TICK-202608-0045', title: 'Demora en firma digital de receta de urgencia', platform_code: 'Receta Electrónica', status: 'RESUELTO', priority: 'P3', updated_at: 'Hace 8 días' }
@@ -2455,7 +2455,7 @@ function openRequesterTicketDetail(ticketId) {
   if (!t) {
     t = {
       id: ticketId,
-      title: 'Incidencia asistencial de consultorio',
+      title: 'Incidencia de soporte tcnico de consultorio',
       status: 'EN_GESTION',
       priority: 'P2',
       platform_code: 'Consultorio Digital',
@@ -2476,7 +2476,7 @@ function openRequesterTicketDetail(ticketId) {
 
   const subEl = document.getElementById('req-ticket-detail-subtitle');
   if (subEl) {
-    subEl.textContent = `${t.platform_code || 'Consultorio Digital'} • Prioridad ${t.priority || 'P2'} • Guardia N1/N2`;
+    subEl.textContent = `${t.platform_code || 'Consultorio Digital'} • Prioridad ${t.priority || 'P2'} • mesa de soporte N1/N2`;
   }
 
   const bodyEl = document.getElementById('req-ticket-detail-body');
@@ -2496,7 +2496,7 @@ function openRequesterTicketDetail(ticketId) {
       <div style="background: #FFFFFF; border: 1.5px solid #E2E8F0; border-radius: 10px; padding: 16px 20px; box-shadow: 0 1px 3px rgba(10,28,62,0.03);">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
           <div style="font-size: 11.5px; font-weight: 800; color: #0F172A; text-transform: uppercase; letter-spacing: 0.5px;">
-            💬 Conversación y Contexto Asistencial Transferido:
+            💬 Conversación y Contexto de soporte tcnico Transferido:
           </div>
           <span style="font-size: 10.5px; background: rgba(15,23,42,0.1); color: #0F172A; padding: 2px 8px; border-radius: 4px; font-weight: 700;">100% Auditado</span>
         </div>
@@ -2506,10 +2506,10 @@ function openRequesterTicketDetail(ticketId) {
       <div style="background: ${isResolved ? '#F0FDF4' : 'rgba(15, 23, 42, 0.06)'}; border: 1.5px solid ${isResolved ? '#A7F3D0' : 'rgba(15, 23, 42, 0.3)'}; border-radius: 10px; padding: 14px 18px;">
         <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
           <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: ${isResolved ? '#10B981' : '#0F172A'};"></span>
-          <span style="font-size: 11.5px; font-weight: 800; color: #0A1C3E; text-transform: uppercase;">Estado de Guardia Técnica:</span>
+          <span style="font-size: 11.5px; font-weight: 800; color: #0A1C3E; text-transform: uppercase;">Estado de mesa de soporte Técnica:</span>
         </div>
         <div style="font-size: 12px; color: ${isResolved ? '#065F46' : '#0A1C3E'}; line-height: 1.5;">
-          ${isResolved ? '✅ El ticket ha sido resuelto y verificado por el equipo de guardia médica.' : '⚡ Solicitud en curso en la mesa de guardia técnica. El operador N1/N2 dispone de la transcripción clínica completa y te contactará de inmediato si se requiere validar conectividad remota.'}
+          ${isResolved ? '✅ El ticket ha sido resuelto y verificado por el equipo de mesa de soporte tcnico.' : '⚡ Solicitud en curso en la mesa de mesa de soporte técnica. El operador N1/N2 dispone de la transcripción clínica completa y te contactará de inmediato si se requiere validar conectividad remota.'}
         </div>
       </div>
     `;
@@ -2524,7 +2524,7 @@ function closeRequesterTicketDetailModal() {
 }
 
 // -------------------------------------------------------------------------
-// CHAT ASISTENCIAL DE IA CONVERSACIONAL (MULTI-TURNO)
+// CHAT de soporte tcnico DE IA CONVERSACIONAL (MULTI-TURNO)
 // -------------------------------------------------------------------------
 function handleRequesterChatKey(event) {
   if (event.key === 'Enter' && !event.shiftKey) {
@@ -2604,7 +2604,7 @@ function getLocalAiClinicalResponse(query, specialty) {
     return {
       subsystem: 'Consultorio Digital • Validador de OSDE',
       rootCause: 'Validación de token de credencial digital rechazada o desincronizada en transacción en vivo',
-      solutionApplied: 'Protocolo oficial de continuidad asistencial y reingreso de token durante la llamada',
+      solutionApplied: 'Protocolo oficial de continuidad de soporte tcnico y reingreso de token durante la llamada',
       text: isMentalHealth 
         ? 'Estimada Lic. Gómez: No suspendas la sesión terapéutica. De acuerdo a la normativa y al instructivo oficial de Consultorio Digital para Salud Mental (Pág. 23), el árbol de decisión establece el siguiente procedimiento:'
         : 'Estimado/a Profesional: No suspendas la atención médica. De acuerdo al instructivo técnico-operativo oficial de Consultorio Digital OSDE, el árbol de validación establece el siguiente procedimiento:',
@@ -2706,14 +2706,14 @@ function getLocalAiClinicalResponse(query, specialty) {
     };
   }
 
-  // Fallback Operativo Asistencial Integral
+  // Fallback Operativo de soporte tcnico Integral
   return {
     subsystem: 'Consultorio Digital OSDE • Soporte N1',
     rootCause: 'Consulta técnico-operativa sobre plataforma Consultorio Digital OSDE',
-    solutionApplied: 'Aplicación del árbol de decisión técnico-operativo oficial y continuidad del acto asistencial',
+    solutionApplied: 'Aplicación del árbol de decisión técnico-operativo oficial y continuidad del acto de soporte tcnico',
     text: 'Estimado/a Profesional: El Asistente Autónomo N1 de Consultorio Digital OSDE analizó tu consulta y establece el siguiente procedimiento:',
     solutionSteps: [
-      '1. Continuidad Asistencial Inmediata: Confirmar la atención con el paciente sin suspender la videoconsulta ni cancelar el acto profesional.',
+      '1. Continuidad de soporte tcnico Inmediata: Confirmar la atención con el paciente sin suspender la videoconsulta ni cancelar el acto profesional.',
       '2. Consulta en Base de Conocimiento Oficial: Revisar el árbol de decisión correspondiente en el Centro de Soporte para la codificación informada por la herramienta POS.',
       '3. Soporte Especializado N2: Si el inconveniente técnico persiste, presiona "No Pude Resolverlo" para derivar inmediatamente tu solicitud a Soporte Especializado N2 con telemetría precargada.'
     ]
@@ -2889,7 +2889,7 @@ function renderRequesterChatStream() {
               <span style="background: #E6FFFA; color: #00A896; border: 1px solid #B2F5EA; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px;">#${msg.ticketId || 'TKT-2026-0348'} • AUTOGESTIÓN</span>
             </div>
             <div style="font-size: 12px; color: #475569; margin: 8px 0;">
-              Tu consulta fue resuelta en el primer contacto mediante los protocolos oficiales. Muchas gracias por verificar la continuidad asistencial.
+              Tu consulta fue resuelta en el primer contacto mediante los protocolos oficiales. Muchas gracias por verificar la continuidad de soporte tcnico.
             </div>
             <div style="display: flex; gap: 10px; align-items: center; margin-top: 8px;">
               <button type="button" onclick="openRequesterHistoryModal()" style="background: #F1F5F9; border: 1px solid #CBD5E1; color: #0F172A; padding: 5px 12px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer;">Ver en Mis Solicitudes</button>
@@ -3108,7 +3108,7 @@ async function requesterAiEscalate(msgId) {
     specialty: 'Psicología',
     module: msg?.subsystem || 'Consultorio Digital • Validador de OSDE',
     title: userQuery.length > 60 ? (userQuery.substring(0, 57) + '...') : userQuery,
-    description: `Se ejecutó el protocolo oficial Nodo 2.1 (reingreso de token durante la llamada). El validador de OSDE devuelve error en la transacción.\n\n[Contexto Asistencial]\n• Profesional: ${profName} (MN 39.412)\n• Consulta: ${userQuery}\n• Diagnóstico preliminar: ${msg?.rootCause || 'Rechazo de token en vivo'}`
+    description: `Se ejecutó el protocolo oficial Nodo 2.1 (reingreso de token durante la llamada). El validador de OSDE devuelve error en la transacción.\n\n[Contexto de soporte tcnico]\n• Profesional: ${profName} (MN 39.412)\n• Consulta: ${userQuery}\n• Diagnóstico preliminar: ${msg?.rootCause || 'Rechazo de token en vivo'}`
   });
 }
 
@@ -3177,7 +3177,7 @@ function navToApprovedMock(step) {
     if (typeof openTicketPreviewModalForEscalation === 'function') {
       openTicketPreviewModalForEscalation({
         title: 'Falla en validador de OSDE al registrar prestación en vivo',
-        description: 'Se ejecutó el protocolo oficial Nodo 2.1 (reingreso de token durante la llamada). El validador de OSDE devuelve error en la transacción.\n\n[Contexto Asistencial]\n• Profesional: Lic. Marcela Gómez (MN 39.412)\n• Especialidad: Psicología\n• Módulo: Consultorio Digital • Validador de OSDE',
+        description: 'Se ejecutó el protocolo oficial Nodo 2.1 (reingreso de token durante la llamada). El validador de OSDE devuelve error en la transacción.\n\n[Contexto de soporte tcnico]\n• Profesional: Lic. Marcela Gómez (MN 39.412)\n• Especialidad: Psicología\n• Módulo: Consultorio Digital • Validador de OSDE',
         specialty: 'Psicología'
       });
     }
@@ -3778,7 +3778,7 @@ function renderPriorityProgressBarsPanel(tickets) {
   const total = unresolvedTickets.length || tickets.length || 0;
 
   const priorities = [
-    { label: 'Crítica P1', count: unresolvedTickets.filter(t => t.priority === 'P1').length, color: '#F87171', filterType: 'priority', filterValue: 'P1' },
+    { label: 'Crítica P1', count: unresolvedTickets.filter(t => t.priority === 'P1').length, color: '#FBBF24', filterType: 'priority', filterValue: 'P1' },
     { label: 'Alta P2', count: unresolvedTickets.filter(t => t.priority === 'P2').length, color: '#FBBF24', filterType: 'priority', filterValue: 'P2' },
     { label: 'Media P3', count: unresolvedTickets.filter(t => t.priority === 'P3').length, color: '#60A5FA', filterType: 'priority', filterValue: 'P3' },
     { label: 'Baja P4 / P5', count: unresolvedTickets.filter(t => t.priority === 'P4' || t.priority === 'P5').length, color: '#34D399', filterType: 'priority', filterValue: 'P4' }
@@ -3820,7 +3820,7 @@ function renderStatusProgressBarsPanel(tickets) {
 function renderCategoryProgressBarsPanel(tickets) {
   const total = tickets.length || 0;
   const types = [
-    { label: 'Incidentes', count: tickets.filter(t => t.ticket_type === 'INCIDENTE').length, color: '#F87171', filterType: 'type', filterValue: 'INCIDENTE' },
+    { label: 'Incidentes', count: tickets.filter(t => t.ticket_type === 'INCIDENTE').length, color: '#FBBF24', filterType: 'type', filterValue: 'INCIDENTE' },
     { label: 'Requerimientos', count: tickets.filter(t => t.ticket_type === 'REQUERIMIENTO').length, color: '#60A5FA', filterType: 'type', filterValue: 'REQUERIMIENTO' },
     { label: 'Consultas', count: tickets.filter(t => t.ticket_type === 'CONSULTA').length, color: '#A78BFA', filterType: 'type', filterValue: 'CONSULTA' },
     { label: 'Cambios', count: tickets.filter(t => t.ticket_type === 'CAMBIO').length, color: '#F472B6', filterType: 'type', filterValue: 'CAMBIO' }
@@ -3875,7 +3875,7 @@ function renderDashboardIntegratedSlaTable(tickets) {
           </div>
         </td>
         <td>
-          <span style="font-size:10.5px; font-weight:700; color:${sla.isBreached ? '#DC2626' : '#10B981'};">
+          <span style="font-size:10.5px; font-weight:700; color:${sla.isBreached ? '#D97706' : '#10B981'};">
             ${sla.isBreached ? '⚠️ Excedido' : '⏱️ ' + sla.timeRemainingText}
           </span>
         </td>
@@ -3924,7 +3924,7 @@ function renderDashboardActiveSlaTable(currentInst) {
  </div>
  </td>
  <td>
- <span style="font-size:11px; font-weight:700; color:${sla.isBreached ? '#DC2626' : '#10B981'};">
+ <span style="font-size:11px; font-weight:700; color:${sla.isBreached ? '#D97706' : '#10B981'};">
  ${sla.isBreached ? ' Excedido' : ' ' + sla.timeRemainingText}
  </span>
  </td>
@@ -3944,7 +3944,7 @@ function renderDashboardPlatformsGrid(m) {
 
  const platforms = AppState.platforms || [];
  if (platforms.length === 0) {
- container.innerHTML = '<div style="color:#94A3B8; font-size:12px; padding:12px;">Cargando catálogo de plataformas asistenciales...</div>';
+ container.innerHTML = '<div style="color:#94A3B8; font-size:12px; padding:12px;">Cargando catálogo de plataformas operativas de soporte...</div>';
  return;
  }
 
@@ -3958,7 +3958,7 @@ function renderDashboardPlatformsGrid(m) {
  <div style="font-size:14px; font-weight:800; color:#0F172A;"> ${p.name}</div>
  <div style="font-size:11px; color:#64748B;">Código: <code>${p.code}</code></div>
  </div>
- <span style="font-size:10px; font-weight:800; padding:3px 8px; border-radius:6px; background:${isCritical ? '#FEE2E2; color:#DC2626;' : '#ECFDF5; color:#059669;'}">
+ <span style="font-size:10px; font-weight:800; padding:3px 8px; border-radius:6px; background:${isCritical ? '#FEF3C7; color:#D97706;' : '#ECFDF5; color:#059669;'}">
  ${isCritical ? ' ALTA DEMANDA' : ' OPERATIVO'}
  </span>
  </div>
@@ -4394,7 +4394,7 @@ function renderTicketList() {
  const rawAgent = t.assignee_name || (t.assignee_username ? formatUserName(t.assignee_username) : 'Sin Asignar');
  const agentName = rawAgent.replace(/Lic\.\s*/gi, '').trim().split('(')[0].trim();
 
- const rawReq = t.requester_name || (t.requester_username ? formatUserName(t.requester_username) : 'Médico Asistencial');
+ const rawReq = t.requester_name || (t.requester_username ? formatUserName(t.requester_username) : 'Médico de soporte tcnico');
  const reqName = rawReq.replace(/Lic\.\s*/gi, '').trim().split('(')[0].trim();
 
  // 1. Tipo de Ticket (Incidente, Requerimiento, Consulta, Cambio)
@@ -4564,7 +4564,7 @@ window.openTicketRemainingInfo = function(event, ticketId) {
  const timeAgo = formatDateFriendly(t.created_at);
  const rawAgent = t.assignee_name || (t.assignee_username ? formatUserName(t.assignee_username) : 'Sin Asignar');
  const agentName = rawAgent.replace(/Lic\.\s*/gi, '').trim().split('(')[0].trim();
- const rawReq = t.requester_name || (t.requester_username ? formatUserName(t.requester_username) : 'Médico Asistencial');
+ const rawReq = t.requester_name || (t.requester_username ? formatUserName(t.requester_username) : 'Médico de soporte tcnico');
  const reqName = rawReq.replace(/Lic\.\s*/gi, '').trim().split('(')[0].trim();
  const slaText = (t.sla_remaining || '4h 30m').replace(/left/i, 'restantes');
  const displayKey = formatTicketNumber(t.id);
@@ -4605,7 +4605,7 @@ window.openTicketRemainingInfo = function(event, ticketId) {
  </div>
  <div class="jira-popover-row">
  <span class="jira-popover-label">Nivel de Soporte:</span>
- <span class="jira-popover-val"><span class="jira-tag-level">${level} • Mesa de Guardia</span></span>
+ <span class="jira-popover-val"><span class="jira-tag-level">${level} • Mesa de mesa de soporte</span></span>
  </div>
  <div class="jira-popover-row">
  <span class="jira-popover-label">Prioridad:</span>
@@ -4922,7 +4922,7 @@ function renderTicketDetail(rawTicket) {
  const sla = calculateTicketSLA(ticket);
 
  const reqUser = (AppState.users || []).find(u => u.username === ticket.requester_username);
- const reqFullName = reqUser ? reqUser.full_name : (ticket.requester_name || ticket.requester_username || 'Solicitante Asistencial');
+ const reqFullName = reqUser ? reqUser.full_name : (ticket.requester_name || ticket.requester_username || 'Solicitante de soporte tcnico');
 
  const asgUser = (AppState.operators || []).find(u => u.username === ticket.assignee_username) || (AppState.users || []).find(u => u.username === ticket.assignee_username);
  const asgFullName = asgUser ? asgUser.full_name : (ticket.assignee_username ? `@${ticket.assignee_username}` : 'Sin Asignar');
@@ -5262,7 +5262,7 @@ function renderDetailTabContent(ticket) {
  <div class="info-card-clean">
  <div class="info-card-clean-title">
  <span></span>
- <span>Clasificación Asistencial & SLA</span>
+ <span>Clasificación de soporte tcnico & SLA</span>
  </div>
  <div class="info-field-row">
  <span class="info-field-label">Plataforma Afectada:</span>
@@ -5273,7 +5273,7 @@ function renderDetailTabContent(ticket) {
  <span class="info-field-val">${ticket.ticket_type || 'INCIDENTE'}</span>
  </div>
  <div class="info-field-row">
- <span class="info-field-label">Impacto Asistencial:</span>
+ <span class="info-field-label">Impacto de soporte tcnico:</span>
  <span class="info-field-val">${ticket.impact || 'MEDIO'}</span>
  </div>
  <div class="info-field-row">
@@ -5427,7 +5427,7 @@ function renderDetailTabContent(ticket) {
  <div style="text-align:center; padding:30px 10px; background:#FFFFFF; border-radius:10px; border:1px dashed #CBD5E1; color:#64748B;">
  <div style="font-size:24px; margin-bottom:6px;"></div>
  <div style="font-weight:700;">No hay artículos específicos aún para ${platName}</div>
- <div style="font-size:11px; color:#94A3B8; margin-top:2px;">Puede crear el primer protocolo homologado para este módulo asistencial.</div>
+ <div style="font-size:11px; color:#94A3B8; margin-top:2px;">Puede crear el primer protocolo homologado para este módulo de soporte tcnico.</div>
  </div>
  ` : `
  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:12px;">
@@ -5655,7 +5655,7 @@ const KB_CAT_COLORS = {
  'Receta Digital': { bg: '#F0FDFA', text: '#0D9488', border: '#99F6E4' },
  'Telemedicina': { bg: '#EFF6FF', text: '#0F172A', border: '#BFDBFE' },
  'Historia Clínica': { bg: '#EEF2FF', text: '#4F46E5', border: '#C7D2FE' },
- 'Contingencias': { bg: '#FEF2F2', text: '#DC2626', border: '#FECACA' },
+ 'Contingencias': { bg: '#FFFBEB', text: '#D97706', border: '#FECACA' },
  'Facturación y Pagos': { bg: '#FFFBEB', text: '#D97706', border: '#FDE68A' },
  'Interoperabilidad': { bg: '#FAF5FF', text: '#7E22CE', border: '#E9D5FF' },
  'Consultorio Digital': { bg: '#ECFDF5', text: '#059669', border: '#A7F3D0' },
@@ -5751,7 +5751,7 @@ function filterKBCategory(cat) {
   loadKnowledgeBase(search, cat);
 }
 
-// Sub-navegación estilo Google Cloud: Switch entre Chat Asistencial y Catálogo de Artículos
+// Sub-navegación estilo Google Cloud: Switch entre Chat de soporte tcnico y Catálogo de Artículos
 window.switchKbSubView = (viewName) => {
   const chatContainer = document.getElementById('kb-chat-subview');
   const catalogContainer = document.getElementById('kb-catalog-subview');
@@ -5927,7 +5927,7 @@ window.renderKbAiResponse = (query, data, history, scrollArea) => {
   const rootCause = data.root_cause || 'Análisis pericial N3 de interoperabilidad y reglas de negocio.';
   const topArticle = (data.top_articles && data.top_articles[0]) ? data.top_articles[0] : null;
   const articleTitle = (data.matched_runbook && data.matched_runbook.title) ? data.matched_runbook.title : (topArticle ? topArticle.title : 'Matriz Maestra de Contingencias CD2');
-  const articleCategory = (data.matched_runbook && data.matched_runbook.category) ? data.matched_runbook.category : (topArticle ? topArticle.category : 'Soporte Asistencial');
+  const articleCategory = (data.matched_runbook && data.matched_runbook.category) ? data.matched_runbook.category : (topArticle ? topArticle.category : 'Soporte de soporte tcnico');
   const runbookCode = (data.matched_runbook && data.matched_runbook.code) ? data.matched_runbook.code : 'SOP-N3';
 
   // Checklist de Pasos Interactivos
@@ -5991,7 +5991,7 @@ ${escapeHtml(techNotes)}
   let headerBadgesHtml = '';
   if (isFallback) {
     headerBadgesHtml = `
-      <span style="font-size: 10.5px; font-weight: 800; background: #FEE2E2; color: #991B1B; padding: 3px 10px; border-radius: 12px; border: 1px solid #FCA5A5;">
+      <span style="font-size: 10.5px; font-weight: 800; background: #FEF3C7; color: #92400E; padding: 3px 10px; border-radius: 12px; border: 1px solid #FCD34D;">
         ⚠️ NO INDEXADO EN CATÁLOGO
       </span>
       <span style="font-size: 10.5px; font-weight: 700; background: #FEF3C7; color: #92400E; padding: 3px 10px; border-radius: 12px; border: 1px solid #FDE68A;">
@@ -6020,8 +6020,8 @@ ${escapeHtml(techNotes)}
         <div style="font-size: 11px; font-weight: 800; color: #92400E; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px;">Diagnóstico de Estado</div>
         <div style="font-size: 13px; color: #78350F; font-weight: 600; line-height: 1.45;">${escapeHtml(rootCause)}</div>
       </div>
-      <div style="background: #FEF2F2; border: 1.5px solid #EF4444; border-radius: 8px; padding: 12px 14px; margin-bottom: 14px;">
-        <div style="font-size: 11px; font-weight: 800; color: #991B1B; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">🚨 Directiva Mandatoria de Escalamiento:</div>
+      <div style="background: #FFFBEB; border: 1.5px solid #F59E0B; border-radius: 8px; padding: 12px 14px; margin-bottom: 14px;">
+        <div style="font-size: 11px; font-weight: 800; color: #92400E; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">🚨 Directiva Mandatoria de Escalamiento:</div>
         <div style="font-size: 13.5px; color: #7F1D1D; font-weight: 700; line-height: 1.45;">👉 Se debe sugerir que se escale la consulta a Análisis Funcional o para análisis por parte de Desarrollo.</div>
       </div>
     `;
@@ -6038,7 +6038,7 @@ ${escapeHtml(techNotes)}
 
   const aiMsgHtml = `
     <div style="display: flex; gap: 12px; align-items: flex-start; margin-bottom: 6px;">
-      <div style="width: 36px; height: 36px; border-radius: 50%; background: ${isFallback ? '#FEE2E2' : '#E8F0FE'}; color: ${isFallback ? '#991B1B' : '#1A73E8'}; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; flex-shrink: 0; border: 1.5px solid ${isFallback ? '#FCA5A5' : '#D2E3FC'}; box-shadow: 0 1px 4px rgba(0,0,0,0.06);">
+      <div style="width: 36px; height: 36px; border-radius: 50%; background: ${isFallback ? '#FEF3C7' : '#E8F0FE'}; color: ${isFallback ? '#92400E' : '#1A73E8'}; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; flex-shrink: 0; border: 1.5px solid ${isFallback ? '#FCD34D' : '#D2E3FC'}; box-shadow: 0 1px 4px rgba(0,0,0,0.06);">
         ${isFallback ? '!' : 'Q'}
       </div>
       <div style="background: #FFFFFF; border: 1px solid ${isFallback ? '#FECACA' : '#E2E8F0'}; border-radius: 18px 18px 18px 4px; padding: 18px 22px; font-size: 13px; color: #1E293B; line-height: 1.5; max-width: 90%; box-shadow: 0 2px 10px rgba(0,0,0,0.04);">
@@ -6122,11 +6122,11 @@ window.renderKbAiFallback = (query, history, scrollArea) => {
   } else if (qLower.includes('mail de consultorio') || qLower.includes('correo de consultorio') || qLower.includes('email consultorio') || qLower.includes('contacto sede') || qLower.includes('inhabilitacion por ic') || qLower.includes('1000 + ic')) {
     title = 'CD2-SEDE-001: Módulo Consultorio - Mail de Sede, Teléfono y Protocolos de Baja / Inhabilitación por IC';
     subsystem = 'Consultorio Digital / Sedes';
-    rootCause = 'El email de sede publicado en Cartilla y Extranet no se actualiza automáticamente desde la interfaz web asistencial. Requiere actualización pericial en MongoDB o baja/inhabilitación por 1000 + IC.';
+    rootCause = 'El email de sede publicado en Cartilla y Extranet no se actualiza automáticamente desde la interfaz web de soporte tcnico. Requiere actualización pericial en MongoDB o baja/inhabilitación por 1000 + IC.';
     steps = [
       'Identificar la institución mediante su ID de Consultorio / Institución en BD.',
       'Para cambio de datos: ejecutar updateOne en institutions actualizando telephone y email.',
-      'Para baja lógica asistencial: aplicar { $set: { isDeleted: true } } en institutions.',
+      'Para baja lógica de soporte tcnico: aplicar { $set: { isDeleted: true } } en institutions.',
       'Para inhabilitación administrativa sin borrar: actualizar el código IC anteponiendo el prefijo 1000 (1000 + IC).',
       'Confirmar que la sede deje de listar turnos y notificar al solicitante.'
     ];
@@ -6213,7 +6213,7 @@ window.copySolutionToClipboard = (btn) => {
 
 window.autoCreateTicketFromAiChat = async (queryRaw) => {
   const query = decodeURIComponent(queryRaw || 'Consulta técnica CD2');
-  showToast('Generando ticket asistencial con contexto de IA...', 'info');
+  showToast('Generando ticket de soporte tcnico con contexto de IA...', 'info');
 
   try {
     const payload = {
@@ -6223,7 +6223,7 @@ window.autoCreateTicketFromAiChat = async (queryRaw) => {
       platform_code: 'CD2',
       priority: 'MEDIA',
       status: 'NUEVO',
-      contact_name: AppState.currentUser?.full_name || 'Operador Asistencial',
+      contact_name: AppState.currentUser?.full_name || 'Operador de soporte tcnico',
       contact_email: AppState.currentUser?.email || 'soporte@quantux.salud.ar'
     };
 
@@ -6319,11 +6319,11 @@ function renderKnowledgeBase(articles) {
  jiraKbTbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:36px; color:#6B778C; font-size:13px;">No se encontraron artículos que coincidan con la búsqueda.</td></tr>`;
  } else {
  jiraKbTbody.innerHTML = filtered.map(a => {
- const spaceName = a.space_name || (a.category ? `Guías de ${a.category}` : 'Guías y Documentación de Soporte Asistencial');
+ const spaceName = a.space_name || (a.category ? `Guías de ${a.category}` : 'Guías y Documentación de Soporte de soporte tcnico');
  const views = (a.view_count || 1420).toLocaleString('es-AR');
  const deflected = (a.requests_deflected || Math.round((a.view_count || 1420) * 0.28)).toLocaleString('es-AR');
  const score = a.helpful_score || 95;
- const plainSnippet = (a.content || 'Instrucciones técnicas paso a paso para la resolución y derivación de tickets asistenciales.').replace(/<[^>]*>/g, '').substring(0, 95);
+ const plainSnippet = (a.content || 'Instrucciones técnicas paso a paso para la resolución y derivación de tickets operativas de soporte.').replace(/<[^>]*>/g, '').substring(0, 95);
 
  return `
  <tr>
@@ -6516,11 +6516,11 @@ async function openViewArticleModal(articleId) {
              <div style="display: flex; align-items: center; gap: 6px;">
                <span style="font-size: 11px; font-weight: 800; font-family: monospace; color: #0F172A; background: #F1F5F9; padding: 1px 6px; border-radius: 4px;">${c.ticket_id}</span>
                <span style="font-size: 10.5px; font-weight: 700; color: #00A896; background: #F0FDFA; padding: 1px 6px; border-radius: 4px; border: 1px solid #CCFBF1;">${c.contributor_role || 'ESPECIALISTA'}</span>
-               <span style="font-size: 11px; color: #475569; font-weight: 500;">${c.contributor_sector || 'Soporte Asistencial'}</span>
+               <span style="font-size: 11px; color: #475569; font-weight: 500;">${c.contributor_sector || 'Soporte de soporte tcnico'}</span>
              </div>
              <span style="font-size: 10.5px; color: #94A3B8;">${cDate}</span>
            </div>
-           <div style="font-size: 12px; font-weight: 700; color: #1E293B; margin-top: 2px;">${c.title || c.ticket_title || 'Incidencia Asistencial Resuelta'}</div>
+           <div style="font-size: 12px; font-weight: 700; color: #1E293B; margin-top: 2px;">${c.title || c.ticket_title || 'Incidencia de soporte tcnico Resuelta'}</div>
            <div style="font-size: 11.5px; color: #334155; line-height: 1.45; background: #F8FAFC; border-radius: 4px; padding: 6px 8px; margin-top: 2px;">
              <span style="font-weight: 700; color: #00A896;">Aporte a KB:</span> ${c.contribution_summary || c.solution_steps || 'Conocimiento transferible registrado en resolución.'}
            </div>
@@ -6560,7 +6560,7 @@ function copyArticleSolution(id) {
     return;
   }
   const cleanContent = (art.content || '').replace(/<[^>]*>/g, '').replace(/###\s*/g, '').trim();
-  const textToCopy = `[SOP Quantux Salud - ${art.title}]\nResolución y procedimiento asistencial:\n${cleanContent}\n\nEspacio: ${art.space_name || 'Guías de Soporte Asistencial'}`;
+  const textToCopy = `[SOP Quantux Salud - ${art.title}]\nResolución y procedimiento de soporte tcnico:\n${cleanContent}\n\nEspacio: ${art.space_name || 'Guías de Soporte de soporte tcnico'}`;
   navigator.clipboard.writeText(textToCopy).then(() => {
     showToast(`Solución de "${art.title}" copiada al portapapeles. Lista para responder en tickets.`, 'success');
   }).catch(() => {
@@ -6590,7 +6590,7 @@ function insertKbSolutionToReply() {
   const textarea = document.getElementById('ws-reply-textarea');
   if (!textarea) return;
   const t = AppState.selectedTicket;
-  let solutionText = "Procedimiento Operativo Estandarizado (SOP):\n1. Verificación de conectividad y estado del servicio asistencial.\n2. Reinicio controlado de la sesión en el módulo clínico.\n3. Revalidación de credencial y sincronización de receta/estudio.\nSe confirma restablecimiento del servicio.";
+  let solutionText = "Procedimiento Operativo Estandarizado (SOP):\n1. Verificación de conectividad y estado del servicio de soporte tcnico.\n2. Reinicio controlado de la sesión en el módulo clínico.\n3. Revalidación de credencial y sincronización de receta/estudio.\nSe confirma restablecimiento del servicio.";
   
   if (AppState.kbArticles && AppState.kbArticles.length > 0 && t) {
     const art = AppState.kbArticles.find(a => (a.category && t.platform_code && a.category.toLowerCase().includes(t.platform_code.toLowerCase())) || (a.content && a.content.length > 50));
@@ -6705,7 +6705,7 @@ async function openArticleHistoryModal(articleId) {
  } catch (err) {
  console.error('Error cargando historial:', err);
  if (timelineEl) {
- timelineEl.innerHTML = '<div style="padding:20px; color:#DC2626; text-align:center;"> Error al consultar el historial de versiones en la base de datos.</div>';
+ timelineEl.innerHTML = '<div style="padding:20px; color:#D97706; text-align:center;"> Error al consultar el historial de versiones en la base de datos.</div>';
  }
  }
 }
@@ -6816,7 +6816,7 @@ function promoteCurrentTicketToKB(ticketId) {
  .map(c => c.content)
  .join('\n\n');
 
- contentInput.value = `1. DIAGNÓSTICO DEL INCONVENIENTE:\n${ticket.description || 'Problema reportado en producción.'}\n\n2. PROCEDIMIENTO TÉCNICO DE RESOLUCIÓN APLICADO:\n${resNotes || 'Verificación de conectividad y reintento de emisión homologada.'}\n\n3. VALIDACIÓN:\nConfirmación de operatividad con el profesional asistencial.`;
+ contentInput.value = `1. DIAGNÓSTICO DEL INCONVENIENTE:\n${ticket.description || 'Problema reportado en producción.'}\n\n2. PROCEDIMIENTO TÉCNICO DE RESOLUCIÓN APLICADO:\n${resNotes || 'Verificación de conectividad y reintento de emisión homologada.'}\n\n3. VALIDACIÓN:\nConfirmación de operatividad con el profesional de soporte tcnico.`;
  }
 
  modal.classList.add('active');
@@ -7008,13 +7008,13 @@ const PLATFORM_PROTOCOLS = {
 
 const PLATFORM_ITIL_TIER = {
  'CAT_RECETA': 'N1 Triage / N2 Farmacia',
- 'CAT_TELEMEDICINA': 'N1 Guardia / N2 WebRTC',
+ 'CAT_TELEMEDICINA': 'N1 mesa de soporte / N2 WebRTC',
  'CAT_AFILIADOS_PORTAL': 'N1 Atención al Paciente',
  'CAT_REGISTRO_INTEROP': 'N3 Arquitectura e Integración',
  'CAT_RPM_MONITOREO': 'N2 Dispositivos Médicos',
  'CAT_INTERNACION_DOM': 'N2 Coordinación Domiciliaria',
  'CAT_COPAGOS_PAGOS': 'N2 Facturación y Pasarelas',
- 'CAT_CARTILLA_TURNOS': 'N1 Turnos Asistenciales',
+ 'CAT_CARTILLA_TURNOS': 'N1 Turnos operativas de soporte',
  'CAT_CONSULTORIO_DIGITAL': 'N2 Especialistas Clínicos'
 };
 
@@ -7117,7 +7117,7 @@ function getInstitutionLogoSvg(code, name) {
   }
   if (c === 'GALENO') {
     return `<div style="width: 28px; height: 28px; border-radius: 7px; background: #002C6C; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 3px rgba(0,44,108,0.25); flex-shrink: 0;" title="Galeno">
-      <svg viewBox="0 0 24 24" style="width: 18px; height: 18px;" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round"><path d="M12 2v20"/><path d="M7 6c3-1 7-1 10 0M7 11c3-1 7-1 10 0" stroke="#EF4444"/><circle cx="12" cy="2" r="1.5" fill="#EF4444"/></svg>
+      <svg viewBox="0 0 24 24" style="width: 18px; height: 18px;" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round"><path d="M12 2v20"/><path d="M7 6c3-1 7-1 10 0M7 11c3-1 7-1 10 0" stroke="#F59E0B"/><circle cx="12" cy="2" r="1.5" fill="#F59E0B"/></svg>
     </div>`;
   }
   if (c === 'MEDIFE') {
@@ -7250,7 +7250,7 @@ function renderInstitutionsCatalog() {
           orgType = 'Hospital';
           typeBadgeBg = '#ECFDF5';
           typeBadgeColor = '#047857';
-          slaTier = 'Asistencial (4h)';
+          slaTier = 'de soporte tcnico (4h)';
         } else if (['PAMI', 'IOMA'].includes(inst.code)) {
           orgType = 'Red Pública';
           typeBadgeBg = '#FEF3C7';
@@ -7294,8 +7294,8 @@ function renderInstitutionsCatalog() {
               <!-- Metadatos de SLA y Casos Activos -->
               <div style="display: flex; justify-content: space-between; align-items: center; background: #F8FAFC; padding: 4px 8px; border-radius: 5px; margin-bottom: 6px; border: 1px solid #F1F5F9; font-size: 10px;">
                 <span style="color: #475569; font-weight: 600;">${slaTier}</span>
-                <span style="font-weight: 800; color: ${activeTicketsCount > 0 ? '#DC2626' : '#059669'}; display: inline-flex; align-items: center; gap: 4px;">
-                  ${activeTicketsCount > 0 ? `<span style="width: 6px; height: 6px; border-radius: 50%; background: #DC2626;"></span> ${activeTicketsCount} en curso` : '✓ Operativo'}
+                <span style="font-weight: 800; color: ${activeTicketsCount > 0 ? '#D97706' : '#059669'}; display: inline-flex; align-items: center; gap: 4px;">
+                  ${activeTicketsCount > 0 ? `<span style="width: 6px; height: 6px; border-radius: 50%; background: #D97706;"></span> ${activeTicketsCount} en curso` : '✓ Operativo'}
                 </span>
               </div>
             </div>
@@ -7376,7 +7376,7 @@ function renderInstitutionsCatalog() {
  SLA Platino (24x7)
  </td>
  <td style="padding: 12px 14px;">
- <span style="font-size: 10.5px; font-weight: 800; padding: 3px 8px; border-radius: 6px; ${activeTicketsCount> 0 ? 'background: #FEE2E2; color: #DC2626; border: 1px solid #FECACA;' : 'background: #DCFCE7; color: #15803D; border: 1px solid #86EFAC;'}">
+ <span style="font-size: 10.5px; font-weight: 800; padding: 3px 8px; border-radius: 6px; ${activeTicketsCount> 0 ? 'background: #FEF3C7; color: #D97706; border: 1px solid #FECACA;' : 'background: #DCFCE7; color: #15803D; border: 1px solid #86EFAC;'}">
  ${activeTicketsCount> 0 ? ` ${activeTicketsCount} en curso` : ' Operativo'}
  </span>
  </td>
@@ -7483,7 +7483,7 @@ function renderClinicalPlatformsCards() {
                   </div>
 
                   <p style="font-size: 11.5px; color: #64748B; margin: 0 0 10px 0; line-height: 1.45;">
-                    ${typeof escapeHtml === 'function' ? escapeHtml(plat.description || 'Módulo asistencial crítico de alta disponibilidad') : (plat.description || '')}
+                    ${typeof escapeHtml === 'function' ? escapeHtml(plat.description || 'Módulo de soporte tcnico crítico de alta disponibilidad') : (plat.description || '')}
                   </p>
 
                   <div style="background: #F8FAFC; border: 1px solid #F1F5F9; border-radius: 8px; padding: 8px 12px; margin-bottom: 8px;">
@@ -7500,7 +7500,7 @@ function renderClinicalPlatformsCards() {
                 <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #F1F5F9; padding-top: 10px;">
                   <div>
                     ${openIncidents > 0
-                      ? `<span style="font-size: 10.5px; font-weight: 700; color: #DC2626; background: #FEE2E2; padding: 2px 8px; border-radius: 4px;">⚡ ${openIncidents} incidentes</span>`
+                      ? `<span style="font-size: 10.5px; font-weight: 700; color: #D97706; background: #FEF3C7; padding: 2px 8px; border-radius: 4px;">⚡ ${openIncidents} incidentes</span>`
                       : `<span style="font-size: 10.5px; font-weight: 700; color: #059669; background: #DCFCE7; padding: 2px 8px; border-radius: 4px;">🟢 Operativo (99.98%)</span>`}
                   </div>
                   <div style="display: flex; gap: 6px;">
@@ -7855,7 +7855,7 @@ function renderTenantMatrixTable() {
             <button type="button" onclick="bulkToggleTenantMatrix('${inst.code}', true)" style="cursor: pointer; background: #F0FDF4; border: 1px solid #BBF7D0; color: #166534; font-size: 9.5px; font-weight: 800; padding: 3px 6px; border-radius: 4px;" title="Activar todos los módulos">
               Todo
             </button>
-            <button type="button" onclick="bulkToggleTenantMatrix('${inst.code}', false)" style="cursor: pointer; background: #FEF2F2; border: 1px solid #FECACA; color: #991B1B; font-size: 9.5px; font-weight: 800; padding: 3px 6px; border-radius: 4px;" title="Suspender todos los módulos">
+            <button type="button" onclick="bulkToggleTenantMatrix('${inst.code}', false)" style="cursor: pointer; background: #FFFBEB; border: 1px solid #FECACA; color: #92400E; font-size: 9.5px; font-weight: 800; padding: 3px 6px; border-radius: 4px;" title="Suspender todos los módulos">
               Nada
             </button>
           </div>
@@ -7935,7 +7935,7 @@ function openInstitutionDetailModal(instCode) {
   let inst = (AppState.institutions || []).find(i => i.code === instCode);
   if (!inst) {
     const knownInsts = {
-      'OSDE': { code: 'OSDE', name: 'OSDE Organización de Servicios Directos Empresarios', description: 'Empresa de medicina prepaga líder en Argentina.', domains: 'osde.com.ar, salud.osde.com.ar', sla_policy: 'SLA Platino VIP - 15m Respuesta', assigned_group: 'Guardia Asistencial Nivel 1' },
+      'OSDE': { code: 'OSDE', name: 'OSDE Organización de Servicios Directos Empresarios', description: 'Empresa de medicina prepaga líder en Argentina.', domains: 'osde.com.ar, salud.osde.com.ar', sla_policy: 'SLA Platino VIP - 15m Respuesta', assigned_group: 'mesa de soporte de soporte tcnico Nivel 1' },
       'SWISS_MEDICAL': { code: 'SWISS_MEDICAL', name: 'Swiss Medical Group', description: 'Grupo de salud y medicina privada integral.', domains: 'swissmedical.com.ar', sla_policy: 'SLA Oro - 30m Respuesta', assigned_group: 'Mesa Prestadores' },
       'GALENO': { code: 'GALENO', name: 'Galeno Argentina', description: 'Red de sanatorios de la Trinidad e infraestructura médica privada.', domains: 'galeno.com.ar', sla_policy: 'SLA Oro - 30m Respuesta', assigned_group: 'Soporte HIS Ambulatorio' }
     };
@@ -7988,10 +7988,10 @@ function openInstitutionDetailModal(instCode) {
  const zdSharedToggle = document.getElementById('zd-org-shared-toggle');
 
  if (zdNameInput) zdNameInput.value = inst.name || '';
- if (zdDescInput) zdDescInput.value = inst.description || `Sede asistencial de alta complejidad para atención ambulatoria, internación y guardia 24hs.`;
+ if (zdDescInput) zdDescInput.value = inst.description || `Sede de soporte tcnico de alta complejidad para atención ambulatoria, internación y mesa de soporte 24hs.`;
  if (zdDomainsInput) zdDomainsInput.value = inst.domains || `${inst.code.toLowerCase().replace(/_/g, '')}.com.ar, salud.${inst.code.toLowerCase().replace(/_/g, '')}.org.ar`;
  if (zdSlaSelect) zdSlaSelect.value = inst.sla_policy || 'SLA Platino VIP - 15m Respuesta';
- if (zdGroupSelect) zdGroupSelect.value = inst.assigned_group || 'Guardia Asistencial Nivel 1';
+ if (zdGroupSelect) zdGroupSelect.value = inst.assigned_group || 'mesa de soporte de soporte tcnico Nivel 1';
  
  const isShared = inst.shared_tickets !== false;
  if (zdSharedCheck) zdSharedCheck.checked = isShared;
@@ -8108,7 +8108,7 @@ function openInstitutionDetailModal(instCode) {
  <div style="font-size: 11px; font-weight: 800; color: #64748B; text-transform: uppercase; margin-bottom: 8px;"> Especificaciones de Soporte</div>
  <div style="font-size: 12px; color: #1E293B; line-height: 1.6;">
  <div><strong>Nivel de Contrato:</strong> Platinum Healthcare Support</div>
- <div><strong>Horario de Cobertura:</strong> 24x7x365 (Guardia Activa)</div>
+ <div><strong>Horario de Cobertura:</strong> 24x7x365 (mesa de soporte Activa)</div>
  <div><strong>Tiempo de Respuesta P1:</strong> &lt; 15 minutos</div>
  <div><strong>Tiempo de Resolución P1:</strong> &lt; 2 horas</div>
  </div>
@@ -8117,7 +8117,7 @@ function openInstitutionDetailModal(instCode) {
  <div style="font-size: 11px; font-weight: 800; color: #64748B; text-transform: uppercase; margin-bottom: 8px;">‍ Ingeniero de Cuenta Designado</div>
  <div style="font-size: 12px; color: #1E293B; line-height: 1.6;">
  <div><strong>Líder de Servicio:</strong> Freddy Cortés (N2 Especialista)</div>
- <div><strong>Canal Escalamiento:</strong> Guardia Red Asistencial N3</div>
+ <div><strong>Canal Escalamiento:</strong> mesa de soporte Red de soporte tcnico N3</div>
  <div><strong>Monitoreo de Enlace:</strong> Activo (Healthcheck cada 60s)</div>
  <div><strong>Estado de Conexión VPN:</strong> Online 99.98%</div>
  </div>
@@ -8359,7 +8359,7 @@ function openPlatformDetailModal(platCode) {
  <div style="font-size: 12px; font-weight: 800; color: #0284C7; font-family: 'JetBrains Mono', monospace; margin-top: 2px;">${protocol}</div>
  </div>
  <div style="padding: 10px 12px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px;">
- <div style="font-size: 10.5px; color: #64748B; font-weight: 600;">Nivel de Guardia ITIL</div>
+ <div style="font-size: 10.5px; color: #64748B; font-weight: 600;">Nivel de mesa de soporte ITIL</div>
  <div style="font-size: 12px; font-weight: 800; color: #0F172A; margin-top: 2px;">${itilTier}</div>
  </div>
  </div>
@@ -8388,9 +8388,9 @@ function openPlatformDetailModal(platCode) {
  ` : `
  <div style="display: flex; flex-direction: column; gap: 6px; max-height: 120px; overflow-y: auto;">
  ${openIncidents.map(t => `
- <div style="padding: 8px 10px; background: #FEF2F2; border: 1px solid #FEE2E2; border-radius: 6px; font-size: 11.5px; display: flex; justify-content: space-between; align-items: center;">
- <span style="font-weight: 700; color: #991B1B;">${t.title}</span>
- <span style="font-weight: 800; color: #DC2626;">${t.priority}</span>
+ <div style="padding: 8px 10px; background: #FFFBEB; border: 1px solid #FEF3C7; border-radius: 6px; font-size: 11.5px; display: flex; justify-content: space-between; align-items: center;">
+ <span style="font-weight: 700; color: #92400E;">${t.title}</span>
+ <span style="font-weight: 800; color: #D97706;">${t.priority}</span>
  </div>
  `).join('')}
  </div>
@@ -8728,7 +8728,7 @@ function renderUsersDirectory() {
  ).join(' ');
 
  // Chips de Grupos Jira
- const defaultGroups = u.role === 'ADMIN' ? 'jira-admins' : (u.support_level ? `soporte-${u.support_level.toLowerCase()}` : 'medicos-asistenciales');
+ const defaultGroups = u.role === 'ADMIN' ? 'jira-admins' : (u.support_level ? `soporte-${u.support_level.toLowerCase()}` : 'medicos-operativas de soporte');
  const groupsStr = u.groups || defaultGroups;
  const groupChips = groupsStr.split(',').map(s => s.trim()).filter(Boolean).map(grp => 
  `<span class="jira-chip-group">${grp}</span>`
@@ -8975,7 +8975,7 @@ async function loadHelpdeskLevelsConfig() {
   } catch (err) {
  console.error('Error cargando configuración de niveles de soporte:', err);
  if (container) {
- container.innerHTML = `<div style="color:#EF4444; padding:12px; font-weight:700;">Error al cargar la configuración de niveles de mesa de ayuda.</div>`;
+ container.innerHTML = `<div style="color:#F59E0B; padding:12px; font-weight:700;">Error al cargar la configuración de niveles de mesa de ayuda.</div>`;
  }
  }
 }
@@ -8985,7 +8985,7 @@ function renderHelpdeskLevelsConfig(levels) {
  if (!container || !levels) return;
 
  const levelStyles = {
- 'N1': { border: 'card-n1', badgeClass: 'badge-tier-n1', icon: '', title: 'Nivel 1 • Triage & Recepción Asistencial', badgeText: 'N1 • FIRST CONTACT' },
+ 'N1': { border: 'card-n1', badgeClass: 'badge-tier-n1', icon: '', title: 'Nivel 1 • Triage & Recepción de soporte tcnico', badgeText: 'N1 • FIRST CONTACT' },
  'N2': { border: 'card-n2', badgeClass: 'badge-tier-n2', icon: '', title: 'Nivel 2 • Soporte Especializado por Módulo', badgeText: 'N2 • ESPECIALISTAS' },
  'N3': { border: 'card-n3', badgeClass: 'badge-tier-n3', icon: '', title: 'Nivel 3 • Ingeniería de Software, Cloud & DBA', badgeText: 'N3 • INGENIERÍA' }
  };
@@ -9310,7 +9310,7 @@ function goToWizardStep(stepNum) {
  // Auto-select first available institution if not chosen
  instEl.selectedIndex = 1;
  } else {
- showToast('Por favor seleccione la institución asistencial para continuar', 'warning');
+ showToast('Por favor seleccione la institución de soporte tcnico para continuar', 'warning');
  if (instEl) instEl.focus();
  return;
  }
@@ -9452,7 +9452,7 @@ function openTechDetailsModal(ticketId) {
  </div>
 
  <div style="background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 8px; padding: 12px;">
- <div style="font-size: 11.5px; font-weight: 800; color: #1E40AF; margin-bottom: 4px;">Información de Contexto Asistencial</div>
+ <div style="font-size: 11.5px; font-weight: 800; color: #1E40AF; margin-bottom: 4px;">Información de Contexto de soporte tcnico</div>
  <div style="font-size: 12px; color: #1E293B; line-height: 1.5;">
  <strong>Institución / Sede:</strong> ${instName}<br>
  <strong>Solicitante:</strong> ${ticket.requester_name || ticket.requester_username} (${ticket.requester_email || 'fcortes@quantux.salud.ar'})<br>
@@ -9521,7 +9521,7 @@ function openChatExpandedModal(ticketId) {
  if (stream) {
  const comments = ticket.comments || [];
  if (comments.length === 0) {
- stream.innerHTML = `<div style="text-align: center; padding: 30px; color: #94A3B8; font-size: 12.5px;">No hay comentarios registrados. Escriba el primer mensaje para iniciar el diálogo asistencial.</div>`;
+ stream.innerHTML = `<div style="text-align: center; padding: 30px; color: #94A3B8; font-size: 12.5px;">No hay comentarios registrados. Escriba el primer mensaje para iniciar el diálogo de soporte tcnico.</div>`;
  } else {
  stream.innerHTML = comments.map(c => `
  <div class="chat-bubble ${c.is_internal ? 'chat-bubble-internal' : (c.author_username === ticket.requester_username ? 'chat-bubble-requester' : 'chat-bubble-agent')}">
@@ -9615,7 +9615,7 @@ function openUserProfileModal(userId) {
     { code: 'IDOM', name: 'IDOM', segment: 'Internación Domiciliaria' },
     { code: 'MEVATERAPIA', name: 'Mevaterapia', segment: 'Internación Domiciliaria' },
     { code: 'ORIEN', name: 'ORIEN', segment: 'Internación Domiciliaria' },
-    { code: 'RED_ASISTENCIAL', name: 'Red Asistencial Integral', segment: 'Internación Domiciliaria' }
+    { code: 'RED_ASISTENCIAL', name: 'Red de soporte tcnico Integral', segment: 'Internación Domiciliaria' }
   ];
 
   const assignedStr = (user.assigned_institutions || '').trim();
@@ -9667,7 +9667,7 @@ function openUserProfileModal(userId) {
               <option value="ADMIN" ${user.role === 'ADMIN' ? 'selected' : ''}>Administrador General</option>
               <option value="TEAM_LEADER" ${user.role === 'TEAM_LEADER' ? 'selected' : ''}>Líder de Mesa de Ayuda</option>
               <option value="SOPORTE" ${user.role.startsWith('SOPORTE') ? 'selected' : ''}>Equipo de Mesa de Ayuda / Analista</option>
-              <option value="SOLICITANTE" ${user.role === 'SOLICITANTE' ? 'selected' : ''}>Cliente (Solicitante Asistencial)</option>
+              <option value="SOLICITANTE" ${user.role === 'SOLICITANTE' ? 'selected' : ''}>Cliente (Solicitante de soporte tcnico)</option>
             </select>
           </div>
           <div>
@@ -9695,7 +9695,7 @@ function openUserProfileModal(userId) {
           </div>
         </div>
         <p style="font-size: 11.5px; color: #64748B; margin: 0 0 12px 0;">
-          Seleccione a qué instituciones asistenciales y financiadores tiene acceso este usuario para interactuar con requerimientos o solicitudes.
+          Seleccione a qué instituciones operativas de soporte y financiadores tiene acceso este usuario para interactuar con requerimientos o solicitudes.
         </p>
 
         <!-- Selector Global vs Específico -->
@@ -9908,7 +9908,7 @@ async function openMetricsDrilldownModal(type, value, label) {
  const assignee = formatUserName(t.assignee_username);
 
  let prioBadgeStyle = 'background: #F1F5F9; color: #475569;';
- if (prio === 'P1') prioBadgeStyle = 'background: #FEE2E2; color: #DC2626; font-weight: 800;';
+ if (prio === 'P1') prioBadgeStyle = 'background: #FEF3C7; color: #D97706; font-weight: 800;';
  else if (prio === 'P2') prioBadgeStyle = 'background: #FFEDD5; color: #EA580C; font-weight: 700;';
  else if (prio === 'P3') prioBadgeStyle = 'background: #DBEAFE; color: #0F172A; font-weight: 700;';
 
@@ -9972,7 +9972,7 @@ async function openMetricsDrilldownModal(type, value, label) {
  }
  } catch (err) {
  body.innerHTML = `
- <div style="text-align: center; padding: 24px; color: #EF4444;">
+ <div style="text-align: center; padding: 24px; color: #F59E0B;">
  <p style="font-size: 13px; font-weight: 600;">Error al cargar registros: ${err.message}</p>
  </div>
  `;
@@ -10073,10 +10073,10 @@ function initModalListeners() {
   // Si el usuario viene de interactuar con el chat o no completó datos, auto-poblar sin validaciones bloqueantes
   if (!descVal) {
     if (requesterChatHistory && requesterChatHistory.length > 0) {
-      descVal = `[SOLICITUD ASISTENCIAL ORIGINADA EN CHAT]\n` +
+      descVal = `[SOLICITUD de soporte tcnico ORIGINADA EN CHAT]\n` +
         requesterChatHistory.map(m => `[${m.sender === 'user' ? 'Médico' : 'IA'}]: ${m.text}`).join('\n\n');
     } else {
-      descVal = 'Solicitud asistencial generada en guardia para análisis técnico especializado.';
+      descVal = 'Solicitud de soporte tcnico generada en mesa de soporte para análisis técnico especializado.';
     }
     if (descInput) descInput.value = descVal;
   }
@@ -10084,9 +10084,9 @@ function initModalListeners() {
   if (!titleVal) {
     const firstUserMsg = (requesterChatHistory && requesterChatHistory.find(m => m.sender === 'user')?.text);
     if (firstUserMsg) {
-      titleVal = `[Guardia Asistencial] ` + (firstUserMsg.length > 50 ? (firstUserMsg.substring(0, 47) + '...') : firstUserMsg);
+      titleVal = `[mesa de soporte de soporte tcnico] ` + (firstUserMsg.length > 50 ? (firstUserMsg.substring(0, 47) + '...') : firstUserMsg);
     } else {
-      titleVal = '[Guardia Asistencial] Solicitud de análisis técnico en plataforma';
+      titleVal = '[mesa de soporte de soporte tcnico] Solicitud de análisis técnico en plataforma';
     }
     if (titleInput) titleInput.value = titleVal;
   }
@@ -10731,7 +10731,7 @@ async function checkApiConnection() {
  if (dot) dot.style.backgroundColor = '#10B981';
  if (text) text.textContent = 'v4.0.0-DEV • Online';
  } else {
- if (dot) dot.style.backgroundColor = '#EF4444';
+ if (dot) dot.style.backgroundColor = '#F59E0B';
  if (text) text.textContent = 'API Desconectada';
  }
 }
@@ -10922,7 +10922,7 @@ function showToast(message, type = 'info') {
   let icon = 'ℹ️';
   let accentColor = '#00C4B4'; // Quantux Teal
   if (type === 'error') {
-    accentColor = '#EF4444';
+    accentColor = '#F59E0B';
     icon = '⚠️';
   } else if (type === 'success') {
     accentColor = '#10B981';
@@ -11116,7 +11116,7 @@ function resetTicketModalForm() {
  const reporterNameEl = document.getElementById('modal-reporter-name');
  if (reporterNameEl) {
  const u = AppState.currentUser;
- reporterNameEl.textContent = u ? (u.full_name || u.username) : 'Médico Asistencial';
+ reporterNameEl.textContent = u ? (u.full_name || u.username) : 'Médico de soporte tcnico';
  }
 }
 
@@ -11166,7 +11166,7 @@ async function openAgentWorkspace(ticketId) {
   if (elStatusBadge) elStatusBadge.style.display = 'none';
 
  // 2. Información estructurada del Solicitante y Caso (Estilo de referencia)
- const reqName = ticket.requester_name || (ticket.requester_username ? formatUserName(ticket.requester_username) : 'Solicitante Asistencial');
+ const reqName = ticket.requester_name || (ticket.requester_username ? formatUserName(ticket.requester_username) : 'Solicitante de soporte tcnico');
  const platName = formatPlatformName(ticket.platform_code);
  const instName = formatInstitutionName(ticket.institution_code);
 
@@ -11294,8 +11294,8 @@ function renderWsMetricsPanel(ticket) {
  badgeBg = '#FFFBEB';
  statusText = ' EN RIESGO DE INCUMPLIMIENTO';
  } else if (sla.status === 'BREACHED') {
- badgeColor = '#DC2626';
- badgeBg = '#FEF2F2';
+ badgeColor = '#D97706';
+ badgeBg = '#FFFBEB';
  statusText = ' SLA VENCIDO - ACCIÓN URGENTE';
  }
 
@@ -11347,7 +11347,7 @@ function renderWsMetricsPanel(ticket) {
  </div>
  <div style="display: flex; flex-direction: column; gap: 8px; font-size: 12px;">
  <div style="display: flex; justify-content: space-between; padding: 8px 12px; background: #F1F5F9; border-radius: 6px;">
- <span>1. Registro & Triage Asistencial (Nivel N1)</span>
+ <span>1. Registro & Triage de soporte tcnico (Nivel N1)</span>
  <strong style="color: #059669;">✓ Completado (${formatDateTime(ticket.created_at)})</strong>
  </div>
  <div style="display: flex; justify-content: space-between; padding: 8px 12px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 6px;">
@@ -11838,7 +11838,7 @@ function renderWsParticipants(ticket) {
  const countBadge = document.getElementById('ws-participants-count');
  if (!container) return;
 
- const reqName = ticket.requester_name || (ticket.requester_username ? formatUserName(ticket.requester_username) : 'Solicitante Asistencial');
+ const reqName = ticket.requester_name || (ticket.requester_username ? formatUserName(ticket.requester_username) : 'Solicitante de soporte tcnico');
  const instName = formatInstitutionName(ticket.institution_code);
 
  const agentName = ticket.assignee_name || (ticket.assignee_username ? formatUserName(ticket.assignee_username) : 'Sin Asignar');
@@ -11918,7 +11918,7 @@ function openParticipantsModal() {
   const ticket = AppState.selectedTicket;
   if (!ticket) return;
 
-  const reqName = ticket.requester_name || (ticket.requester_username ? formatUserName(ticket.requester_username) : 'Solicitante Asistencial');
+  const reqName = ticket.requester_name || (ticket.requester_username ? formatUserName(ticket.requester_username) : 'Solicitante de soporte tcnico');
   const instName = formatInstitutionName(ticket.institution_code);
 
   const agentName = ticket.assignee_name || (ticket.assignee_username ? formatUserName(ticket.assignee_username) : 'Sin Asignar');
@@ -11938,7 +11938,7 @@ function openParticipantsModal() {
             <span style="font-size: 14px; font-weight: 800; color: #0F172A; text-align: left;">${escapeHtml(reqName)}</span>
             <span style="font-size: 10px; font-weight: 700; color: #0F172A; background: #F0FDFA; padding: 2px 8px; border-radius: 12px; border: 1px solid #0F172A; flex-shrink: 0;">SOLICITANTE</span>
           </div>
-          <div style="font-size: 11.5px; color: #475569; font-weight: 600; margin-top: 4px; text-align: left;">Médico de Guardia de la Institución</div>
+          <div style="font-size: 11.5px; color: #475569; font-weight: 600; margin-top: 4px; text-align: left;">Profesional Solicitante de la Institución</div>
           <div style="display: grid; grid-template-columns: 1fr; gap: 4px; margin-top: 10px; border-top: 1px solid #F1F5F9; padding-top: 10px; text-align: left;">
             <div style="font-size: 11.5px; color: #64748B;"><strong style="color: #334155;">Institución:</strong> ${escapeHtml(instName)} (Código: ${escapeHtml(ticket.institution_code || '---')})</div>
             <div style="font-size: 11.5px; color: #64748B;"><strong style="color: #334155;">Usuario Clínico:</strong> @${escapeHtml(ticket.requester_username || '---')}</div>
@@ -11957,7 +11957,7 @@ function openParticipantsModal() {
             <span style="font-size: 14px; font-weight: 800; color: #0F172A; text-align: left;">${escapeHtml(agentName)}</span>
             <span style="font-size: 10px; font-weight: 700; color: #6554C0; background: #EAE6FF; padding: 2px 8px; border-radius: 12px; border: 1px solid #6554C0; flex-shrink: 0;">ESPECIALISTA</span>
           </div>
-          <div style="font-size: 11.5px; color: #475569; font-weight: 600; margin-top: 4px; text-align: left;">Agente Asignado en la Guardia de Soporte</div>
+          <div style="font-size: 11.5px; color: #475569; font-weight: 600; margin-top: 4px; text-align: left;">Agente Asignado en la mesa de soporte de Soporte</div>
           <div style="display: grid; grid-template-columns: 1fr; gap: 4px; margin-top: 10px; border-top: 1px solid #F1F5F9; padding-top: 10px; text-align: left;">
             <div style="font-size: 11.5px; color: #64748B;"><strong style="color: #334155;">Nivel de Soporte:</strong> Nivel ${escapeHtml(level)} ITIL</div>
             <div style="font-size: 11.5px; color: #64748B;"><strong style="color: #334155;">Usuario de Red:</strong> @${escapeHtml(ticket.assignee_username || 'Ninguno')}</div>
@@ -12240,8 +12240,8 @@ function insertQuickResponseTemplate() {
   if (!textarea) return;
 
   const templates = [
-    "Estimado/a profesional, hemos tomado intervención en su solicitud asistencial. Se realizaron las validaciones en el módulo clínico y nos encontramos aplicando las correcciones requeridas. Lo mantendremos informado.",
-    "Se ha verificado la conectividad y estado del servicio asistencial. Por favor reintente la acción en el sistema y confírmenos si el incidente persiste.",
+    "Estimado/a profesional, hemos tomado intervención en su solicitud de soporte tcnico. Se realizaron las validaciones en el módulo clínico y nos encontramos aplicando las correcciones requeridas. Lo mantendremos informado.",
+    "Se ha verificado la conectividad y estado del servicio de soporte tcnico. Por favor reintente la acción en el sistema y confírmenos si el incidente persiste.",
     "Procedimiento completado conforme a protocolo operativo. Aguardamos su validación para proceder con el cierre de la solicitud."
   ];
 
@@ -12283,13 +12283,13 @@ async function openReassignModal(ticketId) {
       { username: 'admin', full_name: 'Freddy Cortés', role: 'ADMIN', support_level: 'N3', email: 'fcortes@quantuxsalud.com', sector: 'Ingeniería N3 & Arquitectura' },
       { username: 'soporte', full_name: 'Laura Benítez', role: 'SOPORTE', support_level: 'N2', email: 'soporte@quantuxsalud.com', sector: 'Mesa N2 Pasarelas & Integraciones' },
       { username: 'cpaez', full_name: 'Carlos Páez', role: 'SOPORTE', support_level: 'N2', email: 'cpaez@quantuxsalud.com', sector: 'Mesa N2 Receta Digital & SISA' },
-      { username: 'svaldez', full_name: 'Sofía Valdez', role: 'SOPORTE', support_level: 'N1', email: 'svaldez@quantuxsalud.com', sector: 'Mesa N1 Triage & Guardia' },
+      { username: 'svaldez', full_name: 'Sofía Valdez', role: 'SOPORTE', support_level: 'N1', email: 'svaldez@quantuxsalud.com', sector: 'Mesa N1 Triage & mesa de soporte' },
       { username: 'dnavarro', full_name: 'Diego Navarro', role: 'ADMIN', support_level: 'N3', email: 'dnavarro@quantuxsalud.com', sector: 'Infraestructura Cloud & DBAs' },
       { username: 'mrodriguez', full_name: 'Mariana Rodríguez', role: 'ADMIN', support_level: 'N3', email: 'mrodriguez@quantuxsalud.com', sector: 'Desarrollo Core & APIs' },
       { username: 'mflores', full_name: 'Marcos Flores', role: 'SOPORTE', support_level: 'N1', email: 'mflores@quantuxsalud.com', sector: 'Mesa N1 Atención Inicial' },
-      { username: 'ealvarez', full_name: 'Elena Álvarez', role: 'SOPORTE', support_level: 'N2', email: 'ealvarez@quantuxsalud.com', sector: 'Mesa N2 Facturación Asistencial' },
+      { username: 'ealvarez', full_name: 'Elena Álvarez', role: 'SOPORTE', support_level: 'N2', email: 'ealvarez@quantuxsalud.com', sector: 'Mesa N2 Facturación de soporte tcnico' },
       { username: 'vromero', full_name: 'Valeria Romero', role: 'SOPORTE', support_level: 'N2', email: 'vromero@quantuxsalud.com', sector: 'Mesa N2 Telemedicina & Turnos' },
-      { username: 'gfernandez', full_name: 'Gustavo Fernández', role: 'SOPORTE', support_level: 'N1', email: 'gfernandez@quantuxsalud.com', sector: 'Mesa N1 Guardia Médica' }
+      { username: 'gfernandez', full_name: 'Gustavo Fernández', role: 'SOPORTE', support_level: 'N1', email: 'gfernandez@quantuxsalud.com', sector: 'Mesa N1 Mesa de Soporte Tcnico' }
     ];
   }
 
@@ -12599,7 +12599,7 @@ async function quickResolveTicket(ticketId) {
  try {
  const currentActor = AppState.currentUser ? AppState.currentUser.username : 'soporte';
  await API.resolveTicket(ticketId, {
- resolution_notes: 'Incidente asistencial diagnosticado y resuelto exitosamente conforme a protocolo operativo.',
+ resolution_notes: 'Incidente de soporte tcnico diagnosticado y resuelto exitosamente conforme a protocolo operativo.',
  is_workaround: false,
  resolved_by_username: currentActor
  });
@@ -13032,8 +13032,8 @@ function validateTechJsonLive(value) {
     return true;
   } catch (err) {
     badge.textContent = '✗ Sintaxis JSON inválida';
-    badge.style.background = '#FEE2E2';
-    badge.style.color = '#B91C1C';
+    badge.style.background = '#FEF3C7';
+    badge.style.color = '#B45309';
     return false;
   }
 }
@@ -13266,7 +13266,7 @@ function renderTeamLeaderAnalysts(analysts) {
     : rawAnalysts.filter(a => (a.support_level || a.level || 'N2') === currentFilter);
 
   if (!filteredAnalysts || filteredAnalysts.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="6" style="padding: 32px; text-align: center; color: #94A3B8; font-weight: 600;">No hay analistas del nivel ${currentFilter} registrados en la guardia activa.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6" style="padding: 32px; text-align: center; color: #94A3B8; font-weight: 600;">No hay analistas del nivel ${currentFilter} registrados en la mesa de soporte activa.</td></tr>`;
     return;
   }
 
@@ -13285,7 +13285,7 @@ function renderTeamLeaderAnalysts(analysts) {
 
     let loadBadge = `<span style="background: #DCFCE7; color: #166534; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 6px;">Óptima (${activeCount} casos)</span>`;
     if (activeCount >= 6) {
-      loadBadge = `<span style="background: #FEE2E2; color: #991B1B; font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 6px;">Sobrecarga (${activeCount} casos)</span>`;
+      loadBadge = `<span style="background: #FEF3C7; color: #92400E; font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 6px;">Sobrecarga (${activeCount} casos)</span>`;
     } else if (activeCount >= 3) {
       loadBadge = `<span style="background: #FEF3C7; color: #92400E; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 6px;">Moderada (${activeCount} casos)</span>`;
     }
@@ -13302,7 +13302,7 @@ function renderTeamLeaderAnalysts(analysts) {
         <td style="padding: 10px 14px; text-align: center; font-weight: 800; font-size: 13px; color: #0F172A;">
           <div style="display: inline-flex; align-items: center; gap: 5px; justify-content: center;">
             <span>${activeCount}</span>
-            ${analystP1s > 0 ? `<span style="background: #EF4444; color: #FFFFFF; font-size: 8.5px; font-weight: 900; padding: 1px 4.5px; border-radius: 9999px; display: inline-block; vertical-align: middle; line-height: 1.15; cursor: help;" title="${analystP1s} emergencias críticas P1">${analystP1s} P1</span>` : ''}
+            ${analystP1s > 0 ? `<span style="background: #F59E0B; color: #FFFFFF; font-size: 8.5px; font-weight: 900; padding: 1px 4.5px; border-radius: 9999px; display: inline-block; vertical-align: middle; line-height: 1.15; cursor: help;" title="${analystP1s} emergencias críticas P1">${analystP1s} P1</span>` : ''}
           </div>
         </td>
         <td style="padding: 10px 14px; text-align: center; font-weight: 700; color: #0F172A;">
@@ -13349,7 +13349,7 @@ function renderTeamLeaderRescueDesk(cases) {
  <strong>${c.requester_name || c.requester_username}</strong> • ${c.institution_code} • Plataforma: ${c.platform_code}
  </div>
  </div>
- <span style="background: #FEF2F2; border: 1px solid #FECACA; color: #DC2626; font-size: 11px; font-weight: 800; padding: 2px 7px; border-radius: 6px; white-space: nowrap;">
+ <span style="background: #FFFBEB; border: 1px solid #FECACA; color: #D97706; font-size: 11px; font-weight: 800; padding: 2px 7px; border-radius: 6px; white-space: nowrap;">
  ${starsEmoji}
  </span>
  </div>
@@ -13672,7 +13672,7 @@ async function submitQuickReassign() {
   if (!ticketSelect || !userSelect) return;
   const ticketId = ticketSelect.value;
   const username = userSelect.value;
-  const reason = (reasonInput ? reasonInput.value.trim() : '') || 'Rebalanceo de guardia';
+  const reason = (reasonInput ? reasonInput.value.trim() : '') || 'Rebalanceo de mesa de soporte';
 
   if (!ticketId || !username) {
     showToast('Seleccione una solicitud y un analista destino', 'warning');
@@ -13693,7 +13693,7 @@ async function submitQuickReassign() {
 
 async function autoRebalanceWorkload() {
   try {
-    showToast('Ejecutando auto-balanceo inteligente de guardia...', 'info');
+    showToast('Ejecutando auto-balanceo inteligente de mesa de soporte...', 'info');
     const res = await API.autoRebalanceWorkload();
     if (res && res.status === 'success') {
       showToast(res.message, 'success');
@@ -13776,8 +13776,8 @@ function renderTLTriageList() {
     container.innerHTML = `
       <div style="padding: 40px 10px; text-align: center;">
         <span style="font-size: 32px; display: block; margin-bottom: 10px;">🎉</span>
-        <div style="font-size: 12px; font-weight: 800; color: #10B981;">Guardia sin Pendientes</div>
-        <div style="font-size: 10.5px; color: #64748B; margin-top: 4px;">Todos los incidentes activos de la guardia cuentan con analistas de soporte asignados.</div>
+        <div style="font-size: 12px; font-weight: 800; color: #10B981;">mesa de soporte sin Pendientes</div>
+        <div style="font-size: 10.5px; color: #64748B; margin-top: 4px;">Todos los incidentes activos de la mesa de soporte cuentan con analistas de soporte asignados.</div>
       </div>
     `;
     return;
@@ -13792,7 +13792,7 @@ function renderTLTriageList() {
   container.innerHTML = unassigned.map(t => {
     let pBadge = '';
     if (t.priority === 'P1') {
-      pBadge = `<span style="background: #FEE2E2; color: #DC2626; font-size: 8.5px; font-weight: 900; padding: 1px 4px; border-radius: 4px;">P1 CRÍTICO</span>`;
+      pBadge = `<span style="background: #FEF3C7; color: #D97706; font-size: 8.5px; font-weight: 900; padding: 1px 4px; border-radius: 4px;">P1 CRÍTICO</span>`;
     } else {
       pBadge = `<span style="background: #EFF6FF; color: #1E40AF; font-size: 8.5px; font-weight: 800; padding: 1px 4px; border-radius: 4px;">${t.priority || 'P2'}</span>`;
     }
@@ -13932,7 +13932,7 @@ async function submitRescueResolution() {
 window.submitRescueResolution = submitRescueResolution;
 
 // =============================================================================
-// REBALANCEO PERSONALIZADO DE GUARDIA (TORRE DE CONTROL)
+// REBALANCEO PERSONALIZADO DE mesa de soporte (TORRE DE CONTROL)
 // =============================================================================
 function openCustomRebalanceModal() {
   const modal = document.getElementById('modal-tl-custom-rebalance');
@@ -14009,13 +14009,13 @@ async function executeCustomRebalance() {
     };
 
     const res = await API.customRebalanceWorkload(payload);
-    showToast(res.message || 'Balanceo de guardia ejecutado con éxito', 'success');
+    showToast(res.message || 'Balanceo de mesa de soporte ejecutado con éxito', 'success');
     closeCustomRebalanceModal();
     await loadTeamLeaderData(instCode);
     await loadTickets();
   } catch (err) {
     console.error('Error en executeCustomRebalance:', err);
-    showToast(`Error al balancear guardia: ${err.message || 'Error del servidor'}`, 'error');
+    showToast(`Error al balancear mesa de soporte: ${err.message || 'Error del servidor'}`, 'error');
   } finally {
     if (btn) {
       btn.disabled = false;
@@ -14465,8 +14465,8 @@ function selectCsatRating(stars) {
         const s = parseInt(btn.dataset.stars, 10);
         if (!isNaN(s)) {
           if (s === stars) {
-            btn.style.borderColor = s <= 2 ? '#EF4444' : (s === 3 ? '#F59E0B' : '#22C55E');
-            btn.style.background = s <= 2 ? '#FEF2F2' : (s === 3 ? '#FFFBEB' : '#F0FDF4');
+            btn.style.borderColor = s <= 2 ? '#F59E0B' : (s === 3 ? '#F59E0B' : '#22C55E');
+            btn.style.background = s <= 2 ? '#FFFBEB' : (s === 3 ? '#FFFBEB' : '#F0FDF4');
           } else {
             btn.style.borderColor = '#E2E8F0';
             btn.style.background = '#F8FAFC';
@@ -14515,7 +14515,7 @@ async function submitCsatClosure() {
    showToast('⚠️ Para calificaciones de 1 o 2 estrellas es obligatorio detallar el motivo para la gestión de rescate del Líder de Equipo.', 'error');
    if (feedbackInput) {
      feedbackInput.focus();
-     feedbackInput.style.borderColor = '#EF4444';
+     feedbackInput.style.borderColor = '#F59E0B';
    }
    return;
  }
@@ -14656,7 +14656,7 @@ function renderLinkChildrenList(tickets) {
  const isChecked = _selectedChildIds.has(t.id);
  const prio = (t.priority || 'P3').toUpperCase();
  return `
- <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; border-bottom: 1px solid #F1F5F9; background: ${isChecked ? '#FEF2F2' : '#FFF'};">
+ <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; border-bottom: 1px solid #F1F5F9; background: ${isChecked ? '#FFFBEB' : '#FFF'};">
  <label style="display: flex; align-items: center; gap: 10px; flex: 1; cursor: pointer; margin: 0;">
  <input type="checkbox" value="${t.id}" ${isChecked ? 'checked' : ''} onchange="toggleChildTicketSelection('${t.id}', this.checked)">
  <div>
@@ -14824,7 +14824,7 @@ async function loadReleasesTable() {
  `;
  } catch (err) {
  console.error('Error cargando releases:', err);
- container.innerHTML = '<div style="padding: 20px; text-align: center; color: #DC2626;">Error al cargar lista de releases.</div>';
+ container.innerHTML = '<div style="padding: 20px; text-align: center; color: #D97706;">Error al cargar lista de releases.</div>';
  }
 }
 
@@ -14954,7 +14954,7 @@ async function actionCopilotAutoFix(ticketId, actionType) {
  } else if (actionType === 'RESET_TOKEN') {
  confirmMsg = 'Copilot N1: ¿Resetear token de sesión y forzar regeneración de credencial segura?';
  } else if (actionType === 'SYNTHESIZE_SUMMARY') {
- confirmMsg = 'Copilot N1: ¿Generar resumen flash diagnóstico con IA asistencial en las notas técnicas?';
+ confirmMsg = 'Copilot N1: ¿Generar resumen flash diagnóstico con IA de soporte tcnico en las notas técnicas?';
  }
 
  if (!confirm(confirmMsg)) return;
@@ -15078,9 +15078,9 @@ async function submitSimulateEmail(e) {
  const detail = (err && (err.detail || err.message)) || 'Falla al ingestar correo';
  if (statusDiv) {
  statusDiv.style.display = 'block';
- statusDiv.style.background = '#FEF2F2';
- statusDiv.style.border = '1px solid #FCA5A5';
- statusDiv.style.color = '#991B1B';
+ statusDiv.style.background = '#FFFBEB';
+ statusDiv.style.border = '1px solid #FCD34D';
+ statusDiv.style.color = '#92400E';
  statusDiv.innerHTML = `<strong> Error en ingesta:</strong> ${detail}`;
  }
  showToast(` Error: ${detail}`, 'error');
@@ -15146,7 +15146,7 @@ function selectZdMainOrg(code) {
   if (selectorEl && selectorEl.value !== inst.code) selectorEl.value = inst.code;
   if (titleEl) titleEl.textContent = inst.name;
   if (inputName) inputName.value = inst.name;
-  if (inputDesc) inputDesc.value = inst.description || `${inst.name} - Entidad prestadora de servicios de salud e internación asistencial.`;
+  if (inputDesc) inputDesc.value = inst.description || `${inst.name} - Entidad prestadora de servicios de salud e internación de soporte tcnico.`;
 
   const cleanDomain = `@${inst.code.toLowerCase().replace(/_/g, '')}.com.ar, @salud.${inst.code.toLowerCase().replace(/_/g, '')}.org.ar`;
   if (inputDomains) inputDomains.value = inst.domains || cleanDomain;
@@ -15243,7 +15243,7 @@ function renderZdMainMembersList(members) {
     const cleanName = (m.full_name || m.username).replace(/Lic\.\s*/gi, '').trim();
     const initials = (cleanName.split(' ').map(n => n[0]).join('') || m.username.substring(0, 2)).toUpperCase().slice(0, 2);
     const color = avatarColors[idx % avatarColors.length];
-    const roleName = m.role === 'ADMIN' ? 'Administrador' : (m.role === 'SOLICITANTE' ? 'Médico Solicitante' : 'Operador de Guardia');
+    const roleName = m.role === 'ADMIN' ? 'Administrador' : (m.role === 'SOLICITANTE' ? 'Médico Solicitante' : 'Operador de mesa de soporte');
     const roleBg = m.role === 'SOLICITANTE' ? '#E3FCEF' : '#DEEBFF';
     const roleColor = m.role === 'SOLICITANTE' ? '#0F172A' : '#0747A6';
     const isActive = m.is_active !== false;
@@ -15403,7 +15403,7 @@ async function loadUnifiedHubData(institutionCode = null, forceReload = false) {
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
     const sevenDaysAgo = now.getTime() - (7 * 24 * 60 * 60 * 1000);
 
-    // Los tickets ACTIVOS están pendientes de resolución en la guardia y aplican siempre
+    // Los tickets ACTIVOS están pendientes de resolución en la mesa de soporte y aplican siempre
     const activeTickets = filteredTickets.filter(t => !['RESUELTO', 'CERRADO'].includes((t.status || '').toUpperCase()));
 
     // Los tickets RESUELTOS se filtran según el período seleccionado
@@ -15465,7 +15465,7 @@ async function loadUnifiedHubData(institutionCode = null, forceReload = false) {
     if (bP3) bP3.style.width = `${p3Pct}%`;
     if (bP4) bP4.style.width = `${p4Pct}%`;
 
-    // 6. Renderizar Analistas de Guardia con Telemetría Dinámica según Período
+    // 6. Renderizar Analistas de mesa de soporte con Telemetría Dinámica según Período
     const baseWorkload = (data && (data.agent_workload || data.analyst_workload)) || [];
     const agentMap = {};
     baseWorkload.forEach(a => {
@@ -15539,7 +15539,7 @@ function renderUnifiedHubAnalysts(analysts) {
   if (btnN2) btnN2.textContent = `N2 (${countN2})`;
   if (btnN3) btnN3.textContent = `N3 (${countN3})`;
 
-  // Alerta de Desbalance Asistencial Inteligente
+  // Alerta de Desbalance de soporte tcnico Inteligente
   const alertEl = document.getElementById('uh-smart-balance-alert');
   const descEl = document.getElementById('uh-smart-balance-desc');
   if (alertEl && descEl) {
@@ -15558,7 +15558,7 @@ function renderUnifiedHubAnalysts(analysts) {
       const lowA = rawAnalysts.find(a => (a.active_tickets_count ?? a.active_count ?? 0) === minLoad) || rawAnalysts[rawAnalysts.length - 1];
       const topName = topA.name || topA.full_name || topA.username || 'Analista';
       const lowName = lowA.name || lowA.full_name || lowA.username || 'Analista';
-      descEl.textContent = `Desbalance Detectado: ${topName} acumula ${maxLoad} casos activos mientras ${lowName} registra sólo ${minLoad} casos. Se recomienda balancear la guardia.`;
+      descEl.textContent = `Desbalance Detectado: ${topName} acumula ${maxLoad} casos activos mientras ${lowName} registra sólo ${minLoad} casos. Se recomienda balancear la mesa de soporte.`;
       const btnAuto = document.getElementById('btn-uh-autobalance');
       if (btnAuto) {
         btnAuto.textContent = 'Nivelar Carga';
@@ -15571,7 +15571,7 @@ function renderUnifiedHubAnalysts(analysts) {
       alertEl.style.background = '#F8FAFC';
       alertEl.style.borderColor = '#E2E8F0';
       alertEl.style.borderLeftColor = '#0F172A';
-      descEl.textContent = `Guardia Equilibrada: Carga homogénea (~${Math.round(avgLoad)} tickets/analista) en todos los niveles operativos.`;
+      descEl.textContent = `mesa de soporte Equilibrada: Carga homogénea (~${Math.round(avgLoad)} tickets/analista) en todos los niveles operativos.`;
       const btnAuto = document.getElementById('btn-uh-autobalance');
       if (btnAuto) {
         btnAuto.textContent = 'Carga Homogénea';
@@ -15602,9 +15602,9 @@ function renderUnifiedHubAnalysts(analysts) {
 
     // Paleta Densidad Silenciosa: Neutral Slate armónico, Coral exclusivo en sobrecarga real (>24)
     if (activeCount > 24) {
-      barColor = '#DC2626';
+      barColor = '#D97706';
       satText = 'Sobrecarga';
-      satTextColor = '#DC2626';
+      satTextColor = '#D97706';
       satPct = 100;
     } else if (activeCount >= 18) {
       barColor = '#64748B';
@@ -15638,7 +15638,7 @@ function renderUnifiedHubAnalysts(analysts) {
             ${level}
           </span>
         </td>
-        <td style="padding: 6px 8px; text-align: center; font-weight: 800; font-size: 11px; color: ${activeCount >= 6 ? '#DC2626' : '#0F172A'};">
+        <td style="padding: 6px 8px; text-align: center; font-weight: 800; font-size: 11px; color: ${activeCount >= 6 ? '#D97706' : '#0F172A'};">
           ${activeCount}
         </td>
         <td style="padding: 6px 8px; text-align: center; font-weight: 700; font-size: 11px; color: #059669;">
@@ -15756,9 +15756,9 @@ function renderUnifiedHubP1List(p1Tickets) {
     const assigneeName = typeof formatUserName === 'function' ? formatUserName(t.assignee_username || t.assigned_to_username) : (t.assignee_username || 'Sin asignar');
 
     return `
-      <div onclick="openAgentWorkspace('${t.id}')" style="border: 1px solid #FEE2E2; border-left: 3px solid #DC2626; border-radius: 6px; padding: 6px 8px; cursor: pointer; background: #FFFFFF; transition: all 0.12s ease;" onmouseover="this.style.background='#FEF2F2'; this.style.borderColor='#FECACA'" onmouseout="this.style.background='#FFFFFF'; this.style.borderColor='#FEE2E2'" title="Clic para abrir #${t.id} en modal sin recargar">
+      <div onclick="openAgentWorkspace('${t.id}')" style="border: 1px solid #FEF3C7; border-left: 3px solid #D97706; border-radius: 6px; padding: 6px 8px; cursor: pointer; background: #FFFFFF; transition: all 0.12s ease;" onmouseover="this.style.background='#FFFBEB'; this.style.borderColor='#FECACA'" onmouseout="this.style.background='#FFFFFF'; this.style.borderColor='#FEF3C7'" title="Clic para abrir #${t.id} en modal sin recargar">
         <div style="display: flex; justify-content: space-between; font-size: 9.5px; font-weight: 700;">
-          <span style="color: #DC2626; font-family: 'JetBrains Mono', monospace;">#${t.id}</span>
+          <span style="color: #D97706; font-family: 'JetBrains Mono', monospace;">#${t.id}</span>
           <span style="color: #64748B;">${instName}</span>
         </div>
         <div style="font-size: 10.5px; font-weight: 700; color: #0F172A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 2px 0;">
@@ -15766,7 +15766,7 @@ function renderUnifiedHubP1List(p1Tickets) {
         </div>
         <div style="display: flex; justify-content: space-between; font-size: 9px; color: #64748B;">
           <span>Asig: <strong>${assigneeName}</strong></span>
-          <span style="color: #DC2626; font-weight: 800;">P1 Inmediato</span>
+          <span style="color: #D97706; font-weight: 800;">P1 Inmediato</span>
         </div>
       </div>
     `;
@@ -15949,7 +15949,7 @@ function toggleVoipMute(btn) {
   } else {
     btn.classList.add('muted');
     btn.textContent = '🔊 Reactivar Mic';
-    btn.style.background = '#DC2626';
+    btn.style.background = '#D97706';
     showToast('Micrófono silenciado', 'warning');
   }
 }
@@ -16004,7 +16004,7 @@ function whatsappRequester(phoneOrId, name, ticketId, title) {
   if (phoneEl) phoneEl.textContent = `${_activeOmniTicket.phone} • En línea`;
   if (tagEl) tagEl.textContent = `Caso #${_activeOmniTicket.ticketId}`;
   if (bodyEl) {
-    bodyEl.textContent = `Estimado/a ${_activeOmniTicket.name}, le escribimos desde la Mesa de Ayuda Quantux para coordinar la recuperación inmediata de su solicitud #${_activeOmniTicket.ticketId} ('${_activeOmniTicket.title}'). Lamentamos los inconvenientes ocasionados en su guardia y hemos priorizado su caso con soporte especializado. ¿Desea que validemos la solución juntos?`;
+    bodyEl.textContent = `Estimado/a ${_activeOmniTicket.name}, le escribimos desde la Mesa de Ayuda Quantux para coordinar la recuperación inmediata de su solicitud #${_activeOmniTicket.ticketId} ('${_activeOmniTicket.title}'). Lamentamos los inconvenientes ocasionados en su mesa de soporte y hemos priorizado su caso con soporte especializado. ¿Desea que validemos la solución juntos?`;
   }
 
   if (modal) {
