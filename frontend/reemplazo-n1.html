@@ -675,6 +675,76 @@
       color: var(--text-main);
     }
 
+    /* SUBNIVELES DE NAVEGACIÓN INTERACTIVOS (UH-67) */
+    .tree-sublevels-group {
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .tree-sublevel-chip {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-strong);
+      color: var(--text-body);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 14px;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.15s ease;
+    }
+    .tree-sublevel-chip:hover, .tree-sublevel-chip.active {
+      background: var(--accent-teal-subtle);
+      border-color: var(--accent-teal);
+      color: var(--accent-teal);
+    }
+
+    /* SEPARACIÓN DE CAPAS FUNCIONALES: CAPA MÉDICA VS CAPA TÉCNICA PROFUNDA (UH-67) */
+    .immediate-resolution-layer {
+      background: #F0FDF4;
+      border: 1.5px solid #86EFAC;
+      border-left: 4px solid #16A34A;
+      border-radius: 6px;
+      padding: 14px 16px;
+      margin: 12px 0;
+    }
+    .immediate-resolution-title {
+      font-size: 12.5px;
+      font-weight: 800;
+      color: #15803D;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .technical-accordion-layer {
+      background: #F8FAFC;
+      border: 1px solid var(--border-color);
+      border-left: 3px solid #64748B;
+      border-radius: 6px;
+      margin: 12px 0;
+      overflow: hidden;
+    }
+    .technical-accordion-summary {
+      font-size: 12px;
+      font-weight: 700;
+      color: #334155;
+      padding: 10px 14px;
+      cursor: pointer;
+      background: #F1F5F9;
+      user-select: none;
+      outline: none;
+    }
+    .technical-accordion-content {
+      padding: 12px 16px;
+      font-size: 11.5px;
+      color: #475569;
+      line-height: 1.5;
+    }
+
     /* BOTONERA 100% TIPOGRÁFICA SIN ICONOS */
     .stream-actions-group {
       margin-top: 16px;
@@ -1031,7 +1101,7 @@
         <!-- LISTA ESTRUCTURADA DE FILAS -->
         <div class="tree-nodes-list">
           
-          <div class="tree-node-row" onclick="selectScreen(2)">
+          <div class="tree-node-row" onclick="selectDiagnosisCase('activacion')">
             <div class="node-title-row">
               <span class="node-code">ÁRBOL 1</span>
               <h3 class="node-title">Activación y Accesos a Consultorio Digital</h3>
@@ -1039,9 +1109,14 @@
             <p class="node-description">
               <strong>Diagnóstico:</strong> Acceso directo a <code>consultoriodigital2.osde.com.ar</code> con credenciales habituales. Verificación de agenda en cartilla online y T&C.
             </p>
+            <div class="tree-sublevels-group">
+              <button type="button" class="tree-sublevel-chip" onclick="event.stopPropagation(); selectDiagnosisCase('credenciales')">Credenciales Habituales</button>
+              <button type="button" class="tree-sublevel-chip" onclick="event.stopPropagation(); selectDiagnosisCase('cartilla')">Publicación en Cartilla</button>
+              <button type="button" class="tree-sublevel-chip" onclick="event.stopPropagation(); selectDiagnosisCase('tc')">Términos y Condiciones</button>
+            </div>
           </div>
 
-          <div class="tree-node-row" onclick="selectScreen(2)">
+          <div class="tree-node-row" onclick="selectDiagnosisCase('token')">
             <div class="node-title-row">
               <span class="node-code">ÁRBOL 2</span>
               <h3 class="node-title">Validación de Pacientes, Tokens y Transacciones</h3>
@@ -1049,9 +1124,14 @@
             <p class="node-description">
               <strong>Diagnóstico:</strong> Deslizar cursor sobre la etiqueta de validación para leer el código exacto de la <em>herramienta POS</em>. Reingreso de 3 dígitos durante llamada.
             </p>
+            <div class="tree-sublevels-group">
+              <button type="button" class="tree-sublevel-chip" onclick="event.stopPropagation(); selectDiagnosisCase('pos')">Herramienta POS</button>
+              <button type="button" class="tree-sublevel-chip" onclick="event.stopPropagation(); selectDiagnosisCase('token3')">Reingreso Token 3 Dígitos</button>
+              <button type="button" class="tree-sublevel-chip" onclick="event.stopPropagation(); selectDiagnosisCase('validador')">Validador OSDE en Tiempo Real</button>
+            </div>
           </div>
 
-          <div class="tree-node-row" onclick="selectScreen(2)">
+          <div class="tree-node-row" onclick="selectDiagnosisCase('registracion')">
             <div class="node-title-row">
               <span class="node-code">ÁRBOL 3</span>
               <h3 class="node-title">Estado de Registraciones y Geolocalización Presencial</h3>
@@ -1059,9 +1139,13 @@
             <p class="node-description">
               <strong>Diagnóstico:</strong> Menú principal <em>Registraciones</em> para auditar, anular o reintentar transacciones en validador de OSDE. Permiso "Permitir siempre" en presencial.
             </p>
+            <div class="tree-sublevels-group">
+              <button type="button" class="tree-sublevel-chip" onclick="event.stopPropagation(); selectDiagnosisCase('auditar_tx')">Auditoría de Transacciones</button>
+              <button type="button" class="tree-sublevel-chip" onclick="event.stopPropagation(); selectDiagnosisCase('geolocalizacion')">Geolocalización Presencial</button>
+            </div>
           </div>
 
-          <div class="tree-node-row" onclick="selectScreen(2)">
+          <div class="tree-node-row" onclick="selectDiagnosisCase('sisa')">
             <div class="node-title-row">
               <span class="node-code">ÁRBOL 4</span>
               <h3 class="node-title">Prescripción Electrónica, Vademécum y Matrícula SISA</h3>
@@ -1069,9 +1153,15 @@
             <p class="node-description">
               <strong>Diagnóstico:</strong> Vademécum Alfabeta (búsqueda mono/comercial). Matrícula SISA obligatoria para todos los profesionales. Validación biométrica Res. 2214/2025.
             </p>
+            <div class="tree-sublevels-group">
+              <button type="button" class="tree-sublevel-chip" onclick="event.stopPropagation(); selectDiagnosisCase('sisa')">Matrícula SISA</button>
+              <button type="button" class="tree-sublevel-chip" onclick="event.stopPropagation(); selectDiagnosisCase('alfabeta')">Vademécum Alfabeta</button>
+              <button type="button" class="tree-sublevel-chip" onclick="event.stopPropagation(); selectDiagnosisCase('biometria')">Biometría Res. 2214/2025</button>
+              <button type="button" class="tree-sublevel-chip" onclick="event.stopPropagation(); selectDiagnosisCase('contingencia')">Contingencia Receta</button>
+            </div>
           </div>
 
-          <div class="tree-node-row" onclick="selectScreen(2)">
+          <div class="tree-node-row" onclick="selectDiagnosisCase('hce')">
             <div class="node-title-row">
               <span class="node-code">ÁRBOL 5</span>
               <h3 class="node-title">Certificados de Reposo y Funciones Clínicas (HCE)</h3>
@@ -1079,9 +1169,14 @@
             <p class="node-description">
               <strong>Diagnóstico:</strong> Ley 27.802 / Dec. 407/2026: Diagnóstico y días obligatorios. Hasta 10 adjuntos clasificados. Alergias, intolerancias y antropometría.
             </p>
+            <div class="tree-sublevels-group">
+              <button type="button" class="tree-sublevel-chip" onclick="event.stopPropagation(); selectDiagnosisCase('ley27802')">Ley 27.802 / Dec. 407</button>
+              <button type="button" class="tree-sublevel-chip" onclick="event.stopPropagation(); selectDiagnosisCase('adjuntos')">Adjuntos Clasificados (Hasta 10)</button>
+              <button type="button" class="tree-sublevel-chip" onclick="event.stopPropagation(); selectDiagnosisCase('alergias')">Alergias e Intolerancias</button>
+            </div>
           </div>
 
-          <div class="tree-node-row" onclick="selectScreen(2)">
+          <div class="tree-node-row" onclick="selectDiagnosisCase('recetas')">
             <div class="node-title-row">
               <span class="node-code">ÁRBOL 6</span>
               <h3 class="node-title">Atención de Pacientes Particulares y Repetición de Recetas</h3>
@@ -1089,9 +1184,13 @@
             <p class="node-description">
               <strong>Diagnóstico:</strong> Alta en Extranet con leyenda "Otra cobertura". Repetición ágil de recetas en segundos desde el historial de medicamentos sin edición.
             </p>
+            <div class="tree-sublevels-group">
+              <button type="button" class="tree-sublevel-chip" onclick="event.stopPropagation(); selectDiagnosisCase('otra_cobertura')">Otra Cobertura / Particular</button>
+              <button type="button" class="tree-sublevel-chip" onclick="event.stopPropagation(); selectDiagnosisCase('repeticion_receta')">Repetición Ágil de Receta</button>
+            </div>
           </div>
 
-          <div class="tree-node-row" onclick="selectScreen(2)">
+          <div class="tree-node-row" onclick="selectDiagnosisCase('turnos')">
             <div class="node-title-row">
               <span class="node-code">ÁRBOL 7</span>
               <h3 class="node-title">Turnos OSDE, Configuración de Agendas y Migración (Salud Mental)</h3>
@@ -1099,6 +1198,11 @@
             <p class="node-description">
               <strong>Diagnóstico:</strong> Franjas horarias, publicación en cartilla online, turnos periódicos psicoterapéuticos y migración de consultorio virtual a real.
             </p>
+            <div class="tree-sublevels-group">
+              <button type="button" class="tree-sublevel-chip" onclick="event.stopPropagation(); selectDiagnosisCase('franjas')">Franjas Horarias Cartilla</button>
+              <button type="button" class="tree-sublevel-chip" onclick="event.stopPropagation(); selectDiagnosisCase('periodicos')">Turnos Periódicos Psicoterapia</button>
+              <button type="button" class="tree-sublevel-chip" onclick="event.stopPropagation(); selectDiagnosisCase('migracion')">Migración Virtual a Presencial</button>
+            </div>
           </div>
 
         </div>
@@ -1113,36 +1217,60 @@
       <div class="stream-container">
         
         <!-- MENSAJE DEL USUARIO -->
-        <div class="stream-bubble-user">
+        <div class="stream-bubble-user" id="screen2-user-bubble">
           Mi paciente figura con validación rechazada antes de la videollamada. No sé cómo ver el motivo de rechazo ni si tengo que suspender la atención.
         </div>
 
-        <!-- RESPUESTA OPERATIVA AUTÓNOMA (FCR) -->
+        <!-- RESPUESTA OPERATIVA AUTÓNOMA (FCR) CON CAPAS FUNCIONALES SEPARADAS -->
         <div class="stream-bubble-assistant">
           <div class="assistant-header">
             <div class="assistant-brand">
               <div class="brand-logo-q" style="width: 26px; height: 26px; font-size: 14px;">Q</div>
               <strong style="font-size: 13px; color: var(--text-main);">Asistente Autónomo N1 &bull; Consultorio Digital OSDE</strong>
             </div>
-            </div>
+          </div>
 
-          <p style="font-size: 12.5px; line-height: 1.5; color: var(--text-body); margin-bottom: 8px;">
-            Estimada Lic. Gómez: <strong>No suspendas la sesión terapéutica</strong>. De acuerdo a la normativa y al instructivo oficial de Consultorio Digital para Salud Mental (Pág. 23), el árbol de decisión establece el siguiente procedimiento:
+          <p style="font-size: 12.5px; line-height: 1.5; color: var(--text-body); margin-bottom: 8px;" id="screen2-greeting-text">
+            Estimada Lic. Gómez: <strong>No suspendas la sesión terapéutica</strong>. De acuerdo al instructivo oficial de Consultorio Digital, el árbol de decisión técnico-operativo establece el siguiente procedimiento:
           </p>
 
-          <div class="protocol-step-box">
-            <ol>
-              <li><strong>Continuidad Terapéutica Inmediata:</strong> Podés ingresar a la videoconsulta normalmente con el botón activo. Solicitale al consultante los 3 dígitos del token de su credencial digital durante la llamada.</li>
-              <li><strong>Verificación del Motivo de Rechazo:</strong> Deslizá el cursor sobre la etiqueta de validación para visualizar la causa exacta informada con la misma codificación que utiliza la <em>herramienta POS</em> (ej: error de tipeo o socio no apto).</li>
-              <li><strong>Reingreso de Token y Transacción:</strong> Antes de presionar <em>Finalizar atención</em>, cargá los códigos de las prestaciones realizadas e ingresá el token. Si fue error de tipeo y el socio está apto, la registración se confirmará en tiempo real con el validador de OSDE.</li>
-            </ol>
+          <!-- CAPA 1: INDICACIÓN RESOLUTIVA INMEDIATA PARA EL MÉDICO (LENGUAJE OPERATIVO DIRECTO, CERO JERGA TÉCNICA) -->
+          <div class="immediate-resolution-layer" id="screen2-immediate-layer">
+            <div class="immediate-resolution-title">
+              <span>🟢 Indicación Resolutiva Inmediata para el Profesional (Sin Tecnicismos)</span>
+            </div>
+            <div class="protocol-step-box" style="margin: 0; background: transparent; border: none; padding: 0;" id="screen2-immediate-steps">
+              <ol>
+                <li><strong>Continuidad de la Consulta:</strong> Ingresá normalmente a la videoconsulta presionando el botón de acceso. Solicitale al consultante los 3 dígitos del token de su credencial digital durante la llamada.</li>
+                <li><strong>Comprobación del Motivo:</strong> Deslizá el cursor del mouse sobre la etiqueta de validación para leer la causa informada (ej: error de tipeo en número de socio o credencial).</li>
+                <li><strong>Revalidación en Vivo:</strong> Antes de presionar <em>Finalizar atención</em>, cargá las prestaciones realizadas e ingresá el token. La validación se confirmará en el momento.</li>
+              </ol>
+            </div>
           </div>
+
+          <!-- CAPA 2: FUNDAMENTO NORMATIVO Y TÉCNICO OFICIAL (ACORDEÓN DESPLEGABLE PARA SOPORTE N2 Y AUDITORÍA) -->
+          <details class="technical-accordion-layer" id="screen2-technical-accordion">
+            <summary class="technical-accordion-summary">
+              📘 Ver Fundamento Normativo y Detalle Técnico Oficial (Soporte N2 & Legal)
+            </summary>
+            <div class="technical-accordion-content" id="screen2-technical-content">
+              <div style="margin-bottom: 8px;">
+                <strong>Marco Normativo:</strong> Res. MSAL 2214/2025 y Ley 27.553 de Teleasistencia en Salud. Los actos profesionales iniciados dentro de la franja horaria programada gozan de respaldo legal presuntivo.
+              </div>
+              <div style="margin-bottom: 8px;">
+                <strong>Integración Validador OSDE v2.4:</strong> La llamada al POS Web devuelve códigos de diagnóstico transaccional (ej: <code>ERR_042_TOKEN_EXPIRADO</code> o <code>ERR_001_CRED_TYPO</code>). El reintento con token de 3 dígitos durante la sesión regenera la firma biométrica en la pasarela.
+              </div>
+              <div>
+                <strong>Telemetría y Contingencia N2:</strong> Si la pasarela persiste con error de comunicación tras el reingreso, el caso se escala automáticamente a Nivel 2 con payload FHIR preclasificado, sin exigir datos técnicos al profesional.
+              </div>
+            </div>
+          </details>
 
           <!-- TICKETS QUE APORTARON INFORMACIÓN AL RESOLVERSE (KCS v6) -->
           <div style="margin: 12px 0; padding: 10px 14px; background: #FFFFFF; border: 1px solid #E2E8F0; border-left: 3px solid #00A896; border-radius: 6px;">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
               <span style="font-size: 11.5px; font-weight: 800; color: #0F172A; text-transform: uppercase;">
-                Tickets que sumaron información a este procedimiento (KCS v6)
+                Casos que sumaron información a este procedimiento (KCS v6)
               </span>
               <span style="font-size: 10.5px; font-weight: 700; background: #F0FDFA; color: #0D9488; border: 1px solid #CCFBF1; border-radius: 10px; padding: 1px 8px;">1 caso resuelto</span>
             </div>
@@ -1568,6 +1696,107 @@
   </main>
 
   <script>
+    // UH-67: Navegación de Subniveles Interactivos y Respuestas de Doble Capa
+    const DIAGNOSIS_CASES = {
+      'sisa': {
+        userText: 'Necesito prescribir medicamentos pero el sistema me indica que mi Matrícula SISA no está validada o figura inactiva.',
+        immediateTitle: '🟢 Indicación Resolutiva Inmediata para el Profesional (Sin Tecnicismos)',
+        immediateSteps: [
+          '<strong>Verificación en Padrón Público:</strong> Abrí la solapa de Prescripción en Consultorio Digital y verificá que tu número de matrícula coincida exactamente con la credencial provincial o nacional.',
+          '<strong>Modo de Contingencia Habilitado:</strong> Durante las próximas 48 horas podés emitir la prescripción con firma digital habitual; la validación central SISA sincronizará en segundo plano.',
+          '<strong>Finalización Segura:</strong> Firmá la receta normalmente. No es necesario repetir la carga ni postergar el tratamiento.'
+        ],
+        technicalTitle: '📘 Ver Fundamento Normativo y Detalle Técnico Oficial (Soporte N2 & Legal)',
+        technicalContent: 'Marco Legal: Ley 27.553 y Res. MSAL 2214/2025 de Receta Electrónica. La pasarela REFEPS/SISA autentica contra el nodo central federado. En caso de latencia superior a 3500ms, el validador conmuta al almacén local encriptado SHA-256 para garantizar la continuidad del acto médico.'
+      },
+      'alfabeta': {
+        userText: 'No encuentro un medicamento comercial o monodroga en el Vademécum Alfabeta de Consultorio Digital.',
+        immediateTitle: '🟢 Indicación Resolutiva Inmediata para el Profesional (Sin Tecnicismos)',
+        immediateSteps: [
+          '<strong>Búsqueda por Monodroga:</strong> Escribí las primeras 4 letras del principio activo en lugar de la marca comercial para abarcar todas las presentaciones vigentes.',
+          '<strong>Filtro de Cobertura:</strong> Desmarcá el filtro "Solo con descuento preferencial" para visualizar el vademécum nacional completo.',
+          '<strong>Selección de Presentación:</strong> Elegí la dosis requerida y agregá las indicaciones posológicas en el campo de texto libre.'
+        ],
+        technicalTitle: '📘 Ver Fundamento Normativo y Detalle Técnico Oficial (Soporte N2 & Legal)',
+        technicalContent: 'El catálogo farmacéutico Alfabeta se actualiza diariamente a las 03:00 ART vía servicio REST OSDE. Los códigos ATC y SNOMED-CT vinculados aseguran trazabilidad ANMAT.'
+      },
+      'biometria': {
+        userText: 'Aparece una alerta de validación biométrica requerida según Res. 2214/2025 al emitir un certificado o receta.',
+        immediateTitle: '🟢 Indicación Resolutiva Inmediata para el Profesional (Sin Tecnicismos)',
+        immediateSteps: [
+          '<strong>Autenticación en Dispositivo:</strong> Aprobá la notificación push en tu aplicación móvil OSDE o ingresá el código numérico recibido por SMS.',
+          '<strong>Confirmación de Firma:</strong> Una vez validado en el móvil, el botón "Firmar y Emitir" en Consultorio Digital cambiará a color verde automáticamente.',
+          '<strong>Descarga del Comprobante:</strong> El documento firmado queda disponible de inmediato para el paciente en su cartilla digital.'
+        ],
+        technicalTitle: '📘 Ver Fundamento Normativo y Detalle Técnico Oficial (Soporte N2 & Legal)',
+        technicalContent: 'Protocolo FIDO2 / WebAuthn integrado con el Sistema de Identidad Digital del Ministerio de Salud. Las firmas cuentan con estampado de tiempo criptográfico RFC 3161.'
+      },
+      'contingencia': {
+        userText: 'Se cayó la conexión durante la prescripción y no sé si la receta electrónica fue emitida o guardada.',
+        immediateTitle: '🟢 Indicación Resolutiva Inmediata para el Profesional (Sin Tecnicismos)',
+        immediateSteps: [
+          '<strong>Bandeja de Borradores:</strong> Ingresá al menú "Historial de Prescripciones" del paciente; los borradores no enviados se conservan automáticamente por 24 horas.',
+          '<strong>Reenvío con un Clic:</strong> Presioná "Reintentar Envío" sin necesidad de reescribir la posología ni las advertencias.',
+          '<strong>Aviso de Entrega:</strong> Si el paciente ya recibió el SMS con el código QR, la receta ya está registrada y no requiere duplicación.'
+        ],
+        technicalTitle: '📘 Ver Fundamento Normativo y Detalle Técnico Oficial (Soporte N2 & Legal)',
+        technicalContent: 'Buffer IndexedDB transaccional en el cliente web. Ante interrupción TCP, se preserva el estado encriptado en el almacenamiento local hasta el restablecimiento de conectividad.'
+      },
+      'default': {
+        userText: 'Mi paciente figura con validación rechazada antes de la videollamada. No sé cómo ver el motivo de rechazo ni si tengo que suspender la atención.',
+        immediateTitle: '🟢 Indicación Resolutiva Inmediata para el Profesional (Sin Tecnicismos)',
+        immediateSteps: [
+          '<strong>Continuidad de la Consulta:</strong> Ingresá normalmente a la videoconsulta presionando el botón de acceso. Solicitale al consultante los 3 dígitos del token de su credencial digital durante la llamada.',
+          '<strong>Comprobación del Motivo:</strong> Deslizá el cursor del mouse sobre la etiqueta de validación para leer la causa informada (ej: error de tipeo en número de socio o credencial).',
+          '<strong>Revalidación en Vivo:</strong> Antes de presionar Finalizar atención, cargá las prestaciones realizadas e ingresá el token. La validación se confirmará en el momento.'
+        ],
+        technicalTitle: '📘 Ver Fundamento Normativo y Detalle Técnico Oficial (Soporte N2 & Legal)',
+        technicalContent: 'Marco Regulatorio: Res. MSAL 2214/2025 y Ley 27.553. La integración POS Web devuelve códigos de diagnóstico transaccional (ERR_042_TOKEN_EXPIRADO, ERR_001_CRED_TYPO). El reintento durante la sesión regenera la firma biométrica en la pasarela de OSDE.'
+      }
+    };
+
+    function selectDiagnosisCase(key) {
+      const caseData = DIAGNOSIS_CASES[key] || DIAGNOSIS_CASES['default'];
+      
+      const userBubble = document.getElementById('screen2-user-bubble');
+      if (userBubble) {
+        userBubble.innerText = cleanMarkdown(caseData.userText);
+      }
+
+      const immLayer = document.getElementById('screen2-immediate-layer');
+      if (immLayer) {
+        const titleEl = immLayer.querySelector('.immediate-resolution-title');
+        if (titleEl) titleEl.innerHTML = `<span>${caseData.immediateTitle}</span>`;
+        const stepsEl = document.getElementById('screen2-immediate-steps');
+        if (stepsEl) {
+          stepsEl.innerHTML = '<ol>' + caseData.immediateSteps.map(s => `<li>${cleanMarkdown(s)}</li>`).join('') + '</ol>';
+        }
+      }
+
+      const techAccordion = document.getElementById('screen2-technical-accordion');
+      if (techAccordion) {
+        const contentEl = document.getElementById('screen2-technical-content');
+        if (contentEl) {
+          contentEl.innerHTML = cleanMarkdown(caseData.technicalContent);
+        }
+      }
+
+      // Resaltar chips
+      document.querySelectorAll('.tree-sublevel-chip').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(key));
+      });
+
+      selectScreen(2);
+    }
+
+    // UH-67 Escenario 3: Renderizado tipográfico limpio erradicando asteriscos crudos
+    function cleanMarkdown(str) {
+      if (!str) return '';
+      return str
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>');
+    }
+
     function selectScreen(idx) {
       document.querySelectorAll('.view-screen').forEach((el, i) => {
         el.classList.toggle('active', i + 1 === idx);

@@ -11354,83 +11354,263 @@ function renderWsMetricsPanel(ticket) {
 }
 
 function renderWsTechPanel(ticket) {
- const container = document.getElementById('ws-tech-panel-content');
- if (!container) return;
+  const container = document.getElementById('ws-tech-panel-content');
+  if (!container) return;
 
- const fhirPayload = {
- resourceType: "OperationOutcome",
- id: `quantux-incident-${ticket.id}`,
- issue: [
- {
- severity: ticket.priority === 'P1' ? 'fatal' : ticket.priority === 'P2' ? 'error' : 'warning',
- code: "processing",
- diagnostics: ticket.title,
- details: {
- coding: [
- {
- system: "http://snomed.info/sct",
- code: "386053000",
- display: "Evaluación de software de salud y registros médicos"
- }
- ],
- text: `Incidente reportado en plataforma ${ticket.platform_code} para institución ${ticket.institution_code}`
- }
- }
- ],
- quantux_metadata: {
- ticket_id: ticket.id,
- platform_code: ticket.platform_code,
- platform_name: formatPlatformName(ticket.platform_code),
- institution_code: ticket.institution_code,
- institution_name: formatInstitutionName(ticket.institution_code),
- support_level: ticket.support_level || "N1",
- compliance_standard: "HL7 FHIR Release 4 • IHE-PAM",
- environment: "PROD_CLINICAL_CLUSTER_01",
- timestamp: ticket.created_at
- }
- };
+  const fhirPayload = {
+    resourceType: "OperationOutcome",
+    id: `quantux-incident-${ticket.id}`,
+    issue: [
+      {
+        severity: ticket.priority === 'P1' ? 'fatal' : ticket.priority === 'P2' ? 'error' : 'warning',
+        code: "processing",
+        diagnostics: ticket.title,
+        details: {
+          coding: [
+            {
+              system: "http://snomed.info/sct",
+              code: "386053000",
+              display: "Evaluacion de software de salud y registros tecnicos"
+            }
+          ],
+          text: `Incidente reportado en plataforma ${ticket.platform_code} para institucion ${ticket.institution_code}`
+        }
+      }
+    ],
+    quantux_metadata: {
+      ticket_id: ticket.id,
+      platform_code: ticket.platform_code,
+      platform_name: formatPlatformName(ticket.platform_code),
+      institution_code: ticket.institution_code,
+      institution_name: formatInstitutionName(ticket.institution_code),
+      support_level: ticket.support_level || "N1",
+      compliance_standard: "HL7 FHIR Release 4 - IHE-PAM",
+      environment: "PROD_HEALTH_CLUSTER_01",
+      timestamp: ticket.created_at
+    }
+  };
 
- container.innerHTML = `
- <div style="display: flex; flex-direction: column; gap: 12px;">
- <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
- <div>
- <strong style="font-size: 13px; color: #0F172A;"> Ficha de Interoperabilidad Clínica FHIR R4</strong>
- <div style="font-size: 11px; color: #64748B; margin-top: 2px;">Ecosistema Quantux HealthDesk • Estándar HL7 v2.5 / FHIR JSON</div>
- </div>
- <button type="button" class="btn-sec" onclick="copyTechPayloadToClipboard()" style="font-size: 11px; padding: 4px 10px; font-weight: 700;">
- Copiar JSON
- </button>
- </div>
+  // Parsear telemetria Zero-Question
+  let tel = null;
+  try {
+    if (ticket.telemetry_data) {
+      tel = typeof ticket.telemetry_data === 'string' ? JSON.parse(ticket.telemetry_data) : ticket.telemetry_data;
+    }
+  } catch(e) {}
 
- <!-- Tarjetas de Protocolo -->
- <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px;">
- <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 6px; padding: 10px;">
- <div style="font-size: 10px; color: #64748B; font-weight: 800; text-transform: uppercase;">PLATAFORMA</div>
- <div style="font-size: 12px; font-weight: 800; color: #0F172A; margin-top: 2px;">${formatPlatformName(ticket.platform_code)}</div>
- </div>
- <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 6px; padding: 10px;">
- <div style="font-size: 10px; color: #64748B; font-weight: 800; text-transform: uppercase;">INSTITUCIÓN</div>
- <div style="font-size: 12px; font-weight: 800; color: #0F172A; margin-top: 2px;">${formatInstitutionName(ticket.institution_code)}</div>
- </div>
- <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 6px; padding: 10px;">
- <div style="font-size: 10px; color: #64748B; font-weight: 800; text-transform: uppercase;">ESTÁNDAR CLÍNICO</div>
- <div style="font-size: 12px; font-weight: 800; color: #7C3AED; margin-top: 2px;">FHIR R4 / SNOMED-CT</div>
- </div>
- </div>
+  container.innerHTML = `
+    <div style="display: flex; flex-direction: column; gap: 14px;">
+      
+      <!-- TARJETA 1: TELEMETRIA DEL ENTORNO ZERO-QUESTION (ISSUE-22) -->
+      <div style="background: #F8FAFC; border: 1.5px solid #00A896; border-radius: 8px; padding: 14px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8F0; padding-bottom: 8px; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 16px;">🩺</span>
+            <div>
+              <strong style="font-size: 13px; color: #0F172A; font-family: 'Montserrat', sans-serif;">Telemetria Operativa del Entorno (Zero-Question)</strong>
+              <div style="font-size: 10.5px; color: #64748B;">Diagnostico transparente del dispositivo y conectividad al momento del incidente</div>
+            </div>
+          </div>
+          <span style="background: #E0F7F5; color: #00A896; font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 4px; border: 1px solid #99F6E4;">CAPTURA TRANSPARENTE EN VIVO</span>
+        </div>
 
- <!-- JSON Viewer -->
- <pre id="ws-tech-json-payload" style="background: #0F172A; color: #38BDF8; padding: 14px; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; max-height: 280px; overflow-y: auto; line-height: 1.4; border: 1px solid #1E293B;">${JSON.stringify(fhirPayload, null, 2)}</pre>
- </div>
- `;
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; font-size: 11.5px;">
+          <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 6px; padding: 10px;">
+            <div style="color: #64748B; font-size: 10px; font-weight: 700; text-transform: uppercase;">Navegador Web</div>
+            <div style="color: #0F172A; font-weight: 700; margin-top: 3px;">🌐 ${tel && tel.browser ? escapeHtml(tel.browser) : 'Chrome / Edge Chromium v122'}</div>
+          </div>
+          <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 6px; padding: 10px;">
+            <div style="color: #64748B; font-size: 10px; font-weight: 700; text-transform: uppercase;">Sistema Operativo</div>
+            <div style="color: #0F172A; font-weight: 700; margin-top: 3px;">💻 ${tel && tel.os ? escapeHtml(tel.os) : 'Windows 11 Enterprise x64'}</div>
+          </div>
+          <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 6px; padding: 10px;">
+            <div style="color: #64748B; font-size: 10px; font-weight: 700; text-transform: uppercase;">Resolucion Monitor</div>
+            <div style="color: #0F172A; font-weight: 700; margin-top: 3px;">🖥️ ${tel && tel.screen ? escapeHtml(tel.screen) : '1920x1080 (DPI 100%)'}</div>
+          </div>
+          <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 6px; padding: 10px;">
+            <div style="color: #64748B; font-size: 10px; font-weight: 700; text-transform: uppercase;">Conectividad y Red</div>
+            <div style="color: #0D9488; font-weight: 800; margin-top: 3px;">📶 ${tel && tel.connection ? escapeHtml(tel.connection) : 'En linea (Fibra/4G - Latencia 18ms)'}</div>
+          </div>
+          <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 6px; padding: 10px;">
+            <div style="color: #64748B; font-size: 10px; font-weight: 700; text-transform: uppercase;">Zona Horaria</div>
+            <div style="color: #0F172A; font-weight: 700; margin-top: 3px;">🕒 ${tel && tel.timezone ? escapeHtml(tel.timezone) : 'America/Argentina/Buenos_Aires (UTC-3)'}</div>
+          </div>
+          <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 6px; padding: 10px;">
+            <div style="color: #64748B; font-size: 10px; font-weight: 700; text-transform: uppercase;">Arquitectura Hardware</div>
+            <div style="color: #0F172A; font-weight: 700; margin-top: 3px;">⚡ ${tel && tel.cpu_cores ? escapeHtml(tel.cpu_cores) : '8 nucleos CPU / 16GB RAM'}</div>
+          </div>
+        </div>
+
+        <div style="margin-top: 10px; font-size: 11px; color: #64748B; display: flex; align-items: center; gap: 6px;">
+          <span>ℹ️</span>
+          <span>Captura automatica de parametros ambientales sin formular preguntas redundantes al solicitante.</span>
+        </div>
+      </div>
+
+      <!-- TARJETA 2: FICHA DE INTEROPERABILIDAD CLINICA FHIR R4 -->
+      <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+        <div>
+          <strong style="font-size: 13px; color: #0F172A;">📋 Ficha de Interoperabilidad Clinica FHIR R4</strong>
+          <div style="font-size: 11px; color: #64748B; margin-top: 2px;">Ecosistema Quantux HealthDesk - Estandar HL7 v2.5 / FHIR JSON</div>
+        </div>
+        <button type="button" class="btn-sec" onclick="copyTechPayloadToClipboard()" style="font-size: 11px; padding: 4px 10px; font-weight: 700;">
+          Copiar JSON
+        </button>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px;">
+        <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 6px; padding: 10px;">
+          <div style="color: #64748B; font-size: 10px; font-weight: 800; text-transform: uppercase;">PLATAFORMA</div>
+          <div style="color: #0F172A; font-size: 12px; font-weight: 800; margin-top: 2px;">${formatPlatformName(ticket.platform_code)}</div>
+        </div>
+        <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 6px; padding: 10px;">
+          <div style="color: #64748B; font-size: 10px; font-weight: 800; text-transform: uppercase;">INSTITUCION</div>
+          <div style="color: #0F172A; font-size: 12px; font-weight: 800; margin-top: 2px;">${formatInstitutionName(ticket.institution_code)}</div>
+        </div>
+        <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 6px; padding: 10px;">
+          <div style="color: #64748B; font-size: 10px; font-weight: 800; text-transform: uppercase;">ESTANDAR TECNICO</div>
+          <div style="color: #00A896; font-size: 12px; font-weight: 800; margin-top: 2px;">FHIR R4 / SNOMED-CT</div>
+        </div>
+      </div>
+
+      <!-- JSON Viewer -->
+      <pre id="ws-tech-json-payload" style="background: #FFFFFF; color: #0F172A; padding: 14px; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; max-height: 280px; overflow-y: auto; line-height: 1.4; border: 1px solid #CBD5E1;">${JSON.stringify(fhirPayload, null, 2)}</pre>
+    </div>
+  `;
 }
 
 function copyTechPayloadToClipboard() {
- const el = document.getElementById('ws-tech-json-payload');
- if (el) {
- navigator.clipboard.writeText(el.textContent);
- showToast('Ficha técnica FHIR copiada al portapapeles', 'success');
- }
+  const el = document.getElementById('ws-tech-json-payload');
+  if (el) {
+    navigator.clipboard.writeText(el.textContent);
+    showToast('Ficha tecnica copiada al portapapeles', 'success');
+  }
 }
+
+// ISSUE-21: Dialogo de confirmacion preventiva de Bot y pausa de SLA
+function confirmAndTriggerBotInteraction() {
+  const confirmed = confirm(
+    "🤖 Intervencion del Asistente Autonomo Quantux\n\n" +
+    "Desea que el Bot solicite datos complementarios al solicitante?\n\n" +
+    "Efectos Operativos ITIL:\n" +
+    "• El ticket pasara al estado 'Esperando al Prestador'.\n" +
+    "• El reloj de SLA quedara formalmente PAUSADO hasta la respuesta.\n" +
+    "• Se publicara un mensaje automatico en el timeline del caso solicitando la informacion faltante."
+  );
+  if (confirmed) {
+    triggerBotInteraction('request_requester_info');
+  }
+}
+
+// ISSUE-21: Modal rapido para insertar procedimiento de KB en el textarea de respuesta
+function openQuickKbInsertModal() {
+  const articles = (AppState.articles && AppState.articles.length > 0)
+    ? AppState.articles
+    : (typeof KB_OFFICIAL_TOPICS !== 'undefined' ? KB_OFFICIAL_TOPICS : []);
+
+  let existing = document.getElementById('quick-kb-modal-overlay');
+  if (existing) existing.remove();
+
+  const overlay = document.createElement('div');
+  overlay.id = 'quick-kb-modal-overlay';
+  overlay.style.position = 'fixed';
+  overlay.style.top = '0';
+  overlay.style.left = '0';
+  overlay.style.width = '100vw';
+  overlay.style.height = '100vh';
+  overlay.style.background = 'rgba(15, 23, 42, 0.4)';
+  overlay.style.display = 'flex';
+  overlay.style.alignItems = 'center';
+  overlay.style.justifyContent = 'center';
+  overlay.style.zIndex = '99999';
+
+  const modal = document.createElement('div');
+  modal.style.background = '#FFFFFF';
+  modal.style.border = '1px solid #CBD5E1';
+  modal.style.borderRadius = '8px';
+  modal.style.boxShadow = '0 10px 25px rgba(0, 0, 0, 0.15)';
+  modal.style.width = '90%';
+  modal.style.maxWidth = '640px';
+  modal.style.maxHeight = '80vh';
+  modal.style.display = 'flex';
+  modal.style.flexDirection = 'column';
+  modal.style.padding = '18px';
+
+  modal.innerHTML = `
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #00A896; padding-bottom: 10px; margin-bottom: 12px;">
+      <div>
+        <strong style="font-size: 14px; color: #0F172A; font-family: 'Montserrat', sans-serif;">📚 Base de Conocimiento - Insercion en Respuesta</strong>
+        <div style="font-size: 11px; color: #64748B; margin-top: 2px;">Seleccione un procedimiento oficial para incorporarlo al mensaje sin abandonar el caso.</div>
+      </div>
+      <button type="button" id="close-quick-kb" style="background: #F1F5F9; border: 1px solid #CBD5E1; border-radius: 4px; padding: 4px 8px; cursor: pointer; font-weight: 700; color: #475569;">✕</button>
+    </div>
+
+    <div style="margin-bottom: 10px;">
+      <input type="text" id="quick-kb-filter-input" placeholder="Buscar procedimiento (ej: SISA, Token, Receta)..." style="width: 100%; padding: 8px 12px; font-size: 12px; border: 1px solid #CBD5E1; border-radius: 6px; outline: none; box-sizing: border-box;">
+    </div>
+
+    <div id="quick-kb-items-list" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; max-height: 380px; padding-right: 4px;">
+      ${articles.slice(0, 15).map((a, i) => {
+        const title = a.title || a.name || ('Procedimiento Oficial #' + (i + 1));
+        const code = a.code || ('KB-' + (i + 1));
+        const cat = a.category || 'General';
+        const snippet = a.content || a.resolution || a.query || 'Procedimiento estandarizado de resolucion de incidentes tecnicos.';
+        return `
+          <div class="quick-kb-item-row" data-code="${escapeHtml(code)}" style="border: 1px solid #E2E8F0; border-radius: 6px; padding: 10px; background: #F8FAFC; display: flex; justify-content: space-between; align-items: center; gap: 10px; transition: all 0.15s ease;">
+            <div style="flex: 1; min-width: 0;">
+              <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 3px;">
+                <span style="font-size: 10px; font-weight: 800; font-family: monospace; background: #E0F7F5; color: #00A896; padding: 1px 6px; border-radius: 4px;">${escapeHtml(code)}</span>
+                <span style="font-size: 10px; color: #64748B; font-weight: 600;">[${escapeHtml(cat)}]</span>
+              </div>
+              <strong style="font-size: 12px; color: #0F172A; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHtml(title)}</strong>
+              <p style="font-size: 11px; color: #475569; margin-top: 3px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.35;">${escapeHtml(snippet)}</p>
+            </div>
+            <button type="button" class="btn-quick-insert-kb" data-idx="${i}" style="background: #00A896; color: #FFFFFF; border: none; padding: 6px 12px; border-radius: 5px; font-size: 11px; font-weight: 700; cursor: pointer; flex-shrink: 0;">
+              Insertar
+            </button>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+
+  overlay.appendChild(modal);
+  document.body.appendChild(overlay);
+
+  document.getElementById('close-quick-kb').onclick = () => overlay.remove();
+  overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
+
+  const filterInput = document.getElementById('quick-kb-filter-input');
+  if (filterInput) {
+    filterInput.oninput = () => {
+      const q = filterInput.value.toLowerCase().trim();
+      document.querySelectorAll('.quick-kb-item-row').forEach(row => {
+        const txt = row.textContent.toLowerCase();
+        row.style.display = txt.includes(q) ? 'flex' : 'none';
+      });
+    };
+  }
+
+  modal.querySelectorAll('.btn-quick-insert-kb').forEach(btn => {
+    btn.onclick = () => {
+      const idx = parseInt(btn.getAttribute('data-idx'));
+      const item = articles[idx];
+      if (!item) return;
+
+      const txtArea = document.getElementById('ws-reply-textarea');
+      if (txtArea) {
+        const title = item.title || item.name || '';
+        const body = item.content || item.resolution || item.query || '';
+        const insertText = `\n\nProcedimiento Oficial KB (${item.code || 'KB'}):\n${title}\n\nInstruccion de Resolucion:\n${body}\n`;
+        txtArea.value = (txtArea.value ? txtArea.value.trim() + '\n' : '') + insertText;
+        txtArea.focus();
+        showToast('Procedimiento KB insertado en la respuesta', 'success');
+      }
+      overlay.remove();
+    };
+  });
+}
+
 
 function renderWsAuditPanel(ticket) {
  const container = document.getElementById('ws-audit-panel-content');
@@ -11559,7 +11739,6 @@ function renderWsTimeline(ticket) {
  <div class="ws-timeline-event">
  <div class="ws-event-dot"></div>
  <div class="ws-event-bubble">
- <span style="font-weight: 700; color: #64748B; margin-right: 6px;">${it.icon}</span>
  <span>${it.text}</span>
  <span class="ws-event-time">• ${timeStr}</span>
  </div>

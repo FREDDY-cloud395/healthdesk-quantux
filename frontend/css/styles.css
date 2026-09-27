@@ -6126,5 +6126,61 @@ html, body {
   font-weight: 700;
 }
 
+/* ISSUE-21: Botones semánticos con affordance en Workspace de Tickets */
+.ws-tool-action-btn {
+  background: #F1F5F9;
+  border: 1px solid #CBD5E1;
+  color: #334155;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.15s ease;
+  font-family: 'Montserrat', sans-serif;
+  height: 28px;
+}
+
+.ws-tool-action-btn:hover {
+  background: #E2E8F0;
+  border-color: #94A3B8;
+  color: #0F172A;
+}
+
+.ws-tool-action-btn.ws-btn-bot-action {
+  background: #F0FDFA;
+  border-color: #99F6E4;
+  color: #0D9488;
+}
+
+.ws-tool-action-btn.ws-btn-bot-action:hover {
+  background: #CCFBF1;
+  border-color: #5EEAD4;
+  color: #0F766E;
+}
+
+/* Modal Rápido de Inserción de KB */
+.kb-insert-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #FFFFFF;
+  border: 1px solid #CBD5E1;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  width: 90%;
+  max-width: 600px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  z-index: 10000;
+  padding: 16px;
+}
+
+
 
 

@@ -3145,6 +3145,10 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
               <span>Conversación</span>
             </button>
+            <button class="ws-tab-btn" id="ws-tab-tech" onclick="switchWsTab('tech')" title="Telemetría técnica del entorno y diagnóstico Zero-Question">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+              <span>Telemetría & Diagnóstico</span>
+            </button>
             <button class="ws-tab-btn" id="ws-tab-metrics" onclick="switchWsTab('metrics')" title="Métricas de respuesta, tiempos y SLA">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
               <span>Métricas & SLA</span>
@@ -3251,11 +3255,13 @@
                     <button type="button" class="ws-tool-icon-btn" id="ws-btn-canned-template" title="Plantillas de Respuesta Rápida" onclick="insertQuickResponseTemplate()">
                       📄
                     </button>
-                    <button type="button" class="ws-tool-icon-btn" title="Procedimiento de Base de Conocimiento" onclick="switchView('articles')">
-                      📚
+                    <button type="button" class="ws-tool-action-btn" id="ws-btn-insert-kb" title="Insertar procedimiento de la Base de Conocimiento en la respuesta sin salir del caso" onclick="openQuickKbInsertModal()">
+                      <span>📚</span>
+                      <span>Insertar Solución KB</span>
                     </button>
-                    <button type="button" class="ws-tool-icon-btn" title="🤖 Bot: Solicitar Datos al Prestador (Pausa SLA)" onclick="triggerBotInteraction('request_requester_info')">
-                      🤖
+                    <button type="button" class="ws-tool-action-btn ws-btn-bot-action" id="ws-btn-bot-request-info" title="🤖 Bot Quantux: Solicitar datos complementarios al usuario (Pausa el SLA)" onclick="confirmAndTriggerBotInteraction()">
+                      <span>🤖</span>
+                      <span>Bot: Pedir Datos (Pausa SLA)</span>
                     </button>
                   </div>
 

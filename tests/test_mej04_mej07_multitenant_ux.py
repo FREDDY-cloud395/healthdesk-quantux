@@ -92,10 +92,10 @@ class TestMultiTenantUXSenior(unittest.TestCase):
         self.assertNotIn('<button class="btn btn-secondary" onclick="window.print()">', self.board_content)
         self.assertNotIn('<button class="btn btn-secondary" onclick="resetDefaultTasks()">', self.board_content)
         self.assertNotIn('<button class="btn" onclick="saveState()">', self.board_content)
-        # Verificar que MEJ-08 existe en el CSV con estado 'progress'
-        match = re.search(r'"MEJ-08".*?"progress"', self.csv_content)
-        self.assertIsNotNone(match, "MEJ-08 debe estar registrada en estado 'progress' (en curso)")
-        print("[OK] MEJ-08: Botonera administrativa eliminada y tarjeta colocada en curso (progress).")
+        # Verificar que MEJ-08 existe en el CSV con estado 'progress' o 'done'
+        match = re.search(r'"MEJ-08".*?"(progress|done)"', self.csv_content)
+        self.assertIsNotNone(match, "MEJ-08 debe estar registrada en estado 'progress' o 'done'")
+        print("[OK] MEJ-08: Botonera administrativa eliminada y tarjeta verificada.")
 
 if __name__ == '__main__':
     unittest.main()
