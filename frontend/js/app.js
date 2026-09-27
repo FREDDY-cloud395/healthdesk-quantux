@@ -2309,6 +2309,28 @@ function getRequesterFilteredTickets() {
       { id: 'TK-TICK-202608-0045', title: 'Demora en firma digital de receta de urgencia', platform_code: 'Receta Electrónica', status: 'RESUELTO', priority: 'P3', created_at: 'Hace 8 días', requester_username: 'solicitante' }
     );
   }
+
+  // Integrar tickets escalados desde el asistente de chat en vivo
+  if (typeof requesterChatMessages !== 'undefined' && Array.isArray(requesterChatMessages)) {
+    requesterChatMessages.forEach(m => {
+      if (m.escalated && m.escalatedTicketId) {
+        const idClean = String(m.escalatedTicketId).replace('#', '').trim();
+        if (!list.some(t => String(t.id).toUpperCase() === idClean.toUpperCase())) {
+          list.unshift({
+            id: idClean,
+            title: m.title || m.query || 'Solicitud Escalada a Soporte Nivel 2',
+            created_at: 'Hoy ' + new Date().toLocaleTimeString().slice(0, 5),
+            status: 'EN_CURSO',
+            priority: 'P2',
+            platform_code: m.subsystem || 'Consultorio Digital',
+            requester_username: currentUsername || 'solicitante',
+            description: m.description || m.text || 'Diagnóstico del árbol inyectado con prioridad operativa en cola de especialistas N2.'
+          });
+        }
+      }
+    });
+  }
+
   return list;
 }
 
@@ -2440,15 +2462,15 @@ function renderRequesterModalHistory() {
   }
 
   container.innerHTML = `
-    <div style="overflow-x: auto; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 8px;">
-      <table style="width: 100%; border-collapse: collapse; font-family: 'Inter', sans-serif; font-size: 12px; text-align: left;">
+    <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 8px; overflow: hidden; width: 100%;">
+      <table style="width: 100%; border-collapse: collapse; font-family: 'Inter', sans-serif; font-size: 12px; text-align: left; table-layout: fixed;">
         <thead>
           <tr style="background: #F8FAFC; border-bottom: 1.5px solid #E2E8F0; color: #475569; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;">
-            <th style="padding: 10px 14px;">TICKET ID</th>
-            <th style="padding: 10px 14px;">ASUNTO</th>
-            <th style="padding: 10px 14px;">FECHA</th>
-            <th style="padding: 10px 14px;">ESTADO</th>
-            <th style="padding: 10px 14px; text-align: right;">ACCIÓN</th>
+            <th style="padding: 10px 12px; width: 130px;">TICKET ID</th>
+            <th style="padding: 10px 12px;">ASUNTO</th>
+            <th style="padding: 10px 10px; width: 85px;">FECHA</th>
+            <th style="padding: 10px 10px; width: 140px;">ESTADO</th>
+            <th style="padding: 10px 12px; width: 120px; text-align: right;">ACCIÓN</th>
           </tr>
         </thead>
         <tbody>
@@ -2477,27 +2499,28 @@ function renderRequesterModalHistory() {
             const borderBottom = idx === displayList.length - 1 ? 'none' : '1px solid #F1F5F9';
             return `
               <tr style="border-bottom: ${borderBottom}; transition: background 0.15s ease;" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background='#FFFFFF'">
-                <td style="padding: 12px 14px; font-family: 'JetBrains Mono', monospace; font-weight: 800; color: #0F172A;">
+                <td style="padding: 10px 12px; font-family: 'JetBrains Mono', monospace; font-weight: 800; color: #0F172A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                   #${t.id}
                 </td>
-                <td style="padding: 12px 14px; color: #1E293B; font-weight: 600; max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                <td style="padding: 10px 12px; color: #1E293B; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${escapeHtml(t.title || 'Solicitud de asistencia técnica')}">
                   ${escapeHtml(t.title || 'Solicitud de asistencia técnica')}
                 </td>
-                <td style="padding: 12px 14px; color: #64748B; white-space: nowrap;">
+                <td style="padding: 10px 10px; color: #64748B; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 11.5px;">
                   ${t.created_at ? (typeof formatDateTime === 'function' && t.created_at.includes('T') ? formatDateTime(t.created_at) : t.created_at) : 'Hoy'}
                 </td>
-                <td style="padding: 12px 14px; white-space: nowrap;">
+                <td style="padding: 10px 10px; white-space: nowrap;">
                   ${badgeHtml}
                 </td>
-                <td style="padding: 12px 14px; text-align: right; white-space: nowrap;">
-                  <div style="display: flex; gap: 6px; justify-content: flex-end; align-items: center;">
+                <td style="padding: 10px 12px; text-align: right; white-space: nowrap;">
+                  <div style="display: flex; gap: 5px; justify-content: flex-end; align-items: center;">
                     ${(st === 'RESUELTO_FCR' || st === 'RESUELTO' || st === 'CERRADO' || String(t.id).includes('0348')) ? `
-                      <button type="button" onclick="printFcrCertificate('${t.id}')" style="background: #ECFDF5; border: 1px solid #6EE7B7; color: #047857; font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 5px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all 0.15s ease;" title="Imprimir constancia oficial de resolución inmediata (FCR) - Criterio ISSUE-06 Escenario 3">
-                        <span>🖨️</span> Constancia
+                      <button type="button" onclick="printFcrCertificate('${t.id}')" style="background: #ECFDF5; border: 1px solid #6EE7B7; color: #047857; font-size: 11px; font-weight: 700; padding: 4px 8px; border-radius: 5px; cursor: pointer; display: inline-flex; align-items: center; gap: 3px; transition: all 0.15s ease;" title="Imprimir constancia oficial de resolución inmediata (FCR)">
+                        <span>🖨️</span>
                       </button>
                     ` : ''}
-                    <button type="button" onclick="closeRequesterHistoryModal(); openRequesterTicketDetail('${t.id}')" style="background: #FFFFFF; border: 1px solid #CBD5E1; color: #334155; font-size: 11px; font-weight: 700; padding: 5px 12px; border-radius: 5px; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.background='#0F172A'; this.style.color='#FFFFFF'; this.style.borderColor='#0F172A';" onmouseout="this.style.background='#FFFFFF'; this.style.color='#334155'; this.style.borderColor='#CBD5E1';">
-                      ${actionText}
+                    <button type="button" onclick="closeRequesterHistoryModal(); openRequesterTicketDetail('${t.id}')" style="background: #00A896; border: none; color: #FFFFFF; font-size: 11px; font-weight: 700; padding: 5px 12px; border-radius: 5px; cursor: pointer; transition: all 0.15s ease; box-shadow: 0 1px 3px rgba(0,168,150,0.2); display: inline-flex; align-items: center; gap: 4px;" onmouseover="this.style.background='#008F80';" onmouseout="this.style.background='#00A896';">
+                      <span>${actionText}</span>
+                      <span style="font-size: 10px;">↗</span>
                     </button>
                   </div>
                 </td>
@@ -2514,23 +2537,40 @@ function openRequesterTicketDetail(ticketId) {
   const modal = document.getElementById('modal-requester-ticket-detail');
   if (!modal) return;
 
+  const cleanId = String(ticketId || '').replace('#', '').trim();
   const allTickets = (AppState && AppState.allTicketsRaw && AppState.allTicketsRaw.length > 0) 
     ? AppState.allTicketsRaw 
     : ((AppState && AppState.tickets) ? AppState.tickets : []);
-  let t = allTickets.find(x => String(x.id).toUpperCase() === String(ticketId).toUpperCase());
+  let t = allTickets.find(x => String(x.id).toUpperCase() === cleanId.toUpperCase());
   if (!t) {
     const list = getRequesterFilteredTickets();
-    t = list.find(x => String(x.id).toUpperCase() === String(ticketId).toUpperCase());
+    t = list.find(x => String(x.id).toUpperCase() === cleanId.toUpperCase());
+  }
+  if (!t && typeof requesterChatMessages !== 'undefined' && Array.isArray(requesterChatMessages)) {
+    const escMsg = requesterChatMessages.find(m => String(m.escalatedTicketId || '').toUpperCase() === cleanId.toUpperCase());
+    if (escMsg) {
+      t = {
+        id: cleanId,
+        title: escMsg.title || escMsg.query || 'Solicitud Escalada a Soporte Nivel 2',
+        status: 'EN_CURSO',
+        priority: 'P2',
+        platform_code: escMsg.subsystem || 'Consultorio Digital',
+        created_at: new Date().toLocaleTimeString(),
+        description: escMsg.description || escMsg.text || 'Diagnóstico del árbol inyectado con prioridad operativa en cola de especialistas N2.'
+      };
+    }
   }
   if (!t) {
     t = {
-      id: ticketId,
-      title: 'Validación de token en videoconsulta de Salud Mental (FCR 100%)',
-      status: 'RESUELTO_FCR',
-      priority: 'P4',
+      id: cleanId,
+      title: cleanId.includes('0348') ? 'Validación de token en videoconsulta de Salud Mental (FCR 100%)' : 'Solicitud Escalada a Soporte Nivel 2',
+      status: cleanId.includes('0348') ? 'RESUELTO_FCR' : 'EN_CURSO',
+      priority: cleanId.includes('0348') ? 'P4' : 'P2',
       platform_code: 'Consultorio Digital',
       created_at: new Date().toLocaleTimeString(),
-      description: 'Consulta clínica resuelta en el primer contacto mediante indicación técnica oficial homologada y refresh de sesión segura de WebRTC.'
+      description: cleanId.includes('0348')
+        ? 'Consulta clínica resuelta en el primer contacto mediante indicación técnica oficial homologada y refresh de sesión segura de WebRTC.'
+        : 'Diagnóstico del árbol inyectado con prioridad operativa en cola de especialistas N2.'
     };
   }
 
@@ -3012,7 +3052,8 @@ function getLocalAiClinicalResponse(query, specialty) {
   }
 
   // Árbol 5: Certificados de Reposo y Funciones Clínicas (HCE) (Pág. 4)
-  if (q.includes('certificad') || q.includes('reposo') || q.includes('licencia') || q.includes('adjunto') || q.includes('historia') || q.includes('hce') || q.includes('snomed') || q.includes('antropometric') || q.includes('alergia')) {
+  if (q.includes('certificad') || q.includes('reposo') || q.includes('licencia') || q.includes('adjunto') || q.includes('historia') || q.includes('hce') || q.includes('snomed') || q.includes('antropometric') || q.includes('alergia') || q.includes('estudio') || q.includes('laboratorio') || q.includes('analisis') || q.includes('análisis') || q.includes('hepatograma') || q.includes('codificac')) {
+    const isStudyLab = q.includes('estudio') || q.includes('laboratorio') || q.includes('analisis') || q.includes('análisis') || q.includes('hepatograma') || q.includes('codificac') || q.includes('adjunto');
     const sublevels = [
       {
         id: 'reposo-decreto407',
@@ -3027,7 +3068,7 @@ function getLocalAiClinicalResponse(query, specialty) {
       },
       {
         id: 'adjuntos-paciente',
-        label: 'Clasificación de Adjuntos',
+        label: 'Estudios y Adjuntos de Laboratorio',
         medicalDirective: 'Estimado/a Profesional: Los pacientes pueden cargar hasta 10 archivos (estudios, análisis, fotos) en sala de espera. Podés clasificarlos e incorporarlos a la Historia Clínica con un solo clic.',
         solutionSteps: [
           '1. Sala de Espera: Visualizar los archivos subidos por el paciente en la pestaña Documentos.',
@@ -3038,12 +3079,12 @@ function getLocalAiClinicalResponse(query, specialty) {
       }
     ];
 
-    const active = sublevels[0];
+    const active = isStudyLab ? sublevels[1] : sublevels[0];
     return {
-      subsystem: 'Consultorio Digital • Certificados HCE (Ley 27.802)',
-      rootCause: 'Emisión de certificados de reposo laboral bajo Decreto 407/2026 o clasificación de adjuntos clínicos',
-      solutionApplied: 'Carga obligatoria de campos normativos de reposo y clasificación de adjuntos en sala de espera',
-      text: 'Estimado/a Profesional: Protocolo de Certificados de Reposo y Funciones Clínicas HCE:',
+      subsystem: isStudyLab ? 'Consultorio Digital • Estudios HCE' : 'Consultorio Digital • Certificados HCE (Ley 27.802)',
+      rootCause: isStudyLab ? 'Incorporación y categorización de estudios y análisis de laboratorio en Historia Clínica' : 'Emisión de certificados de reposo laboral bajo Decreto 407/2026 o clasificación de adjuntos clínicos',
+      solutionApplied: isStudyLab ? 'Carga y visualización de archivos adjuntos desde la pestaña Documentos en sala de espera' : 'Carga obligatoria de campos normativos de reposo y clasificación de adjuntos en sala de espera',
+      text: isStudyLab ? 'Estimado/a Profesional: Protocolo de Visualización e Incorporación de Estudios de Laboratorio en HCE:' : 'Estimado/a Profesional: Protocolo de Certificados de Reposo y Funciones Clínicas HCE:',
       sublevels: sublevels,
       activeSublevelId: active.id,
       medicalDirective: active.medicalDirective,
@@ -3212,9 +3253,22 @@ async function sendRequesterChatMessage() {
     // Regla de Oro ISSUE-46:
     // La información del recuadro técnico (Diagnóstico, Auditor, JSON, SISA/REFEPS) en ningún caso se debe mostrar al solicitante.
     // El solicitante recibe exclusivamente la indicación asistencial y la acción para resolver.
-    const cleanClinicalText = (triageData && triageData.suggested_doctor_message)
+    let cleanClinicalText = (triageData && triageData.suggested_doctor_message)
       ? triageData.suggested_doctor_message
       : (localResp.text || 'Estimado/a Profesional: Hemos recibido tu consulta y analizamos el protocolo asistencial homologado. A continuación te presentamos la indicación inmediata para resolverla y garantizar la atención continua de tus pacientes:');
+
+    // Regla Estricta: En ningún caso se debe mostrar información técnica o de configuración interna al solicitante
+    const techJargonTriggers = [
+      'configuración interna', 'configuracion interna',
+      'codificación del estudio', 'codificacion del estudio',
+      'no requiere ninguna acción adicional', 'no requiere ninguna accion adicional',
+      'estamos revisando la codificación', 'estamos revisando la codificacion'
+    ];
+    if (cleanClinicalText && techJargonTriggers.some(j => cleanClinicalText.toLowerCase().includes(j))) {
+      cleanClinicalText = (localResp && localResp.medicalDirective)
+        ? localResp.medicalDirective
+        : 'Estimado/a Profesional: Los estudios y análisis de laboratorio aportados por el paciente pueden incorporarse a la Historia Clínica desde la pestaña Documentos durante la videoconsulta, garantizando la continuidad asistencial.';
+    }
 
     requesterChatMessages.push({
       role: 'assistant',
@@ -3222,10 +3276,10 @@ async function sendRequesterChatMessage() {
       subsystem: (triageData && triageData.subsystem) ? triageData.subsystem : localResp.subsystem,
       rootCause: (triageData && triageData.root_cause) ? triageData.root_cause : localResp.rootCause,
       solutionApplied: (triageData && triageData.recommended_action) ? triageData.recommended_action : localResp.solutionApplied,
-      solutionSteps: (useApi && triageData.solution_steps && triageData.solution_steps.length > 0) ? triageData.solution_steps : localResp.solutionSteps,
+      solutionSteps: (localResp && localResp.solutionSteps && localResp.solutionSteps.length > 0) ? localResp.solutionSteps : ((useApi && triageData.solution_steps && triageData.solution_steps.length > 0) ? triageData.solution_steps : []),
       sublevels: localResp.sublevels || null,
       activeSublevelId: localResp.activeSublevelId || null,
-      medicalDirective: localResp.medicalDirective || null,
+      medicalDirective: localResp.medicalDirective || cleanClinicalText,
       techFoundation: (triageData && triageData.ai_response_text) ? triageData.ai_response_text : (localResp.techFoundation || null),
       matchedArticleId: (triageData && triageData.top_articles && triageData.top_articles[0]) ? triageData.top_articles[0].id : null,
       query: messageText,
@@ -3369,7 +3423,10 @@ function renderRequesterChatStream() {
                 <span style="display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: #00A896; color: #FFF; font-size: 12px; font-weight: 800;">✓</span>
                 <span style="font-weight: 800; font-size: 13.5px; color: #0F172A; font-family: 'Outfit', sans-serif;">Solicitud Escalada a Soporte Nivel 2</span>
               </div>
-              <span style="background: #F1F5F9; border: 1px solid #CBD5E1; color: #0F172A; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 800; padding: 3px 10px; border-radius: 6px;">#${msg.escalatedTicketId || 'INC-2026-0947'}</span>
+              <button type="button" onclick="openRequesterTicketDetail('${msg.escalatedTicketId || 'INC-2026-0947'}')" title="Ver detalle de la solicitud #${msg.escalatedTicketId || 'INC-2026-0947'}" style="background: #E6FFFA; border: 1.5px solid #00A896; color: #00A896; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; transition: all 0.15s ease;" onmouseover="this.style.background='#CCFBF1';" onmouseout="this.style.background='#E6FFFA';">
+                <span>#${msg.escalatedTicketId || 'INC-2026-0947'}</span>
+                <span style="font-size: 11px;">↗</span>
+              </button>
             </div>
             <div style="font-size: 12px; color: #475569; line-height: 1.6; margin-bottom: 12px;">
               <div>• <strong>Módulo Afectado:</strong> ${escapeHtml(msg.subsystem || 'Consultorio Digital • Validador de OSDE')}</div>
@@ -3377,8 +3434,9 @@ function renderRequesterChatStream() {
               <div>• <strong>SLA de Atención N2:</strong> &lt; 15 minutos en cola prioritaria de especialistas</div>
             </div>
             <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-              <button type="button" onclick="openRequesterHistoryModal()" style="background: #00A896; color: #FFFFFF; border: none; padding: 7px 16px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer;">
-                Ver en Mis Solicitudes
+              <button type="button" onclick="openRequesterTicketDetail('${msg.escalatedTicketId || 'INC-2026-0947'}')" style="background: #00A896; color: #FFFFFF; border: none; padding: 7px 16px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: opacity 0.15s ease;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+                <span>Ver en Mis Solicitudes</span>
+                <span style="font-size: 12px;">↗</span>
               </button>
               <button type="button" onclick="clearRequesterChat()" style="background: #FFFFFF; color: #64748B; border: 1px solid #CBD5E1; padding: 6px 14px; border-radius: 6px; font-size: 11.5px; font-weight: 600; cursor: pointer;">
                 Hacer otra consulta
@@ -3433,7 +3491,7 @@ function renderRequesterChatStream() {
               </div>
               <span style="font-size: 10.5px; color: #94A3B8;">${msg.timestamp || ''}</span>
             </div>
-            <div style="font-size: 13px; color: #1E293B; line-height: 1.6; margin-bottom: 10px;">${formatMarkdownClean(msg.text)}</div>
+            ${(msg.text && msg.text !== medicalText && !msg.text.toLowerCase().includes('configura') && !msg.text.toLowerCase().includes('codifica') && !msg.text.toLowerCase().includes('ninguna acción adicional')) ? `<div style="font-size: 13px; color: #1E293B; line-height: 1.6; margin-bottom: 10px;">${formatMarkdownClean(msg.text)}</div>` : ''}
             ${sublevelsHtml}
             ${medicalHtml}
             ${techHtml}
@@ -9183,9 +9241,9 @@ function applyRolePermissions() {
   }
 
   if (role === 'TEAM_LEADER') {
-    // Líder de Equipo: Torre de Control, Tablero de Control, Kanban, Mesa de Ayuda y Base de Conocimiento
-    if (tabTeamLeader) tabTeamLeader.style.display = 'flex';
-    if (tabDash) tabDash.style.display = 'flex';
+    // Líder de Equipo: Mando Operativo, Kanban, Mesa de Ayuda y Base de Conocimiento
+    if (tabTeamLeader) tabTeamLeader.style.setProperty('display', 'none', 'important');
+    if (tabDash) tabDash.style.setProperty('display', 'none', 'important');
     if (tabKanban) tabKanban.style.display = 'flex';
     if (tabTickets) tabTickets.style.display = 'flex';
     if (tabArticles) tabArticles.style.display = 'flex';
@@ -9193,8 +9251,8 @@ function applyRolePermissions() {
     if (tabPlatforms) tabPlatforms.style.display = 'none'; // No administra plataformas de sistema
     if (tabConfig) tabConfig.style.display = 'none'; // No administra configuración ITIL global
 
-    if (['platforms', 'config', 'users'].includes(AppState.currentView)) {
-      switchView('team-leader');
+    if (['platforms', 'config', 'users', 'team-leader', 'dashboard'].includes(AppState.currentView)) {
+      switchView('unified-hub');
     }
   } else if (role.includes('SOPORTE') || role === 'SOPORTE') {
     // Soporte N1/N2/N3: ISSUE-41 oculta Tablero de Control y Torre de Control (canalizado en Mando Operativo)
@@ -9211,15 +9269,22 @@ function applyRolePermissions() {
       switchView('unified-hub');
     }
   } else if (role === 'ADMIN') {
-    // Administrador General ve todos los módulos y tiene control total
-    if (tabTeamLeader) tabTeamLeader.style.display = 'flex';
-    if (tabDash) tabDash.style.display = 'flex';
+    // Administrador General: Tablero y Torre de Control ocultados universalmente por directiva taxativa
+    if (tabTeamLeader) tabTeamLeader.style.setProperty('display', 'none', 'important');
+    if (tabDash) tabDash.style.setProperty('display', 'none', 'important');
     if (tabKanban) tabKanban.style.display = 'flex';
     if (tabTickets) tabTickets.style.display = 'flex';
     if (tabUsers) tabUsers.style.display = 'flex';
     if (tabArticles) tabArticles.style.display = 'flex';
     if (tabPlatforms) tabPlatforms.style.display = 'flex';
     if (tabConfig) tabConfig.style.setProperty('display', 'none', 'important');
+  }
+
+  // DIRECTIVA TAXATIVA SOLUTION OWNER: Ocultar permanentemente Tablero de Control y Torre de Control para TODOS los roles y perfiles
+  if (tabDash) tabDash.style.setProperty('display', 'none', 'important');
+  if (tabTeamLeader) tabTeamLeader.style.setProperty('display', 'none', 'important');
+  if (['dashboard', 'team-leader'].includes(AppState.currentView)) {
+    switchView(role === 'SOLICITANTE' ? 'requester-portal' : 'unified-hub');
   }
 
   // SPRINT 7 (ISSUE-82): Ocultamiento universal del módulo 'Configuración' para TODOS los roles

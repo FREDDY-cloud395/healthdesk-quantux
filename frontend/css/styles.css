@@ -6543,3 +6543,21 @@ html, body {
     margin: 8px !important;
   }
 }
+
+/* SPRINT 7 MANDATORY DIRECTIVE: Ocultar permanentemente 'Tablero de Control' y 'Torre de Control' para TODOS los roles y perfiles */
+#tab-dashboard,
+#tab-team-leader,
+.nav-link-dashboard,
+.nav-link-team-leader,
+.nav-hub-tab[data-view="dashboard"],
+.nav-hub-tab[data-view="team-leader"] {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  height: 0 !important;
+  width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  opacity: 0 !important;
+  overflow: hidden !important;
+}

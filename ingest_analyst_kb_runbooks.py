@@ -153,7 +153,7 @@ Se detectó la necesidad de reemplazar una codificación NNO por un concepto SNO
 5. Validar la prestación en el flujo funcional correspondiente.
 
 #### 4. Mensaje Sugerido para Responder al Médico (Tono Empático y No Técnico)
-"Estamos revisando la codificación del estudio para que quede correctamente identificado dentro del sistema. La actualización se realiza sobre la configuración interna y no requiere ninguna acción adicional de su parte."
+"Estimado/a Profesional: Los estudios y análisis de laboratorio aportados por el paciente pueden incorporarse a la Historia Clínica desde la pestaña Documentos durante la videoconsulta, garantizando la continuidad asistencial."
 
 #### 5. Notas Técnicas para Soporte N2 / N3 (Opcional)
 Sistema SNOMED documentado: http://snomed.info/sct. No asumir correspondencia directa cuando el concepto no haya sido validado.

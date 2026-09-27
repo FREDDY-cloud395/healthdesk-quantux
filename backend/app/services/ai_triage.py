@@ -637,10 +637,15 @@ class N3CognitiveTriageEngine:
                 doctor_message = msg.strip('"').strip("'")
             else:
                 doctor_message = (
-                    "Estimado/a profesional: nos encontramos verificando la situación reportada "
-                    "en Consultorio Digital para aplicar la actualización operativa correspondiente. "
-                    "A la brevedad le informaremos sobre la regularización del servicio."
+                    "Estimado/a profesional: Hemos analizado su consulta en Consultorio Digital. A continuación se detallan las directivas asistenciales para su gestión inmediata."
                 )
+
+            # Regla de Oro: En ningún caso se debe mostrar información técnica o de configuración interna al solicitante
+            if user_role == "SOLICITANTE" or "SOLICITANTE" in str(user_role).upper():
+                tech_triggers = ["configuración interna", "configuracion interna", "codificación del estudio", "codificacion del estudio", "no requiere ninguna acción adicional", "no requiere ninguna accion adicional"]
+                if any(t in doctor_message.lower() for t in tech_triggers):
+                    doctor_message = "Estimado/a Profesional: Los estudios y análisis de laboratorio aportados por el paciente pueden incorporarse a la Historia Clínica desde la pestaña Documentos durante la videoconsulta, garantizando la continuidad asistencial."
+
 
             # Manejo de notas técnicas para N2/N3
             tech_notes = notes or "Validar logs de auditoría y conciliación de eventos en microservicios asociados."
