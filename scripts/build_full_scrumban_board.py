@@ -3526,7 +3526,7 @@ def generate_scrumban_board():
     }}
 
     function init() {{
-      const saved = localStorage.getItem('quantux_scrumban_v12_progress');
+      const saved = localStorage.getItem('quantux_scrumban_v13_progress');
       if (saved) {{
         try {{
           tasks = JSON.parse(saved);
@@ -3546,7 +3546,10 @@ def generate_scrumban_board():
       }});
 
       // Asegurar que todos los items prioritarios con capturas existan y tengan sus evidencias sincronizadas
-      const priorityItems = ["UH-69", "ISSUE-07", "UH-68", "UH-67", "UH-66", "ISSUE-06", "ISSUE-05", "ISSUE-04"];
+      const priorityItems = [
+        "UH-69", "ISSUE-07", "UH-68", "UH-67", "UH-66", "ISSUE-06", "ISSUE-05", "ISSUE-04",
+        "MEJ-08", "ISSUE-01", "ISSUE-02", "ISSUE-21", "ISSUE-22", "ISSUE-23"
+      ];
       priorityItems.forEach(id => syncIssueInBacklog(id));
 
       // Filtro por defecto en el Sprint 6 en curso
@@ -4661,13 +4664,13 @@ def generate_scrumban_board():
     }}
 
     function saveState(notify = true) {{
-      localStorage.setItem('quantux_scrumban_v12_progress', JSON.stringify(tasks));
+      localStorage.setItem('quantux_scrumban_v13_progress', JSON.stringify(tasks));
       if (notify) alert('✓ Estado del Tablero Scrumban guardado exitosamente.');
     }}
 
     function resetDefaultTasks() {{
       if (confirm('¿Restaurar la base de datos oficial del tablero?')) {{
-        localStorage.removeItem('quantux_scrumban_v12_progress');
+        localStorage.removeItem('quantux_scrumban_v13_progress');
         tasks = JSON.parse(JSON.stringify(INITIAL_BACKLOG));
         tasks.forEach(t => {{
           const d = getTaskDocInfo(t);
