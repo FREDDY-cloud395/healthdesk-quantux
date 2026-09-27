@@ -3946,13 +3946,14 @@ html, body {
   display: flex;
   align-items: center;
   gap: 6px;
-  background: #0F172A;
-  color: #FFFFFF;
+  background: #E0F7F5;
+  color: #00897B;
+  border: 1.5px solid #80DFD5;
   padding: 5px 12px;
   border-radius: 6px;
   font-size: 13px;
   font-family: 'JetBrains Mono', monospace;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: 0.5px;
   box-shadow: none;
 }
@@ -3979,13 +3980,13 @@ html, body {
 }
 
 .ws-tab-btn:hover {
-  color: #0F172A;
-  background: #F8FAFC;
+  color: #00A896;
+  background: #F0FDFA;
 }
 
 .ws-tab-btn.active {
-  color: #0F172A;
-  border-bottom-color: #0F172A;
+  color: #00A896;
+  border-bottom-color: #00A896;
   font-weight: 800;
 }
 
@@ -4005,9 +4006,9 @@ html, body {
   letter-spacing: 0.5px;
 }
 
-.ws-prio-badge.prio-p1 { background: #F1F5F9; color: #0F172A; border: 1px solid #CBD5E1; }
+.ws-prio-badge.prio-p1 { background: #F1F5F9; color: #1E293B; border: 1px solid #CBD5E1; }
 .ws-prio-badge.prio-p2 { background: #FEF3C7; color: #D97706; border: 1px solid #FDE68A; }
-.ws-prio-badge.prio-p3 { background: #DBEAFE; color: #0F172A; border: 1px solid #BFDBFE; }
+.ws-prio-badge.prio-p3 { background: #DBEAFE; color: #1E293B; border: 1px solid #BFDBFE; }
 .ws-prio-badge.prio-p4 { background: #F1F5F9; color: #475569; border: 1px solid #CBD5E1; }
 .ws-prio-badge.prio-p5 { background: #F8FAFC; color: #64748B; border: 1px solid #E2E8F0; }
 
@@ -4036,8 +4037,8 @@ html, body {
 }
 
 .ws-btn-close:hover {
-  background: #E2E8F0;
-  color: #0F172A;
+  background: #E0F7F5;
+  color: #00897B;
 }
 
 /* 2. Workspace Body Grid */
@@ -4171,7 +4172,7 @@ html, body {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: #0F172A;
+  background: #00A896;
   color: #FFFFFF;
   font-weight: 800;
   font-size: 14px;
@@ -4179,7 +4180,7 @@ html, body {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 2px 4px rgba(15, 23, 42, 0.2);
+  box-shadow: 0 2px 6px rgba(0, 168, 150, 0.25);
 }
 
 .ws-reply-card,
@@ -4195,8 +4196,8 @@ html, body {
 
 .ws-reply-card:focus-within,
 .ws-reply-panel:focus-within {
-  border-color: #0F172A;
-  box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.15);
+  border-color: #00A896;
+  box-shadow: 0 0 0 3px rgba(0, 168, 150, 0.15);
 }
 
 .ws-reply-textarea {
@@ -4243,8 +4244,8 @@ html, body {
 }
 
 .ws-tool-icon-btn:hover {
-  background: #E2E8F0;
-  color: #0F172A;
+  background: #E0F7F5;
+  color: #00897B;
 }
 
 .ws-reply-tools-right {
@@ -4272,21 +4273,21 @@ html, body {
 }
 
 .ws-btn-submit-reply {
-  background: #0F172A !important;
-  border: 1px solid #0F172A !important;
+  background: #00A896 !important;
+  border: 1px solid #00897B !important;
   color: #FFFFFF !important;
-  font-weight: 600 !important;
+  font-weight: 700 !important;
   font-size: 12.5px !important;
   padding: 6px 18px !important;
   border-radius: 6px !important;
-  box-shadow: none !important;
+  box-shadow: 0 2px 5px rgba(0, 168, 150, 0.25) !important;
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .ws-btn-submit-reply:hover {
-  background: #1E293B !important;
-  border-color: #1E293B !important;
+  background: #00897B !important;
+  border-color: #00796B !important;
   transform: translateY(-1px);
 }
 
@@ -4461,7 +4462,7 @@ html, body {
 }
 
 .ws-count-bubble {
-  background: #0F172A;
+  background: #00A896;
   color: #FFFFFF;
   font-size: 10.5px;
   font-weight: 800;
@@ -4490,9 +4491,9 @@ html, body {
 }
 
 .ws-btn-add-part:hover {
-  background: #0F172A;
+  background: #00A896;
   color: #FFFFFF;
-  border-color: #0F172A;
+  border-color: #00A896;
 }
 
 .ws-participants-list {
@@ -6184,3 +6185,180 @@ html, body {
 
 
 
+/* ==========================================================================
+   UH-67: SUBNIVELES INTERACTIVOS ÁRBOL N1 & SEPARACIÓN DE CAPAS (MÉDICO VS TI)
+   ========================================================================== */
+
+.n1-sublevels-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 12px 0 14px 0;
+  padding: 10px 14px;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+}
+
+.n1-sublevels-tag {
+  font-size: 11px;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.n1-sublevels-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.n1-sublevel-chip {
+  background: #FFFFFF;
+  border: 1px solid #CBD5E1;
+  color: #334155;
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: 'Inter', sans-serif;
+}
+
+.n1-sublevel-chip:hover {
+  background: #F1F5F9;
+  border-color: #94A3B8;
+  color: #0F172A;
+}
+
+.n1-sublevel-chip.active {
+  background: #E0F7F5 !important;
+  border-color: #00A896 !important;
+  color: #00796B !important;
+  font-weight: 700 !important;
+  box-shadow: 0 1px 4px rgba(0, 168, 150, 0.18);
+}
+
+/* CAPA 1: INDICACIÓN INMEDIATA PARA EL MÉDICO (CLÍNICA) */
+.n1-medical-layer-box {
+  background: #FFFFFF;
+  border: 1.5px solid #CCFBF1;
+  border-left: 4.5px solid #00A896;
+  border-radius: 10px;
+  padding: 16px 18px;
+  margin: 12px 0;
+  box-shadow: 0 2px 8px rgba(0, 168, 150, 0.05);
+}
+
+.n1-layer-badge.clinical {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.n1-badge-pill {
+  background: #00A896;
+  color: #FFFFFF;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.n1-badge-sub {
+  font-size: 11px;
+  color: #00796B;
+  font-weight: 600;
+}
+
+.n1-medical-content {
+  font-size: 13px;
+  color: #1E293B;
+  line-height: 1.65;
+  font-family: 'Inter', sans-serif;
+}
+
+.n1-steps-list {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.n1-step-item {
+  display: flex;
+  gap: 8px;
+  font-size: 12.5px;
+  color: #334155;
+  line-height: 1.6;
+}
+
+.n1-step-num {
+  font-weight: 800;
+  color: #00A896;
+  flex-shrink: 0;
+}
+
+/* CAPA 2: FUNDAMENTO TÉCNICO Y NORMATIVO PROFUNDO (SOPORTE TI) */
+.n1-tech-layer-details {
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  margin: 12px 0;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.n1-tech-summary {
+  padding: 10px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #475569;
+  cursor: pointer;
+  background: #F1F5F9;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+}
+
+.n1-tech-summary:hover {
+  background: #E2E8F0;
+  color: #1E293B;
+}
+
+.n1-tech-summary-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.n1-tech-toggle-label {
+  font-size: 11px;
+  color: #64748B;
+  font-weight: 600;
+}
+
+.n1-tech-content {
+  padding: 14px 16px;
+  background: #FFFFFF;
+  border-top: 1px solid #E2E8F0;
+  font-size: 12px;
+  color: #475569;
+  line-height: 1.65;
+}
+
+.n1-tech-section {
+  margin-bottom: 8px;
+}
+
+.n1-tech-section strong {
+  color: #0F172A;
+}

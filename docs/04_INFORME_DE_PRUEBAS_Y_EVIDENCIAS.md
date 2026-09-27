@@ -183,15 +183,125 @@ Conforme a la política de aseguramiento de calidad y preparación hacia el hito
 * **Componente:** `scripts/build_full_scrumban_board.py` y `docs/00_Tablero_Scrumban_Quantux.html` (`<header>`).
 * **Dictamen:** Corregido y Verificado. Eliminación completa de la cabecera superior y badges de fase conforme a solicitud del Solution Owner (`media_1790474232877.png`), liberando ~65px de altura vertical útil para que el tablero Scrumban aproveche el 100vh de pantalla sin scroll innecesario.
 
-### MEJ-09: Transición Automática de Tarjetas de Retrabajo a la Pila de Revisión al Ejecutar Demonio
-* **Severidad:** P1 — Alta Prioridad / Automatización de Ciclo de Vida Scrumban.
-* **Componente:** `scripts/build_full_scrumban_board.py` (`triggerDemonRework`) y `docs/00_Tablero_Scrumban_Quantux.html`.
-* **Dictamen:** Implementado y Verificado. Al finalizar la ejecución de la barra del Demonio (100%), la tarjeta pasa de forma reactiva e inmediata a `status: 'qa'` ("EN REVISIÓN - ACEPTACIÓN SOLUTION OWNER") y se reordena al tope de la lista para su inspección formal, con notificación explícita en pantalla.
+### MEJ-09: Transición Automática de Tarjetas de Retrabajo al Final de la Pila de Revisión al Ejecutar Demonio
+* **Severidad:** P1 — Alta Prioridad / Automatización de Ciclo de Vida Scrumban & Ergonomía.
+* **Componente:** `scripts/build_full_scrumban_board.py` (`triggerDemonRework`, `syncIssueInBacklog`) y `docs/00_Tablero_Scrumban_Quantux.html`.
+* **Dictamen:** Implementado y Verificado. Conforme a la instrucción del Solution Owner ("la barra de porcentaje cuando se completa y corrige no envía la tarjeta al final de la pila de revisión", evidencia `media_1790474829399.png`), al finalizar la ejecución de la barra del Demonio (100%), la tarjeta transiciona automáticamente a la columna **"EN REVISIÓN - ACEPTACIÓN SOLUTION OWNER"** (`status: 'qa'`) y se inserta **al final de la pila de revisión** (`tasks.push(movedTask)`) para respetar el orden de cola de revisión. Adicionalmente se corrigió el desbordamiento del botón papelera `🗑️` en el contenedor de adjuntos y se protegió la persistencia en `syncIssueInBacklog` para no revertir el estado al recargar la página.
+
 
 ### MEJ-10: Posicionamiento Superior Inmediato ('Arriba de la Pila') al Aprobar Tarjetas a Aceptado
 * **Severidad:** P1 — Alta Prioridad / Ergonomía LIFO en Columna de Aceptación.
 * **Componente:** `scripts/build_full_scrumban_board.py` (`approveTaskDone`, `drop`, `moveTask`) y `docs/00_Tablero_Scrumban_Quantux.html`.
 * **Dictamen:** Implementado y Verificado. Toda tarjeta que transiciona a `status: 'done'` ("ACEPTADO Y FINALIZADO") es reposicionada en la cabeza (`unshift`) del vector de tareas, garantizando que quede visible en el primer lugar superior ("arriba de la pila") de la columna.
 
+
+
+
+### ISSUE-37: Supresión del Botón 'Backlog Jerárquico' en Barra de Navegación del Tablero
+* **Severidad:** P1 — Alta Prioridad / Ruido Funcional.
+* **Componente:** `scripts/build_full_scrumban_board.py` y `docs/00_Tablero_Scrumban_Quantux.html`.
+* **Dictamen:** Corregido y Verificado. Conforme a la orden directa del Solution Owner ("quita ese botón no aporta nada"), se removió el botón y su vista asociada, preservando la navegación unificada.
+
+### ISSUE-38: Rediseño de Barra de Navegación del Tablero Scrumban bajo Identidad Visual Quantux
+* **Severidad:** P1 — Alta Prioridad / Estándar Visual Zen.
+* **Componente:** `scripts/build_full_scrumban_board.py` y `docs/00_Tablero_Scrumban_Quantux.html`.
+* **Dictamen:** Corregido y Verificado. Se reemplazó el fondo oscuro `#1E293B` por fondo blanco luminoso `#FFFFFF` con borde `#E2E8F0`, pestañas estilizadas en Quantux Teal (`#00A896` / `#E0F7F5`), y erradicación total de emojis en toda la botonera y banners.
+
+### ISSUE-39: Corrección de Botones 'Tarjetas' | 'Tabla' en Clientes & Plataformas Sanitarias
+* **Severidad:** P1 — Alta Criticidad / Interrupción de Usabilidad.
+* **Componente:** `frontend/index.html` y `frontend/js/app.js` (`togglePlatformsViewMode`).
+* **Dictamen:** Corregido y Verificado. Se eliminaron estilos inline que bloqueaban la alternancia de vista, se normalizó el estilo de píldora activa Quantux (fondo blanco con sombra sutil) y se conectó la función con `renderInstitutionsCatalog()` para sincronizar datos instantáneamente.
+
+### ISSUE-40: Corrección de Apertura de Ficha 360° al Clicar Tarjeta OSDE y Demás Clientes
+* **Severidad:** P1 — Alta Criticidad / Fatal ReferenceError en Ejecución.
+* **Componente:** `frontend/js/app.js` (`openInstitutionDetailModal`, `formatPriorityBadge`).
+* **Dictamen:** Corregido y Verificado. Se definió globalmente `formatPriorityBadge` con estilos ITIL armonizados, eliminando el fallo `ReferenceError: formatPriorityBadge is not defined` que abortaba la apertura de OSDE y demás clientes con incidentes activos. Se incorporó bloque `try/catch/finally` para inmunizar el modal ante cualquier inconsistencia de datos.
+
+### ISSUE-41: Ocultamiento Categórico de 'Tablero de Control' y 'Torre de Control' para Todos los Roles
+* **Severidad:** P1 — Alta Criticidad / Cumplimiento de Regla de Negocio.
+* **Componente:** `frontend/js/app.js` (`applyRolePermissions`, `switchView`) y `frontend/index.html`.
+* **Dictamen:** Corregido y Verificado. Se ocultaron incondicionalmente ambos accesos del menú lateral (`display: none !important`) para todos los roles (Admin, Líder de Equipo, Soporte N1/N2/N3 y Solicitante), canalizando las operaciones a través del Mando Operativo y Centro de Ayuda.
+
+### ISSUE-42: Aislamiento Estricto RBAC: Ocultamiento del Módulo 'Mando Operativo' para Solicitantes
+* **Severidad:** P1 — Alta Criticidad / Fuga de Visibilidad Operativa Interna.
+* **Componente:** `frontend/js/app.js` (`applyRolePermissions`, `switchView`).
+* **Dictamen:** Corregido y Verificado. El rol Solicitante (Médicos y Pacientes) tiene estrictamente oculto el botón `#tab-unified-hub` y toda invocación por ruta es redirigida al `requester-portal` (Centro de Ayuda con Chat IA).
+
+### ISSUE-43: Reubicación Ergonométrica de Hamburguesa de 3 Rayas a la Izquierda del Título
+* **Severidad:** P1 — Alta Criticidad / Ergonomía de Menú Lateral.
+* **Componente:** `frontend/index.html` (`.sidebar-brand-header`, `#btn-sidebar-collapse`).
+* **Dictamen:** Corregido y Verificado. Se reordenó la estructura DOM de la cabecera del menú lateral posicionando el botón hamburguesa `#btn-sidebar-collapse` a la izquierda del texto `Service Desk / Mesa de Ayuda TI` con espaciado flexible de 12px.
+
+### ISSUE-44: Filtro por Defecto en Mesa de Ayuda para Analistas: Solo Casos Asignados y Sin Asignar
+* **Severidad:** P1 — Alta Criticidad / Sobrecarga de Información y Foco de Turno.
+* **Componente:** `frontend/js/app.js` (`loadTickets`, `applyRolePermissions`) y `frontend/index.html` (`#tkt-filter-assignee`).
+* **Dictamen:** Corregido y Verificado. Los analistas de soporte técnico (`SOPORTE`, `SOPORTE_N1`, `SOPORTE_N2`, `SOPORTE_N3`) cargan por defecto un filtro que restringe la bandeja operativa exclusivamente a tickets asignados a su propio usuario y tickets en estado Sin Asignar (o nuevos). Se habilitó el selector `#tkt-filter-assignee` para conmutar con flexibilidad.
+
+### MEJ-11: Tooltips de Gobernanza Scrumban en Cabeceras de Columna y Erradicación Total de Emojis
+* **Severidad:** P1 — Alta Prioridad / Ergonomía Visual y Limpieza Tipográfica.
+* **Componente:** `scripts/build_full_scrumban_board.py` y `docs/00_Tablero_Scrumban_Quantux.html`.
+* **Dictamen:** Implementado y Verificado. Descripciones de estados convertidas en tooltips interactivos no invasivos y eliminación definitiva de todos los emojis gráficos del tablero.
+
+### OPP-04 a OPP-08: Banco de 5 Oportunidades de Innovación de Mercado con Mockeo Interactivo
+* **Severidad:** P2 — Oportunidad de Mejora / Benchmark de Mercado (Zendesk Copilot, ServiceNow GenAI, InvGate Virtual Agent, Dynatrace RCA, Jira Service Management).
+* **Componente:** `scripts/build_full_scrumban_board.py` y `docs/00_Tablero_Scrumban_Quantux.html`.
+* **Dictamen:** Diseñado y Mockeado en Product Backlog con especificación completa, criterios de aceptación, estimación SP y prototipo de interacción.
+
+### ISSUE-45: Modal de Escalamiento N2 No Muestra Botones Inferiores y Requiere Campo de Adjuntos
+* **Severidad:** P1 — Alta Criticidad / Bloqueo de Flujo de Escalamiento Médico.
+* **Componente:** `frontend/index.html` (`#modal-preview-edit-ticket`), `frontend/js/app.js` (`handlePreviewTicketFileSelect`, `clearPreviewTicketAttachment`, `confirmCreateTicketFromPreview`).
+* **Evidencia Visual:** [`assets/capturas/ISSUE-45_modal_n2_botones_cortados_campo_adjuntos.png`](file:///C:/Users/FERO_ADM/.gemini/antigravity/scratch/quantux-v4-dev/docs/assets/capturas/ISSUE-45_modal_n2_botones_cortados_campo_adjuntos.png).
+* **Dictamen:** Corregido y Verificado. Se reconstruyó la estructura CSS del modal con `display: flex; flex-direction: column; max-height: 85vh;`, aislando el cuerpo con scroll independiente (`overflow-y: auto`) y fijando el footer con los botones de acción (`sticky; bottom: 0`). Se incorporó una dropzone interactiva de adjuntos con selector nativo de archivos, previsualización de archivo seleccionado, botón de remoción y persistencia del adjunto en el ticket transferido a Soporte N2.
+
+### ISSUE-46: Aislamiento Estricto de Diagnóstico Técnico al Solicitante (Solo para Analista en KB)
+* **Severidad:** P1 — Alta Criticidad / Fuga de Complejidad Técnica al Rol Asistencial.
+* **Componente:** `frontend/js/app.js` (`renderRequesterChatStream`).
+* **Evidencia Visual:** [`assets/capturas/ISSUE-46_ocultar_fundamento_tecnico_diagnostico_al_solicitante.png`](file:///C:/Users/FERO_ADM/.gemini/antigravity/scratch/quantux-v4-dev/docs/assets/capturas/ISSUE-46_ocultar_fundamento_tecnico_diagnostico_al_solicitante.png).
+* **Dictamen:** Corregido y Verificado. Se implementó una cláusula taxativa `const isRequesterUser = !AppState.currentUser || AppState.currentUser.role === 'SOLICITANTE';` que suprime al 100% el bloque desplegable de Fundamento Normativo y Técnico Oficial para el solicitante. El profesional de la salud recibe exclusivamente la Indicación Inmediata en lenguaje clínico resolutivo sin ningún tipo de recuadros técnicos, diagnósticos crudos o JSON.
+
+### ISSUE-47: Blindaje de Inmutabilidad Cuántica en 'Aceptado y Finalizado' (Done)
+* **Severidad:** P1 — Alta Criticidad / Gobernanza y Calidad Auditada.
+* **Componente:** `scripts/build_full_scrumban_board.py` (`createCardElement`, `moveTask`, `drag`, `drop`), `docs/00_Tablero_Scrumban_Quantux.html`.
+* **Evidencia Visual:** [`assets/capturas/ISSUE-47_tarjetas_en_aceptado_nunca_vuelven_a_estado_anterior.png`](file:///C:/Users/FERO_ADM/.gemini/antigravity/scratch/quantux-v4-dev/docs/assets/capturas/ISSUE-47_tarjetas_en_aceptado_nunca_vuelven_a_estado_anterior.png).
+* **Dictamen:** Implementado y Verificado. Toda tarjeta que transicione a `status: 'done'` ("ACEPTADO Y FINALIZADO") queda blindada de forma inmutable: se inhabilita el atributo `draggable = false`, se eliminan las flechas de desplazamiento hacia la izquierda, se sustituyen por un badge institucional `✓ Aceptado (Inmutable)`, y se interceptan los métodos `drag`, `drop` y `moveTask` bloqueando cualquier intento de retroceso hacia columnas previas.
+
+### ISSUE-48: Eliminación de Duplicidad en Cápsulas de Hito y Comité en Encabezado Scrumban
+* **Severidad:** P1 — Alta Prioridad / Calidad Visual y Limpieza Institucional.
+* **Componente:** `scripts/build_full_scrumban_board.py` y `docs/00_Tablero_Scrumban_Quantux.html`.
+* **Evidencia Visual:** [`assets/capturas/ISSUE-48_duplicidad_capsulas_hito_comite_evaluador.png`](file:///C:/Users/FERO_ADM/.gemini/antigravity/scratch/quantux-v4-dev/docs/assets/capturas/ISSUE-48_duplicidad_capsulas_hito_comite_evaluador.png).
+* **Dictamen:** Corregido y Verificado. Se removió el bloque `<div>` duplicado en la barra superior de gobernanza, manteniendo una única instancia perfectamente alineada a la derecha con los badges `HITO: 01-OCT-2026` y `COMITÉ EVALUADOR`.
+
+### ISSUE-49: Eliminación Definitiva del Botón 'Mis Solicitudes (1997)' de la Cabecera Superior
+* **Severidad:** P1 — Alta Criticidad / Experiencia Médica Limpia y Aislamiento de Telemetría.
+* **Componente:** `frontend/index.html` (`#requester-top-header-suite`, `#btn-top-requester-my-requests`), `frontend/js/app.js` (`getRequesterFilteredTickets`, `updateRequesterPortalCounters`, `switchRole`).
+* **Evidencia Visual:** [`assets/capturas/ISSUE-49_quitar_mis_solicitudes_o_badge_enorme_al_solicitante.png`](file:///C:/Users/FERO_ADM/.gemini/antigravity/scratch/quantux-v4-dev/docs/assets/capturas/ISSUE-49_quitar_mis_solicitudes_o_badge_enorme_al_solicitante.png).
+* **Dictamen:** Corregido y Verificado. Se eliminó el botón `#btn-top-requester-my-requests` y su divisor vertical de la barra de navegación del Solicitante. Asimismo, se corrigió la causa raíz en `getRequesterFilteredTickets()` que provocaba el cálculo erróneo del universo total de 1997 tickets de la plataforma. La cabecera superior exhibe únicamente el avatar y chip médico homologado (Dr. Martín Gómez).
+
+### ISSUE-50: Reemplazo de la Palabra 'Hardening' por 'Pruebas y Estabilización'
+* **Severidad:** P1 — Prioritario / Estandarización Lingüística y Calidad Institucional.
+* **Componente:** `scripts/build_full_scrumban_board.py` (Barra superior de Scope Freeze), `docs/00_Tablero_Scrumban_Quantux.html`.
+* **Evidencia Visual:** [`assets/capturas/ISSUE-50_reemplazo_palabra_hardening_por_pruebas_y_estabilizacion.png`](file:///C:/Users/FERO_ADM/.gemini/antigravity/scratch/quantux-v4-dev/docs/assets/capturas/ISSUE-50_reemplazo_palabra_hardening_por_pruebas_y_estabilizacion.png).
+* **Dictamen:** Implementado y Verificado. Por indicación taxativa del Solution Owner, se sustituyó la cápsula amarilla `FASE DE HARDENING` por la denominación oficial en español homologada `FASE DE PRUEBAS Y ESTABILIZACIÓN`, erradicando el anglicismo y armonizando la terminología en toda la suite.
+
+### OPP-09 a OPP-12: Ampliación de Oportunidades de Mercado en Product Backlog
+* **Severidad:** P2 — Oportunidades de Mercado / Arquitectura de Vanguardia.
+* **Entregables:**
+  - `OPP-09`: Agente Virtual Multicanal con Asistencia Autónoma de Nivel 0 (Freshservice Virtual Agent).
+  - `OPP-10`: Motor AIOps para Detección Proactiva de Degeneración de Infraestructura y Fallas en Redes Sanitarias (PagerDuty AIOps).
+  - `OPP-11`: Descubrimiento Automatizado y Cartografía Dinámica de Activos Tecnológicos y Dispositivos Biomédicos (Cherwell Asset Discovery).
+  - `OPP-12`: Triage Predictivo y Ruteo Inteligente Basado en Análisis de Sentimiento del Prestador de Salud (Salesforce Service Cloud Voice).
+* **Dictamen:** Registrados en el Product Backlog del Tablero Scrumban en estado `backlog` con estimación de puntos de historia, especificación funcional y criterios de adaptación.
+
+### ISSUE-51: Eliminación Definitiva del Chip de Perfil Médico de la Cabecera Superior
+* **Severidad:** P1 — Alta Criticidad / Cumplimiento de Regla de Negocio y Cero Ruido en Cabecera.
+* **Componente:** `frontend/index.html` (`#requester-top-header-suite`), `frontend/js/app.js` (`switchView`).
+* **Evidencia Visual:** [`assets/capturas/ISSUE-51_quitar_avatar_doctor_martin_gomez_cabecera.png`](file:///C:/Users/FERO_ADM/.gemini/antigravity/scratch/quantux-v4-dev/docs/assets/capturas/ISSUE-51_quitar_avatar_doctor_martin_gomez_cabecera.png).
+* **Dictamen:** Implementado y Verificado. Se suprimió del DOM el bloque con el avatar `MG` y texto `Dr. Martín Gómez / MN 142.859 • OSDE`. Se aseguró en `app.js` la ocultación permanente de `#requester-top-header-suite`, garantizando una barra superior limpia y despejada para el Solicitante. Incorporado al Sprint 6 en estado `qa`.
+
+### ISSUE-52: Corrección de Fallo de Clave Foránea en Motor de Auto-Balanceo de Carga
+* **Severidad:** P1 — Alta Criticidad / Interrupción de Motor de Inteligencia Operativa.
+* **Componente:** `backend/app/api/endpoints/team_leader.py` (`auto_rebalance_workload`), `backend/app/db/seed.py`, `backend/healthdesk.db`.
+* **Evidencia Visual:** [`assets/capturas/ISSUE-52_error_al_ejecutar_el_balanceo_automatizado.png`](file:///C:/Users/FERO_ADM/.gemini/antigravity/scratch/quantux-v4-dev/docs/assets/capturas/ISSUE-52_error_al_ejecutar_el_balanceo_automatizado.png).
+* **Dictamen:** Resuelto y Verificado. La llamada a `/api/v1/team-leader/auto-rebalance` fallaba con `sqlite3.IntegrityError: FOREIGN KEY constraint failed` al intentar auditar con el usuario `torre_control` no registrado en `users`. Se dio de alta formalmente la cuenta de servicio institucional `torre_control` en la base de datos y `seed.py`, y se parametrizó la resolución dinámica de `audit_actor_username` en `team_leader.py`. El endpoint retorna HTTP 200 con éxito reasignando más de 1.100 solicitudes operativas equitativamente sin errores. Incorporado al Sprint 6 en estado `qa`.
 
 

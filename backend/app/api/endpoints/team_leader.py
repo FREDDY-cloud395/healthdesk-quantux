@@ -220,6 +220,10 @@ def auto_rebalance_workload(session: Session = Depends(get_session)):
     if not support_users:
         return {"status": "warning", "message": "No hay analistas de soporte activos para balancear.", "reassigned_count": 0}
 
+    # Determinar actor válido para TicketAuditLog (garantizando integridad referencial FK a users)
+    actor = session.get(User, "torre_control") or session.get(User, "teamleader") or session.get(User, "admin")
+    audit_actor_username = actor.username if actor else "admin"
+
     all_tickets = session.exec(select(Ticket)).all()
     active_tickets = [t for t in all_tickets if t.status not in (TicketStatus.RESUELTO, TicketStatus.CERRADO)]
     unassigned = [t for t in active_tickets if not t.assignee_username or t.status == TicketStatus.NUEVO]
@@ -241,7 +245,7 @@ def auto_rebalance_workload(session: Session = Depends(get_session)):
         reassigned_count += 1
         session.add(TicketAuditLog(
             ticket_id=t.id,
-            changed_by_username="torre_control",
+            changed_by_username=audit_actor_username,
             field_changed="assignee_username",
             old_value="Sin Asignar",
             new_value=min_user,
@@ -273,7 +277,7 @@ def auto_rebalance_workload(session: Session = Depends(get_session)):
                         reassigned_count += 1
                         session.add(TicketAuditLog(
                             ticket_id=candidate.id,
-                            changed_by_username="torre_control",
+                            changed_by_username=audit_actor_username,
                             field_changed="assignee_username",
                             old_value=max_u,
                             new_value=min_u,
@@ -303,7 +307,7 @@ def auto_rebalance_workload(session: Session = Depends(get_session)):
                     reassigned_count += 1
                     session.add(TicketAuditLog(
                         ticket_id=candidate.id,
-                        changed_by_username="torre_control",
+                        changed_by_username=audit_actor_username,
                         field_changed="assignee_username",
                         old_value=max_user,
                         new_value=min_user,

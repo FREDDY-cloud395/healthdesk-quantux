@@ -47,6 +47,8 @@ def run_seed():
             User(username="alopez", full_name="Dra. Andrea López", email="alopez@sanatorio.salud.ar", role=UserRole.SOLICITANTE, support_level=None),
             User(username="jmolina", full_name="Dr. Javier Molina", email="jmolina@swissmedical.com.ar", role=UserRole.SOLICITANTE, support_level=None),
             User(username="cbenedetti", full_name="Dra. Clara Benedetti", email="cbenedetti@hospitalaleman.com", role=UserRole.SOLICITANTE, support_level=None),
+            User(username="teamleader", full_name="Carla Daneri", email="cdaneri@quantux.com", role=UserRole.TEAM_LEADER, support_level=SupportLevel.N2),
+            User(username="torre_control", full_name="Torre de Control Automática", email="torre.control@quantux.health", role=UserRole.ADMIN, support_level=SupportLevel.N3),
         ]
         for u in users:
             session.add(u)

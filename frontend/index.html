@@ -311,21 +311,21 @@
       <div class="sidebar-top">
         
         <!-- Header de Marca & Toggle de Colapso (Sin logo azul, botón hamburguesa destacado) -->
-        <div class="sidebar-brand-header" style="display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-bottom: 1px solid #E2E8F0; margin-bottom: 8px;">
-          <div class="sidebar-brand-text" style="display: flex; flex-direction: column; min-width: 0;">
-            <span style="font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 16px; color: #0F172A; letter-spacing: -0.3px; line-height: 1.1;">Service Desk</span>
-            <span style="font-size: 11px; color: #64748B; font-weight: 600; margin-top: 2px;">Mesa de Ayuda TI</span>
-          </div>
-          <button type="button" class="btn-win11-hamburger" id="btn-sidebar-collapse" onclick="toggleSidebarCollapse()" title="Plegar / Expandir Menú [Tecla '[']" aria-label="Menú" style="width: 34px; height: 34px; border-radius: 8px; background: #F1F5F9; border: 1.5px solid #CBD5E1; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #1E293B; box-shadow: 0 1px 3px rgba(0,0,0,0.05); transition: all 0.15s ease;" onmouseover="this.style.background='#E2E8F0'; this.style.borderColor='#94A3B8';" onmouseout="this.style.background='#F1F5F9'; this.style.borderColor='#CBD5E1';">
+        <div class="sidebar-brand-header" style="display: flex; align-items: center; justify-content: flex-start; gap: 12px; padding: 14px 16px; border-bottom: 1px solid #E2E8F0; margin-bottom: 8px;">
+          <button type="button" class="btn-win11-hamburger" id="btn-sidebar-collapse" onclick="toggleSidebarCollapse()" title="Plegar / Expandir Menú [Tecla '[']" aria-label="Menú" style="width: 34px; height: 34px; border-radius: 8px; background: #F1F5F9; border: 1.5px solid #CBD5E1; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #1E293B; box-shadow: 0 1px 3px rgba(0,0,0,0.05); transition: all 0.15s ease; flex-shrink: 0;" onmouseover="this.style.background='#E2E8F0'; this.style.borderColor='#94A3B8';" onmouseout="this.style.background='#F1F5F9'; this.style.borderColor='#CBD5E1';">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px;">
               <line x1="3" y1="6" x2="21" y2="6"></line>
               <line x1="3" y1="12" x2="21" y2="12"></line>
               <line x1="3" y1="18" x2="21" y2="18"></line>
             </svg>
           </button>
+          <div class="sidebar-brand-text" style="display: flex; flex-direction: column; min-width: 0;">
+            <span style="font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 16px; color: #0F172A; letter-spacing: -0.3px; line-height: 1.1;">Service Desk</span>
+            <span style="font-size: 11px; color: #64748B; font-weight: 600; margin-top: 2px;">Mesa de Ayuda TI</span>
+          </div>
         </div>
 
-        <!-- Enlaces de Navegación del Menú Izquierdo (Patrón Unificado de Iconos Outline) -->
+        <!-- Enlaces<!-- Enlaces de Navegación del Menú Izquierdo (Patrón Unificado de Iconos Outline) -->
         <nav class="sidebar-nav win11-sidebar-nav">
           <!-- Centro de Ayuda (Portal Solicitante con Chat de IA y Asistencia) -->
           <div class="nav-link-item nav-hub-tab" data-view="requester-portal" id="tab-requester-portal" title="Centro de Ayuda • Asistente IA de Soporte" data-tooltip="Centro de Ayuda">
@@ -483,32 +483,12 @@
             <input type="text" id="top-global-search-input" placeholder="Buscar por número de ticket, paciente o médico..." style="border: none; background: transparent; outline: none; font-size: 12px; width: 100%; color: #0F172A;" oninput="onGlobalOmniSearch(this.value)" onkeydown="if(event.key === 'Escape') { this.value = ''; onGlobalOmniSearch(''); }">
           </div>
 
-          <!-- Componente Oficial de Cabecera Solicitante / Prestador (Alineado al Mockup) -->
+          <!-- Componente Cabecera Solicitante (ISSUE-51: Chip de perfil médico MG / Dr. Martín Gómez removido taxativamente por orden del SO) -->
           <div id="requester-top-header-suite" style="display: none; align-items: center; gap: 10px;">
             <!-- Botón Crear Solicitud Directo (Cero Iconos / Regla de Oro) -->
-            <button type="button" id="btn-top-requester-create-ticket" onclick="openCreateTicketModal(true)" style="display: inline-flex; align-items: center; background: #00A896; color: #FFFFFF; border: none; padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.25); transition: all 0.15s ease;" onmouseover="this.style.background='#008F80'" onmouseout="this.style.background='#00A896'" title="Crear nueva solicitud formal">
+            <button type="button" id="btn-top-requester-create-ticket" onclick="openCreateTicketModal(true)" style="display: none; align-items: center; background: #00A896; color: #FFFFFF; border: none; padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.25); transition: all 0.15s ease;" onmouseover="this.style.background='#008F80'" onmouseout="this.style.background='#00A896'" title="Crear nueva solicitud formal">
               <span>+ Crear Solicitud</span>
             </button>
-
-            <!-- Botón Mis Solicitudes (Cero Iconos / Regla de Oro) -->
-            <button type="button" id="btn-top-requester-my-requests" onclick="openRequesterHistoryModal()" style="display: inline-flex; align-items: center; gap: 8px; background: #F1F5F9; border: 1.5px solid #CBD5E1; color: #0F172A; padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; box-shadow: 0 1px 3px rgba(10, 28, 62, 0.04); transition: all 0.15s ease;" onmouseover="this.style.borderColor='#0F172A'; this.style.color='#0F172A';" onmouseout="this.style.borderColor='#CBD5E1'; this.style.color='#0A1C3E';" title="Ver mis tickets y estado de atención">
-              <span>Mis Solicitudes</span>
-              <span id="req-history-badge" style="background: #00A896; color: #FFFFFF; font-size: 10px; font-weight: 800; padding: 2px 7px; border-radius: 9999px;">0</span>
-            </button>
-
-            <!-- Separador Vertical -->
-            <div style="height: 24px; width: 1px; background: #CBD5E1;"></div>
-
-            <!-- Chip Perfil Médico Homologado -->
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <div style="width: 32px; height: 32px; border-radius: 50%; background: #FFFFFF; color: #0F172A; border-bottom: 1px solid #E2E8F0; font-weight: 800; display: flex; align-items: center; justify-content: center; font-size: 11px; font-family: 'Outfit', sans-serif;">
-                MG
-              </div>
-              <div style="text-align: left; font-size: 11px; line-height: 1.2;">
-                <div style="font-weight: 700; color: #1E293B; font-family: 'Inter', sans-serif;">Dr. Martín Gómez</div>
-                <div style="font-size: 10px; color: #64748B;">MN 142.859 &bull; OSDE</div>
-              </div>
-            </div>
           </div>
 
           <!-- Botón Primario: Crear Ticket (Agentes de Soporte N1/N2/Admin) -->
@@ -983,6 +963,12 @@
                 <option value="today">Hoy (soporte operativo)</option>
                 <option value="7days">Últimos 7 Días</option>
                 <option value="30days">Últimos 30 Días</option>
+              </select>
+              <select id="tkt-filter-assignee" class="invgate-filter-select" onchange="onFilterChange()" title="Filtrar por Asignación Operativa">
+                <option value="DEFAULT_ANALYST">Mis Asignados + Sin Asignar</option>
+                <option value="MINE_ONLY">Solo Mis Asignados</option>
+                <option value="UNASSIGNED_ONLY">Solo Sin Asignar</option>
+                <option value="ALL">Todos los Responsables</option>
               </select>
               <button type="button" class="invgate-btn-tool" id="btn-refresh-tickets" onclick="resetBoardFilters()" title="Restablecer filtros y refrescar bandeja" style="padding: 0 10px; height: 32px; display: flex; align-items: center; justify-content: center; background: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 6px; cursor: pointer; transition: all 0.2s ease;">
                 <svg id="svg-refresh-icon" viewBox="0 0 24 24" fill="none" stroke="#334155" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px; transition: transform 0.45s ease;"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
@@ -1771,19 +1757,19 @@
                   <button type="button" class="btn-clean-action" data-inst-type-filter="INCIDENTS" onclick="filterInstitutionCardsByType('INCIDENTS')" style="padding: 3px 8px; font-size: 10.5px; font-weight: 700; border-radius: 5px; color: #0F172A; border-color: #CBD5E1;">Con Incidentes</button>
                 </div>
 
-                <!-- Selector de Modo de Vista -->
-                <div style="display: flex; background: #F1F5F9; padding: 2px; border-radius: 6px; gap: 2px;">
-                  <button type="button" id="btn-view-mode-cards" class="btn-view-mode active" onclick="togglePlatformsViewMode('cards')" title="Vista en Cuadrícula" style="border: none; background: #FFFFFF; color: #0F172A; padding: 3px 8px; border-radius: 5px; font-size: 10.5px; font-weight: 800; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.06);">
+                <!-- Selector de Modo de Vista (ISSUE-39) -->
+                <div style="display: flex; background: #F1F5F9; padding: 2px; border-radius: 6px; gap: 2px; border: 1px solid #E2E8F0;">
+                  <button type="button" id="btn-view-mode-cards" class="btn-view-mode active" onclick="togglePlatformsViewMode('cards')" title="Vista en Cuadrícula" style="border: none; background: #FFFFFF; color: #0F172A; padding: 3px 10px; border-radius: 5px; font-size: 10.5px; font-weight: 800; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.08);">
                     <span>Tarjetas</span>
                   </button>
-                  <button type="button" id="btn-view-mode-table" class="btn-view-mode" onclick="togglePlatformsViewMode('table')" title="Vista en Tabla" style="border: none; background: transparent; color: #64748B; padding: 3px 8px; border-radius: 5px; font-size: 10.5px; font-weight: 700; cursor: pointer;">
+                  <button type="button" id="btn-view-mode-table" class="btn-view-mode" onclick="togglePlatformsViewMode('table')" title="Vista en Tabla" style="border: none; background: transparent; color: #64748B; padding: 3px 10px; border-radius: 5px; font-size: 10.5px; font-weight: 700; cursor: pointer;">
                     <span>Tabla</span>
                   </button>
                 </div>
               </div>
 
-              <!-- Contenedor Cuadrícula de Tarjetas Responsiva (Auto-Adaptable sin cortes y sin scroll) -->
-              <div id="grid-institutions-cards" style="display: grid; display: flex; flex-direction: column; gap: 10px; width: 100%; box-sizing: border-box;">
+              <!-- Contenedor Cuadrícula<!-- Contenedor Cuadrícula de Tarjetas Responsiva (Auto-Adaptable sin cortes y sin scroll) -->
+              <div id="grid-institutions-cards" style="display: flex; flex-direction: column; gap: 10px; width: 100%; box-sizing: border-box;">
                 <!-- Se inyecta dinámicamente desde renderInstitutionsCatalog() -->
               </div>
 
@@ -2278,10 +2264,12 @@
   <div class="modal-overlay" id="modal-view-article">
     <div class="modal-box" style="max-width: 640px;">
       <div class="modal-header">
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <span id="view-article-icon" style="font-size: 20px;">📄</span>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="width: 32px; height: 32px; border-radius: 6px; background: #E0F7F5; border: 1px solid #80DFD5; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800; color: #00A896; font-family: monospace;">
+            KB
+          </div>
           <div>
-            <div id="view-article-cat" style="font-size: 10.5px; font-weight: 800; color: #0D9488; text-transform: uppercase;">Receta Digital</div>
+            <div id="view-article-cat" style="font-size: 10.5px; font-weight: 800; color: #0D9488; text-transform: uppercase;">Procedimiento Técnico</div>
             <span class="modal-title" id="view-article-title" style="font-size: 14px;">Procedimiento Operativo</span>
           </div>
         </div>
@@ -2306,7 +2294,7 @@
           <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
             <div style="display: flex; align-items: center; gap: 6px;">
               <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #00A896;"></span>
-              <span style="font-size: 12px; font-weight: 800; color: #0F172A; text-transform: uppercase; letter-spacing: 0.3px;">Tickets que sumaron información al resolverse (KCS v6)</span>
+              <span style="font-size: 12px; font-weight: 800; color: #0F172A; text-transform: uppercase; letter-spacing: 0.3px;">Tickets que alimentan esta Base de Conocimiento (KCS v6)</span>
             </div>
             <span id="view-article-contributions-badge" style="font-size: 11px; font-weight: 700; background: #F0FDFA; color: #0D9488; border: 1px solid #CCFBF1; border-radius: 12px; padding: 2px 8px;">0 aportes</span>
           </div>
@@ -2316,8 +2304,8 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn-sec" onclick="copyArticleContent()">📋 Copiar Procedimiento</button>
-        <button type="button" class="btn-pri" onclick="document.getElementById('modal-view-article').classList.remove('active')">Entendido</button>
+        <button type="button" class="btn-sec" onclick="copyArticleContent()">Copiar Procedimiento</button>
+        <button type="button" class="btn-pri" onclick="document.getElementById('modal-view-article').classList.remove('active')">Cerrar</button>
       </div>
     </div>
   </div>
@@ -3050,23 +3038,23 @@
         <!-- Filtro Estado del Caso (Por defecto oculta resueltos y cerrados) -->
         <div class="form-group" style="margin-bottom: 0;">
           <label style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
-            📊 Estado del Caso:
+            Estado del Caso:
           </label>
           <select id="adv-filter-status" class="form-control" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid #CBD5E1; font-size: 13px;">
-            <option value="ACTIVE" selected>⚡ Solo Casos Activos (Ocultar Resueltos y Cerrados)</option>
-            <option value="ALL">🌐 Todos los Estados (Incluir Resueltos y Cerrados)</option>
-            <option value="NUEVO">✨ NUEVO (Sin Asignar)</option>
-            <option value="ASIGNADO">👤 ASIGNADO (En Cola)</option>
-            <option value="EN_CURSO">⚙️ EN CURSO (En Diagnóstico)</option>
-            <option value="RESUELTO">✅ RESUELTO (Casos Resueltos)</option>
-            <option value="CERRADO">🔒 CERRADO (Casos Archivados)</option>
+            <option value="ACTIVE" selected>Solo Casos Activos (Ocultar Resueltos y Cerrados)</option>
+            <option value="ALL">Todos los Estados (Incluir Resueltos y Cerrados)</option>
+            <option value="NUEVO">NUEVO (Sin Asignar)</option>
+            <option value="ASIGNADO">ASIGNADO (En Cola)</option>
+            <option value="EN_CURSO">EN CURSO (En Diagnóstico)</option>
+            <option value="RESUELTO">RESUELTO (Casos Resueltos)</option>
+            <option value="CERRADO">CERRADO (Casos Archivados)</option>
           </select>
         </div>
 
         <!-- Filtro Institución -->
         <div class="form-group" style="margin-bottom: 0;">
           <label style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
-            🏥 Institución / Sede técnico-operativo:
+            Institución / Sede técnico-operativo:
           </label>
           <select id="adv-filter-institution" class="form-control" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid #CBD5E1; font-size: 13px;">
             <option value="">Todas las Instituciones (Multi-Sede)</option>
@@ -3077,28 +3065,28 @@
           <!-- Filtro Nivel ITIL -->
           <div class="form-group" style="margin-bottom: 0;">
             <label style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
-              🏢 Nivel de Soporte ITIL:
+              Nivel de Soporte ITIL:
             </label>
             <select id="adv-filter-level" class="form-control" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid #CBD5E1; font-size: 13px;">
               <option value="">Todos los Niveles</option>
-              <option value="N1">🔵 Nivel 1 • clasificación técnica</option>
-              <option value="N2">🟣 Nivel 2 • Especialista</option>
-              <option value="N3">🔴 Nivel 3 • Ingeniería</option>
+              <option value="N1">Nivel 1 • Clasificación técnica</option>
+              <option value="N2">Nivel 2 • Especialista</option>
+              <option value="N3">Nivel 3 • Ingeniería</option>
             </select>
           </div>
 
           <!-- Filtro Prioridad ITIL -->
           <div class="form-group" style="margin-bottom: 0;">
             <label style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
-              ⚡ Prioridad ITIL:
+              Prioridad ITIL:
             </label>
             <select id="adv-filter-priority" class="form-control" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid #CBD5E1; font-size: 13px;">
               <option value="">Todas las Prioridades</option>
-              <option value="P1">🚨 P1 - Crítica (SLA 2h)</option>
-              <option value="P2">⚠️ P2 - Alta (SLA 8h)</option>
-              <option value="P3">🔷 P3 - Media (SLA 24h)</option>
-              <option value="P4">⚪ P4 - Baja (SLA 48h)</option>
-              <option value="P5">📅 P5 - Planificada (SLA 72h)</option>
+              <option value="P1">P1 - Crítica (SLA 2h)</option>
+              <option value="P2">P2 - Alta (SLA 8h)</option>
+              <option value="P3">P3 - Media (SLA 24h)</option>
+              <option value="P4">P4 - Baja (SLA 48h)</option>
+              <option value="P5">P5 - Planificada (SLA 72h)</option>
             </select>
           </div>
         </div>
@@ -3106,7 +3094,7 @@
         <!-- Filtro Plataforma / Sistema -->
         <div class="form-group" style="margin-bottom: 0;">
           <label style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
-            💻 Plataforma / Módulo de Servicio:
+            Plataforma / Módulo de Servicio:
           </label>
           <select id="adv-filter-platform" class="form-control" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid #CBD5E1; font-size: 13px;">
             <option value="">Todas las Plataformas y Módulos</option>
@@ -3116,7 +3104,7 @@
 
       <div class="modal-footer modal-footer-senior" style="padding-top: 14px; border-top: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center;">
         <button type="button" class="btn-sec" onclick="resetAdvancedFilters()" style="padding: 8px 14px; font-size: 12.5px; font-weight: 700; border-radius: 8px;">
-          🔄 Restablecer
+          Restablecer
         </button>
         <div style="display: flex; gap: 10px;">
           <button type="button" class="btn-sec" onclick="closeAdvancedFiltersModal()" style="padding: 8px 14px; font-size: 12.5px; font-weight: 700; border-radius: 8px;">
@@ -3214,8 +3202,8 @@
               <div id="ws-desc-attachment-wrapper" style="margin-top: 10px; display: none; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 10px 12px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap;">
                   <div style="display: flex; align-items: center; gap: 10px; min-width: 0;">
-                    <div style="width: 32px; height: 32px; border-radius: 6px; background: #EFF6FF; border: 1px solid #DBEAFE; display: flex; align-items: center; justify-content: center; font-size: 15px; color: #0F172A; flex-shrink: 0;">
-                      📄
+                    <div style="width: 32px; height: 32px; border-radius: 6px; background: #E0F7F5; border: 1px solid #80DFD5; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800; color: #00A896; flex-shrink: 0; font-family: monospace;">
+                      LOG
                     </div>
                     <div style="min-width: 0;">
                       <div style="font-size: 10px; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px;">Evidencia Técnica Adjunta</div>
@@ -3225,7 +3213,7 @@
                     </div>
                   </div>
                   <a href="#" target="_blank" id="ws-desc-attachment-link" class="btn-clean-action" style="background: #00A896 !important; color: #FFFFFF !important; border: none !important; padding: 5px 12px !important; border-radius: 6px !important; font-size: 11px !important; font-weight: 700 !important; text-decoration: none !important; display: inline-flex !important; align-items: center !important; gap: 4px !important; white-space: nowrap !important; cursor: pointer !important;">
-                    <span>⬇ Descargar Log / Evidencia</span>
+                    <span>Descargar Log / Evidencia</span>
                   </a>
                 </div>
               </div>
@@ -3242,43 +3230,62 @@
                     <select id="ws-reply-author-select" onchange="onWsReplyAuthorChange()" style="font-size: 11.5px; font-weight: 600; padding: 3px 8px; border-radius: 4px; border: 1px solid #CBD5E1; background: #FFFFFF; color: #0F172A; outline: none; cursor: pointer;">
                       <option value="operador">Operador Asignado (Mesa ITIL)</option>
                       <option value="solicitante">Prestador / Solicitante</option>
-                      <option value="bot_quantux">🤖 Bot Quantux (Asistencia)</option>
+                      <option value="bot_quantux">Bot Quantux (Asistencia)</option>
                     </select>
                   </div>
                   <div style="font-size: 11px; color: #64748B;" id="ws-reply-channel-hint">Portal de Soporte Técnico</div>
                 </div>
                 <textarea id="ws-reply-textarea" class="ws-reply-textarea" rows="3" placeholder="Escriba una respuesta aquí..."></textarea>
                 
-                <div class="ws-reply-toolbar">
-                  <div class="ws-reply-tools-left">
-                    <button type="button" class="ws-tool-icon-btn" title="Adjuntar Archivo" onclick="showToast('Habilitado para adjuntar logs y capturas PNG/PDF', 'info')">
-                      📎
+                <!-- Badge de archivo adjunto seleccionado (CERO ICONOS) -->
+                <div id="ws-reply-attachment-badge" style="display: none; margin-top: 6px; padding: 6px 12px; background: #F1F5F9; border: 1px solid #CBD5E1; border-radius: 6px; font-size: 11.5px; align-items: center; justify-content: space-between; gap: 8px;">
+                  <div style="display: flex; align-items: center; gap: 8px; min-width: 0; overflow: hidden;">
+                    <span style="font-weight: 700; color: #0F172A;">Adjunto:</span>
+                    <span id="ws-reply-attachment-name" style="color: #334155; font-weight: 600; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; max-width: 320px;"></span>
+                    <span id="ws-reply-attachment-size" style="color: #64748B; font-size: 10.5px;"></span>
+                  </div>
+                  <button type="button" onclick="clearWsReplyAttachment()" style="background: none; border: none; color: #64748B; font-size: 11.5px; font-weight: 700; cursor: pointer; padding: 2px 6px;" title="Quitar archivo adjunto">Quitar</button>
+                </div>
+
+                <div class="ws-reply-toolbar" style="margin-top: 8px;">
+                  <div class="ws-reply-tools-left" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                    <!-- Botón único para buscar y adjuntar archivos (CERO ICONOS / DIBUJITOS) -->
+                    <input type="file" id="ws-reply-file-input" style="display: none;" onchange="handleWsReplyFileSelected(event)">
+                    <button type="button" class="ws-tool-action-btn" id="ws-btn-attach-file" title="Buscar y adjuntar archivo" onclick="triggerWsReplyFileBrowse()">
+                      Adjuntar archivo
                     </button>
-                    <button type="button" class="ws-tool-icon-btn" title="Insertar Imagen" onclick="showToast('Pegue capturas de pantalla directamente', 'info')">
-                      🖼️
+
+                    <!-- Botón de plantillas: seleccionar, editar y generar nuevas (CERO ICONOS / DIBUJITOS) -->
+                    <button type="button" class="ws-tool-action-btn" id="ws-btn-manage-templates" title="Plantillas de respuesta rápida (editar, crear y seleccionar)" onclick="openTemplatesModal()">
+                      Plantillas
                     </button>
-                    <button type="button" class="ws-tool-icon-btn" id="ws-btn-canned-template" title="Plantillas de Respuesta Rápida" onclick="insertQuickResponseTemplate()">
-                      📄
-                    </button>
+
+                    <!-- Botón de Solución KB (CERO ICONOS / DIBUJITOS) -->
                     <button type="button" class="ws-tool-action-btn" id="ws-btn-insert-kb" title="Insertar procedimiento de la Base de Conocimiento en la respuesta sin salir del caso" onclick="openQuickKbInsertModal()">
-                      <span>📚</span>
-                      <span>Insertar Solución KB</span>
+                      Insertar Solución KB
                     </button>
-                    <button type="button" class="ws-tool-action-btn ws-btn-bot-action" id="ws-btn-bot-request-info" title="🤖 Bot Quantux: Solicitar datos complementarios al usuario (Pausa el SLA)" onclick="confirmAndTriggerBotInteraction()">
-                      <span>🤖</span>
-                      <span>Bot: Pedir Datos (Pausa SLA)</span>
+
+                    <!-- Botón Pedir Datos / Pausa SLA (CERO ICONOS / DIBUJITOS) -->
+                    <button type="button" class="ws-tool-action-btn ws-btn-bot-action" id="ws-btn-bot-request-info" title="Solicitar datos complementarios al usuario y pausar formalmente el SLA (ITIL 4)" onclick="confirmAndTriggerBotInteraction()">
+                      Pedir Datos (Pausa SLA)
                     </button>
                   </div>
 
-                  <div class="ws-reply-tools-right">
+                  <div class="ws-reply-tools-right" style="display: flex; align-items: center; gap: 10px;">
                     <label class="ws-checkbox-internal" title="Marque si este mensaje es una nota privada visible solo para el equipo técnico">
                       <input type="checkbox" id="ws-reply-is-internal">
                       <span>Interno</span>
                     </label>
 
-                    <button type="button" class="btn-pri ws-btn-submit-reply" id="ws-btn-send-reply" onclick="submitAgentWorkspaceReply()">
-                      <span>Responder</span>
-                    </button>
+                    <!-- Botonera Dual: Responder / Responder y Resolver -->
+                    <div style="display: inline-flex; border-radius: 6px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                      <button type="button" class="btn-pri ws-btn-submit-reply" id="ws-btn-send-reply" onclick="submitAgentWorkspaceReply(false)" style="border-radius: 0; padding: 6px 14px; font-weight: 700; font-size: 11.5px; border-right: 1px solid rgba(255,255,255,0.2);">
+                        Responder
+                      </button>
+                      <button type="button" class="btn-clean-action" id="ws-btn-send-resolve" onclick="submitAgentWorkspaceReply(true)" title="Enviar respuesta y marcar el ticket como Resuelto" style="background: #00A896 !important; color: #FFFFFF !important; border: none !important; border-radius: 0 !important; padding: 6px 12px !important; font-weight: 700 !important; font-size: 11.5px !important; cursor: pointer !important; white-space: nowrap !important; transition: background 0.15s ease;">
+                        Responder y Resolver
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -4526,10 +4533,10 @@
     </div>
   </div>
 
-  <!-- MODAL DE PREVISUALIZACIÓN Y EDICIÓN PREVIA ANTES DE GENERAR TICKET (PIZARRA NEUTRAL) -->
+  <!-- MODAL DE PREVISUALIZACIÓN Y EDICIÓN PREVIA ANTES DE GENERAR TICKET (PIZARRA NEUTRAL / ISSUE-45) -->
   <div class="modal-overlay" id="modal-preview-edit-ticket" style="z-index: 1060;">
-    <div class="modal-box modal-box-senior" style="max-width: 620px; background: #FFFFFF; border-radius: 12px; box-shadow: 0 20px 45px rgba(0,0,0,0.2); overflow: hidden;">
-      <div class="modal-header modal-header-senior" style="background: #FFFFFF; border-bottom: 1px solid #E2E8F0; padding: 16px 22px; display: flex; justify-content: space-between; align-items: flex-start;">
+    <div class="modal-box modal-box-senior" style="max-width: 620px; width: 95%; max-height: 88vh; display: flex; flex-direction: column; background: #FFFFFF; border-radius: 12px; box-shadow: 0 20px 45px rgba(0,0,0,0.2); overflow: hidden;">
+      <div class="modal-header modal-header-senior" style="flex-shrink: 0; background: #FFFFFF; border-bottom: 1px solid #E2E8F0; padding: 14px 22px; display: flex; justify-content: space-between; align-items: flex-start;">
         <div>
           <div style="font-size: 15.5px; font-weight: 800; color: #0F172A; font-family: 'Outfit', sans-serif;">
             Crear Solicitud de Soporte Técnico Especializado (N2)
@@ -4541,10 +4548,10 @@
         <button class="modal-close-btn" type="button" onclick="closeTicketPreviewModal()" style="font-size: 22px; line-height: 1; border: none; background: transparent; cursor: pointer; color: #94A3B8;">&times;</button>
       </div>
 
-      <form id="form-preview-ticket" onsubmit="event.preventDefault(); confirmCreateTicketFromPreview();">
-        <div class="modal-body modal-body-senior" style="padding: 18px 22px; max-height: 75vh; overflow-y: auto;">
+      <form id="form-preview-ticket" onsubmit="event.preventDefault(); confirmCreateTicketFromPreview();" style="display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden; margin: 0;">
+        <div class="modal-body modal-body-senior" style="flex: 1; min-height: 0; overflow-y: auto; padding: 16px 22px;">
           <!-- Telemetría Pre-cargada del Profesional y Plataforma (Figura 3) -->
-          <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-left: 3.5px solid #00A896; border-radius: 8px; padding: 12px 16px; margin-bottom: 16px;">
+          <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-left: 3.5px solid #00A896; border-radius: 8px; padding: 12px 16px; margin-bottom: 14px;">
             <div style="font-size: 11px; font-weight: 800; color: #00A896; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">
               Telemetría Operativa Pre-cargada
             </div>
@@ -4559,12 +4566,12 @@
             </div>
           </div>
 
-          <div class="form-group" style="margin-bottom: 14px;">
+          <div class="form-group" style="margin-bottom: 12px;">
             <label class="form-label" for="preview-ticket-title" style="font-weight: 700; font-size: 12px; color: #0F172A; display: block; margin-bottom: 5px;">Asunto de la Solicitud *</label>
             <input type="text" id="preview-ticket-title" class="form-control" required style="font-size: 13px; border: 1.5px solid #CBD5E1; border-radius: 6px; padding: 8px 12px; width: 100%; color: #0F172A;">
           </div>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
             <div class="form-group">
               <label class="form-label" for="preview-ticket-platform" style="font-weight: 700; font-size: 12px; color: #0F172A; display: block; margin-bottom: 5px;">Plataforma / Módulo *</label>
               <select id="preview-ticket-platform" class="form-control" style="font-size: 12px; border: 1.5px solid #CBD5E1; border-radius: 6px; padding: 8px 10px; width: 100%; color: #0F172A;">
@@ -4586,13 +4593,37 @@
             </div>
           </div>
 
-          <div class="form-group" style="margin-bottom: 14px;">
+          <div class="form-group" style="margin-bottom: 12px;">
             <label class="form-label" for="preview-ticket-description" style="font-weight: 700; font-size: 12px; color: #0F172A; display: block; margin-bottom: 5px;">Descripción Operativa y Diagnóstico *</label>
-            <textarea id="preview-ticket-description" class="form-control" rows="5" required style="font-size: 12.5px; border: 1.5px solid #CBD5E1; border-radius: 6px; padding: 8px 12px; width: 100%; color: #0F172A; line-height: 1.5; font-family: 'Inter', sans-serif;"></textarea>
+            <textarea id="preview-ticket-description" class="form-control" rows="4" required style="font-size: 12.5px; border: 1.5px solid #CBD5E1; border-radius: 6px; padding: 8px 12px; width: 100%; color: #0F172A; line-height: 1.5; font-family: 'Inter', sans-serif;"></textarea>
+          </div>
+
+          <!-- CAMPO PARA ADJUNTAR ARCHIVOS / CAPTURAS (ISSUE-45) -->
+          <div class="form-group" style="margin-bottom: 6px;">
+            <label class="form-label" style="font-weight: 700; font-size: 12px; color: #0F172A; display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+              <span>Adjuntar Archivo o Captura de Pantalla</span>
+              <span style="font-size: 11px; font-weight: 400; color: #64748B;">Opcional (PDF, PNG, JPG, DOCX - máx 10MB)</span>
+            </label>
+            <div id="preview-ticket-dropzone" onclick="document.getElementById('preview-ticket-file-input').click()" style="border: 1.5px dashed #CBD5E1; border-radius: 8px; padding: 10px 14px; background: #F8FAFC; text-align: center; cursor: pointer; transition: all 0.2s ease;">
+              <input type="file" id="preview-ticket-file-input" style="display: none;" onchange="handlePreviewTicketFileSelect(event)">
+              <div id="preview-ticket-upload-prompt" style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <span style="color: #00A896; font-weight: 700; font-size: 12px;">Examinar archivo</span>
+                <span style="color: #64748B; font-size: 12px;">o arrastrar y soltar aquí</span>
+              </div>
+              <div id="preview-ticket-attachment-badge" style="display: none; align-items: center; justify-content: space-between; background: #E6FFFA; border: 1px solid #B2F5EA; border-radius: 6px; padding: 6px 12px; margin-top: 4px;">
+                <div style="display: flex; align-items: center; gap: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                  <span style="font-size: 11.5px; font-weight: 700; color: #00A896;">Adjunto:</span>
+                  <span id="preview-ticket-filename" style="font-size: 12px; font-weight: 600; color: #0F172A; text-overflow: ellipsis; overflow: hidden; max-width: 320px;"></span>
+                  <span id="preview-ticket-filesize" style="font-size: 11px; color: #64748B;"></span>
+                </div>
+                <button type="button" onclick="event.stopPropagation(); clearPreviewTicketAttachment();" style="background: transparent; border: none; color: #64748B; font-weight: 700; font-size: 12px; cursor: pointer; padding: 2px 6px;" title="Quitar archivo adjunto">Quitar</button>
+              </div>
+            </div>
+            <input type="hidden" id="preview-ticket-attachment-url" value="">
           </div>
         </div>
 
-        <div class="modal-footer modal-footer-senior" style="background: #F8FAFC; border-top: 1px solid #E2E8F0; padding: 14px 22px; display: flex; justify-content: flex-end; gap: 10px;">
+        <div class="modal-footer modal-footer-senior" style="flex-shrink: 0; background: #F8FAFC; border-top: 1px solid #E2E8F0; padding: 14px 22px; display: flex; justify-content: flex-end; align-items: center; gap: 10px;">
           <button type="button" class="btn-sec" onclick="closeTicketPreviewModal()" style="background: #FFFFFF; border: 1.5px solid #CBD5E1; color: #475569; padding: 8px 16px; border-radius: 6px; font-size: 12.5px; font-weight: 700; cursor: pointer;">Cancelar</button>
           <button type="submit" class="btn-pri" id="btn-confirm-preview-ticket" style="background: #00A896; border: none; color: #FFFFFF; font-weight: 700; padding: 8px 20px; border-radius: 6px; font-size: 12.5px; cursor: pointer; transition: background 0.15s ease;">Confirmar y Escalar a N2</button>
         </div>

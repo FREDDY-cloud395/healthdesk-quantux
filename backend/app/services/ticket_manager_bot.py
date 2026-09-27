@@ -541,11 +541,13 @@ class TicketManagerBot:
         ).all()
 
         results = []
+        seen_tickets = set()
         for c in contributions:
             ticket = session.get(Ticket, c.ticket_id)
+            seen_tickets.add(c.ticket_id)
             results.append({
                 "ticket_id": c.ticket_id,
-                "title": c.ticket_title or (ticket.title if ticket else "Incidencia Asistencial"),
+                "title": c.ticket_title or (ticket.title if ticket else "Incidencia Técnica"),
                 "contribution_summary": c.contribution_summary,
                 "solution_steps": c.solution_steps,
                 "contributor_username": c.contributor_username,
@@ -556,4 +558,25 @@ class TicketManagerBot:
                 "platform_code": ticket.platform_code if ticket else "GENERAL",
                 "institution_code": ticket.institution_code if ticket else "GENERAL"
             })
+
+        # Si el artículo fue creado a partir de un ticket origen y aún no está en contributions
+        article = session.get(KBArticle, article_id)
+        if article and article.source_ticket_id and article.source_ticket_id not in seen_tickets:
+            src_ticket = session.get(Ticket, article.source_ticket_id)
+            if src_ticket:
+                seen_tickets.add(src_ticket.id)
+                results.append({
+                    "ticket_id": src_ticket.id,
+                    "title": src_ticket.title,
+                    "contribution_summary": f"Ticket origen fundador del procedimiento: {src_ticket.resolution_notes or 'Procedimiento homologado en cierre'}",
+                    "solution_steps": src_ticket.resolution_notes,
+                    "contributor_username": src_ticket.resolved_by or src_ticket.assignee_username or "soporte",
+                    "contributor_role": "AUTOR_BASE",
+                    "contributor_sector": src_ticket.platform_code or "Soporte Técnico",
+                    "created_at": src_ticket.resolved_at.isoformat() if src_ticket.resolved_at else (src_ticket.created_at.isoformat() if src_ticket.created_at else None),
+                    "priority": src_ticket.priority.value if hasattr(src_ticket.priority, 'value') else str(src_ticket.priority),
+                    "platform_code": src_ticket.platform_code or "GENERAL",
+                    "institution_code": src_ticket.institution_code or "GENERAL"
+                })
+
         return results

@@ -1372,12 +1372,12 @@ def bot_ticket_interact(ticket_id: str, req: BotInteractionModeRequest, session:
         ))
 
         note = req.custom_note or "Por favor, indíquenos si el error persiste en el navegador y si cuenta con el token de atención generado."
-        bot_msg = f"🤖 [Bot Quantux - Solicitud de Información al Prestador]\nEstimado/a @{ticket.requester_username or 'Prestador'}: El analista @{req.performed_by} requiere datos adicionales para avanzar en su caso:\n\n👉 {note}\n\n(El cómputo de SLA permanecerá en pausa hasta su respuesta)."
+        bot_msg = f"[Soporte Quantux - Solicitud de Información al Prestador]\nEstimado/a @{ticket.requester_username or 'Prestador'}: El analista @{req.performed_by} requiere datos adicionales para avanzar en su caso:\n\n- {note}\n\n(El cómputo de SLA permanecerá formalmente en pausa hasta su respuesta)."
 
     elif req.action_type == "dispatch_sector":
         sector = req.target_sector or "Nivel 2 Especializado"
         note = req.custom_note or "Se solicita intervención para verificación técnica de conectividad o base de datos."
-        bot_msg = f"🤖 [Bot Quantux - Coordinación Intersectorial]\nSe ha notificado al sector: **{sector}**.\nAnalista emisor: @{req.performed_by}.\nDetalle de la solicitud: {note}\nContexto: Ticket #{ticket.id} - {ticket.title} (Prioridad: {ticket.priority})."
+        bot_msg = f"[Soporte Quantux - Coordinación Intersectorial]\nSe ha notificado al sector: **{sector}**.\nAnalista emisor: @{req.performed_by}.\nDetalle de la solicitud: {note}\nContexto: Ticket #{ticket.id} - {ticket.title} (Prioridad: {ticket.priority})."
 
         session.add(TicketAuditLog(
             ticket_id=ticket.id,
@@ -1389,10 +1389,10 @@ def bot_ticket_interact(ticket_id: str, req: BotInteractionModeRequest, session:
         ))
 
     elif req.action_type == "summarize_handoff":
-        bot_msg = f"🤖 [Bot Quantux - Resumen de Traspaso Intersectorial]\n• Incidencia: #{ticket.id} - {ticket.title}\n• Estado actual: {ticket.status.value if hasattr(ticket.status, 'value') else ticket.status}\n• Solicitante: @{ticket.requester_username}\n• Diagnóstico previo: {ticket.resolution_notes or 'En evaluación preliminar por N1'}\n• Acción requerida: Continuidad operativa sin corte de servicio asistencial."
+        bot_msg = f"[Soporte Quantux - Resumen de Traspaso Intersectorial]\n• Incidencia: #{ticket.id} - {ticket.title}\n• Estado actual: {ticket.status.value if hasattr(ticket.status, 'value') else ticket.status}\n• Solicitante: @{ticket.requester_username}\n• Diagnóstico previo: {ticket.resolution_notes or 'En evaluación preliminar por N1'}\n• Acción requerida: Continuidad operativa sin corte de servicio asistencial."
 
     else:
-        bot_msg = f"🤖 [Bot Quantux] Interacción registrada por @{req.performed_by}."
+        bot_msg = f"[Soporte Quantux] Interacción registrada por @{req.performed_by}."
 
     comment = TicketComment(
         ticket_id=ticket.id,

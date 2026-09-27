@@ -389,6 +389,18 @@ function switchMobileCockpitTab(colId) {
 }
 
 function switchView(viewName) {
+  const currentRole = AppState.currentUser ? (AppState.currentUser.role || 'SOLICITANTE') : 'SOLICITANTE';
+
+  // ISSUE-41: Tablero de Control y Torre de Control ocultos para todos los roles
+  if (viewName === 'dashboard' || viewName === 'team-leader') {
+    viewName = (currentRole === 'SOLICITANTE') ? 'requester-portal' : 'unified-hub';
+  }
+
+  // ISSUE-42: El rol Solicitante no debe ver ni acceder a Mando Operativo
+  if (currentRole === 'SOLICITANTE' && (viewName === 'unified-hub' || viewName === 'tickets')) {
+    viewName = 'requester-portal';
+  }
+
  AppState.currentView = viewName;
  try {
  localStorage.setItem('quantux_active_view', viewName);
@@ -472,7 +484,7 @@ function switchView(viewName) {
     if (viewName === 'requester-portal') {
       if (topSearchBox) topSearchBox.style.display = 'none';
       if (staffCreateBtn) staffCreateBtn.style.display = 'none';
-      if (reqHeaderSuite) reqHeaderSuite.style.display = 'flex';
+      if (reqHeaderSuite) reqHeaderSuite.style.display = 'none'; // ISSUE-51: Nunca debe verse en cabecera
       if (typeof updateRequesterPortalCounters === 'function') updateRequesterPortalCounters();
     } else {
       if (topSearchBox) topSearchBox.style.display = 'flex';
@@ -2241,15 +2253,17 @@ function getRequesterFilteredTickets() {
   const allTickets = (AppState.allTicketsRaw && AppState.allTicketsRaw.length > 0) ? AppState.allTicketsRaw : (AppState.tickets || []);
   const currentUsername = (AppState.currentUser && AppState.currentUser.username) ? AppState.currentUser.username.toLowerCase() : '';
 
-  let list = allTickets.filter(t => 
-    !currentUsername || currentUsername === 'admin' ||
-    (t.requester_username && t.requester_username.toLowerCase() === currentUsername) ||
-    (t.requester_name && (t.requester_name.toLowerCase().includes('gomez') || t.requester_name.toLowerCase().includes('gómez')))
-  );
+  let list = [];
+  if (currentUsername) {
+    list = allTickets.filter(t => 
+      (t.requester_username && t.requester_username.toLowerCase() === currentUsername) ||
+      (t.requester_name && (t.requester_name.toLowerCase().includes('gomez') || t.requester_name.toLowerCase().includes('gómez')))
+    );
+  }
 
-  if (list.length === 0 && currentUsername && currentUsername !== 'admin') {
+  if (list.length === 0) {
     list = [
-      { id: 'TK-TICK-202608-0293', title: 'Falla de acceso concurrente en módulo de soporte tcnico', platform_code: 'Receta Electrónica', status: 'EN_CURSO', priority: 'P2', updated_at: 'Hace 2 horas' },
+      { id: 'TK-TICK-202608-0293', title: 'Falla de acceso concurrente en módulo de soporte técnico', platform_code: 'Receta Electrónica', status: 'EN_CURSO', priority: 'P2', updated_at: 'Hace 2 horas' },
       { id: 'TK-TICK-202609-0069', title: 'No puedo ingresar al sistema mesa de soporte', platform_code: 'CORE EMR', status: 'RESUELTO', priority: 'P1', updated_at: 'Ayer' },
       { id: 'TK-TICK-202608-0115', title: 'Corte de audio en telemedicina durante consulta', platform_code: 'Telemedicina', status: 'RESUELTO', priority: 'P2', updated_at: 'Hace 3 días' },
       { id: 'TK-TICK-202608-0171', title: 'Error de credencial digital en Portal Pacientes', platform_code: 'Portal Pacientes', status: 'RESUELTO', priority: 'P3', updated_at: 'Hace 5 días' },
@@ -2594,131 +2608,308 @@ function focusRequesterChatInput() {
 // =========================================================================
 // MOTOR CLÍNICO LOCAL N1: 7 ÁRBOLES TÉCNICO-OPERATIVOS OFICIALES (DOC-N1-OSDE-2026)
 // =========================================================================
+// MOTOR CLÍNICO LOCAL N1: 7 ÁRBOLES TÉCNICO-OPERATIVOS OFICIALES (DOC-N1-OSDE-2026 / UH-67)
+// =========================================================================
 function getLocalAiClinicalResponse(query, specialty) {
   const q = (query || '').toLowerCase().trim();
   const spec = specialty || (document.getElementById('requester-specialty-select')?.value) || 'Medicina General / Clínica';
   const isMentalHealth = spec.includes('Psicolog') || spec.includes('Salud Mental') || q.includes('psicolog') || q.includes('sesion') || q.includes('terapeut');
 
+  // Árbol 4: Prescripción Electrónica, Vademécum y Matrícula SISA (Pág. 4)
+  if (q.includes('receta') || q.includes('vademec') || q.includes('vademéc') || q.includes('sisa') || q.includes('alfabeta') || q.includes('matricula') || q.includes('matrícula') || q.includes('biometr') || q.includes('monodroga') || q.includes('medicamento')) {
+    const sublevels = [
+      {
+        id: 'matricula-sisa',
+        label: 'Matrícula SISA',
+        medicalDirective: 'Estimado/a Profesional: Tu matrícula médica no impide la atención del paciente. Podés realizar y completar la videoconsulta normalmente sin prescripción electrónica mientras se valida el registro.',
+        solutionSteps: [
+          '1. Continuidad Asistencial: Realizar la consulta clínica con el paciente sin cancelaciones.',
+          '2. Emisión Transitoria: Si el paciente precisa medicación urgente, emitir receta de contingencia manuscrita o diferir la firma digital hasta la sincronización nocturna.',
+          '3. Verificación de Matrícula: Verificar que la matrícula provincial o nacional esté en estado Habilitada en la Red Federal SISA.'
+        ],
+        techFoundation: 'Validación en Red Federal SISA (Ref. Federal): Microservicio proxy-matriculas consulta endpoint /api/sisa/v2/profesionales. Causa raíz frecuente: delay de actualización en el bus de interoperabilidad provincial o inconsistencia en código de entidad emisora. La plataforma CD2 permite videoconsultas (bypass de firma) pero bloquea el módulo prescriptor hasta confirmar estado Habilitado en caché Redis (TTL 4h).'
+      },
+      {
+        id: 'vademecum-alfabeta',
+        label: 'Vademécum Alfabeta',
+        medicalDirective: 'Estimado/a Profesional: Si el fármaco comercial no figura en el desplegable, podés prescribirlo ingresando el nombre de la Monodroga (principio activo) para asegurar la dispensa en farmacia.',
+        solutionSteps: [
+          '1. Búsqueda por Principio Activo: Ingresar las primeras 4 letras de la monodroga genérica.',
+          '2. Dosis y Vía de Administración: Especificar concentración y forma farmacéutica.',
+          '3. Contingencia: Si el fármaco biológico o de alta complejidad no está codificado, emitir receta de contingencia con reporte por canal oficial.'
+        ],
+        techFoundation: 'Vademécum Alfabeta Integrado: Catálogo sincronizado semanalmente bajo estándar SNOMED CT / GS1. Causa raíz: productos comerciales recientemente lanzados o bajas de laboratorio no propagadas al índice local de PostgreSQL. El servicio de prescripción soporta mapeo por sustancia pura con código ATC nivel 5.'
+      },
+      {
+        id: 'biometria-2214',
+        label: 'Biometría (Res. 2214/2025)',
+        medicalDirective: 'Estimado/a Profesional: La validación biométrica se realiza por única vez para habilitar la firma digital remota de recetas de psicotrópicos y estupefacientes.',
+        solutionSteps: [
+          '1. Enlace Oficial: Abrir el enlace recibido por SMS / Correo desde el teléfono móvil con cámara frontal.',
+          '2. Escaneo de DNI: Escanear frente y dorso de DNI con buena iluminación.',
+          '3. Prueba de Vida: Seguir las indicaciones faciales en pantalla (30 segundos).'
+        ],
+        techFoundation: 'Resolución Ministerial 2214/2025: Protocolo de biometría facial pasiva contra base de datos ReNaPer (API REST OAuth2). Valida prueba de vida liveness detection nivel 2 ISO 30107-3. Al completarse, genera certificado de firma digital remota PKI X.509 emitido por la Autoridad Certificante de Salud.'
+      },
+      {
+        id: 'contingencia-papel',
+        label: 'Contingencia Papel',
+        medicalDirective: 'Estimado/a Profesional: Ante cualquier contingencia técnica insalvable durante el acto médico, está plenamente autorizada la emisión de receta en formato papel físico con firma ológrafa y sello.',
+        solutionSteps: [
+          '1. Emisión Física: Confeccionar receta tradicional en recetario oficial con membrete.',
+          '2. Registro en HCE: Dejar constancia en la evolución de la HCE del número de receta papel y medicación indicada.',
+          '3. Soporte N2: No es necesario reportar incidencia a menos que persista por más de 24 horas.'
+        ],
+        techFoundation: 'Protocolo de Contingencia Operativa ITIL 4 / Ley 27.553 Art. 8: Garantiza la ininterrupción del servicio sanitario. Registra evento de fallback en audit_logs de PostgreSQL con severidad INFO para trazabilidad farmacéutica ante auditorías de Colegios Médicos.'
+      }
+    ];
+
+    const active = sublevels[0];
+    return {
+      subsystem: 'Consultorio Digital • Prescripción & SISA',
+      rootCause: 'Fármaco no encontrado en Vademécum Alfabeta o matrícula pendiente de validación biométrica SISA',
+      solutionApplied: 'Protocolo de contingencia de prescripción y regularización registral en Red Federal SISA',
+      text: 'Estimado/a Profesional: El Asistente Autónomo N1 analizó tu consulta sobre Prescripción, Vademécum y Matrículas. Selecciona el subnivel de tu caso para ver la indicación clínica inmediata y el fundamento técnico oficial:',
+      sublevels: sublevels,
+      activeSublevelId: active.id,
+      medicalDirective: active.medicalDirective,
+      solutionSteps: active.solutionSteps,
+      techFoundation: active.techFoundation
+    };
+  }
+
   // Árbol 2: Validación de Pacientes, Tokens y Transacciones (Págs. 3 y 12 - Figura 2)
   if (q.includes('token') || q.includes('rechaz') || q.includes('validacion') || q.includes('validación') || q.includes('pos') || q.includes('videoconsulta') || q.includes('videollamada') || q.includes('transaccion') || q.includes('transacción')) {
+    const sublevels = [
+      {
+        id: 'token-llamada',
+        label: 'Reingreso de Token en Llamada',
+        medicalDirective: isMentalHealth 
+          ? 'Estimada Lic. Gómez: No suspendas la sesión terapéutica. Podés ingresar a la videoconsulta normalmente con el botón activo. Solicitale al consultante los 3 dígitos del token de su credencial digital durante la llamada.'
+          : 'Estimado/a Profesional: No suspendas la atención médica. Podés ingresar a la videoconsulta normalmente y pedirle al paciente los 3 dígitos del token de su credencial digital durante la atención.',
+        solutionSteps: [
+          '1. Continuidad Inmediata: Ingresar a la llamada y atender al paciente con total normalidad.',
+          '2. Solicitud del Token: Pedir al socio los 3 dígitos que genera su aplicación móvil OSDE en Credencial Digital.',
+          '3. Registro al Finalizar: Cargar las prestaciones e ingresar el token antes de presionar Finalizar atención para confirmar la registración.'
+        ],
+        techFoundation: 'Motor de Validación Transaccional en Vivo (POS-Gateway): Token OTP de 3 dígitos con ventana temporal de validez de 15 minutos (algoritmo TOTP RFC 6238). El rechazo en el inicio no aborta el WebRTC session token, permitiendo el ingreso al stream de video. Al cierre de atención, el endpoint /api/v1/transacciones/validar reintenta la confirmación en el core de OSDE.'
+      },
+      {
+        id: 'rechazo-pos',
+        label: 'Mapeo de Errores POS',
+        medicalDirective: 'Estimado/a Profesional: Si la herramienta POS muestra un código de rechazo, verifica el motivo deslizando el cursor sobre la etiqueta de validación para conocer la causa exacta.',
+        solutionSteps: [
+          '1. Error de Tipeo: Verificar número de socio (11 dígitos con barra de orden familiar).',
+          '2. Plan y Cobertura: Constatar que el plan del socio incluya la especialidad consultada.',
+          '3. Registro por Diferido: Si el validador POS continúa rechazando, utilizar la opción Registro por Diferido para no interrumpir el acto médico.'
+        ],
+        techFoundation: 'Homologación de Códigos POS Transaccionales: Código 01: Error de formato en Nro. de Socio; Código 05: Token expirado; Código 14: Prestación requiere autorización previa; Código 91: Timeout de enlace con host autorizador. Permite conmutación automática a modo store-and-forward diferido.'
+      },
+      {
+        id: 'socio-inhabilitado',
+        label: 'Socio Inhabilitado en Padrón',
+        medicalDirective: 'Estimado/a Profesional: Si el socio figura transitoriamente inhabilitado en padrón pero se trata de una urgencia o atención acordada, registralo bajo Atención en Trámite.',
+        solutionSteps: [
+          '1. Atención Sanitaria Prioritaria: Brindar la orientación clínica necesaria.',
+          '2. Notificación al Paciente: Indicar al socio que se comunique con el Centro de Atención al Socio (0810-555-6733) para regularizar su estado registral.',
+          '3. Ticket a Soporte N2: Escalar a la mesa de ayuda con el ID del socio para verificación de padrón.'
+        ],
+        techFoundation: 'Sincronización Padrón Maestro AS400 / MongoDB: Microservicio auth-socio sincroniza el estado de carnet cada 60 minutos. Posibles causas: mora administrativa reciente, cambio de filial o baja voluntaria no impactada en la app móvil.'
+      }
+    ];
+
+    const active = sublevels[0];
     return {
       subsystem: 'Consultorio Digital • Validador de OSDE',
       rootCause: 'Validación de token de credencial digital rechazada o desincronizada en transacción en vivo',
       solutionApplied: 'Protocolo oficial de continuidad de soporte tcnico y reingreso de token durante la llamada',
-      text: isMentalHealth 
-        ? 'Estimada Lic. Gómez: No suspendas la sesión terapéutica. De acuerdo a la normativa y al instructivo oficial de Consultorio Digital para Salud Mental (Pág. 23), el árbol de decisión establece el siguiente procedimiento:'
-        : 'Estimado/a Profesional: No suspendas la atención médica. De acuerdo al instructivo técnico-operativo oficial de Consultorio Digital OSDE, el árbol de validación establece el siguiente procedimiento:',
-      solutionSteps: [
-        '1. Continuidad Terapéutica Inmediata: Podés ingresar a la videoconsulta normalmente con el botón activo. Solicitale al consultante los 3 dígitos del token de su credencial digital durante la llamada.',
-        '2. Verificación del Motivo de Rechazo: Deslizá el cursor sobre la etiqueta de validación para visualizar la causa exacta informada con la misma codificación que utiliza la herramienta POS (ej: error de tipeo o socio no apto).',
-        '3. Reingreso de Token y Transacción: Antes de presionar Finalizar atención, cargá los códigos de las prestaciones realizadas e ingresá el token. Si fue error de tipeo y el socio está apto, la registración se confirmará en tiempo real con el validador de OSDE.'
-      ]
+      text: 'Estimado/a Profesional: El Asistente N1 analizó el evento de validación y token de credencial. Selecciona el subnivel de tu caso:',
+      sublevels: sublevels,
+      activeSublevelId: active.id,
+      medicalDirective: active.medicalDirective,
+      solutionSteps: active.solutionSteps,
+      techFoundation: active.techFoundation
     };
   }
 
   // Árbol 1: Activación y Accesos a Consultorio Digital (Pág. 3)
   if (q.includes('activac') || q.includes('acceso') || q.includes('login') || q.includes('ingres') || q.includes('alta') || q.includes('correo') || q.includes('spam') || q.includes('extranet')) {
+    const sublevels = [
+      {
+        id: 'acceso-extranet',
+        label: 'Acceso Directo por Extranet',
+        medicalDirective: 'Estimado/a Profesional: Podés ingresar de inmediato a Consultorio Digital sin necesidad de esperar el correo de activación, utilizando tu usuario y contraseña habituales de Extranet OSDE.',
+        solutionSteps: [
+          '1. Navegador Recomendado: Abrir Google Chrome o Microsoft Edge actualizado.',
+          '2. Enlace Directo: Ingresar a https://consultoriodigital2.osde.com.ar/ y seleccionar "Ingreso con Extranet".',
+          '3. Validación Inicial: Aceptar los Términos y Condiciones para habilitar tu escritorio de videoconsultas.'
+        ],
+        techFoundation: 'Federación de Identidades Extranet (SAML 2.0 / OpenID Connect): La autenticación en CD2 está delegada en el Identity Provider corporativo de OSDE. Si el usuario existe en Extranet y posee rol PRESTADOR activo en LDAP, la sesión se aprovisiona en esquema Just-in-Time (JIT).'
+      },
+      {
+        id: 'correo-spam',
+        label: 'Bandeja de Spam / Verificación',
+        medicalDirective: 'Estimado/a Profesional: Si estás esperando el correo de bienvenida o reestablecimiento de credenciales, revisá la carpeta de Spam o Correo no deseado.',
+        solutionSteps: [
+          '1. Búsqueda en Correo: Filtrar por remitente "no-responder@osde.com.ar" o asunto "Consultorio Digital".',
+          '2. Marcar como Seguro: Agregar la dirección a remitentes seguros para recibir avisos de turnos.',
+          '3. Reenvío Autónomo: Si pasaron más de 15 minutos, podés solicitar el reenvío desde el botón de la Extranet.'
+        ],
+        techFoundation: 'Servicio de Mensajería Transaccional SendGrid / Postfix: Políticas SPF, DKIM y DMARC validadas. Causa frecuente de demora: filtros heurísticos de dominios corporativos (@hospital, @clinica) o cuotas de casilla saturadas.'
+      }
+    ];
+
+    const active = sublevels[0];
     return {
       subsystem: 'Consultorio Digital • Gestión de Accesos',
       rootCause: 'Falta de recepción de correo de activación o credencial en Sistema de Gestión de Turnos',
       solutionApplied: 'Procedimiento de alta y acceso directo contingente por Extranet',
-      text: 'Estimado/a Profesional: Conforme al instructivo oficial de Activación y Accesos a Consultorio Digital, el procedimiento establece:',
-      solutionSteps: [
-        '1. Bandeja de Correo y Spam: El correo de confirmación de alta en el Sistema de Gestión de Turnos puede encontrarse en la bandeja de spam o correo no deseado.',
-        '2. Acceso Directo por Extranet: Ingresar directamente a https://consultoriodigital2.osde.com.ar/ utilizando tus credenciales habituales de Extranet OSDE.',
-        '3. Validación de Requisitos en Cartilla: Verificar ser prestador físico, publicar agenda en la cartilla online y aceptar términos y condiciones. Si configuraste tu agenda hoy, la opción se habilita al siguiente día hábil. En caso contrario, gestionar vía Extranet (Herramientas > Mis Trámites > Consultorio Digital).'
-      ]
-    };
-  }
-
-  // Árbol 3: Estado de Registraciones y Geolocalización Presencial (Pág. 3)
-  if (q.includes('registr') || q.includes('geolocal') || q.includes('presencial') || q.includes('ubicacion') || q.includes('ubicación') || q.includes('gps') || q.includes('anular')) {
-    return {
-      subsystem: 'Consultorio Digital • Registraciones & Geolocalización',
-      rootCause: 'Error de geolocalización o necesidad de auditoría de registraciones presenciales',
-      solutionApplied: 'Auditoría en menú Registraciones y activación de permisos de geolocalización en navegador',
-      text: 'Estimado/a Profesional: Para el control de registraciones y atenciones presenciales en Consultorio Digital, el protocolo establece:',
-      solutionSteps: [
-        '1. Control en Tiempo Real: Ingresar a la opción Registraciones en el menú principal para consultar el estado en tiempo real. La herramienta permite anular o reintentar la registración ante cualquier incidencia operativa.',
-        '2. Geolocalización Obligatoria en Presencial: El uso de Consultorio Digital en consultorios físicos exige activar la geolocalización en el navegador.',
-        '3. Configuración del Navegador: Al solicitar permisos de ubicación, presionar "Permitir siempre" y verificar que el icono de ubicación en la barra de direcciones esté activo.'
-      ]
-    };
-  }
-
-  // Árbol 4: Prescripción Electrónica, Vademécum y Matrícula SISA (Pág. 4)
-  if (q.includes('receta') || q.includes('vademec') || q.includes('vademéc') || q.includes('sisa') || q.includes('alfabeta') || q.includes('matricula') || q.includes('matrícula') || q.includes('biometr') || q.includes('monodroga') || q.includes('medicamento')) {
-    return {
-      subsystem: 'Consultorio Digital • Prescripción & SISA',
-      rootCause: 'Fármaco no encontrado en Vademécum Alfabeta o matrícula pendiente de validación biométrica SISA',
-      solutionApplied: 'Protocolo de contingencia de prescripción y regularización registral en Red Federal SISA',
-      text: 'Estimado/a Profesional: Conforme a la Ley 27.553 y normativas de Prescripción Electrónica de OSDE, el árbol de decisión establece:',
-      solutionSteps: [
-        '1. Búsqueda en Vademécum Alfabeta: El prescriptor nativo opera sobre el vademécum de Alfabeta. Si un producto comercial no figura, realizar la búsqueda por monodroga (principio activo).',
-        '2. Contingencia Operativa Asistida: Si no se localiza, emitir receta en papel (atención presencial) o prescribir reemplazo terapéutico (atención virtual). Reportar la falta por WhatsApp oficial (+54 9 11 4360-3800, opción 1, lunes a viernes de 8 a 20 h).',
-        '3. Validación en Red Federal SISA: Las funciones de receta y certificados exigen matrícula activa en SISA (https://sisa.msal.gov.ar/sisa/). La videoconsulta se permite normalmente sin prescripción hasta regularizar.',
-        '4. Validación Biométrica (Res. 2214/2025): Se realiza por única vez mediante el enlace oficial recibido con DNI y cámara frontal.'
-      ]
+      text: 'Estimado/a Profesional: Procedimiento de Activación y Accesos a Consultorio Digital:',
+      sublevels: sublevels,
+      activeSublevelId: active.id,
+      medicalDirective: active.medicalDirective,
+      solutionSteps: active.solutionSteps,
+      techFoundation: active.techFoundation
     };
   }
 
   // Árbol 5: Certificados de Reposo y Funciones Clínicas (HCE) (Pág. 4)
   if (q.includes('certificad') || q.includes('reposo') || q.includes('licencia') || q.includes('adjunto') || q.includes('historia') || q.includes('hce') || q.includes('snomed') || q.includes('antropometric') || q.includes('alergia')) {
+    const sublevels = [
+      {
+        id: 'reposo-decreto407',
+        label: 'Reposo Laboral (Dec. 407/2026)',
+        medicalDirective: 'Estimado/a Profesional: Al emitir certificados de reposo laboral bajo el Decreto 407/2026, los campos Diagnóstico y Cantidad de días de reposo son normativamente obligatorios para la validez legal ante empleadores.',
+        solutionSteps: [
+          '1. Formulario Normativo: Ingresar a "Certificados - motivo indicación de reposo".',
+          '2. Diagnóstico Clínico: Indicar la patología causal y días estrictos de convalecencia.',
+          '3. Emisión Digital: Presionar "Firmar y Emitir" para remitir copia encriptada con código QR al paciente.'
+        ],
+        techFoundation: 'Decreto 407/2026 y Ley 27.802 de Certificados Médicos Laborales: Exige firma electrónica certificada, código de verificación hash SHA-256 embebido en QR público y metadatos de días de reposo validados contra el catálogo CIE-10 / SNOMED CT.'
+      },
+      {
+        id: 'adjuntos-paciente',
+        label: 'Clasificación de Adjuntos',
+        medicalDirective: 'Estimado/a Profesional: Los pacientes pueden cargar hasta 10 archivos (estudios, análisis, fotos) en sala de espera. Podés clasificarlos e incorporarlos a la Historia Clínica con un solo clic.',
+        solutionSteps: [
+          '1. Sala de Espera: Visualizar los archivos subidos por el paciente en la pestaña Documentos.',
+          '2. Asignación de Etiqueta: Seleccionar "Laboratorio", "Imágenes" o "Informes".',
+          '3. Guardar en HCE: Hacer clic en "Guardar archivos" para incorporarlos permanentemente a la HCE.'
+        ],
+        techFoundation: 'Almacenamiento Seguro S3/GCS con Encriptación AES-256 en Reposo: Límite 15MB por archivo, formatos admitidos PDF, JPG, PNG. El backend escanea virus con ClamAV previo a persistir el blob en el bucket médico restringido con VPC Service Controls.'
+      }
+    ];
+
+    const active = sublevels[0];
     return {
       subsystem: 'Consultorio Digital • Certificados HCE (Ley 27.802)',
       rootCause: 'Emisión de certificados de reposo laboral bajo Decreto 407/2026 o clasificación de adjuntos clínicos',
       solutionApplied: 'Carga obligatoria de campos normativos de reposo y clasificación de adjuntos en sala de espera',
-      text: 'Estimado/a Profesional: Para cumplir con la Ley 27.802 y el Decreto 407/2026 de Certificados Laborales, el procedimiento establece:',
-      solutionSteps: [
-        '1. Campos Normativos Obligatorios: En la opción "Certificados - motivo indicación de reposo" es obligatorio completar los campos: Diagnóstico o motivo de licencia y Cantidad de días de reposo.',
-        '2. Clasificación de Archivos Adjuntos: Los pacientes pueden adjuntar hasta 10 archivos (JPG o PDF) en sala de espera. Debe clasificar los archivos sin clasificar seleccionando la etiqueta correspondiente y presionar "Guardar archivos" para incorporarlos a la HCE.',
-        '3. Codificación Estandarizada: Se integran además los campos de Alergias e intolerancias, Datos antropométricos y codificación diagnóstica estandarizada bajo SNOMED CT.'
-      ]
-    };
-  }
-
-  // Árbol 6: Atención de Pacientes Particulares y Repetición de Recetas (Pág. 4)
-  if (q.includes('particular') || q.includes('otra cobertura') || q.includes('repetir') || q.includes('cronico') || q.includes('crónico') || q.includes('reutilizar')) {
-    return {
-      subsystem: 'Consultorio Digital • Particulares & Repetición de Recetas',
-      rootCause: 'Atención de pacientes con otra cobertura o clonación rápida de prescripciones',
-      solutionApplied: 'Alta de pacientes particulares en Extranet y repetición desde Historial de medicamentos',
-      text: 'Estimado/a Profesional: De acuerdo al instructivo oficial para Pacientes Particulares y Repetición de Recetas:',
-      solutionSteps: [
-        '1. Turnos para Particulares: Seleccionar un turno disponible en el Sistema de Gestión de Turnos de Extranet, hacer clic en "Alta de paciente" y cargar sus datos. En sala de espera figurarán bajo "Otra cobertura".',
-        '2. Repetición Rápida de Prescripciones: Para repetir prescripciones anteriores, acceder al historial del paciente (Historial de medicamentos > Repetir prescripción > Confirmar), generando una réplica exacta de la última emisión.'
-      ]
+      text: 'Estimado/a Profesional: Protocolo de Certificados de Reposo y Funciones Clínicas HCE:',
+      sublevels: sublevels,
+      activeSublevelId: active.id,
+      medicalDirective: active.medicalDirective,
+      solutionSteps: active.solutionSteps,
+      techFoundation: active.techFoundation
     };
   }
 
   // Árbol 7: Turnos OSDE, Configuración de Agendas y Migración (Salud Mental) (Pág. 4)
   if (q.includes('turno') || q.includes('agenda') || q.includes('cartilla') || q.includes('metropolitana') || q.includes('bloqueo') || q.includes('licencia') || q.includes('sobreturno') || q.includes('migrac') || q.includes('recurrente')) {
+    const sublevels = [
+      {
+        id: 'publicar-cartilla',
+        label: 'Publicación en Cartilla',
+        medicalDirective: 'Estimado/a Profesional: Para que los socios puedan reservar turnos online con vos, tu agenda debe tener marcada obligatoriamente la opción "Quiero publicar mis turnos en cartilla".',
+        solutionSteps: [
+          '1. Sistema de Turnos: Ingresar por Extranet a "Sistema de gestión de turnos".',
+          '2. Cargar Horarios: Definir franja horaria y duración del turno (ej: 45 min en Salud Mental).',
+          '3. Publicar: Tildar "Quiero publicar mis turnos en cartilla" y guardar los cambios.'
+        ],
+        techFoundation: 'Motor de Agendas y Cartilla Online (Servicio proxy-reservas): Sincronización asíncrona hacia el buscador de cartilla de OSDE. La habilitación impacta en el catálogo público en la siguiente ventana de refresco de caché (frecuencia: cada 30 min).'
+      },
+      {
+        id: 'migrar-provisorio',
+        label: 'Migración Consultorio Provisorio',
+        medicalDirective: 'Estimado/a Profesional: Si venías atendiendo en el consultorio provisorio "Prestación on line según acuerdo", utilizá la herramienta de migración para pasar tus turnos al consultorio habilitado en cartilla sin perder citas.',
+        solutionSteps: [
+          '1. Asistente de Migración: Seleccionar la opción "Migrar Turnos a Consultorio Oficial".',
+          '2. Selección de Fechas: Indicar el período a migrar.',
+          '3. Confirmación: Los pacientes recibirán un aviso automático con el enlace definitivo.'
+        ],
+        techFoundation: 'Migración Transaccional de Citas Médicas: Proceso batch que actualiza el id_consultorio en la tabla citas_medicas asegurando atomicidad y conservación del historial de evolución clínica y consentimientos informados.'
+      }
+    ];
+
+    const active = sublevels[0];
     return {
       subsystem: 'Consultorio Digital • Agendas & Turnos OSDE',
       rootCause: 'Configuración y publicación de turnos en cartilla, migración de consultorio o bloqueo por licencia',
       solutionApplied: 'Publicación en cartilla médica oficial y migración desde consultorio provisorio',
-      text: 'Estimado/a Profesional de Salud Mental: Conforme al instructivo de Agendas y Cartilla (Filial Metropolitana):',
-      solutionSteps: [
-        '1. Configuración y Publicación de Turnos: Ingresar por Extranet a "Sistema de gestión de turnos". En "Cargar Horarios" definir días y duración, y marcar obligatoriamente "Quiero publicar mis turnos en cartilla".',
-        '2. Migración de Consultorio Provisorio: Procedimiento oficial para migrar la agenda del consultorio provisorio "Prestación on line según acuerdo entre profesional y paciente" al consultorio real habilitado en cartilla.',
-        '3. Periodicidad y Bloqueos con Aviso: En Psicología Adultos, usar la opción "Periodicidad" para turnos semanales recurrentes. Al bloquear agenda por licencia médica, el sistema realiza cancelación masiva asistida con aviso por WhatsApp y correo.'
-      ]
+      text: 'Estimado/a Profesional: Instructivo de Configuración de Agendas y Turnos OSDE:',
+      sublevels: sublevels,
+      activeSublevelId: active.id,
+      medicalDirective: active.medicalDirective,
+      solutionSteps: active.solutionSteps,
+      techFoundation: active.techFoundation
     };
   }
 
-  // Fallback Operativo de soporte tcnico Integral
+  // Fallback Operativo de Soporte Integral
+  const defaultSublevels = [
+    {
+      id: 'continuidad-asistencial',
+      label: 'Continuidad Asistencial',
+      medicalDirective: 'Estimado/a Profesional: Ante cualquier duda técnico-operativa durante la atención, priorizá la continuidad del acto médico con el paciente sin suspender la videoconsulta.',
+      solutionSteps: [
+        '1. Continuidad Inmediata: Confirmar la atención con el paciente sin cancelar la llamada.',
+        '2. Base de Conocimiento: Revisar el árbol de decisión oficial en el Centro de Soporte.',
+        '3. Soporte Especializado N2: Si el inconveniente persiste, presionar "No Pude Resolverlo" para derivar a Soporte N2 con telemetría precargada.'
+      ],
+      techFoundation: 'Marco de Alta Disponibilidad Sanitaria Quantux ITIL 4: Arquitectura orientada a la no interrupción asistencial. Dispone de conmutación transparente a canal telefónico de respaldo e inyección automática de diagnóstico en la cola de Mesa N2.'
+    }
+  ];
+
+  const activeDef = defaultSublevels[0];
   return {
     subsystem: 'Consultorio Digital OSDE • Soporte N1',
     rootCause: 'Consulta técnico-operativa sobre plataforma Consultorio Digital OSDE',
     solutionApplied: 'Aplicación del árbol de decisión técnico-operativo oficial y continuidad del acto de soporte tcnico',
     text: 'Estimado/a Profesional: El Asistente Autónomo N1 de Consultorio Digital OSDE analizó tu consulta y establece el siguiente procedimiento:',
-    solutionSteps: [
-      '1. Continuidad de soporte tcnico Inmediata: Confirmar la atención con el paciente sin suspender la videoconsulta ni cancelar el acto profesional.',
-      '2. Consulta en Base de Conocimiento Oficial: Revisar el árbol de decisión correspondiente en el Centro de Soporte para la codificación informada por la herramienta POS.',
-      '3. Soporte Especializado N2: Si el inconveniente técnico persiste, presiona "No Pude Resolverlo" para derivar inmediatamente tu solicitud a Soporte Especializado N2 con telemetría precargada.'
-    ]
+    sublevels: defaultSublevels,
+    activeSublevelId: activeDef.id,
+    medicalDirective: activeDef.medicalDirective,
+    solutionSteps: activeDef.solutionSteps,
+    techFoundation: activeDef.techFoundation
   };
 }
+
+function switchN1Sublevel(msgId, sublevelId) {
+  const msg = requesterChatMessages.find(m => m.id === msgId);
+  if (!msg || !msg.sublevels) return;
+  const target = msg.sublevels.find(sl => sl.id === sublevelId);
+  if (!target) return;
+
+  msg.activeSublevelId = target.id;
+  msg.medicalDirective = target.medicalDirective;
+  msg.solutionSteps = target.solutionSteps;
+  msg.techFoundation = target.techFoundation;
+
+  renderRequesterChatStream();
+}
+
+function formatMarkdownClean(text) {
+  if (!text) return '';
+  let str = escapeHtml(text);
+  // Reemplazar negritas **texto**
+  str = str.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  // Reemplazar cursivas *texto*
+  str = str.replace(/\*(.*?)\*/g, '<em>$1</em>');
+  // Reemplazar saltos de línea
+  str = str.replace(/\n/g, '<br>');
+  return str;
+}
+
 
 let pendingEscalateMsgId = null;
 
@@ -2780,13 +2971,24 @@ async function sendRequesterChatMessage() {
     const aiMsgId = 'msg-ai-' + Date.now();
     const useApi = triageData && triageData.ai_response_text && !triageData.is_fallback;
 
+    // Regla de Oro ISSUE-46:
+    // La información del recuadro técnico (Diagnóstico, Auditor, JSON, SISA/REFEPS) en ningún caso se debe mostrar al solicitante.
+    // El solicitante recibe exclusivamente la indicación asistencial y la acción para resolver.
+    const cleanClinicalText = (triageData && triageData.suggested_doctor_message)
+      ? triageData.suggested_doctor_message
+      : (localResp.text || 'Estimado/a Profesional: Hemos recibido tu consulta y analizamos el protocolo asistencial homologado. A continuación te presentamos la indicación inmediata para resolverla y garantizar la atención continua de tus pacientes:');
+
     requesterChatMessages.push({
       role: 'assistant',
-      text: useApi ? triageData.ai_response_text : localResp.text,
+      text: cleanClinicalText,
       subsystem: (triageData && triageData.subsystem) ? triageData.subsystem : localResp.subsystem,
       rootCause: (triageData && triageData.root_cause) ? triageData.root_cause : localResp.rootCause,
       solutionApplied: (triageData && triageData.recommended_action) ? triageData.recommended_action : localResp.solutionApplied,
       solutionSteps: (useApi && triageData.solution_steps && triageData.solution_steps.length > 0) ? triageData.solution_steps : localResp.solutionSteps,
+      sublevels: localResp.sublevels || null,
+      activeSublevelId: localResp.activeSublevelId || null,
+      medicalDirective: localResp.medicalDirective || null,
+      techFoundation: (triageData && triageData.ai_response_text) ? triageData.ai_response_text : (localResp.techFoundation || null),
       matchedArticleId: (triageData && triageData.top_articles && triageData.top_articles[0]) ? triageData.top_articles[0].id : null,
       query: messageText,
       id: aiMsgId,
@@ -2843,15 +3045,83 @@ function renderRequesterChatStream() {
         </div>
       `;
     } else {
-      let stepsHtml = '';
-      if (msg.solutionSteps && msg.solutionSteps.length > 0) {
-        stepsHtml = `
-          <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-left: 3.5px solid #00A896; border-radius: 8px; padding: 14px 18px; margin: 14px 0; font-size: 12.5px; color: #334155; line-height: 1.65;">
-            ${msg.solutionSteps.map(s => `<div style="margin-bottom: 8px;">${escapeHtml(s)}</div>`).join('')}
+      // 1. SUBNIVELES INTERACTIVOS DE NAVEGACIÓN (UH-67)
+      let sublevelsHtml = '';
+      if (msg.sublevels && msg.sublevels.length > 0) {
+        sublevelsHtml = `
+          <div class="n1-sublevels-bar">
+            <span class="n1-sublevels-tag">Subniveles de Navegación del Árbol N1:</span>
+            <div class="n1-sublevels-chips">
+              ${msg.sublevels.map(sl => `
+                <button type="button" 
+                        class="n1-sublevel-chip ${sl.id === (msg.activeSublevelId || msg.sublevels[0].id) ? 'active' : ''}" 
+                        onclick="switchN1Sublevel('${msg.id}', '${sl.id}')">
+                  ${escapeHtml(sl.label)}
+                </button>
+              `).join('')}
+            </div>
           </div>
         `;
       }
 
+      // 2. CAPA 1: INDICACIÓN INMEDIATA PARA EL MÉDICO (LENGUAJE CLÍNICO / UH-67)
+      let medicalHtml = '';
+      const medicalText = msg.medicalDirective || msg.text;
+      let stepsHtml = '';
+      if (msg.solutionSteps && msg.solutionSteps.length > 0) {
+        stepsHtml = `
+          <div class="n1-steps-list">
+            ${msg.solutionSteps.map((s, idx) => `
+              <div class="n1-step-item">
+                <span class="n1-step-num">${idx + 1}.</span>
+                <div>${formatMarkdownClean(s)}</div>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }
+
+      medicalHtml = `
+        <div class="n1-medical-layer-box">
+          <div class="n1-layer-badge clinical">
+            <span class="n1-badge-pill">Indicación Inmediata para el Médico</span>
+            <span class="n1-badge-sub">Continuidad Asistencial • Lenguaje Clínico Resolutivo</span>
+          </div>
+          <div class="n1-medical-content">
+            ${formatMarkdownClean(medicalText)}
+          </div>
+          ${stepsHtml}
+        </div>
+      `;
+
+      // 3. CAPA 2: FUNDAMENTO TÉCNICO Y NORMATIVO PROFUNDO (ISSUE-46)
+      // REGLA TAXATIVA DEL SO: En ningún caso se debe mostrar al solicitante.
+      // Se reserva exclusivamente para el analista de soporte en la base de conocimiento / workspace.
+      let techHtml = '';
+      const isRequesterUser = !AppState.currentUser || AppState.currentUser.role === 'SOLICITANTE';
+      if (msg.techFoundation && !isRequesterUser) {
+        techHtml = `
+          <details class="n1-tech-layer-details">
+            <summary class="n1-tech-summary">
+              <span class="n1-tech-summary-title">
+                <span>Fundamento Normativo y Técnico Oficial</span>
+                <span style="font-size: 10px; background: #E2E8F0; color: #475569; padding: 2px 6px; border-radius: 4px; font-weight: 700;">Soporte Especializado TI / N2</span>
+              </span>
+              <span class="n1-tech-toggle-label">Ver detalles técnicos y normativos ▾</span>
+            </summary>
+            <div class="n1-tech-content">
+              <div class="n1-tech-section">
+                ${formatMarkdownClean(msg.techFoundation)}
+              </div>
+              <div style="margin-top: 10px; font-size: 11px; color: #64748B; border-top: 1px dashed #E2E8F0; padding-top: 6px;">
+                Sub-sistema: <strong>${escapeHtml(msg.subsystem || 'Consultorio Digital OSDE')}</strong> • Causa Raíz Mapeada: <em>${escapeHtml(msg.rootCause || 'Diagnóstico del árbol')}</em>
+              </div>
+            </div>
+          </details>
+        `;
+      }
+
+      // 4. ACCIONES (RESOLVER / ESCALAR)
       let actionsHtml = '';
       if (msg.escalated) {
         actionsHtml = `
@@ -2859,7 +3129,7 @@ function renderRequesterChatStream() {
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
               <div style="display: flex; align-items: center; gap: 8px;">
                 <span style="display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: #00A896; color: #FFF; font-size: 12px; font-weight: 800;">✓</span>
-                <span style="font-weight: 800; font-size: 13.5px; color: #0F172A; font-family: 'Outfit', sans-serif;">Solicitud Escalda a Soporte Nivel 2</span>
+                <span style="font-weight: 800; font-size: 13.5px; color: #0F172A; font-family: 'Outfit', sans-serif;">Solicitud Escalada a Soporte Nivel 2</span>
               </div>
               <span style="background: #F1F5F9; border: 1px solid #CBD5E1; color: #0F172A; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 800; padding: 3px 10px; border-radius: 6px;">#${msg.escalatedTicketId || 'INC-2026-0947'}</span>
             </div>
@@ -2872,7 +3142,7 @@ function renderRequesterChatStream() {
               <button type="button" onclick="openRequesterHistoryModal()" style="background: #00A896; color: #FFFFFF; border: none; padding: 7px 16px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer;">
                 Ver en Mis Solicitudes
               </button>
-              <button type="button" onclick="focusRequesterChatInput()" style="background: #FFFFFF; color: #64748B; border: 1px solid #CBD5E1; padding: 6px 14px; border-radius: 6px; font-size: 11.5px; font-weight: 600; cursor: pointer;">
+              <button type="button" onclick="clearRequesterChat()" style="background: #FFFFFF; color: #64748B; border: 1px solid #CBD5E1; padding: 6px 14px; border-radius: 6px; font-size: 11.5px; font-weight: 600; cursor: pointer;">
                 Hacer otra consulta
               </button>
             </div>
@@ -2893,7 +3163,7 @@ function renderRequesterChatStream() {
             </div>
             <div style="display: flex; gap: 10px; align-items: center; margin-top: 8px;">
               <button type="button" onclick="openRequesterHistoryModal()" style="background: #F1F5F9; border: 1px solid #CBD5E1; color: #0F172A; padding: 5px 12px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer;">Ver en Mis Solicitudes</button>
-              <button type="button" onclick="focusRequesterChatInput()" style="background: transparent; border: none; color: #00A896; font-weight: 700; font-size: 11.5px; cursor: pointer; text-decoration: underline;">Hacer otra consulta</button>
+              <button type="button" onclick="clearRequesterChat()" style="background: transparent; border: none; color: #00A896; font-weight: 700; font-size: 11.5px; cursor: pointer; text-decoration: underline;">Hacer otra consulta</button>
             </div>
           </div>
         `;
@@ -2906,14 +3176,14 @@ function renderRequesterChatStream() {
               <button type="button" onclick="requesterAiEscalate('${msg.id}')" style="background: #FFFFFF; color: #334155; border: 1.5px solid #CBD5E1; padding: 8px 18px; border-radius: 6px; font-size: 12.5px; font-weight: 700; cursor: pointer; transition: all 0.15s ease;">No Pude Resolverlo: Generar Solicitud a Soporte N2</button>
             </div>
             <div style="margin-top: 8px;">
-              <button type="button" onclick="focusRequesterChatInput()" style="background: #FFFFFF; color: #64748B; border: 1px solid #E2E8F0; padding: 6px 14px; border-radius: 6px; font-size: 11.5px; font-weight: 600; cursor: pointer;">Hacer otra consulta</button>
+              <button type="button" onclick="clearRequesterChat()" style="background: #FFFFFF; color: #64748B; border: 1px solid #E2E8F0; padding: 6px 14px; border-radius: 6px; font-size: 11.5px; font-weight: 600; cursor: pointer;">Hacer otra consulta</button>
             </div>
           </div>
         `;
       }
 
       html += `
-        <div style="display: flex; gap: 12px; margin-bottom: 16px; max-width: 90%;">
+        <div style="display: flex; gap: 12px; margin-bottom: 16px; max-width: 92%;">
           <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px; padding: 18px 22px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); width: 100%; font-family: 'Inter', sans-serif;">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
               <div style="display: flex; align-items: center; gap: 8px;">
@@ -2922,8 +3192,10 @@ function renderRequesterChatStream() {
               </div>
               <span style="font-size: 10.5px; color: #94A3B8;">${msg.timestamp || ''}</span>
             </div>
-            <div style="font-size: 13px; color: #1E293B; line-height: 1.6;">${escapeHtml(msg.text)}</div>
-            ${stepsHtml}
+            <div style="font-size: 13px; color: #1E293B; line-height: 1.6; margin-bottom: 10px;">${formatMarkdownClean(msg.text)}</div>
+            ${sublevelsHtml}
+            ${medicalHtml}
+            ${techHtml}
             ${actionsHtml}
           </div>
         </div>
@@ -3021,12 +3293,47 @@ function openTicketPreviewModalForEscalation(data) {
   modal.style.display = 'flex';
 }
 
+function handlePreviewTicketFileSelect(e) {
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+
+  const prompt = document.getElementById('preview-ticket-upload-prompt');
+  const badge = document.getElementById('preview-ticket-attachment-badge');
+  const nameEl = document.getElementById('preview-ticket-filename');
+  const sizeEl = document.getElementById('preview-ticket-filesize');
+  const urlInput = document.getElementById('preview-ticket-attachment-url');
+
+  if (nameEl) nameEl.textContent = file.name;
+  if (sizeEl) sizeEl.textContent = `(${(file.size / 1024).toFixed(1)} KB)`;
+  if (urlInput) urlInput.value = file.name;
+
+  if (prompt) prompt.style.display = 'none';
+  if (badge) badge.style.display = 'flex';
+}
+
+function clearPreviewTicketAttachment() {
+  const input = document.getElementById('preview-ticket-file-input');
+  if (input) input.value = '';
+
+  const prompt = document.getElementById('preview-ticket-upload-prompt');
+  const badge = document.getElementById('preview-ticket-attachment-badge');
+  const urlInput = document.getElementById('preview-ticket-attachment-url');
+
+  if (urlInput) urlInput.value = '';
+  if (prompt) prompt.style.display = 'flex';
+  if (badge) badge.style.display = 'none';
+}
+
+window.handlePreviewTicketFileSelect = handlePreviewTicketFileSelect;
+window.clearPreviewTicketAttachment = clearPreviewTicketAttachment;
+
 function closeTicketPreviewModal() {
   const modal = document.getElementById('modal-preview-edit-ticket');
   if (modal) {
     modal.classList.remove('active');
     modal.style.display = 'none';
   }
+  clearPreviewTicketAttachment();
 }
 
 async function confirmCreateTicketFromPreview() {
@@ -3045,9 +3352,17 @@ async function confirmCreateTicketFromPreview() {
   const doctorUsername = currentUser.username || 'solicitante';
   const instCode = currentUser.institution_code || 'OSDE';
 
+  const attachmentInput = document.getElementById('preview-ticket-attachment-url');
+  const attachmentUrl = attachmentInput ? attachmentInput.value : '';
+
+  let finalDesc = description;
+  if (attachmentUrl) {
+    finalDesc += `\n\n[Archivo adjunto: ${attachmentUrl}]`;
+  }
+
   const payload = {
     title: title,
-    description: description,
+    description: finalDesc,
     platform_code: platform,
     institution_code: instCode,
     priority: priority,
@@ -4059,22 +4374,55 @@ async function loadTickets(params = {}) {
  // Por defecto en la bandeja se ocultan los resueltos y cerrados
  // a menos que el usuario los solicite explícitamente vía filtro o preset
  let filteredTickets = rawTickets;
- 
+  
   if (params.pending_only) {
     filteredTickets = rawTickets.filter(t => ['NUEVO', 'ASIGNADO', 'EN_CURSO'].includes(t.status));
   } else if (!params.status && !params.include_all && !params.include_resolved) {
     filteredTickets = rawTickets.filter(t => t.status !== 'RESUELTO' && t.status !== 'CERRADO');
   } else if (!params.status) {
-    // Si include_all es true (como para el solicitante), de todos modos ocultamos CERRADO
-    // si no hay una búsqueda de texto activa en el buscador.
     const searchInput = (document.getElementById('top-global-search-input') || document.getElementById('jira-ticket-search-input'));
     const hasSearchQuery = searchInput && searchInput.value.trim().length > 0;
     if (!hasSearchQuery) {
       filteredTickets = rawTickets.filter(t => t.status !== 'CERRADO');
     }
   }
- 
- AppState.tickets = filteredTickets;
+
+  // ISSUE-44: Los analistas de soporte por defecto solo deben ver sus tickets asignados y los sin asignar
+  const isSupportAnalystRole = AppState.currentUser && (
+    AppState.currentUser.role === 'SOPORTE' ||
+    AppState.currentUser.role === 'SOPORTE_N1' ||
+    AppState.currentUser.role === 'SOPORTE_N2' ||
+    AppState.currentUser.role === 'SOPORTE_N3' ||
+    (AppState.currentUser.role && AppState.currentUser.role.startsWith('SOPORTE'))
+  );
+
+  const assigneeFilterEl = document.getElementById('tkt-filter-assignee');
+  const assigneeFilterVal = assigneeFilterEl ? assigneeFilterEl.value : (isSupportAnalystRole ? 'DEFAULT_ANALYST' : 'ALL');
+
+  if (isSupportAnalystRole && assigneeFilterVal === 'DEFAULT_ANALYST') {
+    const myUser = (AppState.currentUser.username || '').toLowerCase();
+    const myName = (AppState.currentUser.full_name || '').toLowerCase();
+    filteredTickets = filteredTickets.filter(t => {
+      const assigned = (t.assigned_to || t.assignee_username || '').trim().toLowerCase();
+      const isUnassigned = !assigned || assigned === 'sin asignar' || assigned === 'sin_asignar' || t.status === 'NUEVO';
+      const isMine = assigned === myUser || assigned === myName || (t.assignee && (t.assignee.username === myUser || t.assignee.full_name.toLowerCase() === myName));
+      return isMine || isUnassigned;
+    });
+  } else if (assigneeFilterVal === 'MINE_ONLY') {
+    const myUser = (AppState.currentUser.username || '').toLowerCase();
+    const myName = (AppState.currentUser.full_name || '').toLowerCase();
+    filteredTickets = filteredTickets.filter(t => {
+      const assigned = (t.assigned_to || t.assignee_username || '').trim().toLowerCase();
+      return assigned === myUser || assigned === myName;
+    });
+  } else if (assigneeFilterVal === 'UNASSIGNED_ONLY') {
+    filteredTickets = filteredTickets.filter(t => {
+      const assigned = (t.assigned_to || t.assignee_username || '').trim().toLowerCase();
+      return !assigned || assigned === 'sin asignar' || assigned === 'sin_asignar' || t.status === 'NUEVO';
+    });
+  }
+  
+  AppState.tickets = filteredTickets;
  renderTicketList();
  if (AppState.currentUser && AppState.currentUser.role === 'SOLICITANTE') {
    renderRequesterPortal();
@@ -5304,11 +5652,10 @@ function renderDetailTabContent(ticket) {
  ` : ''}
  </div>
 
- <!-- Tarjeta 3.5: Telemetría Oculta Zero-Question (Módulo 13) -->
+ <!-- Tarjeta 3.5: Telemetría Oculta Zero-Question (Módulo 13 - CERO DIBUJITOS) -->
  <div class="info-card-clean" style="grid-column: 1 / -1; border-color: #93C5FD; background: #F8FAFC;">
  <div class="info-card-clean-title" style="color: #1E40AF; border-bottom-color: #BFDBFE; display: flex; justify-content: space-between; align-items: center;">
  <div style="display: flex; align-items: center; gap: 6px;">
- <span>️</span>
  <span>Telemetría del Entorno (Zero-Question)</span>
  </div>
  <span style="background: #DBEAFE; color: #1D4ED8; font-size: 9.5px; font-weight: 800; padding: 2px 7px; border-radius: 4px;">CAPTURA TRANSPARENTE</span>
@@ -5335,7 +5682,7 @@ function renderDetailTabContent(ticket) {
  </div>
  <div class="info-field-row" style="margin: 0;">
  <span class="info-field-label">Resolución Monitor:</span>
- <span class="info-field-val">️ <strong>${tel.screen || '1920x1080'}</strong></span>
+ <span class="info-field-val"> <strong>${tel.screen || '1920x1080'}</strong></span>
  </div>
  <div class="info-field-row" style="margin: 0;">
  <span class="info-field-label">Conectividad & Red:</span>
@@ -7398,17 +7745,33 @@ function changeInstPage(delta) {
 }
 
 function togglePlatformsViewMode(mode) {
- AppState.platformsViewMode = mode;
- const containerCards = document.getElementById('grid-institutions-cards');
- const containerTable = document.getElementById('container-institutions-table');
- const btnCards = document.getElementById('btn-view-mode-cards');
- const btnTable = document.getElementById('btn-view-mode-table');
+  AppState.platformsViewMode = mode;
+  const containerCards = document.getElementById('grid-institutions-cards');
+  const containerTable = document.getElementById('container-institutions-table');
+  const btnCards = document.getElementById('btn-view-mode-cards');
+  const btnTable = document.getElementById('btn-view-mode-table');
 
- if (btnCards) btnCards.classList.toggle('active', mode === 'cards');
- if (btnTable) btnTable.classList.toggle('active', mode === 'table');
+  if (btnCards) {
+    btnCards.classList.toggle('active', mode === 'cards');
+    btnCards.style.background = (mode === 'cards') ? '#FFFFFF' : 'transparent';
+    btnCards.style.color = (mode === 'cards') ? '#0F172A' : '#64748B';
+    btnCards.style.fontWeight = (mode === 'cards') ? '800' : '700';
+    btnCards.style.boxShadow = (mode === 'cards') ? '0 1px 2px rgba(0,0,0,0.08)' : 'none';
+  }
 
- if (containerCards) containerCards.style.display = (mode === 'cards') ? 'grid' : 'none';
- if (containerTable) containerTable.style.display = (mode === 'table') ? 'block' : 'none';
+  if (btnTable) {
+    btnTable.classList.toggle('active', mode === 'table');
+    btnTable.style.background = (mode === 'table') ? '#FFFFFF' : 'transparent';
+    btnTable.style.color = (mode === 'table') ? '#0F172A' : '#64748B';
+    btnTable.style.fontWeight = (mode === 'table') ? '800' : '700';
+    btnTable.style.boxShadow = (mode === 'table') ? '0 1px 2px rgba(0,0,0,0.08)' : 'none';
+  }
+
+  if (containerCards) containerCards.style.display = (mode === 'cards') ? 'flex' : 'none';
+  if (containerTable) containerTable.style.display = (mode === 'table') ? 'block' : 'none';
+
+  // Sincronizar catálogo para asegurar que la tabla y las tarjetas tengan contenido exacto
+  renderInstitutionsCatalog();
 }
 
 function filterInstitutionCards(query) {
@@ -7930,6 +8293,20 @@ function exportTenantMatrixCSV() {
 // =============================================================================
 // MODALES SENIOR UX: FICHA INSTITUCIONAL 360° & FICHA TÉCNICA
 // =============================================================================
+
+
+// ISSUE-40: Formateo seguro y estilizado de insignias de prioridad ITIL
+function formatPriorityBadge(prio) {
+  const p = (prio || 'P3').toUpperCase();
+  const styles = {
+    'P1': 'background: #FEE2E2; color: #991B1B; border: 1px solid #FECACA;',
+    'P2': 'background: #FFEDD5; color: #C2410C; border: 1px solid #FED7AA;',
+    'P3': 'background: #FEF3C7; color: #92400E; border: 1px solid #FDE68A;',
+    'P4': 'background: #F1F5F9; color: #475569; border: 1px solid #E2E8F0;'
+  };
+  const style = styles[p] || styles['P3'];
+  return `<span style="font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 4px; ${style}">${p}</span>`;
+}
 
 function openInstitutionDetailModal(instCode) {
   let inst = (AppState.institutions || []).find(i => i.code === instCode);
@@ -8457,9 +8834,9 @@ function applyRolePermissions() {
     renderRequesterPortal();
     updateRequesterPortalCounters();
 
-    // UX Senior: Ocultar botón genérico de crear ticket de agente; mostrar botón de "Mis Solicitudes"
+    // UX Senior: Ocultar botón genérico de crear ticket de agente y asegurar que NUNCA aparezca 'Mis Solicitudes' en cabecera (ISSUE-49)
     if (btnAddTicket) btnAddTicket.style.display = 'none';
-    if (btnTopReq) btnTopReq.style.display = 'inline-flex';
+    if (btnTopReq) btnTopReq.style.display = 'none';
 
     // Redirigir siempre a su Centro de Ayuda con Chat IA
     switchView('requester-portal');
@@ -11413,15 +11790,12 @@ function renderWsTechPanel(ticket) {
   container.innerHTML = `
     <div style="display: flex; flex-direction: column; gap: 14px;">
       
-      <!-- TARJETA 1: TELEMETRIA DEL ENTORNO ZERO-QUESTION (ISSUE-22) -->
+      <!-- TARJETA 1: TELEMETRIA DEL ENTORNO ZERO-QUESTION (ISSUE-22 / ISSUE-33: CERO DIBUJITOS) -->
       <div style="background: #F8FAFC; border: 1.5px solid #00A896; border-radius: 8px; padding: 14px;">
         <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8F0; padding-bottom: 8px; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <span style="font-size: 16px;">🩺</span>
-            <div>
-              <strong style="font-size: 13px; color: #0F172A; font-family: 'Montserrat', sans-serif;">Telemetria Operativa del Entorno (Zero-Question)</strong>
-              <div style="font-size: 10.5px; color: #64748B;">Diagnostico transparente del dispositivo y conectividad al momento del incidente</div>
-            </div>
+          <div>
+            <strong style="font-size: 13px; color: #0F172A; font-family: 'Montserrat', sans-serif;">Telemetria Operativa del Entorno (Zero-Question)</strong>
+            <div style="font-size: 10.5px; color: #64748B;">Diagnostico transparente del dispositivo y conectividad al momento del incidente</div>
           </div>
           <span style="background: #E0F7F5; color: #00A896; font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 4px; border: 1px solid #99F6E4;">CAPTURA TRANSPARENTE EN VIVO</span>
         </div>
@@ -11429,41 +11803,40 @@ function renderWsTechPanel(ticket) {
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; font-size: 11.5px;">
           <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 6px; padding: 10px;">
             <div style="color: #64748B; font-size: 10px; font-weight: 700; text-transform: uppercase;">Navegador Web</div>
-            <div style="color: #0F172A; font-weight: 700; margin-top: 3px;">🌐 ${tel && tel.browser ? escapeHtml(tel.browser) : 'Chrome / Edge Chromium v122'}</div>
+            <div style="color: #0F172A; font-weight: 700; margin-top: 3px;">${tel && tel.browser ? escapeHtml(tel.browser) : 'Chrome / Edge Chromium v122'}</div>
           </div>
           <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 6px; padding: 10px;">
             <div style="color: #64748B; font-size: 10px; font-weight: 700; text-transform: uppercase;">Sistema Operativo</div>
-            <div style="color: #0F172A; font-weight: 700; margin-top: 3px;">💻 ${tel && tel.os ? escapeHtml(tel.os) : 'Windows 11 Enterprise x64'}</div>
+            <div style="color: #0F172A; font-weight: 700; margin-top: 3px;">${tel && tel.os ? escapeHtml(tel.os) : 'Windows 11 Enterprise x64'}</div>
           </div>
           <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 6px; padding: 10px;">
             <div style="color: #64748B; font-size: 10px; font-weight: 700; text-transform: uppercase;">Resolucion Monitor</div>
-            <div style="color: #0F172A; font-weight: 700; margin-top: 3px;">🖥️ ${tel && tel.screen ? escapeHtml(tel.screen) : '1920x1080 (DPI 100%)'}</div>
+            <div style="color: #0F172A; font-weight: 700; margin-top: 3px;">${tel && tel.screen ? escapeHtml(tel.screen) : '1920x1080 (DPI 100%)'}</div>
           </div>
           <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 6px; padding: 10px;">
             <div style="color: #64748B; font-size: 10px; font-weight: 700; text-transform: uppercase;">Conectividad y Red</div>
-            <div style="color: #0D9488; font-weight: 800; margin-top: 3px;">📶 ${tel && tel.connection ? escapeHtml(tel.connection) : 'En linea (Fibra/4G - Latencia 18ms)'}</div>
+            <div style="color: #0D9488; font-weight: 800; margin-top: 3px;">${tel && tel.connection ? escapeHtml(tel.connection) : 'En linea (Fibra/4G - Latencia 18ms)'}</div>
           </div>
           <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 6px; padding: 10px;">
             <div style="color: #64748B; font-size: 10px; font-weight: 700; text-transform: uppercase;">Zona Horaria</div>
-            <div style="color: #0F172A; font-weight: 700; margin-top: 3px;">🕒 ${tel && tel.timezone ? escapeHtml(tel.timezone) : 'America/Argentina/Buenos_Aires (UTC-3)'}</div>
+            <div style="color: #0F172A; font-weight: 700; margin-top: 3px;">${tel && tel.timezone ? escapeHtml(tel.timezone) : 'America/Argentina/Buenos_Aires (UTC-3)'}</div>
           </div>
           <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 6px; padding: 10px;">
             <div style="color: #64748B; font-size: 10px; font-weight: 700; text-transform: uppercase;">Arquitectura Hardware</div>
-            <div style="color: #0F172A; font-weight: 700; margin-top: 3px;">⚡ ${tel && tel.cpu_cores ? escapeHtml(tel.cpu_cores) : '8 nucleos CPU / 16GB RAM'}</div>
+            <div style="color: #0F172A; font-weight: 700; margin-top: 3px;">${tel && tel.cpu_cores ? escapeHtml(tel.cpu_cores) : '8 nucleos CPU / 16GB RAM'}</div>
           </div>
         </div>
 
-        <div style="margin-top: 10px; font-size: 11px; color: #64748B; display: flex; align-items: center; gap: 6px;">
-          <span>ℹ️</span>
-          <span>Captura automatica de parametros ambientales sin formular preguntas redundantes al solicitante.</span>
+        <div style="margin-top: 10px; font-size: 11px; color: #64748B;">
+          Captura automatica de parametros ambientales sin formular preguntas redundantes al solicitante.
         </div>
       </div>
 
       <!-- TARJETA 2: FICHA DE INTEROPERABILIDAD CLINICA FHIR R4 -->
       <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
         <div>
-          <strong style="font-size: 13px; color: #0F172A;">📋 Ficha de Interoperabilidad Clinica FHIR R4</strong>
-          <div style="font-size: 11px; color: #64748B; margin-top: 2px;">Ecosistema Quantux HealthDesk - Estandar HL7 v2.5 / FHIR JSON</div>
+          <strong style="font-size: 13px; color: #0F172A;">Ficha de Interoperabilidad y Protocolos FHIR R4</strong>
+          <div style="font-size: 11px; color: #64748B; margin-top: 2px;">Ecosistema Quantux Desk - Estándar HL7 v2.5 / FHIR JSON</div>
         </div>
         <button type="button" class="btn-sec" onclick="copyTechPayloadToClipboard()" style="font-size: 11px; padding: 4px 10px; font-weight: 700;">
           Copiar JSON
@@ -11499,15 +11872,15 @@ function copyTechPayloadToClipboard() {
   }
 }
 
-// ISSUE-21: Dialogo de confirmacion preventiva de Bot y pausa de SLA
+// ISSUE-21 / ISSUE-31: Dialogo de confirmacion de solicitud de datos y pausa de SLA
 function confirmAndTriggerBotInteraction() {
   const confirmed = confirm(
-    "🤖 Intervencion del Asistente Autonomo Quantux\n\n" +
-    "Desea que el Bot solicite datos complementarios al solicitante?\n\n" +
+    "Intervención de Soporte Quantux:\n\n" +
+    "¿Desea solicitar datos complementarios al solicitante?\n\n" +
     "Efectos Operativos ITIL:\n" +
-    "• El ticket pasara al estado 'Esperando al Prestador'.\n" +
-    "• El reloj de SLA quedara formalmente PAUSADO hasta la respuesta.\n" +
-    "• Se publicara un mensaje automatico en el timeline del caso solicitando la informacion faltante."
+    "• El ticket pasará al estado 'Esperando al Prestador'.\n" +
+    "• El reloj de SLA quedará formalmente PAUSADO hasta la respuesta.\n" +
+    "• Se registrará la solicitud de información en el historial del caso."
   );
   if (confirmed) {
     triggerBotInteraction('request_requester_info');
@@ -11551,7 +11924,7 @@ function openQuickKbInsertModal() {
   modal.innerHTML = `
     <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #00A896; padding-bottom: 10px; margin-bottom: 12px;">
       <div>
-        <strong style="font-size: 14px; color: #0F172A; font-family: 'Montserrat', sans-serif;">📚 Base de Conocimiento - Insercion en Respuesta</strong>
+        <strong style="font-size: 14px; color: #0F172A; font-family: 'Montserrat', sans-serif;">Base de Conocimiento - Inserción en Respuesta</strong>
         <div style="font-size: 11px; color: #64748B; margin-top: 2px;">Seleccione un procedimiento oficial para incorporarlo al mensaje sin abandonar el caso.</div>
       </div>
       <button type="button" id="close-quick-kb" style="background: #F1F5F9; border: 1px solid #CBD5E1; border-radius: 4px; padding: 4px 8px; cursor: pointer; font-weight: 700; color: #475569;">✕</button>
@@ -12037,51 +12410,51 @@ function renderWsWorkflowActions(ticket) {
 
   if (status === 'RESUELTO') {
     actionsHtml = `
-      <div style="background: #E3FCEF; border: 1px solid #ABF5D1; border-radius: 6px; padding: 10px 12px; margin-bottom: 8px; text-align: center;">
-        <strong style="display: block; margin-bottom: 2px; color: #0F172A; font-size: 12px;">✓ Solicitud Resuelta</strong>
-        <span style="font-size: 11px; color: #0F172A;">Esperando confirmación de conformidad</span>
+      <div style="background: #F0FDFA; border: 1px solid #99F6E4; border-radius: 6px; padding: 10px 12px; margin-bottom: 8px; text-align: center;">
+        <strong style="display: block; margin-bottom: 2px; color: #0F766E; font-size: 12px;">Solicitud Resuelta</strong>
+        <span style="font-size: 11px; color: #0D9488;">Esperando confirmación de conformidad</span>
       </div>
-      <button type="button" onclick="openCsatModal('${ticketId}')" style="width: 100%; padding: 10px 14px; font-weight: 700; font-size: 13px; border-radius: 6px; background: #0F172A; color: #FFFFFF; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 6px;">
-        <span>⭐ Validar Conformidad (CSAT)</span>
+      <button type="button" onclick="openCsatModal('${ticketId}')" style="width: 100%; padding: 10px 14px; font-weight: 700; font-size: 13px; border-radius: 6px; background: #00A896; color: #FFFFFF; border: 1px solid #00897B; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 6px; box-shadow: 0 2px 5px rgba(0,168,150,0.25);">
+        <span>Validar Conformidad (CSAT)</span>
       </button>
-      <button type="button" onclick="quickReopenTicket('${ticketId}')" style="width: 100%; padding: 8px 12px; font-weight: 600; font-size: 12px; border-radius: 6px; background: #FFFFFF; color: #42526E; border: 1px solid #DFE1E6; cursor: pointer;">
-        <span>🔄 Reabrir Solicitud</span>
+      <button type="button" onclick="quickReopenTicket('${ticketId}')" style="width: 100%; padding: 8px 12px; font-weight: 600; font-size: 12px; border-radius: 6px; background: #FFFFFF; color: #475569; border: 1px solid #CBD5E1; cursor: pointer;">
+        <span>Reabrir Solicitud</span>
       </button>
     `;
   } else if (status === 'CERRADO') {
     actionsHtml = `
-      <div style="background: #F4F5F7; border: 1px solid #DFE1E6; border-radius: 6px; padding: 8px 12px; margin-bottom: 8px; text-align: center; font-size: 11.5px; color: #42526E; font-weight: 600;">
+      <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 6px; padding: 8px 12px; margin-bottom: 8px; text-align: center; font-size: 11.5px; color: #64748B; font-weight: 700;">
         Caso Cerrado
       </div>
       <div style="display: flex; flex-direction: column; gap: 6px;">
-        <button type="button" onclick="quickReopenTicket('${ticketId}')" style="width: 100%; padding: 9px 12px; font-weight: 700; font-size: 12px; border-radius: 6px; background: #0F172A; color: #FFFFFF; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+        <button type="button" onclick="quickReopenTicket('${ticketId}')" style="width: 100%; padding: 9px 12px; font-weight: 700; font-size: 12px; border-radius: 6px; background: #00A896; color: #FFFFFF; border: 1px solid #00897B; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
           <span>Reabrir Solicitud</span>
         </button>
-        <button type="button" onclick="quickResolveTicket('${ticketId}')" style="width: 100%; padding: 9px 12px; font-weight: 600; font-size: 12px; border-radius: 6px; background: #0F172A; color: #FFFFFF; border: 1px solid #0F172A; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+        <button type="button" onclick="quickResolveTicket('${ticketId}')" style="width: 100%; padding: 9px 12px; font-weight: 600; font-size: 12px; border-radius: 6px; background: #FFFFFF; color: #00897B; border: 1.5px solid #00A896; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
           <span>Marcar como Resuelto</span>
         </button>
       </div>
     `;
   } else {
     // Para cualquier estado activo (NUEVO, ASIGNADO, EN_CURSO, REABIERTO, etc.)
-    // La opción de RESOLVER TICKET SIEMPRE ESTÁ PROMINENTEMENTE VISIBLE
+    // La opción de RESOLVER TICKET SIEMPRE ESTÁ PROMINENTEMENTE VISIBLE CON ESTILO QUANTUX TEAL
     actionsHtml = `
       <div style="display: flex; flex-direction: column; gap: 8px;">
-        <button type="button" onclick="quickResolveTicket('${ticketId}')" style="width: 100%; padding: 10px 14px; font-weight: 600; font-size: 13px; border-radius: 6px; background: #0F172A; color: #FFFFFF; border: 1px solid #0F172A; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+        <button type="button" onclick="quickResolveTicket('${ticketId}')" style="width: 100%; padding: 10px 14px; font-weight: 700; font-size: 13px; border-radius: 6px; background: #00A896; color: #FFFFFF; border: 1px solid #00897B; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 2px 6px rgba(0, 168, 150, 0.25);">
           <span>Resolver Ticket</span>
         </button>
     `;
 
     if (status === 'NUEVO') {
       actionsHtml += `
-        <button type="button" class="btn-pri" onclick="quickSelfAssign('${ticketId}')" style="width: 100%; padding: 8px 12px; font-weight: 600; font-size: 12px; border-radius: 6px; background: #FFFFFF; color: #0F172A; border: 1px solid #CBD5E1; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+        <button type="button" class="btn-pri" onclick="quickSelfAssign('${ticketId}')" style="width: 100%; padding: 8px 12px; font-weight: 700; font-size: 12px; border-radius: 6px; background: #FFFFFF; color: #00897B; border: 1.5px solid #00A896; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
           <span>Tomar y Asignar</span>
           <span>&rarr;</span>
         </button>
       `;
     } else if (status === 'ASIGNADO') {
       actionsHtml += `
-        <button type="button" class="btn-pri" onclick="quickStartProgress('${ticketId}')" style="width: 100%; padding: 8px 12px; font-weight: 600; font-size: 12px; border-radius: 6px; background: #FFFFFF; color: #0F172A; border: 1px solid #CBD5E1; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+        <button type="button" class="btn-pri" onclick="quickStartProgress('${ticketId}')" style="width: 100%; padding: 8px 12px; font-weight: 700; font-size: 12px; border-radius: 6px; background: #FFFFFF; color: #00897B; border: 1.5px solid #00A896; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
           <span>Iniciar Diagnóstico</span>
           <span>&rarr;</span>
         </button>
@@ -12090,15 +12463,15 @@ function renderWsWorkflowActions(ticket) {
 
     const isAssignedToMe = AppState.currentUser && (ticket.assignee_username === AppState.currentUser.username);
     const selfAssignBtn = isAssignedToMe
-      ? `<button type="button" onclick="openReassignModal('${ticketId}')" style="width: 100%; padding: 7px 10px; font-weight: 600; font-size: 11.5px; border-radius: 6px; background: #F1F5F9; color: #0F172A; border: 1px solid #CBD5E1; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;" title="Ticket en su bandeja. Clic para derivar a otra mesa o prestador">
-           <span>✓ En mi bandeja (Reasignar)</span>
+      ? `<button type="button" onclick="openReassignModal('${ticketId}')" style="width: 100%; padding: 7px 10px; font-weight: 600; font-size: 11.5px; border-radius: 6px; background: #F0FDFA; color: #0F766E; border: 1px solid #99F6E4; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;" title="Ticket en su bandeja. Clic para derivar a otra mesa o prestador">
+           <span>En mi bandeja (Reasignar)</span>
          </button>`
-      : `<button type="button" onclick="quickSelfAssign('${ticketId}')" style="width: 100%; padding: 7px 10px; font-weight: 600; font-size: 11.5px; border-radius: 6px; background: #FFFFFF; color: #0F172A; border: 1px solid #CBD5E1; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;">
+      : `<button type="button" onclick="quickSelfAssign('${ticketId}')" style="width: 100%; padding: 7px 10px; font-weight: 600; font-size: 11.5px; border-radius: 6px; background: #FFFFFF; color: #00897B; border: 1px solid #00A896; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;">
            <span>Asignar a mí</span>
          </button>`;
 
     actionsHtml += `
-        <button type="button" onclick="openResolveModal('${ticketId}')" style="width: 100%; padding: 7px 10px; font-weight: 500; font-size: 11.5px; border-radius: 6px; background: #F8FAFC; color: #334155; border: 1px solid #CBD5E1; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;">
+        <button type="button" onclick="openResolveModal('${ticketId}')" style="width: 100%; padding: 7px 10px; font-weight: 600; font-size: 11.5px; border-radius: 6px; background: #F8FAFC; color: #334155; border: 1px solid #CBD5E1; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;">
           <span>Registrar Notas de Solución...</span>
         </button>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 4px;">
@@ -12111,18 +12484,17 @@ function renderWsWorkflowActions(ticket) {
     `;
   }
 
-  // Selector rápido de estados en 1 clic
+  // Selector rápido de estados en 1 clic (Estilo Quantux)
   actionsHtml += `
     <div style="margin-top: 10px; padding-top: 8px; border-top: 1px dashed #CBD5E1;">
-      <div style="font-size: 10.5px; font-weight: 600; color: #475569; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 0.3px;">Cambiar Estado Directo</div>
+      <div style="font-size: 10.5px; font-weight: 700; color: #475569; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 0.3px;">Cambiar Estado Directo</div>
       <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px;">
-        <button type="button" onclick="quickChangeTicketStatus('${ticketId}', 'EN_CURSO')" style="padding: 5px 2px; font-size: 10px; font-weight: 600; border-radius: 4px; border: 1px solid #CBD5E1; background: ${status === 'EN_CURSO' ? '#0F172A' : '#FFFFFF'}; color: ${status === 'EN_CURSO' ? '#FFFFFF' : '#334155'}; cursor: pointer;">En Curso</button>
-        <button type="button" onclick="quickResolveTicket('${ticketId}')" style="padding: 5px 2px; font-size: 10px; font-weight: 600; border-radius: 4px; border: 1px solid #0F172A; background: ${status === 'RESUELTO' ? '#0F172A' : '#FFFFFF'}; color: ${status === 'RESUELTO' ? '#FFFFFF' : '#0F172A'}; cursor: pointer;">Resuelto</button>
-        <button type="button" onclick="quickChangeTicketStatus('${ticketId}', 'CERRADO')" style="padding: 5px 2px; font-size: 10px; font-weight: 600; border-radius: 4px; border: 1px solid #CBD5E1; background: ${status === 'CERRADO' ? '#475569' : '#FFFFFF'}; color: ${status === 'CERRADO' ? '#FFFFFF' : '#334155'}; cursor: pointer;">Cerrado</button>
+        <button type="button" onclick="quickChangeTicketStatus('${ticketId}', 'EN_CURSO')" style="padding: 5px 2px; font-size: 10px; font-weight: 700; border-radius: 4px; border: 1px solid ${status === 'EN_CURSO' ? '#00897B' : '#CBD5E1'}; background: ${status === 'EN_CURSO' ? '#00A896' : '#FFFFFF'}; color: ${status === 'EN_CURSO' ? '#FFFFFF' : '#334155'}; cursor: pointer;">En Curso</button>
+        <button type="button" onclick="quickResolveTicket('${ticketId}')" style="padding: 5px 2px; font-size: 10px; font-weight: 700; border-radius: 4px; border: 1px solid ${status === 'RESUELTO' ? '#059669' : '#10B981'}; background: ${status === 'RESUELTO' ? '#10B981' : '#FFFFFF'}; color: ${status === 'RESUELTO' ? '#FFFFFF' : '#059669'}; cursor: pointer;">Resuelto</button>
+        <button type="button" onclick="quickChangeTicketStatus('${ticketId}', 'CERRADO')" style="padding: 5px 2px; font-size: 10px; font-weight: 700; border-radius: 4px; border: 1px solid ${status === 'CERRADO' ? '#475569' : '#CBD5E1'}; background: ${status === 'CERRADO' ? '#64748B' : '#FFFFFF'}; color: ${status === 'CERRADO' ? '#FFFFFF' : '#334155'}; cursor: pointer;">Cerrado</button>
       </div>
     </div>
   `;
-
 
   container.innerHTML = actionsHtml;
 }
@@ -12149,15 +12521,336 @@ async function onWsReplyAuthorChange() {
   }
 }
 
+// ISSUE-30: Gestión de Adjuntos en Agent Workspace (cero dibujitos)
+let wsPendingAttachment = null;
+
+function triggerWsReplyFileBrowse() {
+  const input = document.getElementById('ws-reply-file-input');
+  if (input) {
+    input.value = '';
+    input.click();
+  }
+}
+
+function handleWsReplyFileSelected(e) {
+  const file = e.target && e.target.files && e.target.files[0];
+  if (!file) return;
+
+  if (file.size > 20 * 1024 * 1024) {
+    showToast('El archivo supera el límite máximo permitido de 20 MB', 'error');
+    return;
+  }
+
+  wsPendingAttachment = file;
+  const badge = document.getElementById('ws-reply-attachment-badge');
+  const nameEl = document.getElementById('ws-reply-attachment-name');
+  const sizeEl = document.getElementById('ws-reply-attachment-size');
+
+  if (nameEl) nameEl.textContent = file.name;
+  if (sizeEl) {
+    const sizeKb = (file.size / 1024).toFixed(1);
+    const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
+    sizeEl.textContent = file.size >= 1024 * 1024 ? `(${sizeMb} MB)` : `(${sizeKb} KB)`;
+  }
+  if (badge) badge.style.display = 'flex';
+  showToast(`Archivo adjunto preparado: ${file.name}`, 'info');
+}
+
+function clearWsReplyAttachment() {
+  wsPendingAttachment = null;
+  const input = document.getElementById('ws-reply-file-input');
+  if (input) input.value = '';
+  const badge = document.getElementById('ws-reply-attachment-badge');
+  if (badge) badge.style.display = 'none';
+}
+
+// ISSUE-30: Plantillas de Respuesta Rápida Editables y Dinámicas
+const DEFAULT_REPLY_TEMPLATES = [
+  {
+    id: 'tpl-1',
+    title: 'Intervención y Validación Técnica',
+    content: 'Estimado/a usuario/a, hemos tomado intervención en su solicitud de soporte técnico. Se realizaron las validaciones correspondientes y nos encontramos aplicando las correcciones requeridas. Lo mantendremos informado.'
+  },
+  {
+    id: 'tpl-2',
+    title: 'Verificación de Conectividad',
+    content: 'Se ha verificado la conectividad y estado del servicio de soporte técnico. Por favor reintente la acción en el sistema y confírmenos si el incidente persiste.'
+  },
+  {
+    id: 'tpl-3',
+    title: 'Solicitud de Validación para Cierre',
+    content: 'Procedimiento completado conforme a protocolo operativo. Aguardamos su validación para proceder con el cierre de la solicitud.'
+  },
+  {
+    id: 'tpl-4',
+    title: 'Escalamiento a Soporte Especializado N2',
+    content: 'Su solicitud ha sido derivada al equipo de Soporte Especializado Nivel 2 para análisis exhaustivo. Se mantendrá la prioridad asignada y se emitirá reporte de diagnóstico.'
+  }
+];
+
+function getReplyTemplates() {
+  try {
+    const raw = localStorage.getItem('quantux_reply_templates');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch (e) {
+    console.warn('Error leyendo plantillas de localStorage:', e);
+  }
+  return DEFAULT_REPLY_TEMPLATES.slice();
+}
+
+function saveReplyTemplates(templates) {
+  try {
+    localStorage.setItem('quantux_reply_templates', JSON.stringify(templates));
+  } catch (e) {
+    console.error('Error guardando plantillas:', e);
+  }
+}
+
+function openTemplatesModal() {
+  let existing = document.getElementById('templates-modal-overlay');
+  if (existing) existing.remove();
+
+  const overlay = document.createElement('div');
+  overlay.id = 'templates-modal-overlay';
+  overlay.style.position = 'fixed';
+  overlay.style.top = '0';
+  overlay.style.left = '0';
+  overlay.style.width = '100vw';
+  overlay.style.height = '100vh';
+  overlay.style.background = 'rgba(15, 23, 42, 0.4)';
+  overlay.style.display = 'flex';
+  overlay.style.alignItems = 'center';
+  overlay.style.justifyContent = 'center';
+  overlay.style.zIndex = '99999';
+
+  const modal = document.createElement('div');
+  modal.style.background = '#FFFFFF';
+  modal.style.border = '1px solid #CBD5E1';
+  modal.style.borderRadius = '8px';
+  modal.style.boxShadow = '0 10px 25px rgba(0, 0, 0, 0.15)';
+  modal.style.width = '90%';
+  modal.style.maxWidth = '680px';
+  modal.style.maxHeight = '85vh';
+  modal.style.display = 'flex';
+  modal.style.flexDirection = 'column';
+  modal.style.padding = '18px';
+
+  modal.innerHTML = `
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #00A896; padding-bottom: 10px; margin-bottom: 12px;">
+      <div>
+        <strong style="font-size: 14px; color: #0F172A; font-family: 'Montserrat', sans-serif;">Plantillas de Respuesta Rápida</strong>
+        <div style="font-size: 11px; color: #64748B; margin-top: 2px;">Seleccione, edite o cree plantillas de respuesta predefinidas para el Workspace.</div>
+      </div>
+      <button type="button" id="close-templates-modal" style="background: #F1F5F9; border: 1px solid #CBD5E1; border-radius: 4px; padding: 4px 8px; cursor: pointer; font-weight: 700; color: #475569;">✕</button>
+    </div>
+
+    <!-- Barra de acciones: búsqueda y botón de nueva plantilla -->
+    <div style="display: flex; gap: 8px; margin-bottom: 12px; align-items: center;">
+      <input type="text" id="tpl-filter-input" placeholder="Buscar en plantillas..." style="flex: 1; padding: 7px 10px; font-size: 12px; border: 1px solid #CBD5E1; border-radius: 6px; outline: none; box-sizing: border-box;">
+      <button type="button" id="btn-toggle-new-tpl" class="btn-clean-action" style="background: #00A896; color: white; border: none; padding: 7px 12px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer; white-space: nowrap;">
+        + Nueva Plantilla
+      </button>
+    </div>
+
+    <!-- Formulario para crear nueva plantilla (oculto por defecto) -->
+    <div id="new-template-form" style="display: none; background: #F8FAFC; border: 1px solid #CBD5E1; border-radius: 6px; padding: 12px; margin-bottom: 12px;">
+      <div style="font-size: 12px; font-weight: 700; color: #0F172A; margin-bottom: 6px;">Crear Nueva Plantilla</div>
+      <input type="text" id="new-tpl-title" placeholder="Título de la plantilla..." style="width: 100%; padding: 6px 10px; font-size: 12px; border: 1px solid #CBD5E1; border-radius: 4px; margin-bottom: 8px; box-sizing: border-box;">
+      <textarea id="new-tpl-content" rows="3" placeholder="Contenido del mensaje..." style="width: 100%; padding: 6px 10px; font-size: 12px; border: 1px solid #CBD5E1; border-radius: 4px; margin-bottom: 8px; box-sizing: border-box; font-family: inherit; resize: vertical;"></textarea>
+      <div style="display: flex; justify-content: flex-end; gap: 8px;">
+        <button type="button" id="btn-cancel-new-tpl" style="padding: 5px 12px; font-size: 11.5px; font-weight: 600; border: 1px solid #CBD5E1; background: #FFFFFF; border-radius: 4px; cursor: pointer;">Cancelar</button>
+        <button type="button" id="btn-save-new-tpl" style="padding: 5px 14px; font-size: 11.5px; font-weight: 700; background: #00A896; color: #FFFFFF; border: none; border-radius: 4px; cursor: pointer;">Guardar Plantilla</button>
+      </div>
+    </div>
+
+    <!-- Lista de plantillas -->
+    <div id="templates-list-container" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; max-height: 380px; padding-right: 4px;">
+    </div>
+  `;
+
+  overlay.appendChild(modal);
+  document.body.appendChild(overlay);
+
+  const filterInput = modal.querySelector('#tpl-filter-input');
+  const btnToggleNew = modal.querySelector('#btn-toggle-new-tpl');
+  const newForm = modal.querySelector('#new-template-form');
+  const btnCancelNew = modal.querySelector('#btn-cancel-new-tpl');
+  const btnSaveNew = modal.querySelector('#btn-save-new-tpl');
+  const newTitle = modal.querySelector('#new-tpl-title');
+  const newContent = modal.querySelector('#new-tpl-content');
+  const listContainer = modal.querySelector('#templates-list-container');
+  const btnClose = modal.querySelector('#close-templates-modal');
+
+  btnClose.onclick = () => overlay.remove();
+  overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
+
+  btnToggleNew.onclick = () => {
+    newForm.style.display = newForm.style.display === 'none' ? 'block' : 'none';
+    if (newForm.style.display === 'block') newTitle.focus();
+  };
+  btnCancelNew.onclick = () => {
+    newForm.style.display = 'none';
+    newTitle.value = '';
+    newContent.value = '';
+  };
+
+  btnSaveNew.onclick = () => {
+    const title = newTitle.value.trim();
+    const content = newContent.value.trim();
+    if (!title || !content) {
+      showToast('Por favor ingrese título y contenido para la plantilla', 'warning');
+      return;
+    }
+    const currentList = getReplyTemplates();
+    const newTpl = {
+      id: 'tpl-' + Date.now(),
+      title: title,
+      content: content
+    };
+    currentList.unshift(newTpl);
+    saveReplyTemplates(currentList);
+    showToast('Plantilla creada exitosamente', 'success');
+    newTitle.value = '';
+    newContent.value = '';
+    newForm.style.display = 'none';
+    renderTemplatesList();
+  };
+
+  function renderTemplatesList() {
+    const query = (filterInput.value || '').toLowerCase().trim();
+    const templates = getReplyTemplates();
+    const filtered = templates.filter(t => 
+      t.title.toLowerCase().includes(query) || t.content.toLowerCase().includes(query)
+    );
+
+    if (filtered.length === 0) {
+      listContainer.innerHTML = '<div style="text-align: center; color: #64748B; padding: 24px 10px; font-size: 12px;">No se encontraron plantillas coincidentes.</div>';
+      return;
+    }
+
+    listContainer.innerHTML = filtered.map(t => `
+      <div id="tpl-card-${t.id}" style="border: 1px solid #E2E8F0; border-radius: 6px; padding: 10px 12px; background: #FFFFFF; transition: border-color 0.15s ease;">
+        <div id="tpl-view-${t.id}">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
+            <span style="font-weight: 700; font-size: 12.5px; color: #0F172A;">${escapeHtml(t.title)}</span>
+            <div style="display: flex; gap: 6px;">
+              <button type="button" class="btn-select-tpl" data-id="${t.id}" style="padding: 4px 10px; font-size: 11px; font-weight: 700; background: #00A896; color: #FFFFFF; border: none; border-radius: 4px; cursor: pointer;">
+                Seleccionar
+              </button>
+              <button type="button" class="btn-edit-tpl" data-id="${t.id}" style="padding: 4px 8px; font-size: 11px; font-weight: 600; background: #F1F5F9; border: 1px solid #CBD5E1; color: #334155; border-radius: 4px; cursor: pointer;">
+                Editar
+              </button>
+              <button type="button" class="btn-delete-tpl" data-id="${t.id}" style="padding: 4px 8px; font-size: 11px; font-weight: 600; background: #FEF2F2; border: 1px solid #FCA5A5; color: #DC2626; border-radius: 4px; cursor: pointer;">
+                Eliminar
+              </button>
+            </div>
+          </div>
+          <div style="font-size: 11.5px; color: #475569; line-height: 1.4; white-space: pre-wrap;">${escapeHtml(t.content)}</div>
+        </div>
+
+        <div id="tpl-edit-${t.id}" style="display: none;">
+          <input type="text" id="edit-title-${t.id}" value="${escapeHtml(t.title)}" style="width: 100%; padding: 6px 10px; font-size: 12px; border: 1px solid #CBD5E1; border-radius: 4px; margin-bottom: 6px; box-sizing: border-box;">
+          <textarea id="edit-content-${t.id}" rows="3" style="width: 100%; padding: 6px 10px; font-size: 12px; border: 1px solid #CBD5E1; border-radius: 4px; margin-bottom: 6px; box-sizing: border-box; font-family: inherit; resize: vertical;">${escapeHtml(t.content)}</textarea>
+          <div style="display: flex; justify-content: flex-end; gap: 6px;">
+            <button type="button" class="btn-cancel-edit" data-id="${t.id}" style="padding: 4px 10px; font-size: 11px; font-weight: 600; background: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 4px; cursor: pointer;">Cancelar</button>
+            <button type="button" class="btn-save-edit" data-id="${t.id}" style="padding: 4px 12px; font-size: 11px; font-weight: 700; background: #00A896; color: #FFFFFF; border: none; border-radius: 4px; cursor: pointer;">Guardar</button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+
+    // Event listeners
+    listContainer.querySelectorAll('.btn-select-tpl').forEach(btn => {
+      btn.onclick = () => {
+        const id = btn.getAttribute('data-id');
+        const tpl = templates.find(item => item.id === id);
+        if (tpl) {
+          const textarea = document.getElementById('ws-reply-textarea');
+          if (textarea) {
+            textarea.value = tpl.content;
+            textarea.focus();
+            showToast(`Plantilla "${tpl.title}" insertada`, 'info');
+          }
+          overlay.remove();
+        }
+      };
+    });
+
+    listContainer.querySelectorAll('.btn-edit-tpl').forEach(btn => {
+      btn.onclick = () => {
+        const id = btn.getAttribute('data-id');
+        document.getElementById(`tpl-view-${id}`).style.display = 'none';
+        document.getElementById(`tpl-edit-${id}`).style.display = 'block';
+      };
+    });
+
+    listContainer.querySelectorAll('.btn-cancel-edit').forEach(btn => {
+      btn.onclick = () => {
+        const id = btn.getAttribute('data-id');
+        document.getElementById(`tpl-view-${id}`).style.display = 'block';
+        document.getElementById(`tpl-edit-${id}`).style.display = 'none';
+      };
+    });
+
+    listContainer.querySelectorAll('.btn-save-edit').forEach(btn => {
+      btn.onclick = () => {
+        const id = btn.getAttribute('data-id');
+        const newTitleVal = document.getElementById(`edit-title-${id}`).value.trim();
+        const newContentVal = document.getElementById(`edit-content-${id}`).value.trim();
+        if (!newTitleVal || !newContentVal) {
+          showToast('Título y contenido no pueden estar vacíos', 'warning');
+          return;
+        }
+        const currentList = getReplyTemplates();
+        const target = currentList.find(item => item.id === id);
+        if (target) {
+          target.title = newTitleVal;
+          target.content = newContentVal;
+          saveReplyTemplates(currentList);
+          showToast('Plantilla actualizada', 'success');
+          renderTemplatesList();
+        }
+      };
+    });
+
+    listContainer.querySelectorAll('.btn-delete-tpl').forEach(btn => {
+      btn.onclick = () => {
+        const id = btn.getAttribute('data-id');
+        const currentList = getReplyTemplates();
+        const target = currentList.find(item => item.id === id);
+        if (!target) return;
+        if (confirm(`¿Eliminar la plantilla "${target.title}"?`)) {
+          const updated = currentList.filter(item => item.id !== id);
+          saveReplyTemplates(updated);
+          showToast('Plantilla eliminada', 'info');
+          renderTemplatesList();
+        }
+      };
+    });
+  }
+
+  filterInput.oninput = () => renderTemplatesList();
+  renderTemplatesList();
+}
+
+function insertQuickResponseTemplate() {
+  openTemplatesModal();
+}
+
+// ISSUE-31: Interacción de Pedir Datos con Pausa Efectiva de SLA ITIL 4
 async function triggerBotInteraction(actionType = 'request_requester_info') {
   if (!AppState.selectedTicket) return;
   const ticketId = AppState.selectedTicket.id;
   try {
-    const res = await API.request(`/tickets/${ticketId}/bot-interact`, {
-      method: 'POST',
-      body: JSON.stringify({ action_type: actionType })
+    const performedBy = AppState.currentUser ? (AppState.currentUser.username || 'soporte') : 'soporte';
+    const res = await API.botTicketInteract(ticketId, {
+      action_type: actionType,
+      performed_by: performedBy
     });
-    showToast(res.message || 'Intervención del Bot Quantux registrada con éxito', 'success');
+    showToast('Datos complementarios solicitados. Reloj de SLA pausado (ITIL 4)', 'success');
     const refreshed = await API.getTicket(ticketId);
     AppState.selectedTicket = refreshed;
     renderWsTimeline(refreshed);
@@ -12166,12 +12859,13 @@ async function triggerBotInteraction(actionType = 'request_requester_info') {
     renderWsWorkflowActions(refreshed);
     loadTickets();
   } catch (err) {
-    console.error('Error en interacción del bot:', err);
-    showToast('Error al ejecutar la acción del Bot', 'error');
+    console.error('Error en interacción de solicitud de datos:', err);
+    showToast('Error al solicitar datos complementarios: ' + (err.message || 'Fallo de conexión'), 'error');
   }
 }
 
-async function submitAgentWorkspaceReply() {
+// ISSUE-30 / ISSUE-32: Envío de Respuesta, Adjuntos y Opción Dual de Resolución
+async function submitAgentWorkspaceReply(andResolve = false) {
   if (!AppState.selectedTicket) return;
   const textarea = document.getElementById('ws-reply-textarea');
   const isInternalCheck = document.getElementById('ws-reply-is-internal');
@@ -12194,7 +12888,7 @@ async function submitAgentWorkspaceReply() {
 
   if (authorMode === 'solicitante') {
     authorUsername = ticket.requester_username || 'solicitante';
-    authorName = ticket.requester_name || (ticket.requester_username ? formatUserName(ticket.requester_username) : 'Dr. Martín Gómez (Solicitante)');
+    authorName = ticket.requester_name || (ticket.requester_username ? formatUserName(ticket.requester_username) : 'Solicitante');
     authorRole = 'SOLICITANTE';
   } else if (authorMode === 'bot_quantux') {
     authorUsername = 'bot_quantux';
@@ -12207,9 +12901,24 @@ async function submitAgentWorkspaceReply() {
   }
 
   try {
+    let finalContent = content;
+
+    // Subir adjunto pendiente si existe
+    if (wsPendingAttachment) {
+      try {
+        const uploadRes = await API.uploadFile(wsPendingAttachment, ticket.id, authorUsername);
+        if (uploadRes && uploadRes.file_url) {
+          finalContent += `\n\n[Archivo adjunto: ${uploadRes.original_name || wsPendingAttachment.name}](${uploadRes.file_url})`;
+        }
+      } catch (uploadErr) {
+        console.warn('Error subiendo adjunto:', uploadErr);
+        showToast('Aviso: El archivo no pudo adjuntarse al servidor, pero se enviará el mensaje.', 'warning');
+      }
+    }
+
     const payload = {
-      message: content,
-      content: content,
+      message: finalContent,
+      content: finalContent,
       is_internal: isInternal,
       author_username: authorUsername,
       author_name: authorName,
@@ -12217,8 +12926,21 @@ async function submitAgentWorkspaceReply() {
     };
 
     await API.addComment(ticket.id, payload);
+
+    // Si se activó la opción "Responder y Resolver"
+    if (andResolve) {
+      await API.resolveTicket(ticket.id, {
+        resolution_notes: content,
+        is_workaround: false,
+        resolved_by_username: authorUsername
+      });
+      showToast(`Respuesta enviada y Ticket #${ticket.id} marcado como RESUELTO`, 'success');
+    } else {
+      showToast(isInternal ? 'Nota interna agregada' : 'Respuesta enviada con éxito', 'success');
+    }
+
     textarea.value = '';
-    showToast(isInternal ? 'Nota interna agregada' : 'Respuesta enviada con éxito', 'success');
+    clearWsReplyAttachment();
 
     // Refrescar ticket y recalcular SLA
     const refreshed = await API.getTicket(ticket.id);
@@ -12231,22 +12953,8 @@ async function submitAgentWorkspaceReply() {
     loadTickets();
   } catch (err) {
     console.error('Error enviando respuesta:', err);
-    showToast('Error al enviar la respuesta', 'error');
+    showToast('Error al enviar la respuesta: ' + (err.message || 'Fallo de red'), 'error');
   }
-}
-
-function insertQuickResponseTemplate() {
-  const textarea = document.getElementById('ws-reply-textarea');
-  if (!textarea) return;
-
-  const templates = [
-    "Estimado/a profesional, hemos tomado intervención en su solicitud de soporte tcnico. Se realizaron las validaciones en el módulo clínico y nos encontramos aplicando las correcciones requeridas. Lo mantendremos informado.",
-    "Se ha verificado la conectividad y estado del servicio de soporte tcnico. Por favor reintente la acción en el sistema y confírmenos si el incidente persiste.",
-    "Procedimiento completado conforme a protocolo operativo. Aguardamos su validación para proceder con el cierre de la solicitud."
-  ];
-
-  textarea.value = templates[0];
-  textarea.focus();
 }
 
 function reassignFromWorkspace() {

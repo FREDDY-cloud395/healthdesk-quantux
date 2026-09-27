@@ -671,6 +671,53 @@ const API = {
     return res.json();
   },
 
+  async botTicketInteract(ticketId, payload) {
+    const res = await fetch(`${API_BASE}/api/v1/tickets/${ticketId}/bot-interact`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) {
+      let errMsg = 'Error al interactuar con el bot';
+      try { const errData = await res.json(); errMsg = errData.detail || errMsg; } catch(e){}
+      throw new Error(errMsg);
+    }
+    return res.json();
+  },
+
+  async uploadFile(file, ticketId = null, uploadedBy = 'soporte') {
+    const formData = new FormData();
+    formData.append('file', file);
+    if (ticketId) formData.append('ticket_id', ticketId);
+    if (uploadedBy) formData.append('uploaded_by', uploadedBy);
+    const res = await fetch(`${API_BASE}/api/v1/files/upload`, {
+      method: 'POST',
+      body: formData
+    });
+    if (!res.ok) {
+      let errMsg = 'Error al subir el archivo';
+      try { const errData = await res.json(); errMsg = errData.detail || errMsg; } catch(e){}
+      throw new Error(errMsg);
+    }
+    return res.json();
+  },
+
+  async request(endpoint, options = {}) {
+    const path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+    const url = endpoint.startsWith('http') ? endpoint : `${API_BASE}/api/v1${path}`;
+    const headers = options.headers || {};
+    if (!headers['Content-Type'] && !(options.body instanceof FormData)) {
+      headers['Content-Type'] = 'application/json';
+    }
+    const res = await fetch(url, { ...options, headers });
+    if (!res.ok) {
+      let errMsg = `HTTP ${res.status}`;
+      try { const errData = await res.json(); errMsg = errData.detail || errMsg; } catch(e){}
+      throw new Error(errMsg);
+    }
+    return res.json();
+  },
+
   async checkHealth() {
     try {
       const res = await fetch(`${API_BASE}/`);
