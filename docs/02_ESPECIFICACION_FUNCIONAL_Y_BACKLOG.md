@@ -363,6 +363,13 @@ En virtud del protocolo de adaptación PMI y aseguramiento de calidad, todo gap 
     3. Verificación técnica automatizada con suite de pruebas dedicada (`test_ticket_manager_bot_and_kb.py`: 4/4 tests OK).
     4. Trazabilidad inmutable e indexada en SQLite (`ix_kb_contributions_article`, `ix_kb_contributions_ticket`) y sincronización con el tablero Scrumban.
 
+* **UH-70 [P1 - 2 SP]:** Menú Lateral Zen: Ocultamiento de Accesos a Tablero de Control y Torre de Control Preservando Funcionalidad Subyacente.
+  * *Narrativa:* **Como** Operador Asistencial y Solution Owner, **quiero** que el menú lateral oculte los botones de Tablero de Control y Torre de Control manteniendo el código y la capacidad analítica intacta, **para** que la barra de navegación lateral sea minimalista y enfocada en la atención sin ruido de accesos no utilizados en la rutina diaria.
+  * *Criterios de Aceptación Gherkin:*
+    * **Dado** el menú lateral de navegación, **cuando** se renderizan los ítems principales, **entonces** los accesos `#tab-dashboard` y `#tab-team-leader` están completamente invisibles (`display: none !important;`).
+    * **Dado** el código JavaScript y backend, **cuando** se consultan las métricas o se abren las vistas programáticamente, **entonces** todas las funciones y controladores operan normalmente sin excepciones.
+    * **Dado** el registro en el Scrumban, **cuando** se abre la tarjeta UH-70, **entonces** exhibe la captura de evidencia remitida por el Solution Owner.
+
 *(El detalle completo de narrativas, escenarios Gherkin y criterios de adaptación se encuentra en el Documento DOC-GOV-008, DOC-QA-004 y en el Tablero Scrumban interactivo docs/00_Tablero_Scrumban_Quantux.html).*
 
 ---

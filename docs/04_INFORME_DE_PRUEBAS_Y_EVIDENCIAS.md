@@ -145,5 +145,36 @@ Conforme a la política de aseguramiento de calidad y preparación hacia el hito
 | **Cumplimiento Visual DOM** | Selenium / DOM inspector | 🟢 PASS | `tests/test_dom_visual_compliance.py` (6/6 tests exitosos). |
 | **Integridad Backend ITIL** | Integración relacional FastAPI/SQLite | 🟢 PASS | `backend/tests/test_reemplazo_n1_suite.py` (5/5 tests exitosos). |
 | **Bot Gestor y KCS v6** | Flujo multi-rol y base de conocimiento | 🟢 PASS | `tests/test_ticket_manager_bot_and_kb.py` (4/4 tests exitosos). |
-| **Mejoras UX Senior & Filtros** | Suite unitaria integral | 🟢 PASS | `tests/test_mej04_mej07_multitenant_ux.py` (25/25 tests exitosos). |
+| **Alimentación KB al Resolver** | Suite Backend ITIL 4 & KCS v6 | 🟢 PASS | `backend/tests/test_kb_feeding_on_resolve.py` (1/1 test exitoso). |
+| **Golden Tests Clasificación CD2** | Suite Semántica de Clasificación | 🟢 PASS | `backend/tests/golden_test_cd2_suite.py` (8/8 tests exitosos). |
 | **Pre-Commit Hook Guard** | Gate Git antes de commit | 🟢 PASS | `.git/hooks/pre-commit` bloquea activamente cualquier transgresión. |
+
+---
+
+## 8. REGISTRO OFICIAL DE RESOLUCIÓN DE DEFECTOS Y CONTINGENCIAS (SPRINT 6)
+
+### ISSUE-24: Remoción de Badge Innecesario 'AF-DEV' en Cabecera del Asistente IA
+* **Severidad:** P1 — Alta Prioridad / Ruido Visual.
+* **Componente:** `frontend/js/app.js` (`renderAIChatHeader`).
+* **Dictamen:** Corregido y Verificado. Se eliminó la etiqueta residual de desarrollo 'AF-DEV', preservando el estado operativo y el diseño zen del asistente.
+
+### ISSUE-25: Visualización Scrumban 100vh sin Scroll Derecho y Distribución Uniforme de 6 Columnas
+* **Severidad:** P1 — Alta Prioridad / Ergonomía de Pantalla Completa.
+* **Componente:** `scripts/build_full_scrumban_board.py` y `docs/00_Tablero_Scrumban_Quantux.html`.
+* **Dictamen:** Corregido y Verificado. `html, body { height: 100vh; overflow: hidden; }`, grilla fluidamente distribuida con `repeat(6, minmax(0, 1fr))` y scroll confinado exclusivamente a `.cards-list` de cada columna, eliminando la barra vertical derecha del navegador.
+
+### ISSUE-26: Rediseño UX Senior: Barra de Pestañas y Acciones Multi-Tenant en Fila Única
+* **Severidad:** P1 — Alta Prioridad / Ergonomía Visual y Usabilidad.
+* **Componente:** `frontend/index.html` y `frontend/js/app.js`.
+* **Dictamen:** Corregido y Verificado. Toolbar flex unificada con subpestañas a la izquierda y botón de acción dinámica contextual a la derecha, eliminando la dispersión visual.
+
+### ISSUE-27: Corrección de Botón 'Expandir Todo' en Historial y Notas del Caso en Agent Workspace
+* **Severidad:** P1 — Alta Criticidad / Operatividad de Soporte.
+* **Componente:** `frontend/index.html` y `frontend/js/app.js` (`expandAllWsNotes`, `collapseAllWsNotes`).
+* **Dictamen:** Corregido y Verificado. Despliegue forzado con `setProperty('display', 'block', 'important')`, rotación a `▼`, remoción de line clamp y listeners nativos en DOM.
+
+### ISSUE-28: Alimentación y Trazabilidad Automática de la Base de Conocimiento al Resolver Ticket
+* **Severidad:** P1 — Alta Criticidad / Pérdida de Capital Intelectual.
+* **Componente:** `backend/app/api/endpoints/tickets.py`, `app/models/entities.py` y `frontend/js/app.js`.
+* **Dictamen:** Corregido y Verificado. Incorporación de `publish_to_kb` en `TicketResolveRequest`, persistencia automática en `KBArticle`, `KBArticleHistory`, relación formal en `KBArticleContribution`, auditoría ITIL en `TicketAuditLog` y comentario en `TicketComment`. Verificado mediante suite `backend/tests/test_kb_feeding_on_resolve.py`.
+
