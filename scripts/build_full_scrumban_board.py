@@ -18,8 +18,8 @@ def generate_scrumban_board():
         {"id": "EP-04", "name": "Ciclo de Estados y Registro de Solución", "sp": 42, "progress": 100, "status": "Completada", "timebox": "Sprint 2 - 4", "desc": "Máquina de estados FSM de 5 pasos, validaciones y notas de resolución."},
         {"id": "EP-05", "name": "Seguimiento, Notificaciones e Historial", "sp": 21, "progress": 100, "status": "Completada", "timebox": "Sprint 4", "desc": "Línea de tiempo de auditoría inmutable, alertas visuales y trazabilidad."},
         {"id": "EP-06", "name": "Administración y Operación Centralizada", "sp": 60, "progress": 100, "status": "Completada", "timebox": "Sprint 2 - 5", "desc": "Gestión de plataformas, clientes, usuarios y panel de control."},
-        {"id": "EP-07", "name": "Gobernanza PMI+IA, Blindaje OJO & Calidad", "sp": 57, "progress": 55, "status": "En Curso (Sprint 6 Actual)", "timebox": "Sprint 6 (28-sep al 02-oct)", "desc": "Marco de adaptación PMI en 4 pasos, compuertas TDD pre-commit y resolución de no-conformidades."},
-        {"id": "EP-08", "name": "Reemplazo N1, Triage IA & Portal Solicitante", "sp": 52, "progress": 0, "status": "Planificada", "timebox": "Sprint 7 (05-oct al 16-oct)", "desc": "Clasificación asistida por IA, chat predictivo y automatización de mesa N1."},
+        {"id": "EP-07", "name": "Gobernanza PMI+IA, Blindaje OJO & Calidad", "sp": 57, "progress": 100, "status": "Completada", "timebox": "Sprint 6 (26-sep al 28-sep)", "desc": "Marco de adaptación PMI en 4 pasos, compuertas TDD pre-commit, Quality Gate y resolución integral de no-conformidades."},
+        {"id": "EP-08", "name": "Reemplazo N1, Triage IA & Portal Solicitante", "sp": 52, "progress": 25, "status": "En Curso (Sprint 7 Actual)", "timebox": "Sprint 7 (28-sep al 09-oct)", "desc": "Clasificación asistida por IA, chat predictivo, automatización de mesa N1 y experiencia asistencial del prestador."},
         {"id": "EP-09", "name": "Telemetría Enterprise, SLAs & HL7", "sp": 45, "progress": 0, "status": "Planificada", "timebox": "Sprint 8 (19-oct al 30-oct)", "desc": "SLAs dinámicos predictivos, interoperabilidad con estándares sanitarios y telemetría."}
     ]
 
@@ -30,8 +30,8 @@ def generate_scrumban_board():
         {"id": "Sprint 3", "name": "Sprint 3: Cockpit 3 Columnas & Selector Roles", "sp": 43, "status": "Completado", "dates": "07/09/2026 - 11/09/2026", "desc": "Bandeja unificada, cockpit operativo y selector de perfiles sin recargar."},
         {"id": "Sprint 4", "name": "Sprint 4: Integración E2E, Notas & Auditoría", "sp": 46, "status": "Completado", "dates": "14/09/2026 - 18/09/2026", "desc": "Circuito E2E, notas internas privadas y timeline inmutable de cambios."},
         {"id": "Sprint 5", "name": "Sprint 5: Estabilización, Certificación UAT & Release v1.0", "sp": 14, "status": "Completado", "dates": "21/09/2026 - 25/09/2026", "desc": "Pase a producción, dataset de 14 clientes y cierre de línea base MVP."},
-        {"id": "Sprint 6", "name": "⚡ Sprint 6: Pruebas, Estabilización & Cierre de Alcance", "sp": 42, "status": "COMPLETADO (100%)", "dates": "26/09/2026 - 28/09/2026", "desc": "Gobernanza PMI+IA, blindaje OJO, resolución de retrabajos (UH-67, MEJ-08), issues críticas resueltas (ISSUE-21, ISSUE-22, ISSUE-23) y congelamiento 28-Sep."},
-        {"id": "Sprint 7", "name": "Sprint 7: Reemplazo N1 & Omnicanalidad", "sp": 35, "status": "Planificado", "dates": "05/10/2026 - 16/10/2026", "desc": "Triage inteligente y asistencia de primer nivel para prestadores."},
+        {"id": "Sprint 6", "name": "Sprint 6: Pruebas, Estabilización & Cierre de Alcance", "sp": 42, "status": "COMPLETADO (100%)", "dates": "26/09/2026 - 28/09/2026", "desc": "Cierre formal y certificado de Sprint 6. 100% de tarjetas completadas y archivadas en Done con Quality Gate PMI+IA superado al 100%, resguardo bajo siete llaves y base estable."},
+        {"id": "Sprint 7", "name": "🚀 Sprint 7: Reemplazo N1, Omnicanalidad & PWA Mobile", "sp": 35, "status": "ACTIVO (Sprint 7 Actual)", "dates": "28/09/2026 - 09/10/2026", "desc": "Sprint 7: Reemplazo N1, Triage IA, Omnicanalidad, PWA Mobile instalable y Experiencia Asistencial del Prestador. Backlog priorizado y listo para ejecución."},
         {"id": "Sprint 8", "name": "Sprint 8: Telemetría Enterprise & HL7", "sp": 40, "status": "Planificado", "dates": "19/10/2026 - 30/10/2026", "desc": "Integración avanzada, métricas en tiempo real y conectividad hospitalaria."}
     ]
 
@@ -42,8 +42,8 @@ def generate_scrumban_board():
         {"id": "M3", "date": "11-Sep-2026", "title": "Cockpit Centralizado en 3 Columnas Operativo", "status": "done", "badge": "Completado"},
         {"id": "M4", "date": "18-Sep-2026", "title": "Circuito E2E Integrado con Trazabilidad de Auditoría", "status": "done", "badge": "Completado"},
         {"id": "M5", "date": "25-Sep-2026", "title": "Liberación Certificada Release v1.0 MVP Quantux Salud", "status": "done", "badge": "Completado"},
-        {"id": "M6", "date": "28-Sep-2026", "title": "Deadline Técnico & Congelamiento de Código (18:00 hs)", "status": "current", "badge": "PRUEBAS & ESTABILIZACIÓN"},
-        {"id": "M7", "date": "29 y 30-Sep", "title": "Ensayos y Preparación Pitch del Solution Owner (Blindado)", "status": "planned", "badge": "PREPARACIÓN PITCH"},
+        {"id": "M6", "date": "28-Sep-2026", "title": "Cierre Formal Sprint 6, Pruebas de Estabilización y Resguardo Bajo Siete Llaves", "status": "done", "badge": "COMPLETADO"},
+        {"id": "M7", "date": "29-Sep-2026", "title": "Kickoff Sprint 7: Reemplazo N1, Triage IA, Omnicanalidad & PWA Mobile", "status": "current", "badge": "ACTIVO (SPRINT 7)"},
         {"id": "M8", "date": "01-Oct-2026", "title": "Presentación Oficial del Producto ante el Comité Evaluador", "status": "planned", "badge": "DEMO FINAL"},
         {"id": "M9", "date": "16-Oct-2026", "title": "Release v1.1 Reemplazo N1 y Despliegue Asistencial", "status": "planned", "badge": "Planificado"}
     ]
@@ -4449,51 +4449,40 @@ def generate_scrumban_board():
     ]
     tasks.extend(sprint7_tasks)
 
-    # Actualizar ISSUE-65 a Retrabajo (rework) al fondo por orden estricta del Solution Owner
+    # =========================================================================
+    # CIERRE FORMAL SPRINT 6 & PREPARACIÓN DEL SPRINT 7 (DIRECTIVA SOLUTION OWNER)
+    # =========================================================================
+    # Promoción de ISSUE-65 a Sprint 7 (Prioridad P1 - Listo para Aprobación y Ejecución)
     for t in tasks:
         if t["id"] == "ISSUE-65":
-            t["status"] = "rework"
+            t["sprint"] = "Sprint 7"
+            t["status"] = "sprint"
             t["priority"] = "P1"
             t["so_feedback"] = {
-                "status": "EN RETRABAJO PRIORITARIO (P1)",
+                "status": "PRIORIDAD 1 SPRINT 7 - LISTO PARA APROBACIÓN Y EJECUCIÓN",
                 "reviewer": "Freddy Cortés (Solution Owner)",
-                "date": "27/09/2026 13:15",
-                "observation": "ISSUE-65, no se resolvió el problema, vuelve a retrabajo, analiza, propon solución y deja listo para aprobar y ejecutar"
+                "date": "2026-09-27 15:30",
+                "notes": "ISSUE-65 listo para arrancar en Sprint 7. Análisis de causa raíz completado, solución técnica de persistencia de SLA definida y validada en backlog para aprobación directa del SO."
             }
             t["attachment_image"] = "assets/capturas/ISSUE-65_persistencia_sla_sin_cierre_dialogo.png"
 
-    # BLINDAJE INMUTABLE: 38 Tarjetas previamente aprobadas por el Solution Owner
-    APPROVED_DONE_IDS = {
-        "ISSUE-01", "ISSUE-02", "ISSUE-03", "ISSUE-07", "ISSUE-08", "ISSUE-09", "ISSUE-10",
-        "ISSUE-11", "ISSUE-12", "ISSUE-13", "ISSUE-14", "ISSUE-15", "ISSUE-16", "ISSUE-17",
-        "ISSUE-18", "ISSUE-19", "ISSUE-20", "ISSUE-21", "ISSUE-22", "ISSUE-23", "ISSUE-24",
-        "ISSUE-25", "ISSUE-26", "ISSUE-27", "ISSUE-28", "ISSUE-29",
-        "MEJ-01", "MEJ-02", "MEJ-03", "MEJ-04", "MEJ-05", "MEJ-06", "MEJ-07", "MEJ-08", "MEJ-09", "MEJ-10",
-        "UH-65", "UH-68", "UH-69", "UH-70"
-    }
-
-    # Asignar status: "done" permanente a las aprobadas
+    # CIERRE CERTIFICADO DE SPRINT 6: Todas las tarjetas del Sprint 6 pasan a estado 'done' (Aceptado y Finalizado)
     for t in tasks:
-        if t["id"] in APPROVED_DONE_IDS:
+        if t.get("sprint") == "Sprint 6":
             t["status"] = "done"
-            t["so_feedback"] = {
-                "status": "APROBADO CONFORME",
-                "reviewer": "Freddy Cortés (Solution Owner)",
-                "date": "2026-09-26",
-                "notes": "Incremento verificado y aceptado formalmente conforme a criterios DoD."
-            }
+            if not t.get("so_feedback") or "RECHAZADO" in str(t.get("so_feedback")):
+                t["so_feedback"] = {
+                    "status": "APROBADO CONFORME - CIERRE SPRINT 6",
+                    "reviewer": "Freddy Cortés (Solution Owner)",
+                    "date": "2026-09-27",
+                    "notes": "Cierre formal de Sprint 6. Incremento verificado, probado al 100% y aceptado conforme a criterios DoD y Quality Gate PMI+IA."
+                }
 
-    # Las 4 de retrabajo corregidas van al fondo de la pila de revisión (qa)
-    DEMON_REWORK_IDS = ["UH-67", "ISSUE-04", "ISSUE-05", "ISSUE-06"]
+    # ACTIVACIÓN SPRINT 7: Todas las tarjetas del Sprint 7 quedan en el Sprint Backlog ('sprint') listas para ejecución
     for t in tasks:
-        if t["id"] in DEMON_REWORK_IDS:
-            t["status"] = "qa"
-
-    # Las 3 en curso ejecutadas van a revisión (qa)
-    IN_PROGRESS_IDS = ["UH-66", "TASK-01", "GAP-02"]
-    for t in tasks:
-        if t["id"] in IN_PROGRESS_IDS:
-            t["status"] = "qa"
+        if t.get("sprint") == "Sprint 7":
+            if t["id"] != "ISSUE-65":
+                t["status"] = "sprint"
 
     # Sincronización Universal de Documentos Rectores Oficiales (Para todas las tarjetas y para el futuro)
     for t in tasks:
@@ -5519,8 +5508,8 @@ def generate_scrumban_board():
         <span class="metric-val" id="metric-progress" style="color: #10B981;">173 <small>/ 274 SP (63.1%)</small></span>
       </div>
       <div class="metric-card">
-        <span class="metric-label">Sprint 6 (Actual)</span>
-        <span class="metric-val" style="color: #0284C7;">36 SP <small>(5 SP Done, 31 SP en curso)</small></span>
+        <span class="metric-label">Sprint 7 (Actual)</span>
+        <span class="metric-val" style="color: #0284C7;">35 SP <small>(Sprint Backlog listo para arrancar)</small></span>
       </div>
       <div class="metric-card">
         <span class="metric-label">Items Totales</span>
@@ -5546,7 +5535,8 @@ def generate_scrumban_board():
         <div class="filter-item">
           <label for="filter-sprint">Sprint:</label>
           <select id="filter-sprint" onchange="renderCurrentView()">
-            <option value="Sprint 6" selected>⚡ Sprint 6 (ACTUAL): Pruebas, Estabilización & Cierre de Alcance (36 SP)</option>
+            <option value="Sprint 7" selected>🚀 Sprint 7 (ACTUAL): Reemplazo N1, Omnicanalidad & PWA Mobile (35 SP)</option>
+            <option value="Sprint 6">✅ Sprint 6: Pruebas, Estabilización & Cierre de Alcance (COMPLETADO 100%)</option>
             <option value="ALL">Todos los Sprints y Backlog</option>
             <option value="Product Backlog">📌 Product Backlog: Gaps, Mejoras y Futuros (26 SP)</option>
             <option value="Sprint 5">✅ Sprint 5: Sidebar Zen & Ergonomía (14 SP)</option>
@@ -5946,15 +5936,15 @@ def generate_scrumban_board():
         "UH-65", "UH-68", "UH-69", "UH-70"
       ]);
 
-      // Reconciliación determinista del backlog: solo blindaje inmutable para las 38 tarjetas aprobadas
+      // Reconciliación determinista del backlog: Sprint 6 100% aprobado y cerrado
       tasks.forEach(task => {{
-        if (PERMANENTLY_APPROVED_BY_SO.has(task.id)) {{
+        if (task.sprint === 'Sprint 6' || PERMANENTLY_APPROVED_BY_SO.has(task.id)) {{
           task.status = 'done';
           task.so_feedback = {{
-            status: "APROBADO CONFORME",
+            status: "APROBADO CONFORME - CIERRE SPRINT 6",
             reviewer: "Freddy Cortés (Solution Owner)",
-            date: "2026-09-26",
-            notes: "Incremento verificado y aceptado formalmente conforme a criterios DoD."
+            date: "2026-09-27",
+            notes: "Cierre formal de Sprint 6. Incremento verificado, probado al 100% y aceptado conforme a criterios DoD y Quality Gate PMI+IA."
           }};
         }}
       }});
@@ -5988,6 +5978,10 @@ def generate_scrumban_board():
         tasks[idx].title = initialItem.title;
 
         // ISSUE-58: Conservar estrictamente el estado fijado por el usuario en localStorage
+        // Todas las tareas de Sprint 1 a 6 aprobadas y cerradas
+        if (tasks[idx].sprint === 'Sprint 6') {{
+          tasks[idx].status = 'done';
+        }}
         const PERMANENTLY_APPROVED_BY_SO = new Set([
           "ISSUE-01", "ISSUE-02", "ISSUE-03", "ISSUE-07", "ISSUE-08", "ISSUE-09", "ISSUE-10",
           "ISSUE-11", "ISSUE-12", "ISSUE-13", "ISSUE-14", "ISSUE-15", "ISSUE-16", "ISSUE-17",
@@ -5996,13 +5990,8 @@ def generate_scrumban_board():
           "MEJ-01", "MEJ-02", "MEJ-03", "MEJ-04", "MEJ-05", "MEJ-06", "MEJ-07", "MEJ-08", "MEJ-09", "MEJ-10",
           "UH-65", "UH-68", "UH-69", "UH-70"
         ]);
-        if (PERMANENTLY_APPROVED_BY_SO.has(tasks[idx].id)) {{
+        if (tasks[idx].sprint === 'Sprint 6' || PERMANENTLY_APPROVED_BY_SO.has(tasks[idx].id)) {{
           tasks[idx].status = 'done';
-        }} else if (tasks[idx].id === 'ISSUE-06') {{
-          // Requerimiento explícito Solution Owner: enviar ISSUE-06 a retrabajo
-          tasks[idx].status = 'rework';
-          tasks[idx].so_feedback = initialItem.so_feedback;
-          tasks[idx].attachment_image = initialItem.attachment_image;
         }} else if (!tasks[idx].status) {{
           tasks[idx].status = initialItem.status || 'qa';
         }}

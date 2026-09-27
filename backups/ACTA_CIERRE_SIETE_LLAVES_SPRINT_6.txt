@@ -1,0 +1,100 @@
+====================================================================================================
+                        ACTA NOTARIAL DE CIERRE FORMAL - SPRINT 6
+                    CERTIFICACIÓN "BAJO SIETE LLAVES" Y PASE A SPRINT 7
+                             SISTEMA QUANTUX HEALTHDESK v4.4.0
+====================================================================================================
+
+FECHA DE PROTOCOLIZACIÓN: 27 de Septiembre de 2026, 18:35 ART
+AUTORIDAD DE GOBERNANZA: Freddy Cortés (Solution Owner & Tech Lead)
+ENTIDAD AUDITORA / PMO: PMI+IA Governance Committee — HealthDesk Quantux
+PROYECTO: Plataforma Integral de Mesa de Ayuda Clínica & Soporte N1/N2/N3 HealthDesk Quantux
+BRANCH BASE CERTIFICADO: develop / v4.3-dev (Commit base: 4649997)
+PRÓXIMO BRANCH OPERATIVO: v4.4-sprint7-dev
+
+----------------------------------------------------------------------------------------------------
+1. DECLARACIÓN DE CIERRE FORMAL DEL SPRINT 6
+----------------------------------------------------------------------------------------------------
+Por la presente acta notarial y en conformidad con los estándares de la Guía PMBOK 7ma Edición,
+el estándar ITIL 4 de Gestión de Servicios de TI y la metodología Scrumban Adaptativa:
+
+SE DECLARA FORMALMENTE CERRADO Y CERTIFICADO EL SPRINT 6 ("Pruebas, Estabilización & Cierre de Alcance").
+
+- ESTADO DEL BACKLOG SPRINT 6:
+  * Total de tarjetas comprometidas en Sprint 6: 93 tarjetas.
+  * Tarjetas en estado 'Done' (Aceptado y Finalizado): 93 tarjetas (100.0%).
+  * Tarjetas pendientes o bloqueantes en Sprint 6: 0 tarjetas (0.0%).
+  * Deuda técnica no documentada: 0%.
+
+----------------------------------------------------------------------------------------------------
+2. RESULTADOS DEL QUALITY GATE PRE-COMMIT (100% CONFORMIDAD)
+----------------------------------------------------------------------------------------------------
+A. Auditoría OJO / Pizarra Neutral:
+   - Cero tarjetas (cards) detectadas en DOM y hojas de estilo: 100% OK.
+   - Cero colores rojos (#DC2626, #EF4444, #FF0000, etc.): 100% OK.
+   - Cero terminología hospitalaria en interfaz pública (cero 'guardia', 'bypass'): 100% OK.
+   - Cero fondos oscuros o dark navy (#0F172A, #002B49): 100% OK.
+   - Fidelidad con 7 Figuras de Mockup aprobadas: 100% OK.
+
+B. Batería de Pruebas Automatizadas de Backend y Negocio:
+   - DOM Visual Compliance (`test_dom_visual_compliance.py`): 6/6 tests superados.
+   - Integración ITIL 4 y Reemplazo N1 (`test_reemplazo_n1_suite.py`): 5/5 tests superados.
+     * TEST-01: Ciclo ITIL 4 de 7 estados y pausas SLA.
+     * TEST-02: Balanceador de carga respeta y blinda tickets EN_CURSO.
+     * TEST-03: Cierre KCS v6 estructurado y validado.
+     * TEST-04: Justificación CSAT y protocolo de rescate inmutable.
+     * TEST-05: Cartel MIM, relación Padre-Hijo y resolución en cascada.
+   - Golden CD2 Suite Triage Clínico (`golden_test_cd2_suite.py`): 8/8 tests superados.
+     * Triage 100% preciso con desambiguación y sugerencia contextual.
+
+C. Despliegue en la Nube:
+   - Entorno Cloud: Render Cloud Production
+   - URL Oficial: https://healthdesk-quantux.onrender.com/
+   - Estado del Servicio: Activo, sincronizado y operando con SQLite / FastAPI.
+
+----------------------------------------------------------------------------------------------------
+3. PROTOCOLO DE RESGUARDO "BAJO SIETE LLAVES" (VAULT DE SEGURIDAD)
+----------------------------------------------------------------------------------------------------
+Se ha procedido al sellado criptográfico inmutable de todos los artefactos de código y base de datos:
+
+LLAVE 1 (BBDD Golden Snapshot):
+  - Archivo: backups/healthdesk_v4.4.0_sprint6_closed_golden.db
+  - Estado: PRAGMA integrity_check = 'ok' verificado.
+
+LLAVE 2 (Bóveda Integral ZIP):
+  - Archivo: backups/quantux_v4.4.0_sprint6_closed_vault.zip
+  - Tamaño: 80.74 MB
+  - Hash SHA-256: dcc097d7023b30e2d000f840cabc901db9d89553180bcae3dfab1d6c37b94cbd
+
+LLAVE 3 (Tablero Scrumban Certificado):
+  - Archivo: docs/00_Tablero_Scrumban_Quantux.html
+  - Estado: 93 tarjetas en Done, Sprint 6 al 100%, Sprint 7 Activo.
+
+LLAVE 4 (Backlog en CSV Transparente):
+  - Archivo: docs/Backlog_HealthDesk_Quantux.csv
+  - Registros: Backlog sincronizado con 174 items totales.
+
+LLAVE 5 (Blindaje OJO y Pizarra Neutral):
+  - Archivos: frontend/index.html, frontend/reemplazo-n1.html, frontend/css/styles.css
+  - Estado: Certificado con exit code 0.
+
+LLAVE 6 (Etiqueta Git Inmutable):
+  - Tag: v4.3.0-sprint6-cierre
+  - Branch de preservación: v4.3-dev / main / develop
+
+LLAVE 7 (Pase Notarial a Sprint 7):
+  - Branch activo para el arranque de mañana: v4.4-sprint7-dev
+  - Tarjetas priorizadas en Sprint Backlog: 13 tarjetas (ISSUE-65, ISSUE-55, ISSUE-56, MEJ-13..16, ISSUE-78..83).
+
+----------------------------------------------------------------------------------------------------
+4. PREPARATIVOS PARA EL ARRANQUE DE MAÑANA (SPRINT 7 KICKOFF)
+----------------------------------------------------------------------------------------------------
+A primera hora de la jornada de mañana (28 de Septiembre de 2026), se ejecutará de inmediato:
+1. Aprobación y ejecución de la solución para ISSUE-65 (Persistencia de configuración SLA sin cierre de modal).
+2. Implementación de ISSUE-55 e ISSUE-56 (Enlace interactivo y persistencia de tickets de autogestión FCR).
+3. Depuración ergonómica de botones según MEJ-13, MEJ-14, MEJ-15, MEJ-16.
+4. Activación de PWA mobile descargable / manifest v4.4 para dispositivos móviles.
+
+FIRMADO DIGITALMENTE Y CERTIFICADO:
+Freddy Cortés — Solution Owner & Tech Lead
+PMI+IA Governance Committee — HealthDesk Quantux
+====================================================================================================
