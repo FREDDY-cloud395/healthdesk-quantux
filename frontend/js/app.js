@@ -47,6 +47,7 @@ const AppState = {
  institutionSlas: {},
  kanbanCards: []
 };
+window.AppState = AppState;
 
 // 50% con Fotografías Reales de Alta Resolución y 50% con Badges de Iniciales Modernos (Directiva de Diseño)
 const USER_AVATARS = {
@@ -12370,17 +12371,17 @@ function renderWsProgressSLA(ticket) {
   const elBadge = document.getElementById('ws-sla-status-badge');
 
   if (elTitle) {
-    elTitle.textContent = isPaused ? 'Resolución: EN PAUSA (SLA DETENIDO)' : Resolución: ;
+    elTitle.textContent = isPaused ? 'Resolución: EN PAUSA (SLA DETENIDO)' : 'Resolución: Activo';
   }
   if (elCountdown) {
-    elCountdown.textContent = isPaused ? ${sla.timeRemainingText} (PAUSADO) : sla.timeRemainingText;
+    elCountdown.textContent = isPaused ? `${sla.timeRemainingText} (PAUSADO)` : sla.timeRemainingText;
   }
   if (elBarFill) {
-    elBarFill.style.width = ${sla.percent}%;
+    elBarFill.style.width = `${sla.percent}%`;
     elBarFill.style.background = isPaused ? '#B45309' : sla.badgeColor;
   }
   if (elLimitText) {
-    elLimitText.textContent = Límite: h ();
+    elLimitText.textContent = `Límite: ${sla.targetHours || 4}h (${sla.statusText || 'En Curso'})`;
   }
   if (elBadge) {
     elBadge.textContent = isPaused ? '⏸ PAUSADO' : sla.statusText.toUpperCase();
@@ -16922,6 +16923,20 @@ window.closeEmailModal = closeEmailModal;
 window.openNativeEmailClient = openNativeEmailClient;
 window.finishEmailAndOpenRescue = finishEmailAndOpenRescue;
 window.submitRescueResolution = submitRescueResolution;
+
+function expandAllWsNotes() {
+  document.querySelectorAll('.ws-history-note-body, .timeline-content, .audit-note-body').forEach(el => {
+    el.style.display = 'block';
+  });
+}
+window.expandAllWsNotes = expandAllWsNotes;
+
+function collapseAllWsNotes() {
+  document.querySelectorAll('.ws-history-note-body, .timeline-content, .audit-note-body').forEach(el => {
+    el.style.display = 'none';
+  });
+}
+window.collapseAllWsNotes = collapseAllWsNotes;
 
 document.addEventListener('DOMContentLoaded', () => {
   const expandBtn = document.getElementById('btn-ws-expand-all');
