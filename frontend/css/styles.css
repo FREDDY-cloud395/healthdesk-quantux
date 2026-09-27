@@ -1019,6 +1019,47 @@ html, body {
   display: flex !important;
 }
 
+/* BLINDAJE DE SCROLL EN PORTAL SOLICITANTE Y TYPEAHEAD PREDICTIVO (ISSUE-04) */
+#view-requester-portal {
+  overflow-y: auto !important;
+}
+
+#requester-clinical-portal {
+  overflow-y: auto !important;
+  scroll-behavior: smooth;
+}
+
+#requester-typeahead-dropdown {
+  max-height: min(320px, calc(100vh - 380px));
+  min-height: 160px;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+#requester-typeahead-dropdown::-webkit-scrollbar {
+  width: 7px;
+}
+
+#requester-typeahead-dropdown::-webkit-scrollbar-track {
+  background: #F1F5F9;
+  border-radius: 8px;
+}
+
+#requester-typeahead-dropdown::-webkit-scrollbar-thumb {
+  background: #00A896;
+  border-radius: 8px;
+}
+
+#requester-typeahead-dropdown::-webkit-scrollbar-thumb:hover {
+  background: #008F80;
+}
+
+.typeahead-item-highlighted {
+  background: #F0FDFA !important;
+  border-left: 3px solid #00A896 !important;
+}
+
 /* 5. DASHBOARD & INNER VIEWS SCROLLING */
 .dashboard-scroll {
   flex: 1 1 0%;
@@ -1284,9 +1325,9 @@ html, body {
 }
 
 @keyframes pulseAlarm {
-  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-  70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
-  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 168, 150, 0.7); }
+  70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(0, 168, 150, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 168, 150, 0); }
 }
 
 .charts-grid-2x2 {
@@ -5857,9 +5898,9 @@ html, body {
 }
 
 .subnav-badge-red {
-  background: rgba(239, 68, 68, 0.25);
-  color: #64748B;
-  border: 1px solid rgba(239, 68, 68, 0.4);
+  background: rgba(217, 119, 6, 0.15);
+  color: #B45309;
+  border: 1px solid rgba(217, 119, 6, 0.35);
   animation: redBeaconPulse 2s infinite;
 }
 
@@ -6361,4 +6402,144 @@ html, body {
 
 .n1-tech-section strong {
   color: #0F172A;
+}
+
+
+/* =============================================================================
+   HEALTHDESK QUANTUX — VERSIÓN MOBILE & PWA APP DESCARGABLE
+   ============================================================================= */
+
+.quantux-mobile-bottom-nav {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  body {
+    padding-bottom: 64px !important;
+  }
+
+  .app-main {
+    padding-bottom: 64px !important;
+  }
+
+  /* Barra de Navegación Táctil Inferior (iOS / Android Tab Bar) */
+  .quantux-mobile-bottom-nav {
+    display: flex !important;
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 60px !important;
+    background: #FFFFFF !important;
+    border-top: 1px solid #CBD5E1 !important;
+    z-index: 9999 !important;
+    box-shadow: 0 -4px 16px rgba(15, 23, 42, 0.08) !important;
+    justify-content: space-around !important;
+    align-items: center !important;
+    padding: 0 4px !important;
+    user-select: none !important;
+  }
+
+  .mobile-nav-btn {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 3px !important;
+    background: none !important;
+    border: none !important;
+    font-size: 10.5px !important;
+    font-weight: 700 !important;
+    color: #64748B !important;
+    cursor: pointer !important;
+    padding: 6px 0 !important;
+    touch-action: manipulation !important;
+    transition: color 0.15s ease, transform 0.1s ease !important;
+    text-decoration: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+  }
+
+  .mobile-nav-btn:active {
+    transform: scale(0.94) !important;
+  }
+
+  .mobile-nav-btn.active {
+    color: #00A896 !important;
+  }
+
+  .mobile-nav-btn.active svg {
+    color: #00A896 !important;
+    stroke-width: 2.5px !important;
+  }
+
+  .mobile-nav-action-center {
+    position: relative !important;
+    top: -12px !important;
+  }
+
+  .mobile-nav-circle {
+    width: 46px !important;
+    height: 46px !important;
+    border-radius: 50% !important;
+    background: #00A896 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 4px 14px rgba(0, 168, 150, 0.45) !important;
+    border: 3px solid #FFFFFF !important;
+    transition: transform 0.15s ease !important;
+  }
+
+  .mobile-nav-circle:active {
+    transform: scale(0.92) !important;
+  }
+
+  /* Drawer Sidebar en Mobile */
+  .app-sidebar {
+    position: fixed !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    left: -290px !important;
+    width: 280px !important;
+    z-index: 10002 !important;
+    background: #FFFFFF !important;
+    transition: left 0.28s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    box-shadow: 12px 0 28px rgba(15, 23, 42, 0.18) !important;
+  }
+
+  .app-sidebar.mobile-open {
+    left: 0 !important;
+  }
+
+  /* Cockpit y Grillas en Mobile */
+  .cockpit-container {
+    grid-template-columns: 1fr !important;
+    padding: 8px !important;
+    gap: 10px !important;
+    height: auto !important;
+    overflow-y: auto !important;
+  }
+
+  .top-omnisearch-box {
+    min-width: unset !important;
+    flex: 1 !important;
+  }
+
+  .top-navbar {
+    padding: 8px 12px !important;
+    gap: 8px !important;
+  }
+
+  #top-view-title {
+    font-size: 13px !important;
+  }
+
+  /* Modales en Pantallas Táctiles Móviles */
+  .modal-box {
+    width: 95vw !important;
+    max-height: 92vh !important;
+    border-radius: 12px !important;
+    margin: 8px !important;
+  }
 }

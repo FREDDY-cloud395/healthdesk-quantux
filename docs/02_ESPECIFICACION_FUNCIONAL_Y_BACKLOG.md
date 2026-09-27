@@ -370,6 +370,32 @@ En virtud del protocolo de adaptación PMI y aseguramiento de calidad, todo gap 
     * **Dado** el código JavaScript y backend, **cuando** se consultan las métricas o se abren las vistas programáticamente, **entonces** todas las funciones y controladores operan normalmente sin excepciones.
     * **Dado** el registro en el Scrumban, **cuando** se abre la tarjeta UH-70, **entonces** exhibe la captura de evidencia remitida por el Solution Owner.
 
+* **MEJ-12 [P2 - 3 SP]:** Barra de Progreso Unificada en Tareas en Ejecución con Estilo Rojo Institucional `#DC2626` y Desglose de 4 Etapas Técnicas (Sprint 6, estado `qa`).
+  * *Narrativa:* **Como** Solution Owner, **quiero** que todas las tareas en ejecución muestren una barra de progreso unificada en color rojo institucional `#DC2626` en lugar de degradados verdeazulados o multicolores disonantes, **para** monitorear visualmente con precisión el avance técnico y evitar falsas percepciones de finalización inmediata.
+  * *Criterios de Aceptación Gherkin:*
+    * **Dado** una tarjeta en estado En Ejecución (`progress`), **cuando** se visualiza en el tablero, **entonces** exhibe un panel de avance con fondo `#FEF2F2`, borde `#F87171` y barra roja sólida `#DC2626`.
+    * **Dado** el botón Demonio en Retrabajo, **cuando** se ejecuta la corrección, **entonces** transita por las 4 fases técnicas (análisis, parchado, testing y certificación) con barra roja institucional `#DC2626`.
+
+* **ISSUE-55 [P2 - 3 SP]:** Enlace Interactivo en Badge de Ticket en Constancia de Resolución FCR (Sprint 7, estado `todo`).
+  * *Narrativa:* **Como** Profesional Solicitante y Auditor TI, **quiero** que el badge de ticket `#TKT-2026-0348` de la constancia emitida por el asistente virtual funcione como un enlace interactivo, **para** acceder de inmediato a la auditoría técnica y conversación completa del ticket.
+  * *Criterios de Aceptación Gherkin:*
+    * **Dado** el mensaje de resolución emitido por el Asistente TI, **cuando** el usuario hace clic sobre el badge `#TKT-2026-0348`, **entonces** se abre directamente el modal con el detalle completo del ticket.
+
+* **ISSUE-56 [P1 - 5 SP]:** Disponibilidad y Persistencia de Ticket de Autogestión FCR en Historial del Solicitante (Sprint 7, estado `todo`).
+  * *Narrativa:* **Como** Profesional Solicitante, **quiero** que el ticket generado como constancia de solución figure de manera garantizada en mi historial de solicitudes, **para** que nunca retorne vacío y mantenga trazabilidad para auditorías clínicas y facturación.
+  * *Criterios de Aceptación Gherkin:*
+    * **Dado** un ticket cerrado por autogestión FCR, **cuando** el profesional consulta el historial, **entonces** figura listado con su código, asunto clínico, fecha y estado de resolución.
+
+* **ISSUE-57 [P1 - 3 SP]:** Subsanación Integral del Botón Demonio y Sincronización Dual Tarjeta-Modal (Sprint 6, estado `qa`).
+  * *Narrativa:* **Como** Solution Owner, **quiero** que el botón Demonio funcione infaliblemente tanto desde la tarjeta del tablero como desde el modal de detalle, **para** que al hacer clic se ejecute la corrección automática, se desactive el botón, se muestre la barra roja y la tarjeta pase al fondo de En Revisión.
+  * *Criterios de Aceptación Gherkin:*
+    * **Dado** una tarjeta en Retrabajo, **cuando** se presiona el botón Demonio, **entonces** se desactiva el botón, se despliega la barra roja institucional `#DC2626`, se ejecutan las 4 fases de remediación técnica y la tarjeta pasa al fondo de la columna `qa`.
+
+* **ISSUE-58 [P1 - 3 SP]:** Pérdida de Persistencia de Tarjetas en Estado Retrabajo tras Refrescar Pantalla F5 (Sprint 6, estado `qa`).
+  * *Narrativa:* **Como** Solution Owner, **quiero** que las tarjetas enviadas a Retrabajo permanezcan en dicha columna aun tras recargar la página (F5), **para** que no desaparezcan ni se reseteen involuntariamente a otras columnas.
+  * *Criterios de Aceptación Gherkin:*
+    * **Dado** una o más tarjetas enviadas a la columna Retrabajo, **cuando** el usuario refresca el navegador (F5), **entonces** la columna conserva fielmente las tarjetas en retrabajo sin vaciarse ni sobreescribir su estado.
+
 *(El detalle completo de narrativas, escenarios Gherkin y criterios de adaptación se encuentra en el Documento DOC-GOV-008, DOC-QA-004 y en el Tablero Scrumban interactivo docs/00_Tablero_Scrumban_Quantux.html).*
 
 ---
@@ -386,3 +412,15 @@ En virtud del protocolo de adaptación PMI y aseguramiento de calidad, todo gap 
 >    * Aseguramiento de calidad TDD y cumplimiento estricto de la Regla OJO / Pizarra Neutral.  
 >    * Congelamiento técnico total el **Lunes 28 de Septiembre a las 18:00 hs**, garantizando 48 hs libres al Solution Owner para la preparación y ensayos de la demo.
 
+
+---
+
+## 11. GOBERNANZA DE CONFIGURACIÓN ITIL v4 Y DESACOPLAMIENTO DE NIVELES (SPRINT 7)
+
+> ### 📌 DIRECTIVA DE ARQUITECTURA ITIL v4: PARAMETRIZACIÓN INICIAL POR BASE DE DATOS
+> En concordancia con las mejores prácticas internacionales de gestión de servicios de tecnología en salud (**ITIL v4 Service Management Framework**), la funcionalidad interactiva de edición y parametrización de **Niveles de Atención ITIL (N1 / N2 / N3)** y el módulo global de **Configuración de Sistema** se encuentran deliberadamente **ocultos y protegidos** en la interfaz de usuario para la totalidad de los roles y perfiles operativos.
+> 
+> **Fundamentación y Criterios Técnicos:**
+> 1. **Inmutabilidad y Consistencia Operativa:** La matriz de niveles de soporte (Nivel 1 Triage Asistencial/FCR, Nivel 2 Especialistas de Plataformas Clínicas HIS/EHR/Facturación, Nivel 3 Infraestructura de Red & Pasarelas Sanitarias SISA/OSDE) se provisiona y versiona directamente a nivel de base de datos (`seed_database_v4.py` / tablas relacionales de soporte), garantizando coherencia formal ante auditorías hospitalarias.
+> 2. **Prevención de Desalineación Operativa:** Se neutraliza el riesgo de modificaciones no autorizadas o accidentales de matrices de escalamiento clínico desde la interfaz de usuario.
+> 3. **Desacoplamiento de Responsabilidades:** La política de niveles de servicio (SLA) se administra en la capa de persistencia institucional centralizada, mientras el front-end consume de forma reactiva y auditable las métricas de respuesta y resolución en tiempo real.

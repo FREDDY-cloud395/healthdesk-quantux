@@ -707,6 +707,10 @@ def update_ticket(ticket_id: str, req: TicketUpdateRequest, background_tasks: Ba
     if not ticket:
         raise HTTPException(status_code=404, detail="Ticket no encontrado.")
     
+    # Inmutabilidad estricta ITIL (ISSUE-71)
+    if ticket.status == TicketStatus.CERRADO:
+        raise HTTPException(status_code=400, detail="El ticket se encuentra CERRADO y es inmutable. No admite modificaciones.")
+    
     actor = req.changed_by_username or "solicitante"
     
     # Si viene asignación de operador
@@ -902,6 +906,10 @@ def update_ticket_status(ticket_id: str, req: TicketStatusRequest, background_ta
     ticket = session.get(Ticket, ticket_id)
     if not ticket:
         raise HTTPException(status_code=404, detail="Ticket no encontrado.")
+    
+    # Inmutabilidad estricta ITIL (ISSUE-71)
+    if ticket.status == TicketStatus.CERRADO:
+        raise HTTPException(status_code=400, detail="El ticket se encuentra CERRADO y es inmutable. No permite transiciones de estado.")
     
     if not validate_status_transition(ticket.status, req.new_status):
         raise HTTPException(status_code=400, detail=f"Transición inválida de {ticket.status} a {req.new_status}.")
@@ -1273,6 +1281,10 @@ def add_comment(ticket_id: str, req: TicketCommentRequest, session: Session = De
     ticket = session.get(Ticket, ticket_id)
     if not ticket:
         raise HTTPException(status_code=404, detail="Ticket no encontrado.")
+    
+    # Inmutabilidad estricta ITIL (ISSUE-71)
+    if ticket.status == TicketStatus.CERRADO:
+        raise HTTPException(status_code=400, detail="El ticket se encuentra en estado CERRADO y no admite nuevos comentarios ni notas.")
     
     text_msg = req.message or req.content or ""
     author = req.author_username or "soporte"

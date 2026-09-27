@@ -414,12 +414,19 @@ function searchKbOfficialTopics(rawQuery) {
   return scored.slice(0, 6).map(s => s.item);
 }
 
+// Variables de estado para navegación accesible del Typeahead
+let requesterTypeaheadSelectedIndex = -1;
+let requesterTypeaheadMatches = [];
+
 // Manejo del Typeahead para el Portal del Solicitante / Médico
 function handleRequesterTypeahead(val) {
   const dropdown = document.getElementById('requester-typeahead-dropdown');
   if (!dropdown) return;
 
   const matches = searchKbOfficialTopics(val);
+  requesterTypeaheadMatches = matches;
+  requesterTypeaheadSelectedIndex = -1;
+
   if (matches.length === 0) {
     dropdown.style.display = 'none';
     dropdown.innerHTML = '';
@@ -427,14 +434,14 @@ function handleRequesterTypeahead(val) {
   }
 
   let html = `
-    <div style="padding: 6px 12px; background: #F8FAFC; border-bottom: 1px solid #E2E8F0; font-size: 11px; font-weight: 800; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px;">
+    <div style="padding: 6px 12px; background: #F8FAFC; border-bottom: 1px solid #E2E8F0; font-size: 11px; font-weight: 800; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px; position: sticky; top: 0; z-index: 10;">
       Temas Oficiales Homologados de Consultorio Digital 2:
     </div>
   `;
 
   matches.forEach((m, idx) => {
     html += `
-      <div onclick="selectRequesterTypeahead('${encodeURIComponent(m.query)}')" style="padding: 10px 14px; border-bottom: 1px solid #F1F5F9; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 10px; transition: background 0.15s ease;" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background='#FFFFFF'">
+      <div id="requester-typeahead-item-${idx}" onclick="selectRequesterTypeahead('${encodeURIComponent(m.query)}')" style="padding: 10px 14px; border-bottom: 1px solid #F1F5F9; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 10px; transition: background 0.15s ease;" onmouseover="highlightRequesterTypeaheadItem(${idx})" onmouseout="this.classList.remove('typeahead-item-highlighted')">
         <div style="display: flex; align-items: center; gap: 8px; overflow: hidden;">
           <span style="font-size: 10.5px; font-weight: 800; background: rgba(0, 168, 150, 0.1); color: #00A896; border: 1px solid rgba(0, 168, 150, 0.25); padding: 2px 7px; border-radius: 6px; white-space: nowrap;">
             ${m.code}
@@ -454,11 +461,68 @@ function handleRequesterTypeahead(val) {
   dropdown.style.display = 'block';
 }
 
+function highlightRequesterTypeaheadItem(idx) {
+  requesterTypeaheadSelectedIndex = idx;
+  const dropdown = document.getElementById('requester-typeahead-dropdown');
+  if (!dropdown) return;
+  const items = dropdown.querySelectorAll('[id^="requester-typeahead-item-"]');
+  items.forEach((el, i) => {
+    if (i === idx) {
+      el.classList.add('typeahead-item-highlighted');
+      el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    } else {
+      el.classList.remove('typeahead-item-highlighted');
+    }
+  });
+}
+
+function handleRequesterTypeaheadKeydown(event) {
+  const dropdown = document.getElementById('requester-typeahead-dropdown');
+  if (!dropdown || dropdown.style.display === 'none' || requesterTypeaheadMatches.length === 0) {
+    return false;
+  }
+
+  if (event.key === 'ArrowDown') {
+    event.preventDefault();
+    let nextIdx = requesterTypeaheadSelectedIndex + 1;
+    if (nextIdx >= requesterTypeaheadMatches.length) nextIdx = 0;
+    highlightRequesterTypeaheadItem(nextIdx);
+    return true;
+  }
+
+  if (event.key === 'ArrowUp') {
+    event.preventDefault();
+    let prevIdx = requesterTypeaheadSelectedIndex - 1;
+    if (prevIdx < 0) prevIdx = requesterTypeaheadMatches.length - 1;
+    highlightRequesterTypeaheadItem(prevIdx);
+    return true;
+  }
+
+  if (event.key === 'Enter') {
+    if (requesterTypeaheadSelectedIndex >= 0 && requesterTypeaheadSelectedIndex < requesterTypeaheadMatches.length) {
+      event.preventDefault();
+      const selected = requesterTypeaheadMatches[requesterTypeaheadSelectedIndex];
+      selectRequesterTypeahead(encodeURIComponent(selected.query));
+      return true;
+    }
+  }
+
+  if (event.key === 'Escape') {
+    event.preventDefault();
+    dropdown.style.display = 'none';
+    requesterTypeaheadSelectedIndex = -1;
+    return true;
+  }
+
+  return false;
+}
+
 function selectRequesterTypeahead(encodedQuery) {
   const query = decodeURIComponent(encodedQuery);
   const input = document.getElementById('requester-chat-input');
   const dropdown = document.getElementById('requester-typeahead-dropdown');
   if (dropdown) dropdown.style.display = 'none';
+  requesterTypeaheadSelectedIndex = -1;
   if (input) {
     input.value = query;
     if (typeof sendRequesterChatMessage === 'function') {
@@ -538,6 +602,8 @@ document.addEventListener('click', function(e) {
 // Exportar explícitamente a window
 window.handleRequesterTypeahead = handleRequesterTypeahead;
 window.selectRequesterTypeahead = selectRequesterTypeahead;
+window.handleRequesterTypeaheadKeydown = handleRequesterTypeaheadKeydown;
+window.highlightRequesterTypeaheadItem = highlightRequesterTypeaheadItem;
 window.handleKbTypeahead = handleKbTypeahead;
 window.selectKbTypeahead = selectKbTypeahead;
 window.KB_OFFICIAL_TOPICS = KB_OFFICIAL_TOPICS;

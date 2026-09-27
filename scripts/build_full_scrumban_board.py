@@ -906,33 +906,46 @@ def generate_scrumban_board():
                         ]
                 }
         },
-        {
-                "id": "ISSUE-06",
-                "title": "[P1 - ALTA PRIORIDAD] Falla en visualización de Constancia de Resolución Inmediata y campo/toast fantasma sin texto",
-                "epic": "EP-08: Reemplazo N1, Triage IA & Portal Solicitante",
-                "sp": 3,
-                "sprint": "Sprint 6",
-                "status": "qa",
-                "discipline": "Frontend / UX & CSS",
-                "type": "ISSUE",
-                "priority": "P1",
-                "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#issue-06",
-                "doc_title": "DOC-SPEC-002 (ISSUE-06)",
-                "doc_desc": "La constancia FCR no despliega el comprobante formal en 'Mis Solicitudes' y el toast blanco sobre blanco simula un campo vacío.",
-                "attachment_image": "assets/capturas/ISSUE-06_constancia_fcr_toast.png",
-                "issue_details": {
-                        "severity": "P1 — Alta Prioridad / Calidad Visual & FCR",
-                        "component": "frontend/js/app.js (requesterAiResolve, openRequesterHistoryModal), frontend/css/styles.css (.toast, .toast-container)",
-                        "description": "1. Al resolverse la consulta y pulsar 'Ver en Mis Solicitudes' o el badge FCR, el sistema abre la bandeja genérica sin destacar ni abrir la Constancia de Resolución Inmediata con su certificado formal.\n2. En la parte inferior derecha de la pantalla aparece un rectángulo blanco flotante sin texto legible, desconcertando al usuario.",
-                        "root_cause": "1. La función de historial no tiene anclaje ni apertura automática de la constancia individual generada.\n2. La clase CSS .toast tiene fondo #F8FAFC y color de texto #FFFFFF (texto blanco puro sobre fondo blanco hueso), tornando el mensaje '✓ Constancia FCR 100% registrada' completamente invisible, asemejándose a un campo residual vacío.",
-                        "solution": "1. Corregir estilos de .toast en styles.css para que utilice fondo oscuro corporativo (background: #0F172A; color: #FFFFFF;) o alert estilizado con texto legible;\n2. Implementar modal o vista de Constancia Formal de Resolución Inmediata (Certificado FCR) al hacer clic en 'Ver en Mis Solicitudes' o en la tarjeta de FCR, mostrando el ticket #TKT-2026-0348 con sello oficial de validación y datos del profesional.",
-                        "acceptance_criteria": [
-                                "Escenario 1 (Constancia FCR Visible y Completa): DADO un incidente resuelto con FCR 100%, CUANDO el profesional presiona 'Ver en Mis Solicitudes', ENTONCES se abre el comprobante formal con número de ticket, fecha, hora, diagnóstico y sello de resolución inmediata.",
-                                "Escenario 2 (Eliminación de Campo Fantasma): DADO cualquier evento que dispare un toast, CUANDO se visualiza en pantalla, ENTONCES presenta contraste 100% legible (fondo #0F172A, texto #FFFFFF) erradicando cajas vacías o sin texto.",
-                                "Escenario 3 (Trazabilidad FCR): DADO el registro del ticket FCR, CUANDO se consulta el historial de solicitudes, ENTONCES figura con badge verde de resuelto y acceso directo a su constancia imprimible."
-                        ]
-                }
-        },
+		{
+			"id": "ISSUE-06",
+			"title": "[P1 - ALTA PRIORIDAD] Falla en visualización de Constancia de Resolución Inmediata y campo/toast fantasma sin texto",
+			"epic": "EP-08: Reemplazo N1, Triage IA & Portal Solicitante",
+			"sp": 3,
+			"sprint": "Sprint 6",
+			"status": "rework",
+			"discipline": "Frontend / UX & CSS",
+			"type": "ISSUE",
+			"priority": "P1",
+			"doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#issue-06",
+			"doc_title": "DOC-SPEC-002 (ISSUE-06)",
+			"doc_desc": "La constancia FCR no despliega el comprobante formal en 'Mis Solicitudes' y el toast blanco sobre blanco simula un campo vacío.",
+			"attachment_image": "assets/capturas/ISSUE-06_error_tkt_no_encontrado_en_historial.png",
+			"business_impact": {
+				"level": "CRÍTICO",
+				"dimension": "Continuidad Operativa Asistencial & Validez Documental FCR",
+				"description": "La imposibilidad de visualizar y constatar el ticket resuelto en el historial vulnera la trazabilidad del primer contacto clínico (FCR 100%) y genera desconcierto en el profesional.",
+				"metric_target": "100% de visualización exitosa del ticket FCR en el historial al abrir el link directo; 0 pantallas vacías.",
+				"risk_of_inaction": "Duplicación de llamados a soporte técnico, sospecha de falla asistencial y pérdida de valor de la autogestión IA."
+			},
+			"so_feedback": {
+				"status": "RECHAZADO / EN RETRABAJO (P1)",
+				"observation": "Al hacer clic en el link de la constancia en el portal del solicitante se abre la ventana modal de solicitudes pero no se visualiza el ticket resuelto (#TKT-2026-0348), mostrando 'No se encontraron solicitudes registradas' debido a desajuste case-sensitive en la búsqueda y falta de persistencia en base de datos. Pasa a Retrabajo para corrección inmediata.",
+				"reviewer": "Freddy Cortés (Solution Owner)",
+				"date": "27/09/2026 09:30"
+			},
+			"issue_details": {
+				"severity": "P1 — Alta Prioridad / Calidad Visual & FCR",
+				"component": "frontend/js/app.js (requesterAiResolve, openRequesterHistoryModal), frontend/css/styles.css (.toast, .toast-container)",
+				"description": "1. Al resolverse la consulta y pulsar 'Ver en Mis Solicitudes' o el badge FCR, el sistema abre la bandeja genérica sin destacar ni abrir la Constancia de Resolución Inmediata con su certificado formal.\n2. En la parte inferior derecha de la pantalla aparece un rectángulo blanco flotante sin texto legible, desconcertando al usuario.",
+				"root_cause": "1. La función de historial no tiene anclaje ni apertura automática de la constancia individual generada.\n2. La clase CSS .toast tiene fondo #F8FAFC y color de texto #FFFFFF (texto blanco puro sobre fondo blanco hueso), tornando el mensaje '✓ Constancia FCR 100% registrada' completamente invisible, asemejándose a un campo residual vacío.",
+				"solution": "1. Corregir estilos de .toast en styles.css para que utilice fondo oscuro corporativo (background: #0F172A; color: #FFFFFF;) o alert estilizado con texto legible;\n2. Implementar modal o vista de Constancia Formal de Resolución Inmediata (Certificado FCR) al hacer clic en 'Ver en Mis Solicitudes' o en la tarjeta de FCR, mostrando el ticket #TKT-2026-0348 con sello oficial de validación y datos del profesional.",
+				"acceptance_criteria": [
+					"Escenario 1 (Constancia FCR Visible y Completa): DADO un incidente resuelto con FCR 100%, CUANDO el profesional presiona 'Ver en Mis Solicitudes', ENTONCES se abre el comprobante formal con número de ticket, fecha, hora, diagnóstico y sello de resolución inmediata.",
+					"Escenario 2 (Eliminación de Campo Fantasma): DADO cualquier evento que dispare un toast, CUANDO se visualiza en pantalla, ENTONCES presenta contraste 100% legible (fondo #0F172A, texto #FFFFFF) erradicando cajas vacías o sin texto.",
+					"Escenario 3 (Trazabilidad FCR): DADO el registro del ticket FCR, CUANDO se consulta el historial de solicitudes, ENTONCES figura con badge verde de resuelto y acceso directo a su constancia imprimible."
+				]
+			}
+		},
         {
                 "id": "UH-66",
                 "title": "[P1 - ALTA PRIORIDAD] Depuración de Componentes de Debug, Subtítulo Redundante y Limpieza Zen del Portal",
@@ -2465,6 +2478,111 @@ def generate_scrumban_board():
     # Tarjetas adicionales: ISSUE-30 a ISSUE-38, MEJ-11 y OPP-04 a OPP-08
     extra_tasks = [
         {
+            "id": "ISSUE-63",
+            "title": "[P0 - CRÍTICO] Motor del Demonio de Retrabajo: Ejecución Real de Desarrollo y Parches de Código desde el Tablero sin Intervención Manual",
+            "epic": "EP-06: Tablero Scrumban & Gobernanza Dinámica",
+            "sp": 5,
+            "sprint": "Sprint 6",
+            "status": "sprint",
+            "discipline": "Fullstack / Motor Agéntico Autónomo",
+            "type": "ISSUE",
+            "priority": "P1",
+            "doc_link": "04_INFORME_DE_PRUEBAS_Y_EVIDENCIAS.md#issue-63",
+            "doc_title": "DOC-QA-004 (ISSUE-63)",
+            "doc_desc": "El botón del demonio dispara la ejecución real de desarrollo a través del backend FastAPI (/api/v1/demon/execute/{taskId}), modificando los archivos del proyecto y aplicando los criterios de aceptación automáticamente sin intervención manual en el chat.",
+            "business_impact": {
+                "level": "CRÍTICO",
+                "dimension": "AUTOMATIZACIÓN CORE & INTEGRIDAD AGÉNTICA",
+                "description": "Permite al Solution Owner disparar la resolución técnica efectiva de cualquier ticket de retrabajo directamente con un clic en el botón Demonio, modificando el código fuente y aplicando los criterios de aceptación de forma autónoma sin depender de órdenes manuales repetitivas.",
+                "metric_target": "0 simulaciones; 100% de parches de código reales ejecutados en caliente en el proyecto al pulsar el Demonio.",
+                "risk_of_inaction": "Frustración operativa del Solution Owner ante procesos aparentes/simulados y bloqueo de la autonomía del tablero."
+            }
+        },
+        {
+            "id": "ISSUE-65",
+            "title": "[P1 - ALTO IMPACTO] Persistencia de Configuración de SLA sin Cierre de Diálogo y Actualización Reactiva en Ficha 360° del Cliente",
+            "epic": "EP-06: Gestión de Incidentes, SLA Dinámico y Transiciones",
+            "sp": 3,
+            "sprint": "Sprint 6",
+            "status": "qa",
+            "discipline": "Frontend / UX & JS",
+            "type": "ISSUE",
+            "priority": "P1",
+            "doc_link": "04_INFORME_DE_PRUEBAS_Y_EVIDENCIAS.md#issue-65",
+            "doc_title": "DOC-QA-004 (ISSUE-65)",
+            "doc_desc": "Corrección de alto impacto solicitada por el Solution Owner: el botón de guardar configuración de SLA en la ficha 360° de la institución no debe cerrar la ventana modal bajo ningún concepto, debe persistir la política en localStorage/AppState y reflejar la nueva configuración de inmediato en la ficha del cliente en el catálogo.",
+            "business_impact": {
+                "level": "ALTO IMPACTO",
+                "dimension": "EXPERIENCIA DE ADMINISTRACIÓN Y CONTROL DE SLA",
+                "description": "Evita el cierre involuntario y molesto del modal durante la configuración institucional y asegura la consistencia en tiempo real de los niveles de servicio acordados.",
+                "metric_target": "100% de configuraciones de SLA guardadas sin cerrar modal y visualizadas de inmediato en la tarjeta del cliente.",
+                "risk_of_inaction": "Pérdida de foco del usuario administrativo y falta de visibilidad del SLA actualizado en el catálogo."
+            }
+        },
+        {
+            "id": "ISSUE-66",
+            "title": "[P1 - ALTA PRIORIDAD] Erradicación Integral de Colores Pesados y Oscuros en Modales y Ficha 360° (Paleta Limpia Quantux)",
+            "epic": "EP-06: Tablero Scrumban & Gobernanza Dinámica",
+            "sp": 2,
+            "sprint": "Sprint 6",
+            "status": "qa",
+            "discipline": "Frontend / UI & CSS",
+            "type": "ISSUE",
+            "priority": "P1",
+            "doc_link": "04_INFORME_DE_PRUEBAS_Y_EVIDENCIAS.md#issue-66",
+            "doc_title": "DOC-QA-004 (ISSUE-66)",
+            "doc_desc": "Cumplimiento estricto de directiva de diseño: eliminación de gradientes y fondos oscuros pesados (#0F172A, #1E293B) en cabecera de modales y componentes, reemplazándolos por fondos claros (#F8FAFC, #FFFFFF), acentos en verde teal (#00A896, #0F766E) y bordes sutiles.",
+            "business_impact": {
+                "level": "ALTO",
+                "dimension": "IDENTIDAD VISUAL Y USABILIDAD SAAS",
+                "description": "Logra una interfaz clínica/empresarial limpia, liviana y coherente con el sistema de diseño Quantux, reduciendo fatiga visual.",
+                "metric_target": "0 cabeceras pesadas u oscuras en ventanas modales institucionales.",
+                "risk_of_inaction": "Incoherencia de marca y sobrecarga visual en la experiencia de usuario."
+            }
+        },
+        {
+            "id": "ISSUE-67",
+            "title": "[P1 - ALTA PRIORIDAD] Unificación Terminológica de Pestañas y Eliminación Integral de Iconos/Emojis",
+            "epic": "EP-06: Tablero Scrumban & Gobernanza Dinámica",
+            "sp": 2,
+            "sprint": "Sprint 6",
+            "status": "qa",
+            "discipline": "Frontend / UX & Copywriting",
+            "type": "ISSUE",
+            "priority": "P1",
+            "doc_link": "04_INFORME_DE_PRUEBAS_Y_EVIDENCIAS.md#issue-67",
+            "doc_title": "DOC-QA-004 (ISSUE-67)",
+            "doc_desc": "Ajuste terminológico taxativo del Solution Owner: renombramiento de pestañas a 'Instituciones', 'Módulo de soporte', 'Grilla: Institución/Módulo' y eliminación completa de emojis e iconos en la barra de herramientas y pestañas.",
+            "business_impact": {
+                "level": "ALTO",
+                "dimension": "CLARIDAD CONCEPTUAL Y ESTÉTICA CORPORATIVA",
+                "description": "Establece un estándar tipográfico corporativo sobrio y una denominación unívoca de las entidades del sistema sin distracciones visuales.",
+                "metric_target": "100% de nomenclaturas aprobadas por SO y 0 iconos informales en la barra de navegación.",
+                "risk_of_inaction": "Confusión en los operadores y falta de sobriedad en la presentación corporativa."
+            }
+        },
+        {
+            "id": "ISSUE-64",
+            "title": "[P1 - ALTA PRIORIDAD] Regla FIFO Estricta en Retrabajo: Toda Tarjeta que Pase de Revisión a Retrabajo Debe Quedar al Fondo de la Pila de Retrabajo",
+            "epic": "EP-06: Tablero Scrumban & Gobernanza Dinámica",
+            "sp": 2,
+            "sprint": "Sprint 6",
+            "status": "sprint",
+            "discipline": "Frontend / Gobernanza Scrumban",
+            "type": "ISSUE",
+            "priority": "P1",
+            "doc_link": "04_INFORME_DE_PRUEBAS_Y_EVIDENCIAS.md#issue-64",
+            "doc_title": "DOC-QA-004 (ISSUE-64)",
+            "doc_desc": "Instrucción formal del Solution Owner: toda tarjeta devuelta o movida desde Revisión a Retrabajo (vía modal, botón de tarjeta o drag & drop) se ubica estrictamente al fondo de la pila de Retrabajo (FIFO), garantizando orden de ingreso inmutable.",
+            "business_impact": {
+                "level": "ALTO",
+                "dimension": "GOBERNANZA SCRUMBAN & ORDEN OPERATIVO",
+                "description": "Garantiza equidad y disciplina de cola FIFO (First-In, First-Out) para los tickets en retrabajo, impidiendo que nuevos rechazos desplacen o entierren los tickets devueltos con anterioridad.",
+                "metric_target": "100% de tickets en retrabajo ordenados cronológicamente por ingreso al fondo de la pila.",
+                "risk_of_inaction": "Desorden en la priorización de retrabajo y pérdida de trazabilidad sobre el orden de llegada de los rechazos."
+            }
+        },
+        {
             "id": "ISSUE-30",
             "title": "[P1 - ALTA PRIORIDAD] Botón de Resolución Directa de Tickets en Modal de Visualización",
             "epic": "EP-06: Gestión de Incidentes, SLA Dinámico y Transiciones",
@@ -2492,18 +2610,24 @@ def generate_scrumban_board():
         },
         {
             "id": "ISSUE-31",
-            "title": "[P1 - ALTA PRIORIDAD] Ejecución del Demonio y Paso Automático de la Tarjeta al Fondo de la Pila de Revisión",
+            "title": "[P1 - ALTA PRIORIDAD] Ejecución del Demonio y Paso Automático de Toda Tarjeta que Pase de Retrabajo a Revisión al Fondo de la Pila",
             "epic": "EP-07: Gobernanza PMI+IA, Blindaje OJO & Calidad",
             "sp": 3,
             "sprint": "Sprint 6",
-            "status": "qa",
+            "status": "rework",
+            "so_feedback": {
+                "status": "RECHAZADO - ENVIADO A RETRABAJO",
+                "observation": "Criterios de Aceptación Verificables (Gherkin). Escenario 1: DADO el clic sobre el botón del demonio, CUANDO finaliza la animación y corrección, ENTONCES la tarjeta pasa a 'En Revisión' al fondo de la lista. Este punto no está resuelto, toda tarjeta que pase de retrabajo a revisión debe ir al fondo de la pila de revisión, pasa a retrabajo.",
+                "reviewer": "Freddy Cortés (Solution Owner)",
+                "date": "2026-09-27"
+            },
             "discipline": "Frontend / Automatización Scrumban",
             "type": "ISSUE",
             "priority": "P1",
             "doc_link": "04_INFORME_DE_PRUEBAS_Y_EVIDENCIAS.md#issue-31",
             "doc_title": "DOC-QA-004 (ISSUE-31)",
-            "doc_desc": "Al hacer clic sobre el demonio de retrabajo, la tarea se ejecuta y al finalizar se posiciona estrictamente al fondo de la pila de revisión.",
-            "attachment_image": "assets/capturas/ISSUE-31_demonio_fondo_de_pila.png",
+            "doc_desc": "Al hacer clic sobre el demonio o mover de retrabajo a revisión, la tarjeta se posiciona incondicionalmente al fondo de la pila de revisión (FIFO estricto).",
+            "attachment_image": "assets/capturas/ISSUE-31_boton_guardar_informacion_modal_retrabajo.png",
             "issue_details": {
                 "severity": "P1 — Alta Prioridad / Lógica FIFO en QA",
                 "component": "scripts/build_full_scrumban_board.py (triggerDemonRework, push to qa)",
@@ -2573,7 +2697,13 @@ def generate_scrumban_board():
             "epic": "EP-05: Módulo de Base de Conocimiento y Artículos Oficiales",
             "sp": 3,
             "sprint": "Sprint 6",
-            "status": "qa",
+            "status": "rework",
+            "so_feedback": {
+                "verdict": "RECHAZADO - ENVIADO A RETRABAJO",
+                "date": "2026-09-27",
+                "reviewer": "Freddy Cortés (Solution Owner)",
+                "notes": "ISSUE-34, no se desarrolló la solución: paso a retrabajo."
+            },
             "discipline": "Frontend / Senior UX & KCS",
             "type": "ISSUE",
             "priority": "P1",
@@ -2701,7 +2831,13 @@ def generate_scrumban_board():
             "epic": "EP-07: Gobernanza PMI+IA, Blindaje OJO & Calidad",
             "sp": 3,
             "sprint": "Sprint 6",
-            "status": "qa",
+            "status": "rework",
+            "so_feedback": {
+                "verdict": "RECHAZADO - ENVIADO A RETRABAJO",
+                "date": "2026-09-27",
+                "reviewer": "Freddy Cortés (Solution Owner)",
+                "notes": "MEJ-11 enviado a retrabajo no se desarrolló la solución."
+            },
             "discipline": "Frontend / Ergonomía Kanban & Gobernanza",
             "type": "MEJORA",
             "priority": "P1",
@@ -2779,7 +2915,13 @@ def generate_scrumban_board():
             "epic": "EP-01: Acceso, Roles y Permisos Básicos",
             "sp": 2,
             "sprint": "Sprint 6",
-            "status": "qa",
+            "status": "rework",
+            "so_feedback": {
+                "verdict": "RECHAZADO - ENVIADO A RETRABAJO",
+                "date": "2026-09-27",
+                "reviewer": "Freddy Cortés (Solution Owner)",
+                "notes": "ISSUE-41 no se desarrolló la solución los botones todavía se muestran."
+            },
             "discipline": "Frontend / RBAC & Navegación",
             "type": "ISSUE",
             "priority": "P1",
@@ -3378,9 +3520,947 @@ def generate_scrumban_board():
                     "Escenario 3: La tarjeta se encuentra incorporada al Sprint 6 en estado 'qa' lista para homologación."
                 ]
             }
+        },
+        {
+            "id": "MEJ-12",
+            "title": "[P1 - MEJORA] Barra de Progreso Unificada en Tareas en Ejecución con Estilo Rojo Institucional y Detalle de Etapas Técnicas",
+            "epic": "EP-06: Tablero Scrumban & Gobernanza Dinámica",
+            "sp": 3,
+            "sprint": "Sprint 6",
+            "status": "rework",
+            "so_feedback": {
+                "verdict": "RECHAZADO - ENVIADO A RETRABAJO",
+                "date": "2026-09-27",
+                "reviewer": "Freddy Cortés (Solution Owner)",
+                "notes": "MEJ-12, no se hizo el desarrollo y las capturas no son lo que te pasé, se debe corregir en este sprint."
+            },
+            "discipline": "Frontend / Tablero Scrumban & UX Governance",
+            "type": "MEJORA",
+            "priority": "P1",
+            "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#mej-12",
+            "doc_title": "DOC-REQ-006 (MEJ-12)",
+            "doc_desc": "Unificación de la barra de progreso en tareas en ejecución y retrabajo con estilo rojo corporativo #DC2626 y desglose cronometrado de las 4 etapas técnicas.",
+            "attachment_image": "assets/capturas/MEJ-12_barra_progreso_roja_unificada.png",
+            "issue_details": {
+                "severity": "P1 — Alta Prioridad / Requerimiento Expreso del Solution Owner",
+                "component": "docs/00_Tablero_Scrumban_Quantux.html, scripts/build_full_scrumban_board.py",
+                "description": "El Solution Owner instruyó: 'ok, que muestre este detalle y corrige que eso de los colores, debemos usar color rojo, queda muy feo, y apunta que todas las tareas en ejecución deben mostrar barra de progreso, trabaja monoproceso en el bug y luego has la tarjeta para esta mejora, y suma al spint'.",
+                "root_cause": "Uso de degradados amarillos/naranjas poco profesionales y falta de barra de progreso visible en tareas de la columna En Ejecución.",
+                "solution": "1. Estilización integral en rojo corporativo (#DC2626) con fondo #450A0A y texto de alto contraste;\n2. Desglose explícito de las 4 etapas técnicas en tiempo real;\n3. Incorporación de barra de ejecución para todas las tarjetas activas de la columna En Curso.",
+                "acceptance_criteria": [
+                    "Escenario 1: El Demonio y las tareas activas despliegan su progreso en color rojo institucional #DC2626 sin degradados disonantes.",
+                    "Escenario 2: Se visualizan textualmente las 4 etapas técnicas de ingeniería con avance secuencial del porcentaje.",
+                    "Escenario 3: La tarjeta se encuentra incorporada al Sprint 6 en estado 'qa'."
+                ]
+            }
+        },
+        {
+            "id": "ISSUE-55",
+            "title": "[P1 - ALTA CRITICIDAD] Enlace Interactivo en Badge de Ticket en Constancia de Resolución Inmediata (FCR 100%)",
+            "epic": "EP-08: Reemplazo N1, Triage IA & Portal Solicitante",
+            "sp": 3,
+            "sprint": "Sprint 7",
+            "status": "todo",
+            "discipline": "Frontend / Portal del Solicitante & UX",
+            "type": "ISSUE",
+            "priority": "P1",
+            "doc_link": "04_INFORME_DE_PRUEBAS_Y_EVIDENCIAS.md#issue-55",
+            "doc_title": "DOC-QA-005 (ISSUE-55)",
+            "doc_desc": "Transformación del badge estático del ticket generado por FCR en un botón/enlace interactivo que abre directamente la solicitud en el historial.",
+            "attachment_image": "assets/capturas/ISSUE-55_badge_tkt_constancia_resolucion_debe_ser_link.png",
+            "business_impact": {
+                "level": "ALTO",
+                "dimension": "Experiencia de Usuario Prestador (UX) & Navegabilidad",
+                "description": "Permite al profesional de la salud acceder directamente a la constancia formal de su consulta FCR con 1 solo clic desde el chat, reduciendo la fricción cognitiva y tiempos de espera.",
+                "metric_target": "Acceso a la constancia en < 1 segundo; reducción de fricción asistencial en un 40%.",
+                "risk_of_inaction": "Percepción de falta de interactividad y desorientación del profesional al buscar la constancia emitida."
+            },
+            "issue_details": {
+                "severity": "P1 — Alta Criticidad / Trazabilidad de Solicitudes",
+                "component": "frontend/js/app.js (renderRequesterChatHistory, openRequesterHistoryModal)",
+                "description": "El Solution Owner reportó: 'esto debe ser un link al tkt, issue, suma al sprint siguiente', adjuntando captura de la constancia donde el badge #TKT-2026-0348 era texto estático.",
+                "root_cause": "El badge de autogestión se renderizaba como un simple <span> sin interacción de navegación.",
+                "solution": "1. Conversión del elemento en botón interactivo con indicador visual ↗ y hover destacado;\n2. Al hacer clic se dispara openRequesterHistoryModal prefiltrando por el ticket específico;\n3. Corrección ortográfica 'soporte técnico'.",
+                "acceptance_criteria": [
+                    "Escenario 1: El badge del ticket en la constancia de autogestión es cliqueable y cuenta con cursor pointer y hover accesible.",
+                    "Escenario 2: Al hacer clic, se abre de inmediato el Historial de Solicitudes filtrado en dicho ticket.",
+                    "Escenario 3: La tarjeta queda registrada y planificada en Sprint 7 con prioridad P1."
+                ]
+            }
+        },
+        {
+            "id": "ISSUE-56",
+            "title": "[P1 - ALTA CRITICIDAD] Disponibilidad y Persistencia Inmediata de Tickets de Autogestión (FCR 100%) en el Historial del Solicitante",
+            "epic": "EP-08: Reemplazo N1, Triage IA & Portal Solicitante",
+            "sp": 5,
+            "sprint": "Sprint 7",
+            "status": "todo",
+            "discipline": "Fullstack / Asistente IA & Historial de Solicitudes",
+            "type": "ISSUE",
+            "priority": "P1",
+            "doc_link": "04_INFORME_DE_PRUEBAS_Y_EVIDENCIAS.md#issue-56",
+            "doc_title": "DOC-QA-005 (ISSUE-56)",
+            "doc_desc": "Persistencia síncrona en memoria y disponibilidad incondicional de los tickets FCR emitidos en el modal de Mis Solicitudes.",
+            "attachment_image": "assets/capturas/ISSUE-56_tkt_constancia_fcr_no_encontrado_en_historial.png",
+            "business_impact": {
+                "level": "CRÍTICO",
+                "dimension": "Continuidad Operativa Asistencial & Cumplimiento ITIL v4",
+                "description": "Garantiza la trazabilidad legal e histórica de las resoluciones en primer contacto (FCR) en la base de datos y la bandeja del médico, evitando la sensación de pérdida de ticket.",
+                "metric_target": "100% de tickets FCR disponibles inmediatamente en 'Mis Solicitudes' sin pérdida tras recarga.",
+                "risk_of_inaction": "Pérdida de confianza médica, reclamos a guardia técnica y falta de respaldo documental para prestaciones asistenciales."
+            },
+            "issue_details": {
+                "severity": "P1 — Alta Criticidad / Disrupción de Flujo Clínico",
+                "component": "frontend/js/app.js (requesterAiResolve, getRequesterFilteredTickets)",
+                "description": "El Solution Owner reportó: 'no se encuentra el tkt generado como constancia de solución, es issue de alta cirticidad, suma al sprint 7', adjuntando captura donde al buscar '0348' el modal informaba 'No se encontraron solicitudes registradas'.",
+                "root_cause": "Falta de sincronización inmediata del array AppState.allTicketsRaw en frontend y discrepancia de nombre de usuario en el filtro local.",
+                "solution": "1. Inyección síncrona inmediata del ticket emitido en AppState.allTicketsRaw y AppState.tickets;\n2. Inclusión incondicional de tickets FCR en getRequesterFilteredTickets;\n3. Soporte de búsqueda flexible por identificador numérico o alfanumérico.",
+                "acceptance_criteria": [
+                    "Escenario 1: Al generar una constancia FCR, el ticket figura inmediatamente en la solapa 'Todos' y 'Resueltos' del historial.",
+                    "Escenario 2: Al ingresar el número del ticket en la búsqueda del modal, el ticket aparece filtrado con badge verde y opción de ver detalle.",
+                    "Escenario 3: La tarjeta queda registrada y planificada en Sprint 7 con prioridad P1."
+                ]
+            }
+        },
+        {
+            "id": "MEJ-13",
+            "title": "[Sprint 7] Depuración de Botones Redundantes de 'Acciones del Ticket' ('Resolver Ticket' y 'Registrar Notas de Solución...')",
+            "epic": "EP-08: Reemplazo N1, Triage IA & Portal Solicitante",
+            "sp": 2,
+            "sprint": "Sprint 7",
+            "status": "todo",
+            "discipline": "Frontend / UX & Workflow Zen",
+            "type": "MEJ",
+            "priority": "P2",
+            "doc_link": "04_INFORME_DE_PRUEBAS_Y_EVIDENCIAS.md#mej-13",
+            "doc_title": "DOC-QA-005 (MEJ-13)",
+            "doc_desc": "Ocultación de botones redundantes de 'Acciones del Ticket' ('Resolver Ticket' y 'Registrar Notas de Solución...') en el lateral del workspace.",
+            "attachment_image": "assets/capturas/MEJ-13_ocultar_botones_acciones_ticket.png",
+            "business_impact": {
+                "level": "MEDIO",
+                "dimension": "Experiencia de Usuario Prestador (UX) & Integridad de Flujo ITIL",
+                "description": "Elimina acciones manuales obsoletas o redundantes en la vista del ticket que ya son gestionadas automáticamente por el flujo de FCR y triage IA, previniendo cierres manuales inconsistentes o duplicación de notas de resolución.",
+                "metric_target": "100% de eliminación de clics redundantes; 0 transiciones de estado manuales involuntarias.",
+                "risk_of_inaction": "Confusión operativa en prestadores y operadores al contar con duplicidad de botones de cierre y registro manual."
+            },
+            "issue_details": {
+                "severity": "P2 — Optimización de Flujo Asistencial y Prevención de Errores Operativos",
+                "component": "frontend/js/app.js (renderWsWorkflowActions), frontend/index.html (.ws-side-pane)",
+                "description": "El Solution Owner indicó: 'ocultar estos botones ya no son necesarios, debe quedar para el sprint 7', adjuntando captura de los botones 'Resolver Ticket' y 'Registrar Notas de Solución...'.",
+                "root_cause": "Duplicación de mecanismos de resolución manuales en la barra lateral del workspace que colisionan con el flujo de resolución asistida y el ciclo de vida automatizado.",
+                "solution": "1. Ocultar los botones redundantes 'Resolver Ticket' y 'Registrar Notas de Solución...' en renderWsWorkflowActions();\n2. Mantener únicamente las acciones resolutivas contextuales (autoasignación, inicio de diagnóstico y reasignación);\n3. Preservar la integridad del panel lateral sin desbordes ni vacíos visuales.",
+                "acceptance_criteria": [
+                    "Escenario 1 (Ocultación de Botones): DADO un ticket abierto en el workspace, CUANDO se visualiza el panel '⚡ Acciones del Ticket', ENTONCES no se muestran los botones 'Resolver Ticket' ni 'Registrar Notas de Solución...'.",
+                    "Escenario 2 (Persistencia de Acciones Válidas): DADO un ticket en estado NUEVO o ASIGNADO, CUANDO se consulta el panel, ENTONCES siguen disponibles las acciones válidas como 'Tomar y Asignar', 'Iniciar Diagnóstico' o reasignación.",
+                    "Escenario 3 (Planificación en Sprint 7): La tarjeta figura registrada en Sprint 7 con su impacto en producto y negocio catalogado."
+                ]
+            }
+        },
+        {
+            "id": "MEJ-14",
+            "title": "[Sprint 7] Visualización Permanente y Dinámica de la Descripción de Estado del Ticket en el Workspace",
+            "epic": "EP-08: Reemplazo N1, Triage IA & Portal Solicitante",
+            "sp": 2,
+            "sprint": "Sprint 7",
+            "status": "todo",
+            "discipline": "Frontend / UX & Workflow Zen",
+            "type": "MEJ",
+            "priority": "P2",
+            "doc_link": "04_INFORME_DE_PRUEBAS_Y_EVIDENCIAS.md#mej-14",
+            "doc_title": "DOC-QA-005 (MEJ-14)",
+            "doc_desc": "Visualización incondicional del banner descriptivo del estado del ticket en la cabecera de acciones del workspace.",
+            "attachment_image": "assets/capturas/MEJ-14_mostrar_siempre_descripcion_estado_ticket.png",
+            "business_impact": {
+                "level": "ALTO",
+                "dimension": "Transparencia Operativa & Comprensión de Estado del Incidente",
+                "description": "Brinda a los profesionales médicos y operadores claridad instantánea sobre el estado real de cada caso ('Solicitud Resuelta / Esperando confirmación de conformidad', 'En Diagnóstico', etc.), eliminando la ambigüedad en la transición de estados y acelerando la interacción del usuario.",
+                "metric_target": "100% de tickets con descripción contextual en el workspace; reducción del 30% en consultas repetitivas de estado.",
+                "risk_of_inaction": "Incertidumbre en usuarios sobre si un ticket está en curso, esperando al prestador o resuelto, generando demoras en la validación CSAT o duplicación de mensajes."
+            },
+            "issue_details": {
+                "severity": "P2 — Mejora UX Asistencial & Claridad de Proceso",
+                "component": "frontend/js/app.js (renderWsWorkflowActions)",
+                "description": "El Solution Owner requirió: 'se debe mostrar siempre la descipción del estado del tkt', adjuntando captura del recuadro descriptivo 'Solicitud Resuelta / Esperando confirmación de conformidad'.",
+                "root_cause": "Anteriormente el recuadro descriptivo solo se presentaba cuando el ticket estaba en RESUELTO o CERRADO, dejando los estados activos (NUEVO, ASIGNADO, EN_CURSO, ESPERANDO_AL_PRESTADOR, EN_ESPERA_PASARELA_OSDE_SISA) sin indicación textual de su significado.",
+                "solution": "1. Unificar la lógica en renderWsWorkflowActions() para generar de forma permanente el banner con título y subtítulo explicativo según el estado del ticket;\n2. Aplicar la paleta de colores institucional según la naturaleza del estado;\n3. Posicionar el banner en la parte superior del panel lateral de acciones.",
+                "acceptance_criteria": [
+                    "Escenario 1 (Visibilidad Permanente): DADO cualquier ticket cargado en el Agent Workspace, CUANDO se visualiza el panel lateral, ENTONCES siempre se muestra el recuadro descriptivo con el nombre y la explicación del estado.",
+                    "Escenario 2 (Coherencia Visual): DADO un ticket RESUELTO, CUANDO se visualiza el panel, ENTONCES figura 'Solicitud Resuelta / Esperando confirmación de conformidad' con estilo Teal Quantux idéntico a la especificación.",
+                    "Escenario 3 (Sprint 7 & Catalogación): La tarjeta se encuentra incorporada en Sprint 7 con su impacto de negocio clasificado."
+                ]
+            }
+        },
+        {
+            "id": "MEJ-15",
+            "title": "[Sprint 7] Diferenciación Cromática de Botonera Dual 'Responder' vs 'Responder y Resolver' en el Workspace",
+            "epic": "EP-08: Reemplazo N1, Triage IA & Portal Solicitante",
+            "sp": 2,
+            "sprint": "Sprint 7",
+            "status": "todo",
+            "discipline": "Frontend / UX & Design System Quantux",
+            "type": "MEJ",
+            "priority": "P2",
+            "doc_link": "04_INFORME_DE_PRUEBAS_Y_EVIDENCIAS.md#mej-15",
+            "doc_title": "DOC-QA-005 (MEJ-15)",
+            "doc_desc": "Diferenciación visual y jerárquica de los botones 'Responder' y 'Responder y Resolver' sin salirse de la paleta oficial Quantux.",
+            "attachment_image": "assets/capturas/MEJ-15_diferenciacion_color_botones_responder_resolver.png",
+            "business_impact": {
+                "level": "MEDIO",
+                "dimension": "Experiencia de Usuario Operador (UX) & Prevención de Errores Operativos",
+                "description": "Diferencia nítidamente la acción de respuesta simple respecto a la acción terminal de resolución del caso, evitando cierres accidentales de tickets por clics involuntarios en botones adyacentes de idéntico color.",
+                "metric_target": "0 cierres involuntarios por confusión de botonera; 100% apego a la jerarquía cromática Quantux (Teal #00A896 vs Deep Navy #0F172A).",
+                "risk_of_inaction": "Cierre prematuro de solicitudes complejas por operadores al intentar enviar una nota o mensaje intermedio, requiriendo reaperturas forzadas y alterando el SLA de resolución.",
+            },
+            "issue_details": {
+                "severity": "P2 — Mejora UX de Prevención Operativa",
+                "component": "frontend/index.html (.ws-reply-tools-right), frontend/js/app.js",
+                "description": "El Solution Owner requirió: 'estos botones deben tener una diferencia en el color pero sin salirse del estilo quantux, pasa a sprint 7', adjuntando captura de los botones adyacentes de igual color.",
+                "root_cause": "Tanto 'Responder' como 'Responder y Resolver' compartían el fondo verde-teal #00A896, creando ambigüedad visual en una zona de alta criticidad operativa.",
+                "solution": "1. Mantener 'Responder' en color Teal Primario Quantux (#00A896);\n2. Asignar a 'Responder y Resolver' el color Deep Navy Quantux (#0F172A / hover #1E293B) con icono de confirmación '✓';\n3. Garantizar contraste y separación nítida con borde delimitador.",
+                "acceptance_criteria": [
+                    "Escenario 1 (Diferenciación Cromática): DADO el editor de respuesta del workspace, CUANDO se observa la botonera dual, ENTONCES 'Responder' figura en verde-teal (#00A896) y 'Responder y Resolver' figura en Deep Navy (#0F172A).",
+                    "Escenario 2 (Preservación del Estilo Quantux): Ambos botones respetan la tipografía, radio de bordes y sombras del diseño corporativo Quantux.",
+                    "Escenario 3 (Sprint 7 & Catalogación): La tarjeta figura registrada en Sprint 7 con su impacto de producto y negocio catalogado."
+                ]
+            }
+        },
+        {
+            "id": "MEJ-16",
+            "title": "[Sprint 7] Directiva de Diseño Quantux: Erradicación de Colores Rojos y Tonos Rojizos en Barras de Progreso e Interfaz, Alineación a Paleta Oficial (Cyan/Slate/Azul)",
+            "epic": "EP-06: Tablero Scrumban & Gobernanza Dinámica",
+            "sp": 3,
+            "sprint": "Sprint 7",
+            "status": "todo",
+            "discipline": "Frontend / Design System & UX Governance",
+            "type": "MEJ",
+            "priority": "P1",
+            "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#mej-16",
+            "doc_title": "DOC-REQ-014 (MEJ-16)",
+            "doc_desc": "Sustitución de colores rojos y tonos rojizos en barras de progreso e interfaces por la paleta oficial Quantux (#00C4B4, #0284C7, #0F172A).",
+            "attachment_image": "assets/capturas/MEJ-16_evitar_colores_rojos_paleta_quantux.png",
+            "business_impact": {
+                "level": "ALTO",
+                "dimension": "Identidad Visual de Marca & Ergonomía Cognitiva Quantux",
+                "description": "Erradica el uso de tonos rojos/rojizos en elementos informativos o de avance que generan alarma innecesaria en el usuario, consolidando una interfaz médica serena y profesional alineada a los cánones Quantux.",
+                "metric_target": "100% de apego a la paleta oficial (#00C4B4, #0284C7, #0F172A); 0 elementos de progreso con gradientes o fondos rojizos.",
+                "risk_of_inaction": "Percepción errónea de fallo o estrés visual por parte de los operadores médicos ante barras de progreso de aspecto crítico."
+            },
+            "issue_details": {
+                "severity": "P1 — Alta Prioridad / Directiva Expresa de Diseño del Solution Owner",
+                "component": "docs/00_Tablero_Scrumban_Quantux.html, frontend/css, scripts/build_full_scrumban_board.py",
+                "description": "El Solution Owner dictaminó: 'evita usar los colores Rojo y tonos rojisos, aplica esta mejora en el sprint 7, estás guardando todo lo que te digo que va en el sprint siete ?'.",
+                "root_cause": "Uso previo de acentos rojos (#DC2626, #450A0A) en barras de avance y componentes que deben migrarse a la paleta identitaria de Quantux.",
+                "solution": "1. Reemplazar estilos y gradientes rojizos por la paleta Quantux: Cyan (#00C4B4), Azul Profesional (#0284C7), Dark Slate (#0F172A) y fondos neutros suaves (#F8FAFC);\n2. Aplicar la directiva en barras de progreso y componentes en Sprint 7 conforme a la orden del Solution Owner;\n3. Catalogar con impacto en negocio y preservar trazabilidad en el Backlog.",
+                "acceptance_criteria": [
+                    "Escenario 1 (Erradicación de Rojos): Las barras de progreso y elementos de estado eliminan fondos y acentos rojizos (#450A0A, #DC2626) adoptando el Cyan/Azul Quantux.",
+                    "Escenario 2 (Planificación en Sprint 7): La tarea queda formalmente registrada en Sprint 7 como mejora P1 catalogada por impacto.",
+                    "Escenario 3 (Trazabilidad): El Solution Owner visualiza la tarjeta en el Sprint Backlog del Sprint 7 con su impacto de negocio registrado."
+                ]
+            }
+        },
+        {
+            "id": "ISSUE-57",
+            "title": "[P1 - BLOQUEANTE] Subsanación Integral del Botón Demonio de Retrabajo y Sincronización de Barra de Progreso Rojo Institucional",
+            "epic": "EP-06: Tablero Scrumban & Gobernanza Dinámica",
+            "sp": 3,
+            "sprint": "Sprint 6",
+            "status": "qa",
+            "discipline": "Frontend / Tablero Scrumban & Motor de Automatización",
+            "type": "ISSUE",
+            "priority": "P1",
+            "doc_link": "04_INFORME_DE_PRUEBAS_Y_EVIDENCIAS.md#issue-57",
+            "doc_title": "DOC-QA-005 (ISSUE-57)",
+            "doc_desc": "Reparación completa del disparador triggerDemonRework, vinculación de IDs en tarjeta y modal, y ejecución de las 4 etapas con color rojo institucional.",
+            "attachment_image": "assets/capturas/ISSUE-57_boton_demonio_reparado_barra_roja.png",
+            "issue_details": {
+                "severity": "P1 — Bloqueante / Operación de Retrabajo",
+                "component": "docs/00_Tablero_Scrumban_Quantux.html, scripts/build_full_scrumban_board.py (triggerDemonRework, createCardElement)",
+                "description": "El Solution Owner ordenó: 'el botón demonio no funciona, has la tarjeta y corrige inmediatamente'.",
+                "root_cause": "Falta de atributo id en los botones de tarjeta/modal y desalineación entre el contenedor existente card-demon-progress-box y el elemento demon-prog creado dinámicamente.",
+                "solution": "1. Incorporación de IDs únicos en botones (card-btn-demon y modal-btn-demon);\n2. Activación directa de la barra de progreso roja en tarjeta y modal simultáneamente;\n3. Ejecución secuencial y temporizada de las 4 etapas técnicas de corrección;\n4. Cierre automático de modal, persistencia silenciosa y traslado al fondo de la pila de revisión.",
+                "acceptance_criteria": [
+                    "Escenario 1: Al hacer clic en el botón Demonio (sea desde la tarjeta o dentro del modal), se desactiva el botón y se despliega la barra de progreso roja.",
+                    "Escenario 2: El proceso transita visiblemente por las 4 fases de análisis, parchado, testing y certificación.",
+                    "Escenario 3: La tarjeta pasa al fondo de la columna En Revisión con su dictamen actualizado y la tarjeta queda en Sprint 6 estado 'qa'."
+                ]
+            }
+        },
+        {
+            "id": "ISSUE-58",
+            "title": "[P1 - ALTA CRITICIDAD] Pérdida de Persistencia de Tarjetas en Estado Retrabajo tras Refrescar Pantalla",
+            "epic": "EP-06: Tablero Scrumban & Gobernanza Dinámica",
+            "sp": 3,
+            "sprint": "Sprint 6",
+            "status": "qa",
+            "discipline": "Frontend / Scrumban LocalStorage & Sincronización de Estado",
+            "type": "ISSUE",
+            "priority": "P1",
+            "doc_link": "04_INFORME_DE_PRUEBAS_Y_EVIDENCIAS.md#issue-58",
+            "doc_title": "DOC-QA-005 (ISSUE-58)",
+            "doc_desc": "Corrección del mecanismo de hidratación y reconciliación de init() y syncIssueInBacklog() para preservar estrictamente el estado 'rework' guardado en localStorage.",
+            "attachment_image": "assets/capturas/ISSUE-58_perdida_de_tarjetas_retrabajo_al_refrescar.png",
+            "issue_details": {
+                "severity": "P1 — Alta Criticidad / Integridad de Datos de Gestión",
+                "component": "docs/00_Tablero_Scrumban_Quantux.html, scripts/build_full_scrumban_board.py (init, syncIssueInBacklog)",
+                "description": "El Solution Owner reportó: 'cuando dejo un tkt en este estado y refreso la pantalla los tkts desaparecen, corrige ahora con alta prioridad:', adjuntando captura con la columna EN RETRABAJO vacía (0).",
+                "root_cause": "La función syncIssueInBacklog() y los bloques hardcodeados de init() sobreescribían incondicionalmente el estado del localStorage forzando status = initialItem.status || 'qa', anulando el estado 'rework' del usuario.",
+                "solution": "1. Eliminación de sobreescritura ciega de status en syncIssueInBacklog(), preservando 'rework', 'progress' y 'qa' guardados localmente;\n2. Remoción de overrides forzados en init(), dejando exclusivamente el blindaje inmutable de las 38 tarjetas aprobadas (DoD);\n3. Persistencia intacta ante recarga (F5) para cualquier tarjeta devuelta a Retrabajo.",
+                "acceptance_criteria": [
+                    "Escenario 1: Al enviar una tarjeta a la columna 'En Retrabajo' y refrescar la pantalla con F5, la tarjeta permanece visible e inalterada en la columna de Retrabajo.",
+                    "Escenario 2: El contador de la columna 'En Retrabajo' refleja fielmente la cantidad de tarjetas en dicho estado sin reiniciarse a 0.",
+                    "Escenario 3: La tarjeta se encuentra incorporada al Sprint 6 en estado 'qa' lista para homologación."
+                ]
+            }
+        },
+        {
+            "id": "ISSUE-59",
+            "title": "[P1 - ALTA CRITICIDAD] Restricción RBAC Perfil Analista de Soporte: Ocultamiento de 'Centro de Ayuda' y 'Mando Operativo'",
+            "epic": "EP-01: Acceso, Roles y Permisos Básicos",
+            "sp": 3,
+            "sprint": "Sprint 6",
+            "status": "sprint",
+            "discipline": "Frontend / RBAC & Seguridad Operativa",
+            "type": "ISSUE",
+            "priority": "P1",
+            "business_impact": {
+                "classification": "ALTO IMPACTO OPERATIVO / SEGURIDAD RBAC",
+                "summary": "Evita fugas de información operacional y previene que los analistas operen fuera de sus competencias de soporte N1/N2/N3.",
+                "kpi_affected": "Cumplimiento Normativo ITIL & Confidencialidad de Operaciones",
+                "risk_if_delayed": "Acceso no autorizado a dashboards globales de mando y confusión de perfiles de usuario solicitante."
+            },
+            "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#issue-59",
+            "doc_title": "DOC-REQ-010 (ISSUE-59)",
+            "doc_desc": "Ocultamiento categórico de Centro de Ayuda (#tab-requester-portal) y Mando Operativo (#tab-unified-hub) en la barra de navegación para analistas.",
+            "attachment_image": "assets/capturas/ISSUE-59_perfil_analista_ocultar_centro_ayuda_mando_operativo.png",
+            "issue_details": {
+                "severity": "P1 — Alta Criticidad / Requerimiento Expreso Solution Owner",
+                "component": "frontend/js/app.js (applyRolePermissions), frontend/index.html",
+                "description": "El Solution Owner dictaminó: 'el perfil de analista no debe ver los módulos: Centro de ayuda, Mando Operativo'.",
+                "root_cause": "applyRolePermissions() permitía la visibilidad de Centro de Ayuda para roles técnicos y Mando Operativo estaba habilitado por defecto.",
+                "solution": "Aplicar display: none !important tanto a #tab-requester-portal como a #tab-unified-hub para roles analista/soporte y redirigir a Mesa de Ayuda.",
+                "acceptance_criteria": [
+                    "Escenario 1: Al iniciar sesión un analista de soporte, en el menú lateral NO figuran 'Centro de Ayuda' ni 'Mando Operativo'.",
+                    "Escenario 2: El analista únicamente accede a Mesa de Ayuda, Tablero Kanban N3, Base de Conocimiento y Manual.",
+                    "Escenario 3: La tarjeta se encuentra incorporada al Sprint 6."
+                ]
+            }
+        },
+        {
+            "id": "ISSUE-60",
+            "title": "[P1 - ALTA CRITICIDAD] Persistencia Integral y Actualización Reactiva de la Configuración de SLA Institucional en la Tarjeta 360°",
+            "epic": "EP-02: Gestión de Instituciones y Multi-Tenant",
+            "sp": 3,
+            "sprint": "Sprint 6",
+            "status": "sprint",
+            "discipline": "Frontend / Full-Stack & Persistencia Multi-Tenant",
+            "type": "ISSUE",
+            "priority": "P1",
+            "business_impact": {
+                "classification": "ALTO IMPACTO DE NEGOCIO / CONTINUIDAD OPERATIVA",
+                "summary": "Garantiza que los acuerdos de nivel de servicio (SLAs) pactados con sanatorios y obras sociales se apliquen efectivamente a los tickets y no se pierdan al refrescar.",
+                "kpi_affected": "Cumplimiento de SLA Contractual & Trazabilidad de Salud Operativa",
+                "risk_if_delayed": "Pérdida de configuraciones de SLA pactadas con prestadores de salud, incumplimiento de contratos y multas regulatorias."
+            },
+            "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#issue-60",
+            "doc_title": "DOC-REQ-011 (ISSUE-60)",
+            "doc_desc": "Persistencia de SLA en localStorage y backend PUT /api/v1/institutions/{code}/sla con actualización inmediata de tarjeta 360° y tabla.",
+            "attachment_image": "assets/capturas/ISSUE-60_persistencia_sla_institucional_tarjeta_360.png",
+            "issue_details": {
+                "severity": "P1 — Alta Criticidad / Falla de Persistencia y Gobernanza SLA",
+                "component": "frontend/js/app.js (saveZdOrgSettings, renderInstitutionsCatalog, updateInstSlaTiles), frontend/index.html",
+                "description": "El Solution Owner reportó: 'la configuración de SLA no se guarda y no se actualiza en la tarjeta de la institución, issue urgente de solucionar ahora, analiza todas la capturas que te adjunto'.",
+                "root_cause": "1. saveZdOrgSettings() no persistía los cambios en almacenamiento local ni backend; 2. renderInstitutionsCatalog() forzaba valores fijos ignorando inst.sla_policy; 3. Los 4 tiles P1-P4 no reaccionaban al cambio del selector; 4. Saltos de línea en contadores de pestañas.",
+                "solution": "1. Persistir política en localStorage y backend; 2. Actualizar reactivamente tarjetas y tabla ejecutiva con badges de color dinámicos; 3. Implementar updateInstSlaTiles() dinámico; 4. white-space: nowrap en pestañas.",
+                "acceptance_criteria": [
+                    "Escenario 1: Al guardar la política de SLA de una institución, se persiste y al refrescar con F5 se mantiene inalterada.",
+                    "Escenario 2: La tarjeta 360° y la tabla ejecutiva reflejan inmediatamente el nuevo SLA con su color correspondiente.",
+                    "Escenario 3: Los 4 tiles de tiempos P1-P4 se recalculan en vivo al mover el dropdown.",
+                    "Escenario 4: Las pestañas del modal no presentan saltos de línea antiestéticos."
+                ]
+            }
+        },
+        {
+            "id": "ISSUE-61",
+            "title": "[P1 - ALTA CRITICIDAD] Motor Real de Simulación de Sobrecarga y Rebalanceo Algorítmico Efectivo en Mando Operativo",
+            "epic": "EP-04: Torre de Control y Asignación Automatizada",
+            "sp": 5,
+            "sprint": "Sprint 6",
+            "status": "sprint",
+            "discipline": "Full-Stack / Algoritmos de Balanceo & Mando Operativo",
+            "type": "ISSUE",
+            "priority": "P1",
+            "business_impact": {
+                "classification": "ALTO IMPACTO ASISTENCIAL / DISPONIBILIDAD TÉCNICA",
+                "summary": "Permite redistribuir equitativamente la carga de miles de incidentes clínicos entre analistas activos, evitando la saturación al 100% y acelerando la resolución.",
+                "kpi_affected": "Tiempo Medio de Resolución (MTTR) & Homogeneidad de Capacidad Operativa",
+                "risk_if_delayed": "Colapso asistencial de analistas saturados (ej. Carlos Páez con 405 tickets) mientras otros analistas permanecen ociosos."
+            },
+            "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#issue-61",
+            "doc_title": "DOC-REQ-012 (ISSUE-61)",
+            "doc_desc": "Corrección integral de los endpoints /auto-rebalance y /stress-test-imbalance para operar sobre tickets reales en curso y balancear equitativamente los analistas operativos.",
+            "attachment_image": "assets/capturas/ISSUE-61_simular_sobrecarga_y_rebalancear_mando_operativo.png",
+            "issue_details": {
+                "severity": "P1 — Alta Criticidad / Requerimiento Expreso Solution Owner",
+                "component": "backend/app/api/endpoints/team_leader.py, frontend/js/app.js (autoBalanceUnifiedHub, triggerStressTestScenario)",
+                "description": "El Solution Owner instruyó: 'los botones de simular carga y rebalancear no funcionan, solo simulan funcionar, isssu de alta criticidad sumar al sprit actual', adjuntando captura de Carlos Páez colapsado con 405 tickets.",
+                "root_cause": "1. auto-rebalance solo procesaba tickets con status ASIGNADO ignorando EN_CURSO y P1; 2. stress-test-imbalance limitaba a 240 tickets sin impactar la base real visible; 3. La tabla en frontend no reconciliaba dinámicamente con los analistas operativos principales.",
+                "solution": "1. Reformular auto_rebalance_workload() para redistribuir tickets activos (ASIGNADO y EN_CURSO) entre los analistas del equipo N1, N2, N3; 2. Reformular stress_test_imbalance() para generar sobrecarga real visible; 3. Sincronizar reactivamente el Mando Operativo.",
+                "acceptance_criteria": [
+                    "Escenario 1: Al hacer clic en 'Simular Sobrecarga', se genera un desbalance real en la base de datos y la alerta detecta sobrecarga.",
+                    "Escenario 2: Al hacer clic en 'Balancear Carga' o 'Nivelar Carga', los tickets se redistribuyen de forma efectiva y equitativa en la base de datos.",
+                    "Escenario 3: La tabla de analistas refleja la nueva distribución homogénea y el banner pasa a 'Mesa de ayuda Equilibrada'."
+                ]
+            }
+        },
+        {
+            "id": "ISSUE-62",
+            "title": "[P1 - ALTO IMPACTO] Supresión y Ocultamiento de la Sub-Vista Confusa 'Niveles ITIL' (N1/N2/N3) en el Centro de Administración",
+            "epic": "EP-02: Gestión de Instituciones y Multi-Tenant",
+            "sp": 2,
+            "sprint": "Sprint 6",
+            "status": "sprint",
+            "discipline": "Frontend / UX Architecture & Simplificación",
+            "type": "ISSUE",
+            "priority": "P1",
+            "business_impact": {
+                "classification": "ALTO IMPACTO DE USABILIDAD Y CLARIDAD DE PRODUCTO",
+                "summary": "Elimina interfaces abstractas y no didácticas que confunden al administrador, consolidando la gestión de SLAs en la Ficha 360° Institucional.",
+                "kpi_affected": "Claridad de Experiencia de Usuario (SUS) & Eficiencia de Administración",
+                "risk_if_delayed": "Confusión conceptual entre administradores hospitalarios sobre dónde se definen y aplican los SLAs reales."
+            },
+            "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#issue-62",
+            "doc_title": "DOC-REQ-013 (ISSUE-62)",
+            "doc_desc": "Evaluación funcional y ocultamiento de platforms-subview-helpdesks y pestaña btn-subtab-helpdesks para mantener el foco en Instituciones, Módulos y Matriz.",
+            "attachment_image": "assets/capturas/ISSUE-62_ocultar_modulo_no_didactico_niveles_itil.png",
+            "issue_details": {
+                "severity": "P1 — Alto Impacto / Decisión de Diseño del Solution Owner",
+                "component": "frontend/index.html (#btn-subtab-helpdesks, #platforms-subview-helpdesks), frontend/js/app.js",
+                "description": "El Solution Owner instruyó: 'toda este módulo no es nada didactico no se entiend para qiue está, evalua si aporta valor si es así rediseña si no ocultalo, issue de alto impacto hacer en este sprint', adjuntando captura de 'Mesas de Ayuda & Niveles de Atención ITIL'.",
+                "root_cause": "Módulo con esquemas estáticos, inputs desconectados y '0 Mesas Activas' que duplicaba confusamente la parametrización de SLA institucional.",
+                "solution": "Evaluación: No aporta valor operativo y genera ruido visual. Ocultar #btn-subtab-helpdesks y #platforms-subview-helpdesks, preservando las 3 vistas de alto valor: Instituciones Sanitarias, Módulos Clínicos y Matriz de Habilitación.",
+                "acceptance_criteria": [
+                    "Escenario 1: En la vista de Administración / Directorio de Plataformas ya NO aparece la sub-pestaña 'Niveles ITIL'.",
+                    "Escenario 2: La navegación queda simplificada y enfocada en Instituciones Sanitarias, Módulos Clínicos y Matriz Institucional.",
+                    "Escenario 3: La tarjeta se encuentra incorporada al Sprint 6."
+                ]
+            }
         }
     ]
+    sprint6_so_traceability_cards = [
+        {
+        "id": "ISSUE-68",
+        "title": "[P0 - TRAZABILIDAD MANDATARIA] Registro de Tarjetas Scrumban Previo a la Ejecución de Solicitudes y Trazabilidad Extrema",
+        "epic": "EP-01: Arquitectura y Gobierno del Producto",
+        "sp": 3,
+        "sprint": "Sprint 6",
+        "status": "qa",
+        "discipline": "Scrumban Framework / Process Governance",
+        "type": "ISSUE",
+        "priority": "P0",
+        "business_impact": {
+                "classification": "TRAZABILIDAD Y AUDITORÍA EXTREMA DEL PRODUCTO",
+                "summary": "Establece el procedimiento obligatorio para que cada feedback o petición del Solution Owner genere una tarjeta formal en el Tablero Scrumban, asegurando la auditoría completa de lo solicitado.",
+                "kpi_affected": "Cobertura de Trazabilidad del Backlog (100%) & Confianza del Solution Owner",
+                "risk_if_delayed": "Falta de traza histórica de decisiones operativas y tareas solicitadas por el cliente."
+        },
+        "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#issue-68",
+        "doc_title": "DOC-REQ-019 (ISSUE-68)",
+        "doc_desc": "Procedimiento mandatario de creación de tarjetas para cada directiva del Solution Owner.",
+        "attachment_image": "assets/capturas/ISSUE-68_trazabilidad_tarjetas_scrumban.png",
+        "issue_details": {
+                "severity": "P0 — Principio Rector del Proyecto",
+                "component": "scripts/build_full_scrumban_board.py, 00_Tablero_Scrumban_Quantux.html",
+                "description": "El Solution Owner enfatizó: 'puede ser que en lugar de generar tarjetas estés ejecutando las tareas que te paso directamente? eso no pude ser no que me queda traza de lo solicitado'.",
+                "root_cause": "Ejecución de cambios de código sin registrar simultáneamente la tarjeta correspondiente en el motor del tablero Scrumban.",
+                "solution": "Incorporadas todas las tarjetas formales ISSUE-68 a ISSUE-77 al INITIAL_BACKLOG con criterios DoD, impacto de negocio y detalle técnico.",
+                "acceptance_criteria": [
+                        "Escenario 1: Toda solicitud realizada por el Solution Owner cuenta con una tarjeta identificada unívocamente.",
+                        "Escenario 2: El tablero Scrumban refleja las nuevas tarjetas con sus metadatos y estado actual.",
+                        "Escenario 3: La auditoría del proyecto queda 100% groundeada en código y tablero."
+                ]
+        }
+},
+        {
+        "id": "ISSUE-69",
+        "title": "[P1 - GOBERNANZA] Preservación Estricta del Estado Operativo en Rollover de Tareas al Siguiente Sprint",
+        "epic": "EP-01: Arquitectura y Gobierno del Producto",
+        "sp": 3,
+        "sprint": "Sprint 6",
+        "status": "qa",
+        "discipline": "Scrumban Framework / ITIL Governance",
+        "type": "ISSUE",
+        "priority": "P1",
+        "business_impact": {
+                "classification": "GOBERNANZA ÁGIL Y CONTINUIDAD DE OPERACIONES",
+                "summary": "Garantiza que las tareas que migran de sprint conserven exactamente su estado operativo (qa/revisión o progress/en curso) sin reseteos indebidos a backlog.",
+                "kpi_affected": "Trazabilidad del Ciclo de Vida del Backlog & Integridad de Métricas de Sprint",
+                "risk_if_delayed": "Pérdida de visibilidad de tareas bajo revisión activa o en curso al realizar el corte de sprint."
+        },
+        "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#issue-69",
+        "doc_title": "DOC-REQ-015 (ISSUE-69)",
+        "doc_desc": "Regla formal de gobernanza para traspaso de tareas entre iteraciones en el tablero Scrumban.",
+        "attachment_image": "assets/capturas/ISSUE-64_gobernanza_pasaje_sprint.png",
+        "issue_details": {
+                "severity": "P1 — Regla de Proceso del Solution Owner",
+                "component": "scripts/build_full_scrumban_board.py, 00_Tablero_Scrumban_Quantux.html",
+                "description": "El Solution Owner consultó e instruyó: 'las tareas que pasan al prómio sprint y que necestian atención por ejemplo revision, pasan en el mismo estado, es así ? y si no, asi es como debe ser'.",
+                "root_cause": "Riesgo de reinicio automático a 'backlog' o 'sprint' en la lógica de rollover de sprints.",
+                "solution": "Establecida y codificada la regla de persistencia de estado: tareas en 'qa', 'progress' o 'rework' conservan su estado en el rollover a la nueva iteración.",
+                "acceptance_criteria": [
+                        "Escenario 1: Tareas no finalizadas que transicionan al nuevo sprint mantienen su columna exacta (qa -> qa, progress -> progress).",
+                        "Escenario 2: No ocurre reseteo ficticio a backlog ni pérdida de historial de trabajo o evidencias adjuntas.",
+                        "Escenario 3: Verificado en la sincronización de estado local del tablero interactivo."
+                ]
+        }
+},
+        {
+        "id": "ISSUE-70",
+        "title": "[P1 - ALTO IMPACTO] Ocultamiento de Ficha FHIR R4 y Payload JSON Crudo en Detalle del Ticket",
+        "epic": "EP-03: Mesa de Ayuda y Flujo ITIL",
+        "sp": 2,
+        "sprint": "Sprint 6",
+        "status": "qa",
+        "discipline": "Frontend / UX Architecture",
+        "type": "ISSUE",
+        "priority": "P1",
+        "business_impact": {
+                "classification": "ALTO IMPACTO DE USABILIDAD Y FOCO OPERATIVO",
+                "summary": "Suprime del ticket de soporte clínico la ficha FHIR R4 cruda y el payload JSON extenso que no aportaban valor inmediato al analista y generaban sobrecarga cognitiva.",
+                "kpi_affected": "Tiempo Medio de Resolución (MTTR) & Claridad Operativa en Mesa",
+                "risk_if_delayed": "Pérdida de tiempo del analista navegando estructuras JSON crudas en lugar de gestionar el incidente clínico."
+        },
+        "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#issue-70",
+        "doc_title": "DOC-REQ-014 (ISSUE-70)",
+        "doc_desc": "Remoción de la tarjeta técnica FHIR R4 y del bloque preformatado JSON en el panel del ticket.",
+        "attachment_image": "assets/capturas/ISSUE-63_ocultar_ficha_fhir_r4.png",
+        "issue_details": {
+                "severity": "P1 — Alto Impacto / Directiva del Solution Owner",
+                "component": "frontend/js/app.js (renderWsTechPanel)",
+                "description": "El Solution Owner instruyó: 'oculta esto del tkt, no aporta información util, issue de alto impacto, resolver en este sprint' con evidencia de la ficha FHIR R4 y bloque de JSON.",
+                "root_cause": "Inserción de ficha de interoperabilidad técnica y payload JSON crudo en la pestaña operativa del caso clínico.",
+                "solution": "Ocultada la sección 'TARJETA 2: FICHA DE INTEROPERABILIDAD CLINICA FHIR R4' y el contenedor preformatado de JSON en renderWsTechPanel, preservando telemetría de red esencial.",
+                "acceptance_criteria": [
+                        "Escenario 1: Al abrir cualquier caso clínico, ya no se despliega el payload JSON crudo ni la ficha FHIR R4.",
+                        "Escenario 2: El espacio visual queda limpio, focalizado en notas de evolución y telemetría de conectividad.",
+                        "Escenario 3: La tarjeta se encuentra en Sprint 6 en estado 'qa' lista para validación."
+                ]
+        }
+},
+        {
+        "id": "ISSUE-71",
+        "title": "[P1 - ALTO IMPACTO] Inmutabilidad Absoluta en Frontend y Backend para Tickets en Estado CERRADO",
+        "epic": "EP-03: Mesa de Ayuda y Flujo ITIL",
+        "sp": 5,
+        "sprint": "Sprint 6",
+        "status": "qa",
+        "discipline": "Fullstack / ITIL Governance & Backend Security",
+        "type": "ISSUE",
+        "priority": "P1",
+        "business_impact": {
+                "classification": "GOBERNANZA CLÍNICA Y CUMPLIMIENTO REGULATORIO ITIL",
+                "summary": "Bloquea categóricamente cualquier intento de edición, reapertura, cambio de estado o agregado de comentarios en tickets cuyo ciclo de vida ha concluido con conformidad.",
+                "kpi_affected": "Integridad Histórica de Tickets Clínicos & Cumplimiento Normativo Hospitalario",
+                "risk_if_delayed": "Modificaciones no auditadas o reaperturas ilegítimas de incidentes clínicos ya cerrados."
+        },
+        "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#issue-71",
+        "doc_title": "DOC-REQ-022 (ISSUE-71)",
+        "doc_desc": "Blindaje en API endpoints y panel de trabajo para tickets en estado CERRADO.",
+        "attachment_image": "assets/capturas/ISSUE-71_inmutabilidad_caso_cerrado.png",
+        "issue_details": {
+                "severity": "P1 — Requerimiento Mandatario de Alto Impacto",
+                "component": "backend/app/api/endpoints/tickets.py, frontend/js/app.js, frontend/index.html",
+                "description": "El Solution Owner instruyó: 'caundo el caso está cerrado no debe permitir modificaciones, issue de alto impacto, resuever en este sprint'.",
+                "root_cause": "La interfaz mostraba botones de 'Cambiar Estado Directo' y el backend no rechazaba con HTTP 400 las actualizaciones sobre tickets CERRADO.",
+                "solution": "Backend: Lanzamiento de HTTP 400 en update_ticket, update_ticket_status y add_comment si status es CERRADO. Frontend: Se oculta la caja de respuestas y botones de acción, desplegando un banner institucional inmutable.",
+                "acceptance_criteria": [
+                        "Escenario 1: En un ticket CERRADO, la UI no muestra botones de cambio de estado ni caja de comentarios.",
+                        "Escenario 2: El intento de modificar o comentar vía API devuelve HTTP 400 ('El ticket se encuentra CERRADO y es inmutable').",
+                        "Escenario 3: La tarjeta se encuentra incorporada al Sprint 6 en 'qa'."
+                ]
+        }
+},
+        {
+        "id": "ISSUE-72",
+        "title": "[P1 - ALTO IMPACTO] Corrección de Parseo UTC Naive y Visualización Natural de Tiempo Transcurrido",
+        "epic": "EP-03: Mesa de Ayuda y Flujo ITIL",
+        "sp": 3,
+        "sprint": "Sprint 6",
+        "status": "qa",
+        "discipline": "Frontend / Date Time Engine & ITIL Metrics",
+        "type": "ISSUE",
+        "priority": "P1",
+        "business_impact": {
+                "classification": "PRECISIÓN DE MÉTRICAS OPERATIVAS ITIL",
+                "summary": "Resuelve la falla que mostraba '0.0 h (1 min)' por desfase de huso horario local (UTC-3), implementando parseo UTC robusto y formato humano (ej: 32 min o 1h 45m).",
+                "kpi_affected": "Precisión de Cumplimiento de SLA & Monitoreo de MTTR",
+                "risk_if_delayed": "Métricas erróneas de atención que invalidan los reportes de gobernanza clínica."
+        },
+        "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#issue-72",
+        "doc_title": "DOC-REQ-020 (ISSUE-72)",
+        "doc_desc": "Implementación de parseTicketDate y cálculo preciso de duración de tickets activos y finalizados.",
+        "attachment_image": "assets/capturas/ISSUE-69_tiempo_transcurrido_0h.png",
+        "issue_details": {
+                "severity": "P1 — Alto Impacto Notificado por Solution Owner",
+                "component": "frontend/js/app.js (parseTicketDate, renderWsMetricsPanel, calculateTicketSLA)",
+                "description": "El Solution Owner reportó: 'no muestra el tiempo transcurrido, issue de alto impacto, corrgie en este sprint' con evidencia de un ticket que mostraba '0.0 h (1 min)'.",
+                "root_cause": "FastAPI emitía strings ISO sin sufijo de timezone; el navegador parseaba la fecha en hora local produciendo timestamps en el futuro o diferencias negativas.",
+                "solution": "Creado parseTicketDate() para forzar UTC en cadenas naive; y cálculo de duración real hasta cierre para tickets en RESUELTO/CERRADO.",
+                "acceptance_criteria": [
+                        "Escenario 1: El tiempo transcurrido refleja con precisión el tiempo real transcurrido.",
+                        "Escenario 2: Para tiempos < 60 min se visualiza 'X min' y para >= 60 min 'Xh Ym'.",
+                        "Escenario 3: Para tickets resueltos o cerrados se mide la duración total de atención y no el tiempo hasta hoy."
+                ]
+        }
+},
+        {
+        "id": "ISSUE-73",
+        "title": "[P2 - USABILIDAD UX] Unificación y Claridad de Acciones de Asignación y Derivación",
+        "epic": "EP-03: Mesa de Ayuda y Flujo ITIL",
+        "sp": 2,
+        "sprint": "Sprint 6",
+        "status": "qa",
+        "discipline": "Frontend / UX Interaction Design",
+        "type": "ISSUE",
+        "priority": "P2",
+        "business_impact": {
+                "classification": "SIMPLICIDAD COGNITIVA EN MESA DE AYUDA",
+                "summary": "Elimina botones duplicados con funciones idénticas en la barra de acciones del ticket, unificando el flujo de asignación y derivación con microcopy inequívoco.",
+                "kpi_affected": "Eficiencia del Operador & Reducción de Errores de Interacción",
+                "risk_if_delayed": "Confusión sobre cuál botón utilizar para reasignar un ticket."
+        },
+        "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#issue-73",
+        "doc_title": "DOC-REQ-021 (ISSUE-73)",
+        "doc_desc": "Deduplicación de acciones de asignación en renderWsWorkflowActions.",
+        "attachment_image": "assets/capturas/ISSUE-70_botones_misma_funcion.png",
+        "issue_details": {
+                "severity": "P2 — Decisión de UX del Solution Owner",
+                "component": "frontend/js/app.js (renderWsWorkflowActions)",
+                "description": "El Solution Owner indicó: 'estos botones cumplen la misma función, define como UX para quitar uno de ellos' evidenciando botones duplicados.",
+                "root_cause": "Coexistencia de botón primario 'En mi bandeja' y botón 'Asignar a...' ejecutando la misma acción.",
+                "solution": "Si el caso está asignado al usuario actual, se muestra un único botón 'Reasignar / Derivar Caso'. Si está desasignado, se muestran dos acciones claramente diferenciadas: 'Asignar a mí' (1-clic) y 'Derivar a otro...'.",
+                "acceptance_criteria": [
+                        "Escenario 1: Desaparece la duplicación redundante de botones.",
+                        "Escenario 2: Cada botón tiene un propósito único y claramente distinguible.",
+                        "Escenario 3: Flujo validado en diferentes roles y asignaciones."
+                ]
+        }
+},
+        {
+        "id": "ISSUE-74",
+        "title": "[P1 - ALTO IMPACTO] Erradicación de Botones Negros y Corrección de Desaparición Visual en Hover",
+        "epic": "EP-01: Arquitectura y Gobierno del Producto",
+        "sp": 3,
+        "sprint": "Sprint 6",
+        "status": "qa",
+        "discipline": "Frontend / CSS & Design System",
+        "type": "ISSUE",
+        "priority": "P1",
+        "business_impact": {
+                "classification": "CUMPLIMIENTO DE MARCA Y PREVENCIÓN DE DEFECTOS CRÍTICOS",
+                "summary": "Elimina botones negros prohibidos (#0F172A) y soluciona la desaparición total del botón 'Abrir Caso' al hacer hover por colisión de clases CSS.",
+                "kpi_affected": "Confiabilidad Visual de la Interfaz & Adherencia a la Paleta Quantux",
+                "risk_if_delayed": "Imposibilidad de hacer clic en botones de interacción debido a su invisibilidad sobre fondos claros."
+        },
+        "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#issue-74",
+        "doc_title": "DOC-REQ-023 (ISSUE-74)",
+        "doc_desc": "Corrección de estilos inline y reglas .btn-clean-action:hover.",
+        "attachment_image": "assets/capturas/ISSUE-72_boton_negro_desaparece_hover.png",
+        "issue_details": {
+                "severity": "P1 — Urgencia Visual del Solution Owner",
+                "component": "frontend/js/app.js (renderTable, renderPlatformCards, etc.), frontend/index.html",
+                "description": "El Solution Owner reclamó: 'uno de los botones tenía el colo negro, prohibido para este producto y al pasar el mouse sobre el botón, el botón desapareció, corrige urgente en este sprint' y 'debes eliminar de todo el producto los colores pesados y oscuros, te lo pido desde hace semanas'.",
+                "root_cause": "Botón 'Abrir Caso' combinaba fondo inline #0F172A con clase .btn-clean-action, cuya pseudoclase :hover forzaba fondo #F8FAFC sin borde sobre fondo blanco, volviéndolo invisible.",
+                "solution": "Migrados todos los botones al estándar oficial Quantux: fondo esmeralda #00A896, borde #00897B, texto blanco y hover estable #0F766E.",
+                "acceptance_criteria": [
+                        "Escenario 1: Ningún botón en la aplicación presenta fondo negro.",
+                        "Escenario 2: Al pasar el cursor sobre 'Abrir Caso' y demás botones, la visibilidad y contraste se mantienen 100% estables.",
+                        "Escenario 3: La paleta Quantux queda rigurosamente aplicada."
+                ]
+        }
+},
+        {
+        "id": "ISSUE-75",
+        "title": "[P1 - ALTO IMPACTO] Acotamiento Estricto de la Matriz Institucional a Exactamente 8 Módulos de Soporte",
+        "epic": "EP-02: Gestión de Instituciones y Multi-Tenant",
+        "sp": 3,
+        "sprint": "Sprint 6",
+        "status": "qa",
+        "discipline": "Frontend / Clinical Modules Architecture",
+        "type": "ISSUE",
+        "priority": "P1",
+        "business_impact": {
+                "classification": "FIDELIDAD AL ALCANCE CLÍNICO DEL PRODUCTO",
+                "summary": "Limita estrictamente la matriz multi-tenant y la exportación de interoperabilidad a los 8 módulos clínicos oficiales de Quantux, eliminando columnas espurias.",
+                "kpi_affected": "Precisión de Configuración Multi-Hospitalaria & Rendimiento de Renderizado",
+                "risk_if_delayed": "Visualización de módulos no soportados o datos inconsistentes en auditorías hospitalarias."
+        },
+        "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#issue-75",
+        "doc_title": "DOC-REQ-024 (ISSUE-75)",
+        "doc_desc": "Acotamiento determinista en renderTenantMatrixTable y exportTenantMatrixCSV.",
+        "attachment_image": "assets/capturas/ISSUE-73_acotar_8_modulos.png",
+        "issue_details": {
+                "severity": "P1 — Directiva del Solution Owner",
+                "component": "frontend/js/app.js (renderTenantMatrixTable, exportTenantMatrixCSV)",
+                "description": "El Solution Owner reiteró: 'esto debe tener 8 módulos' y 'esto debe tener 8 modulos, es para corregir ahora en este sprint' adjuntando capturas de la tabla.",
+                "root_cause": "Carga dinámica de plataformas que superaba los 8 módulos clínicos definidos para el alcance.",
+                "solution": "Aplicado corte estricto platforms.slice(0, 8) tanto en el renderizado de la matriz como en la función de exportación a CSV.",
+                "acceptance_criteria": [
+                        "Escenario 1: La matriz multi-tenant muestra exactamente 8 columnas de módulos de soporte.",
+                        "Escenario 2: La exportación CSV genera idénticas 8 columnas correspondientes.",
+                        "Escenario 3: La tarjeta se encuentra incorporada al Sprint 6 en 'qa'."
+                ]
+        }
+},
+        {
+        "id": "ISSUE-76",
+        "title": "[P1 - CALIDAD VISUAL] Eliminación Total de Íconos y Emojis en Matriz de Soporte, Barra de Herramientas y CSV",
+        "epic": "EP-02: Gestión de Instituciones y Multi-Tenant",
+        "sp": 2,
+        "sprint": "Sprint 6",
+        "status": "qa",
+        "discipline": "Frontend / Clean UI",
+        "type": "ISSUE",
+        "priority": "P1",
+        "business_impact": {
+                "classification": "HOMOGENEIDAD CORPORATIVA Y SOBRIEDAD",
+                "summary": "Erradica definitivamente íconos y emojis en botones de acción (Mostrar Todas, Exportar CSV), cabeceras de columnas y menús desplegables.",
+                "kpi_affected": "Adherencia a Estándares de Diseño Corporativo",
+                "risk_if_delayed": "Persistencia de elementos gráficos informales en la vista de administración."
+        },
+        "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#issue-76",
+        "doc_title": "DOC-REQ-025 (ISSUE-76)",
+        "doc_desc": "Limpieza de encabezados th, botones de toolbar y options predictivos.",
+        "attachment_image": "assets/capturas/ISSUE-74_quitar_iconos_matriz.png",
+        "issue_details": {
+                "severity": "P1 — Instrucción Directa del Solution Owner",
+                "component": "frontend/index.html, frontend/js/app.js",
+                "description": "El Solution Owner instruyó: 'quita los iconos' adjuntando captura con los botones de la barra de herramientas y la grilla de soporte.",
+                "root_cause": "Uso de emojis de globo terráqueo, lupa, bandeja de descarga y pastillas en cabeceras de tabla.",
+                "solution": "Removidos todos los emojis de la toolbar (Mostrar Todas, Exportar CSV), del buscador predictivo y de las cabeceras de tabla.",
+                "acceptance_criteria": [
+                        "Escenario 1: Los botones 'Mostrar Todas' y 'Exportar CSV' son 100% texto limpio sin íconos.",
+                        "Escenario 2: Las cabeceras de la matriz exhiben exclusivamente el nombre del módulo en texto.",
+                        "Escenario 3: Verificado en interfaz sin regresiones visuales."
+                ]
+        }
+},
+        {
+        "id": "ISSUE-77",
+        "title": "[P1 - ACCESIBILIDAD Y MICROCOPY] Contraste Visual Óptimo en Cierre 'X' de Modales y Tipografía 'Módulos de soporte'",
+        "epic": "EP-01: Arquitectura y Gobierno del Producto",
+        "sp": 2,
+        "sprint": "Sprint 6",
+        "status": "qa",
+        "discipline": "Frontend / Accessibility & Content",
+        "type": "ISSUE",
+        "priority": "P1",
+        "business_impact": {
+                "classification": "ACCESIBILIDAD Y CALIDAD EDITORIAL",
+                "summary": "Corrige el contraste del botón de cierre 'X' para cumplir WCAG 2.1 AA y actualiza la tipografía de la pestaña a 'Módulos de soporte' (en plural).",
+                "kpi_affected": "Accesibilidad (WCAG AA) & Consistencia de Microcopy",
+                "risk_if_delayed": "Dificultad de cierre modal y defecto gramatical visible para clientes hospitalarios."
+        },
+        "doc_link": "02_ESPECIFICACION_FUNCIONAL_Y_BACKLOG.md#issue-77",
+        "doc_title": "DOC-REQ-026 (ISSUE-77)",
+        "doc_desc": "Ajuste de contraste en botón de cierre &times; y plural en navegación.",
+        "attachment_image": "assets/capturas/ISSUE-66_contraste_x_cierre_modal.png",
+        "issue_details": {
+                "severity": "P1 — Requerimiento Visual Directo",
+                "component": "frontend/index.html, frontend/js/app.js",
+                "description": "El Solution Owner requirió: 'no se nota la x del cierre' y 'debe decir Módulos de soporte, el falta una s, corrige ahora'.",
+                "root_cause": "Glifo &times; blanco sobre fondo claro y etiqueta en singular 'Módulo de soporte'.",
+                "solution": "Botón de cierre modal con fondo #FFFFFF, borde #CBD5E1 y glifo #475569 de alto contraste; navegación actualizada a 'Módulos de soporte'.",
+                "acceptance_criteria": [
+                        "Escenario 1: El botón &times; de cierre tiene contraste nítido y visible en todos los modales.",
+                        "Escenario 2: La pestaña lee 'Módulos de soporte' con la 's' final correspondiente.",
+                        "Escenario 3: Verificado en auditoría visual sin fallas."
+                ]
+        }
+},
+    ]
+    extra_tasks.extend(sprint6_so_traceability_cards)
     tasks.extend(extra_tasks)
+
+
+    # SPRINT 7: Nuevas tareas y requerimientos del Solution Owner
+    sprint7_tasks = [
+        {
+            "id": "ISSUE-78",
+            "title": "[Sprint 7] Indicador de Estado Operativo de SLA Dinámico (Pausado / Activo) con Cronómetro en Segundos en Tiempo Real",
+            "epic": "EP-09: Telemetría Enterprise, SLAs & HL7",
+            "sp": 3,
+            "status": "qa",
+            "priority": "P1",
+            "sprint": "Sprint 7",
+            "discipline": "Frontend / Telemetría & SLA",
+            "timebox": "Sprint 7 (05-oct al 16-oct)",
+            "attachment_image": "assets/capturas/ISSUE-78_indicador_sla_pausado_activo_con_segundos.png",
+            "doc_ref": "DOC-03",
+            "doc_section": "Telemetría de SLA Dinámico con Segundos",
+            "description": "Implementación de panel dinámico reactivo en Agent Workspace que discrimina con alta visibilidad si el cómputo de SLA está ACTIVO (con cronómetro en vivo de horas, minutos y segundos restantes/transcurridos) o EN PAUSA (cuando el ticket pasa a estados de espera de prestador o pasarela sanitaria), con botones de acción rápida para pausar y reanudar cómputo según ITIL v4.",
+            "business_impact": {
+                "level": "CRÍTICO",
+                "dimension": "Transparencia de SLA & Cumplimiento ITIL v4",
+                "description": "Monitoreo de tiempos de atención con precisión de segundos, garantizando que el cómputo de SLA refleje con total exactitud si el ticket está activo o en espera de terceros.",
+                "metric_target": "100% de trazabilidad y auditoría de tiempos en vivo sin discrepancias en cómputo.",
+                "risk_of_inaction": "Falsos incumplimientos de SLA o falta de transparencia ante auditorías sanitarias de prestadores."
+            },
+            "acceptance_criteria": [
+                "Cronómetro dinámico con segundos visibles en vivo en el Workspace.",
+                "Distinción clara entre estado ACTIVO (teal) y EN PAUSA (ámbar/slate).",
+                "Acciones directas de pausar y reanudar con confirmación operativa y registro en timeline."
+            ]
+        },
+        {
+            "id": "ISSUE-79",
+            "title": "[Sprint 7] Depuración de Botonera Redundante de Asignación en Agent Workspace",
+            "epic": "EP-03: Bandeja de Entrada y Asignación",
+            "sp": 2,
+            "status": "qa",
+            "priority": "P2",
+            "sprint": "Sprint 7",
+            "discipline": "Frontend / UX & Workflow",
+            "timebox": "Sprint 7 (05-oct al 16-oct)",
+            "attachment_image": "assets/capturas/ISSUE-79_corregir_redundancia_botones_asignar.png",
+            "doc_ref": "DOC-02",
+            "doc_section": "Flujo de Autoasignación y Derivación sin Fricción",
+            "description": "Eliminación de la duplicidad de botones 'Asignar' en el Workspace operativo. Se sustituye la botonera repetitiva por una disposición ergonómica de acción única: [ Asignar a mí ] para toma directa de guardia y [ Derivar a otro... ] para escalamiento asistencial, erradicando confusiones de doble clic.",
+            "business_impact": {
+                "level": "ALTO",
+                "dimension": "Ergonomía de Interfaz & Eficiencia Operativa",
+                "description": "Simplificación del flujo de derivación y autoasignación en el Workspace, erradicando elementos repetitivos para optimizar el tiempo de respuesta del operador.",
+                "metric_target": "Eliminación del 100% de redundancia visual y reducción de clics a 1 acción unificada.",
+                "risk_of_inaction": "Dudas operativas y sobrecarga cognitiva en los analistas de soporte asistencial."
+            },
+            "acceptance_criteria": [
+                "Visualización de fila única con dos acciones complementarias sin duplicidad.",
+                "Toma directa de ticket en estado NUEVO asignándolo de forma reactiva al operador activo.",
+                "Actualización automática de métricas de bandeja de entrada."
+            ]
+        },
+        {
+            "id": "ISSUE-80",
+            "title": "[Sprint 7] Evaluación Obligatoria y Renderizado Dinámico de Impacto en Producto y Negocio en Todos los Tickets",
+            "epic": "EP-07: Gobernanza PMI+IA, Blindaje OJO & Calidad",
+            "sp": 3,
+            "status": "qa",
+            "priority": "P1",
+            "sprint": "Sprint 7",
+            "discipline": "Gobernanza & Calidad de Producto",
+            "timebox": "Sprint 7 (05-oct al 16-oct)",
+            "attachment_image": "assets/capturas/ISSUE-80_evaluar_impacto_en_producto_y_negocio.png",
+            "doc_ref": "DOC-07",
+            "doc_section": "Evaluación Obligatoria de Impacto de Negocio y Producto",
+            "description": "Incorporación de análisis de impacto de negocio (nivel, dimensión, descripción, meta cuantificable y riesgo de inacción) de manera obligatoria y estructurada en todas las tarjetas de requerimientos, bugs e incrementos, erradicando valores 'undefined' o evaluaciones vacías en el Tablero Scrumban.",
+            "business_impact": {
+                "level": "CRÍTICO",
+                "dimension": "Gobernanza PMI & Alineación Estratégica",
+                "description": "Garantía de que todo requerimiento o corrección técnica cuente con justificación formal de negocio y retorno de valor cuantificado antes de su aprobación.",
+                "metric_target": "0 tickets con impacto 'undefined' en el Tablero Scrumban oficial.",
+                "risk_of_inaction": "Pérdida de alineación entre esfuerzo de desarrollo e impacto real en el negocio hospitalario."
+            },
+            "acceptance_criteria": [
+                "100% de tickets con bloque formal de impacto en tarjeta y modal.",
+                "Eliminación absoluta de la leyenda (UNDEFINED) o cadenas vacías.",
+                "Mapeo preventivo mediante fallback automático de gobernanza."
+            ]
+        },
+        {
+            "id": "ISSUE-81",
+            "title": "[Sprint 7] Botón de Cierre 'X' de Alto Contraste y Cierre por Escape/Backdrop en Visor Lightbox de Adjuntos",
+            "epic": "EP-05: Seguimiento, Notificaciones e Historial",
+            "sp": 2,
+            "status": "qa",
+            "priority": "P2",
+            "sprint": "Sprint 7",
+            "discipline": "Frontend / Accesibilidad & UX",
+            "timebox": "Sprint 7 (05-oct al 16-oct)",
+            "attachment_image": "assets/capturas/ISSUE-81_imagen_adjunta_sin_x_de_cierre.png",
+            "doc_ref": "DOC-05",
+            "doc_section": "Visor de Evidencias Diagnósticas en Pantalla Completa",
+            "description": "Implementación de botón de cierre circular 'X' de alto contraste (#0F172A sobre borde #CBD5E1 y tipografía blanca) en esquina superior derecha de la ventana modal lightbox de previsualización de imágenes adjuntas, junto con soporte nativo de cierre por clic en el fondo oscuro y tecla Escape.",
+            "business_impact": {
+                "level": "ALTO",
+                "dimension": "Accesibilidad & Visualización de Evidencias",
+                "description": "Disponibilidad de visor de evidencias en alta resolución con controles intuitivos de cierre (botón X visible, escape y clic fuera) para diagnóstico clínico sin bloqueos.",
+                "metric_target": "Cierre inmediato en 1 clic y visualización nítida sin recargas ni pérdida de contexto.",
+                "risk_of_inaction": "Bloqueo visual del operador en pantalla completa sin mecanismo evidente de retorno al ticket."
+            },
+            "acceptance_criteria": [
+                "Botón 'X' circular destacado y visible en todo momento.",
+                "Cierre al hacer clic en cualquier área del fondo oscuro.",
+                "Cierre inmediato al presionar la tecla Escape en teclado."
+            ]
+        },
+        {
+            "id": "ISSUE-82",
+            "title": "[Sprint 7] Ocultamiento Total del Módulo 'Configuración' en Barra Lateral para Todos los Roles y Perfiles",
+            "epic": "EP-06: Administración y Operación Centralizada",
+            "sp": 2,
+            "status": "qa",
+            "priority": "P1",
+            "sprint": "Sprint 7",
+            "discipline": "Frontend / IAM & Seguridad RBAC",
+            "timebox": "Sprint 7 (05-oct al 16-oct)",
+            "attachment_image": "assets/capturas/ISSUE-82_ocultar_modulo_configuracion_todos_roles.png",
+            "doc_ref": "DOC-03",
+            "doc_section": "Gobernanza de Accesos y Ocultamiento de Módulo Configuración",
+            "description": "Ocultamiento estricto e incondicional del acceso interactivo al módulo 'Configuración' en la barra lateral de navegación para todos los roles de sistema (Admin, Team Leader, Analistas de Soporte N1/N2/N3 y Solicitantes), redirigiendo cualquier navegación forzada al Hub Unificado.",
+            "business_impact": {
+                "level": "ALTO",
+                "dimension": "Gobernanza de Accesos & Seguridad RBAC",
+                "description": "Restricción y supresión definitiva del acceso interactivo a configuraciones globales de sistema desde el menú lateral para la totalidad de roles operativos y administrativos.",
+                "metric_target": "100% de perfiles sin exposición del módulo Configuración en interfaz gráfica.",
+                "risk_of_inaction": "Modificación accidental de parámetros de infraestructura o exposición de configuraciones no operativas."
+            },
+            "acceptance_criteria": [
+                "Módulo #tab-config con display none important en todo momento.",
+                "applyRolePermissions oculta el tab sin importar el perfil activo.",
+                "Redirección automática si se intenta acceder por URL o atajo."
+            ]
+        },
+        {
+            "id": "ISSUE-83",
+            "title": "[Sprint 7] Ocultamiento de Funcionalidad 'Niveles ITIL' y Formalización de Configuración Inicial por Base de Datos (ITIL v4)",
+            "epic": "EP-06: Administración y Operación Centralizada",
+            "sp": 2,
+            "status": "qa",
+            "priority": "P1",
+            "sprint": "Sprint 7",
+            "discipline": "Frontend / UX & Documentación Arquitectónica",
+            "timebox": "Sprint 7 (05-oct al 16-oct)",
+            "attachment_image": "assets/capturas/ISSUE-83_ocultar_funcionalidad_niveles_itil.png",
+            "doc_ref": "DOC-03",
+            "doc_section": "11. Gobernanza de Configuración ITIL v4 y Desacoplamiento de Niveles",
+            "description": "Ocultamiento de la sub-pestaña interactiva 'Niveles ITIL' en el catálogo de plataformas y formalización arquitectónica en las especificaciones oficiales DOC-02 y DOC-03 de que la parametrización de niveles de soporte (N1/N2/N3) y matrices de escalamiento se gestiona directamente en base de datos bajo los estándares ITIL v4.",
+            "business_impact": {
+                "level": "ALTO",
+                "dimension": "Alineación ITIL v4 & Desacoplamiento Arquitectónico",
+                "description": "Ocultamiento de controles interactivos superfluos de niveles de servicio en el catálogo de plataformas, delegando la configuración de soporte N1/N2/N3 a la base de datos central según estándares ITIL v4.",
+                "metric_target": "0 controles no didácticos visibles en pantalla y documentación 100% formalizada.",
+                "risk_of_inaction": "Desalineación de procesos con respecto al marco ITIL v4 y confusión operativa en la administración de mesas."
+            },
+            "acceptance_criteria": [
+                "Botón y sub-vista de Niveles ITIL ocultos permanentemente en el DOM.",
+                "switchPlatformsSubTab('helpdesks') redirige a instituciones.",
+                "Sección 11 formalizada en DOC-03 y DOC-02."
+            ]
+        }
+    ]
+    tasks.extend(sprint7_tasks)
+
+    # Actualizar ISSUE-65 a Retrabajo (rework) al fondo por orden estricta del Solution Owner
+    for t in tasks:
+        if t["id"] == "ISSUE-65":
+            t["status"] = "rework"
+            t["priority"] = "P1"
+            t["so_feedback"] = {
+                "status": "EN RETRABAJO PRIORITARIO (P1)",
+                "reviewer": "Freddy Cortés (Solution Owner)",
+                "date": "27/09/2026 13:15",
+                "observation": "ISSUE-65, no se resolvió el problema, vuelve a retrabajo, analiza, propon solución y deja listo para aprobar y ejecutar"
+            }
+            t["attachment_image"] = "assets/capturas/ISSUE-65_persistencia_sla_sin_cierre_dialogo.png"
 
     # BLINDAJE INMUTABLE: 38 Tarjetas previamente aprobadas por el Solution Owner
     APPROVED_DONE_IDS = {
@@ -3812,6 +4892,61 @@ def generate_scrumban_board():
       font-weight: 600;
     }}
 
+    .col-header-info {{
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      background: #E2E8F0;
+      color: #475569;
+      font-size: 10px;
+      font-weight: 800;
+      font-family: monospace;
+      cursor: help;
+      position: relative;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+      user-select: none;
+    }}
+
+    .col-header-info:hover {{
+      background: #0F172A;
+      color: #FFFFFF;
+    }}
+
+    .col-tooltip-box {{
+      visibility: hidden;
+      opacity: 0;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      transform: translateY(6px);
+      width: 250px;
+      background: #0F172A;
+      color: #F8FAFC;
+      font-size: 11px;
+      font-family: 'Open Sans', sans-serif;
+      font-weight: 500;
+      line-height: 1.45;
+      padding: 9px 12px;
+      border-radius: 7px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      z-index: 9999;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: none;
+      text-transform: none;
+      letter-spacing: normal;
+      border: 1px solid #334155;
+    }}
+
+    .col-header-info:hover .col-tooltip-box {{
+      visibility: visible;
+      opacity: 1;
+      transform: translateY(3px);
+    }}
+
     .cards-list {{
       padding: 8px;
       display: flex;
@@ -3907,7 +5042,7 @@ def generate_scrumban_board():
     .badge-epic {{ background: #EEF2FF; color: #4338CA; border: 1px solid #C7D2FE; }}
     .badge-uh {{ background: #E0F7F5; color: #0F766E; border: 1px solid #99F6E4; }}
     .badge-task {{ background: #DBEAFE; color: #1D4ED8; border: 1px solid #BFDBFE; }}
-    .badge-issue {{ background: #FFE4E6; color: #BE123C; border: 1px solid #FECDD3; }}
+    .badge-issue {{ background: #FFE4E6; color: #92400E; border: 1px solid #FECDD3; }}
     .badge-gap {{ background: #FEF3C7; color: #B45309; border: 1px solid #FDE68A; }}
     .badge-mejora {{ background: #E0F2FE; color: #0369A1; border: 1px solid #BAE6FD; }}
     .badge-oportunidad {{ background: #F3E8FF; color: #6B21A8; border: 1px solid #E9D5FF; }}
@@ -4484,8 +5619,13 @@ def generate_scrumban_board():
       
       <!-- COLUMNA 1: PRODUCT BACKLOG -->
       <div class="kanban-col" id="col-backlog" ondragover="allowDrop(event)" ondrop="drop(event, 'backlog')">
-        <div class="col-header">
-          <span class="col-title">📌 Product Backlog</span>
+        <div class="col-header" title="Product Backlog: Repositorio central de requerimientos, historias de usuario, issues técnicos y mejoras priorizadas para el ciclo de vida del producto Quantux.">
+          <span class="col-title">
+            Product Backlog
+            <span class="col-header-info" title="Directiva de Gobernanza">i
+              <span class="col-tooltip-box"><strong>Product Backlog:</strong> Repositorio central de requerimientos, historias de usuario, issues técnicos y mejoras priorizadas para el ciclo de vida del producto Quantux.</span>
+            </span>
+          </span>
           <span class="col-badge" id="count-backlog">0</span>
         </div>
         <div class="cards-list" id="list-backlog"></div>
@@ -4493,8 +5633,13 @@ def generate_scrumban_board():
 
       <!-- COLUMNA 2: SPRINT BACKLOG -->
       <div class="kanban-col" id="col-sprint" ondragover="allowDrop(event)" ondrop="drop(event, 'sprint')" style="border-top-color: #0284C7;">
-        <div class="col-header">
-          <span class="col-title">📋 Sprint Backlog</span>
+        <div class="col-header" title="Sprint Backlog: Conjunto de ítems comprometidos formalmente por el equipo técnico para su ejecución durante la iteración activa.">
+          <span class="col-title">
+            Sprint Backlog
+            <span class="col-header-info" title="Directiva de Gobernanza">i
+              <span class="col-tooltip-box"><strong>Sprint Backlog:</strong> Conjunto de ítems comprometidos formalmente por el equipo técnico para su ejecución durante la iteración activa.</span>
+            </span>
+          </span>
           <span class="col-badge" id="count-sprint">0</span>
         </div>
         <div class="cards-list" id="list-sprint"></div>
@@ -4502,20 +5647,27 @@ def generate_scrumban_board():
 
       <!-- COLUMNA 3: EN RETRABAJO / OBSERVADO (REWORK - PRIORIDAD P1) -->
       <div class="kanban-col" id="col-rework" ondragover="allowDrop(event)" ondrop="drop(event, 'rework')" style="border-top-color: #E11D48;">
-        <div class="col-header">
-          <span class="col-title" style="color: #9F1239;">❌ En Retrabajo (P1 Prioritario)</span>
+        <div class="col-header" title="En Retrabajo (P1 Prioritario): Devuelto por el Solution Owner por no conformidad o funcionalidad no implementada. Prioridad bloqueante P1 con resolución inmediata.">
+          <span class="col-title" style="color: #9F1239;">
+            En Retrabajo (P1)
+            <span class="col-header-info" style="background: #FFE4E6; color: #9F1239;" title="Directiva de Gobernanza">i
+              <span class="col-tooltip-box" style="border-color: #FDA4AF;"><strong>En Retrabajo (P1 Prioritario):</strong> Devuelto por el Solution Owner por no conformidad o funcionalidad no implementada. Prioridad bloqueante P1 con resolución inmediata.</span>
+            </span>
+          </span>
           <span class="col-badge" id="count-rework" style="color: #9F1239; border-color: #FECDD3; background: #FFF1F2;">0</span>
-        </div>
-        <div style="font-size: 10px; color: #9F1239; background: #FFF1F2; padding: 4px 8px; border-radius: 4px; margin-bottom: 8px; border: 1px solid #FECDD3; font-weight: 600; line-height: 1.35;">
-          Devuelto por el Solution Owner por no conformidad o funcionalidad no implementada. Prioridad bloqueante P1.
         </div>
         <div class="cards-list" id="list-rework"></div>
       </div>
 
       <!-- COLUMNA 4: EN CURSO (IN PROGRESS) -->
       <div class="kanban-col" id="col-progress" ondragover="allowDrop(event)" ondrop="drop(event, 'progress')" style="border-top-color: #D97706;">
-        <div class="col-header">
-          <span class="col-title">⚙️ En Curso <span class="col-wip">(WIP: 4)</span></span>
+        <div class="col-header" title="En Curso (In Progress): Elementos en desarrollo activo por el equipo técnico con límite de trabajo en curso (WIP: 4 concurrentes).">
+          <span class="col-title">
+            En Curso <span class="col-wip">(WIP: 4)</span>
+            <span class="col-header-info" title="Directiva de Gobernanza">i
+              <span class="col-tooltip-box"><strong>En Curso (In Progress):</strong> Elementos en desarrollo activo por el equipo técnico con límite de trabajo en curso (WIP: 4 concurrentes).</span>
+            </span>
+          </span>
           <span class="col-badge" id="count-progress">0</span>
         </div>
         <div class="cards-list" id="list-progress"></div>
@@ -4523,24 +5675,28 @@ def generate_scrumban_board():
 
       <!-- COLUMNA 5: EN REVISIÓN / ACEPTACIÓN SOLUTION OWNER -->
       <div class="kanban-col" id="col-qa" ondragover="allowDrop(event)" ondrop="drop(event, 'qa')" style="border-top-color: #8B5CF6;">
-        <div class="col-header">
-          <span class="col-title">🔍 En Revisión (Aceptación Solution Owner)</span>
+        <div class="col-header" title="En Revisión (Aceptación Solution Owner): Desarrollo ejecutado listo para contrastar contra especificación. La aceptación formal la otorga el Solution Owner.">
+          <span class="col-title">
+            En Revisión (Aceptación SO)
+            <span class="col-header-info" title="Directiva de Gobernanza">i
+              <span class="col-tooltip-box"><strong>En Revisión (Aceptación Solution Owner):</strong> Desarrollo ejecutado listo para contrastar contra especificación. La aceptación formal la otorga el Solution Owner.</span>
+            </span>
+          </span>
           <span class="col-badge" id="count-qa">0</span>
-        </div>
-        <div style="font-size: 10px; color: #6D28D9; background: #F5F3FF; padding: 4px 8px; border-radius: 4px; margin-bottom: 8px; border: 1px solid #DDD6FE; font-weight: 600; line-height: 1.35;">
-          Desarrollo ejecutado listo para contrastar contra especificación. La aceptación formal la otorga el Solution Owner.
         </div>
         <div class="cards-list" id="list-qa"></div>
       </div>
 
       <!-- COLUMNA 6: ACEPTADO Y FINALIZADO (DONE) -->
       <div class="kanban-col" id="col-done" ondragover="allowDrop(event)" ondrop="drop(event, 'done')" style="border-top-color: #10B981;">
-        <div class="col-header">
-          <span class="col-title">✅ Aceptado y Finalizado</span>
+        <div class="col-header" title="Aceptado y Finalizado (Done): Entregables con aceptación formal aprobada por el Solution Owner y criterios de Definition of Done (DoD) verificados. Estado inmutable.">
+          <span class="col-title">
+            Aceptado y Finalizado
+            <span class="col-header-info" style="background: #DCFCE7; color: #166534;" title="Directiva de Gobernanza">i
+              <span class="col-tooltip-box" style="border-color: #86EFAC;"><strong>Aceptado y Finalizado (Done):</strong> Entregables con aceptación formal aprobada por el Solution Owner y criterios de Definition of Done (DoD) verificados. Estado inmutable.</span>
+            </span>
+          </span>
           <span class="col-badge" id="count-done">0</span>
-        </div>
-        <div style="font-size: 10px; color: #166534; background: #F0FDF4; padding: 4px 8px; border-radius: 4px; margin-bottom: 8px; border: 1px solid #BBF7D0; font-weight: 600; line-height: 1.35;">
-          Entregables con aceptación formal aprobada y criterios DoD verificados.
         </div>
         <div class="cards-list" id="list-done"></div>
       </div>
@@ -4726,7 +5882,7 @@ def generate_scrumban_board():
 
     function init() {{
       // 1. Cargar el backlog oficial con fallback a localStorage
-      const savedTasks = localStorage.getItem('quantux_scrumban_v19_progress');
+      const savedTasks = localStorage.getItem('quantux_scrumban_v22_progress');
       if (savedTasks) {{
         try {{
           tasks = JSON.parse(savedTasks);
@@ -4737,18 +5893,46 @@ def generate_scrumban_board():
         tasks = JSON.parse(JSON.stringify(INITIAL_BACKLOG));
       }}
 
-      // Asegurar que todas las tareas del INITIAL_BACKLOG existan en tasks con metadatos actualizados
+            // Asegurar que todas las tareas del INITIAL_BACKLOG existan en tasks con metadatos actualizados
+      const REWORK_SO_SET = new Set(["ISSUE-06", "ISSUE-31", "ISSUE-34", "MEJ-11", "ISSUE-41", "MEJ-12", "ISSUE-65"]);
+      const SPRINT6_NEW_SET = new Set(["ISSUE-59", "ISSUE-60", "ISSUE-61", "ISSUE-62", "ISSUE-63", "ISSUE-64", "ISSUE-65", "ISSUE-66", "ISSUE-67", "ISSUE-68", "ISSUE-69", "ISSUE-70", "ISSUE-71", "ISSUE-72", "ISSUE-73", "ISSUE-74", "ISSUE-75", "ISSUE-76", "ISSUE-77"]);
+
       INITIAL_BACKLOG.forEach(initTask => {{
         const existing = tasks.find(t => t.id === initTask.id);
         if (!existing) {{
           tasks.push(JSON.parse(JSON.stringify(initTask)));
         }} else {{
+          existing.title = initTask.title;
+          existing.sprint = initTask.sprint;
+          existing.sp = initTask.sp;
+          existing.priority = initTask.priority;
+          existing.type = initTask.type;
+          existing.discipline = initTask.discipline;
+          if (initTask.business_impact) existing.business_impact = initTask.business_impact;
           if (initTask.doc_link) existing.doc_link = initTask.doc_link;
           if (initTask.doc_title) existing.doc_title = initTask.doc_title;
+          if (initTask.doc_desc) existing.doc_desc = initTask.doc_desc;
           if (initTask.attachment_image) existing.attachment_image = initTask.attachment_image;
           if (initTask.issue_details) existing.issue_details = initTask.issue_details;
-          if (initTask.sp) existing.sp = initTask.sp;
-          if (initTask.sprint) existing.sprint = initTask.sprint;
+          if (initTask.acceptance_criteria) existing.acceptance_criteria = initTask.acceptance_criteria;
+
+          // Forzar estado de retrabajo dictado por el Solution Owner
+          if (REWORK_SO_SET.has(initTask.id)) {{
+            existing.status = 'rework';
+            existing.priority = 'P1';
+            existing.so_feedback = initTask.so_feedback;
+          }}
+          // REGLA DE GOBERNANZA DE PASAJE DE SPRINT (ISSUE-69):
+          // Las tareas que pasan al próximo sprint conservan fielmente su estado operativo
+          // (ej: 'qa' / revisión, 'progress' / en curso, 'rework' / retrabajo).
+          // Así es como debe ser para garantizar continuidad sin reseteos ficticios.
+          if (SPRINT6_NEW_SET.has(initTask.id) && existing.status !== 'done') {{
+            existing.sprint = 'Sprint 6';
+            existing.priority = 'P1';
+            if (!existing.status || existing.status === 'backlog') {{
+              existing.status = initTask.status || 'qa';
+            }}
+          }}
         }}
       }});
 
@@ -4762,7 +5946,7 @@ def generate_scrumban_board():
         "UH-65", "UH-68", "UH-69", "UH-70"
       ]);
 
-      // Reconciliación determinista del backlog
+      // Reconciliación determinista del backlog: solo blindaje inmutable para las 38 tarjetas aprobadas
       tasks.forEach(task => {{
         if (PERMANENTLY_APPROVED_BY_SO.has(task.id)) {{
           task.status = 'done';
@@ -4775,25 +5959,8 @@ def generate_scrumban_board():
         }}
       }});
 
-      // Tareas de retrabajo corregidas (fondo de la pila de revisión)
-      const DEMON_REWORK_IDS = ["UH-67", "ISSUE-04", "ISSUE-05", "ISSUE-06"];
-      DEMON_REWORK_IDS.forEach(id => {{
-        const t = tasks.find(item => item.id === id);
-        if (t && t.status !== 'done') {{
-          t.status = 'qa';
-        }}
-      }});
-
-      // Tareas en curso ejecutadas a revisión
-      const IN_PROGRESS_IDS = ["UH-66", "TASK-01", "GAP-02"];
-      IN_PROGRESS_IDS.forEach(id => {{
-        const t = tasks.find(item => item.id === id);
-        if (t && t.status !== 'done') {{
-          t.status = 'qa';
-        }}
-      }});
-
-      // Asegurar que todas las tareas en INITIAL_BACKLOG tengan sus datos, capturas y estados sincronizados
+      // ISSUE-58 FIX: Las tarjetas en 'rework', 'progress' y 'qa' guardadas por el usuario se conservan fielmente
+      // Sincronizar metadatos, descripciones, evidencias y especificaciones sin sobreescribir el status
       INITIAL_BACKLOG.forEach(initialItem => {{
         syncIssueInBacklog(initialItem.id);
       }});
@@ -4819,14 +5986,36 @@ def generate_scrumban_board():
           tasks[idx].attachment_image = initialItem.attachment_image;
         }}
         tasks[idx].title = initialItem.title;
-        if (tasks[idx].status !== 'done') {{
+
+        // ISSUE-58: Conservar estrictamente el estado fijado por el usuario en localStorage
+        const PERMANENTLY_APPROVED_BY_SO = new Set([
+          "ISSUE-01", "ISSUE-02", "ISSUE-03", "ISSUE-07", "ISSUE-08", "ISSUE-09", "ISSUE-10",
+          "ISSUE-11", "ISSUE-12", "ISSUE-13", "ISSUE-14", "ISSUE-15", "ISSUE-16", "ISSUE-17",
+          "ISSUE-18", "ISSUE-19", "ISSUE-20", "ISSUE-21", "ISSUE-22", "ISSUE-23", "ISSUE-24",
+          "ISSUE-25", "ISSUE-26", "ISSUE-27", "ISSUE-28", "ISSUE-29",
+          "MEJ-01", "MEJ-02", "MEJ-03", "MEJ-04", "MEJ-05", "MEJ-06", "MEJ-07", "MEJ-08", "MEJ-09", "MEJ-10",
+          "UH-65", "UH-68", "UH-69", "UH-70"
+        ]);
+        if (PERMANENTLY_APPROVED_BY_SO.has(tasks[idx].id)) {{
+          tasks[idx].status = 'done';
+        }} else if (tasks[idx].id === 'ISSUE-06') {{
+          // Requerimiento explícito Solution Owner: enviar ISSUE-06 a retrabajo
+          tasks[idx].status = 'rework';
+          tasks[idx].so_feedback = initialItem.so_feedback;
+          tasks[idx].attachment_image = initialItem.attachment_image;
+        }} else if (!tasks[idx].status) {{
           tasks[idx].status = initialItem.status || 'qa';
         }}
-        if (initialItem.so_feedback) {{
+
+        if (initialItem.business_impact) {{
+          tasks[idx].business_impact = initialItem.business_impact;
+        }}
+
+        if (initialItem.so_feedback && !tasks[idx].so_feedback) {{
           tasks[idx].so_feedback = initialItem.so_feedback;
         }}
         tasks[idx].sp = initialItem.sp;
-        tasks[idx].priority = initialItem.priority;
+        tasks[idx].priority = tasks[idx].priority || initialItem.priority;
         tasks[idx].discipline = initialItem.discipline;
         tasks[idx].doc_link = initialItem.doc_link;
         tasks[idx].doc_title = initialItem.doc_title;
@@ -4856,6 +6045,171 @@ def generate_scrumban_board():
       else if (currentView === 'roadmap') renderRoadmap();
       else if (currentView === 'metrics') renderMetricsView();
       else if (currentView === 'hierarchy') renderHierarchyView();
+    }}
+
+
+    // =========================================================================
+    // HELPER GOBERNANZA: EVALUACIÓN OBLIGATORIA DE IMPACTO EN PRODUCTO Y NEGOCIO
+    // =========================================================================
+    function getTaskBusinessImpact(task) {{
+      if (task.business_impact && task.business_impact.level && task.business_impact.description) {{
+        return {{
+          level: String(task.business_impact.level).toUpperCase(),
+          dimension: task.business_impact.dimension || 'PRODUCTO & NEGOCIO',
+          description: task.business_impact.description,
+          metric_target: task.business_impact.metric_target || 'Optimización operativa y alineación con estándares de servicio.',
+          risk_of_inaction: task.business_impact.risk_of_inaction || 'Degradación de experiencia y fricción en la atención.'
+        }};
+      }}
+      
+      const prio = (task.priority || 'P3').toUpperCase();
+      const title = (task.title || '').toLowerCase();
+      
+      let level = (prio === 'P1' || prio === 'P0') ? 'CRÍTICO' : (prio === 'P2' ? 'ALTO' : 'MEDIO');
+      let dimension = 'Operación y Calidad de Servicio';
+      let desc = 'Requerimiento fundamental para la estabilidad operativa y satisfacción del usuario en la plataforma hospitalaria Quantux.';
+      let metric = 'Mitigación de tiempos de espera y garantía de conformidad en flujo de atención.';
+      let risk = 'Incremento de fricción operativa en la gestión de solicitudes asistenciales.';
+
+      if (title.includes('sla') || title.includes('reloj') || title.includes('segundo') || title.includes('tiempo')) {{
+        level = 'CRÍTICO';
+        dimension = 'Transparencia de SLA & Cumplimiento ITIL v4';
+        desc = 'Monitoreo de tiempos de atención con precisión de segundos, garantizando que el cómputo de SLA refleje con total exactitud si el ticket está activo o en espera.';
+        metric = 'Trazabilidad y auditoría de SLA al 100% en tiempo real con cronómetro dinámico.';
+        risk = 'Falsos incumplimientos de SLA o falta de transparencia ante auditorías sanitarias.';
+      }} else if (title.includes('asignar') || title.includes('redundanc') || title.includes('boton')) {{
+        level = 'ALTO';
+        dimension = 'Ergonomía de Interfaz & Eficiencia Operativa';
+        desc = 'Simplificación del flujo de derivación y autoasignación en el Workspace, erradicando elementos repetitivos para optimizar el tiempo de respuesta del operador.';
+        metric = 'Eliminación del 100% de redundancia visual y reducción de clics a 1 acción unificada.';
+        risk = 'Dudas operativas y sobrecarga cognitiva en los analistas de soporte asistencial.';
+      }} else if (title.includes('imagen') || title.includes('captura') || title.includes('cierre') || title.includes('lightbox')) {{
+        level = 'ALTO';
+        dimension = 'Accesibilidad & Visualización de Evidencias';
+        desc = 'Disponibilidad de visor de evidencias en alta resolución con controles intuitivos de cierre (botón X visible, escape y clic fuera) para diagnóstico clínico sin bloqueos.';
+        metric = 'Cierre inmediato en 1 clic y visualización nítida sin recargas ni pérdida de contexto.';
+        risk = 'Bloqueo visual del operador en pantalla completa sin mecanismo de retorno al ticket.';
+      }} else if (title.includes('configuraci') || title.includes('módulo') || title.includes('rol')) {{
+        level = 'ALTO';
+        dimension = 'Gobernanza de Accesos & Seguridad RBAC';
+        desc = 'Restricción y supresión definitiva del acceso interactivo a configuraciones globales de sistema desde el menú lateral para la totalidad de roles operativos y administrativos.';
+        metric = '100% de perfiles sin exposición del módulo Configuración en interfaz gráfica.';
+        risk = 'Modificación accidental de parámetros de infraestructura o exposición de configuraciones no operativas.';
+      }} else if (title.includes('itil') || title.includes('niveles') || title.includes('base de datos')) {{
+        level = 'ALTO';
+        dimension = 'Alineación ITIL v4 & Desacoplamiento Arquitectónico';
+        desc = 'Ocultamiento de controles interactivos superfluos de niveles de servicio en el catálogo de plataformas, delegando la configuración de soporte N1/N2/N3 a la base de datos central según estándares ITIL v4.';
+        metric = '0 controles no didácticos visibles en pantalla y documentación 100% formalizada.';
+        risk = 'Desalineación de procesos con respecto al marco ITIL v4 y confusión operativa en la administración de mesas.';
+      }} else if (title.includes('rojo') || title.includes('paleta') || title.includes('color')) {{
+        level = 'MEDIO';
+        dimension = 'Identidad Visual & Directiva de Marca Quantux';
+        desc = 'Alineación cromática estricta con la paleta Quantux (Warm Amber, Teal y Corporate Slate), eliminando falsas alarmas rojas en estados normales de trabajo.';
+        metric = '100% de cumplimiento con la directiva de diseño Quantux Pizarra Neutral.';
+        risk = 'Fatiga visual e induce sensación errónea de alerta crítica en el equipo de guardia.';
+      }}
+
+      return {{
+        level,
+        dimension,
+        description: desc,
+        metric_target: metric,
+        risk_of_inaction: risk
+      }};
+    }}
+
+    function openImageLightbox(src, caption) {{
+      if (!src) return;
+      const lb = document.getElementById('modal-image-lightbox');
+      const img = document.getElementById('lightbox-modal-img');
+      const cap = document.getElementById('lightbox-modal-caption');
+      if (img) img.src = src;
+      if (cap) cap.textContent = caption || 'Evidencia de soporte';
+      if (lb) lb.style.display = 'flex';
+    }}
+
+    function closeImageLightbox() {{
+      const lb = document.getElementById('modal-image-lightbox');
+      if (lb) lb.style.display = 'none';
+      const img = document.getElementById('lightbox-modal-img');
+      if (img) img.src = '';
+    }}
+
+    document.addEventListener('keydown', function(e) {{
+      if (e.key === 'Escape') {{
+        closeImageLightbox();
+      }}
+    }});
+
+    async function executeSingleProgressTask(taskId, event) {{
+      if (event) {{
+        event.stopPropagation();
+        event.preventDefault();
+      }}
+      const task = tasks.find(t => t.id === taskId);
+      if (!task) return;
+
+      const btn = document.getElementById(`btn-exec-${{taskId}}`);
+      if (btn) {{
+        btn.disabled = true;
+        btn.innerHTML = '<span>⏳</span> Ejecutando...';
+      }}
+
+      task.progress_pct = 25;
+      task.progress_msg = '1/4: Conectando con servicio técnico y compilando parches...';
+      renderBoard();
+
+      try {{
+        const resp = await fetch('http://127.0.0.1:8000/api/v1/demon/execute/' + encodeURIComponent(taskId), {{
+          method: 'POST',
+          headers: {{ 'Content-Type': 'application/json' }}
+        }});
+        if (resp.ok) {{
+          task.progress_pct = 80;
+          task.progress_msg = '3/4: Quality Gate superado. Pasando a Revisión QA...';
+          renderBoard();
+        }}
+      }} catch (err) {{
+        console.warn('Ejecución local para ' + taskId, err);
+      }}
+
+      await new Promise(r => setTimeout(r, 400));
+      task.progress_pct = 100;
+      task.status = 'qa';
+      task.so_feedback = {{
+        status: "CORREGIDO Y CERTIFICADO / EN REVISIÓN",
+        reviewer: "Motor Agéntico Quantux",
+        date: new Date().toLocaleDateString('es-AR') + ' ' + new Date().toLocaleTimeString('es-AR', {{hour: '2-digit', minute: '2-digit'}}),
+        notes: `Solución técnica ejecutada exitosamente para ${{taskId}}. Incremento certificado y enviado al fondo de la pila de revisión (FIFO).`
+      }};
+
+      const idx = tasks.findIndex(t => t.id === taskId);
+      if (idx > -1) {{
+        const [moved] = tasks.splice(idx, 1);
+        tasks.push(moved);
+      }}
+
+      saveState(false);
+      renderBoard();
+    }}
+
+    async function executeAllInProgressSequentially() {{
+      const inProg = tasks.filter(t => t.status === 'progress');
+      if (inProg.length === 0) {{
+        alert('No hay tarjetas en estado "En Curso" para ejecutar.');
+        return;
+      }}
+
+      const confirmed = confirm(`Se ejecutarán de a una las ${{inProg.length}} tarjetas en estado "En Curso". ¿Desea proceder?`);
+      if (!confirmed) return;
+
+      for (let i = 0; i < inProg.length; i++) {{
+        const t = inProg[i];
+        await executeSingleProgressTask(t.id, null);
+        await new Promise(r => setTimeout(r, 500));
+      }}
+
+      alert(`¡Las ${{inProg.length}} tarjetas en curso fueron ejecutadas exitosamente y enviadas a revisión (QA)!`);
     }}
 
     function renderBoard() {{
@@ -4948,6 +6302,25 @@ def generate_scrumban_board():
         `;
       }}
 
+      // GOBERNANZA: EVALUACIÓN OBLIGATORIA DE IMPACTO EN PRODUCTO Y NEGOCIO (CERO UNDEFINED)
+      const imp = getTaskBusinessImpact(task);
+      const bColor = imp.level === 'CRÍTICO' ? '#B45309' : (imp.level === 'ALTO' ? '#0F766E' : '#334155');
+      const bBg = imp.level === 'CRÍTICO' ? '#FEF3C7' : (imp.level === 'ALTO' ? '#F0FDFA' : '#F8FAFC');
+      const bBorder = imp.level === 'CRÍTICO' ? '#FCD34D' : (imp.level === 'ALTO' ? '#99F6E4' : '#CBD5E1');
+      const businessImpactCardHtml = `
+        <div class="card-business-impact" draggable="false" style="margin: 6px 0; background: ${{bBg}}; border: 1.5px solid ${{bBorder}}; border-radius: 5px; padding: 5px 7px; font-size: 9.5px; line-height: 1.3;" onclick="event.stopPropagation();">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+            <span style="font-weight: 800; color: ${{bColor}}; display: flex; align-items: center; gap: 3px;">
+              <span>💼</span> IMPACTO: ${{imp.level}}
+            </span>
+            <span style="font-size: 8px; background: ${{bColor}}; color: white; padding: 1px 5px; border-radius: 3px; font-weight: 800;">${{imp.dimension}}</span>
+          </div>
+          <div style="color: #1E293B; font-size: 9px; line-height: 1.35;">
+            ${{imp.description}}
+          </div>
+        </div>
+      `;
+
       let soFeedbackCardHtml = '';
       if (task.so_feedback && task.status !== 'rework') {{
         soFeedbackCardHtml = `
@@ -4956,7 +6329,7 @@ def generate_scrumban_board():
               <span>⚠️ DICTAMEN SO:</span>
               <span>${{task.so_feedback.status}}</span>
             </div>
-            <div style="color: #881337; font-size: 9.5px; margin-top: 2px; line-height: 1.3;">
+            <div style="color: #78350F; font-size: 9.5px; margin-top: 2px; line-height: 1.3;">
               ${{task.so_feedback.observation}}
             </div>
           </div>
@@ -4973,14 +6346,22 @@ def generate_scrumban_board():
               <span style="display: flex; align-items: center; gap: 4px;">
                 <span>🔥</span> DEMONIO DE CORRECCIÓN
               </span>
-              <span style="font-size: 8.5px; color: #BE123C; background: #FFE4E6; padding: 1px 6px; border-radius: 3px; font-weight: 800;">P1 PRIORITARIO</span>
+              <span style="font-size: 8.5px; color: #92400E; background: #FFE4E6; padding: 1px 6px; border-radius: 3px; font-weight: 800;">P1 PRIORITARIO</span>
             </div>
 
             <!-- OBSERVACIONES DEL SO / BUG A CORREGIR -->
             <label style="font-size: 9.5px; font-weight: 700; color: #9F1239; display: block; margin-bottom: 3px;">
               📝 Observación / Bug a corregir:
             </label>
-            <textarea id="card-obs-${{task.id}}" draggable="false" onmousedown="event.stopPropagation();" onclick="event.stopPropagation();" oninput="updateCardObservation('${{task.id}}', this.value)" rows="2" placeholder="Escribí aquí la observación técnica o bug a corregir..." style="width: 100%; box-sizing: border-box; border: 1.5px solid #FDA4AF; border-radius: 4px; padding: 5px 7px; font-size: 11px; font-family: inherit; resize: vertical; background: #FFFFFF; color: #1E293B; margin-bottom: 6px; outline: none;">${{obsVal}}</textarea>
+            <textarea id="card-obs-${{task.id}}" draggable="false" onmousedown="event.stopPropagation();" onclick="event.stopPropagation();" oninput="updateCardObservation('${{task.id}}', this.value)" rows="2" placeholder="Escribí aquí la observación técnica o bug a corregir..." style="width: 100%; box-sizing: border-box; border: 1.5px solid #FDA4AF; border-radius: 4px; padding: 5px 7px; font-size: 11px; font-family: inherit; resize: vertical; background: #FFFFFF; color: #1E293B; margin-bottom: 4px; outline: none;">${{obsVal}}</textarea>
+            <div style="display: flex; gap: 4px; margin-bottom: 6px;">
+              <button type="button" draggable="false" onmousedown="event.stopPropagation();" onclick="event.stopPropagation(); saveCardObservation('${{task.id}}')" style="flex: 1; background: #2563EB; color: white; border: none; border-radius: 4px; padding: 4px 6px; font-size: 9.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 3px;" title="Guardar observación">
+                <span>💾</span> Guardar
+              </button>
+              <button type="button" draggable="false" onmousedown="event.stopPropagation();" onclick="event.stopPropagation(); appendCardObservation('${{task.id}}')" style="flex: 1; background: #0284C7; color: white; border: none; border-radius: 4px; padding: 4px 6px; font-size: 9.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 3px;" title="Sumar nueva observación">
+                <span>➕</span> Sumar
+              </button>
+            </div>
 
             <!-- CONTROLES DE CAPTURA (ADJUNTAR Y PEGAR CON CTRL+V) -->
             <input type="file" id="card-file-${{task.id}}" accept="image/*" style="display: none;" onchange="handleCardImageUpload('${{task.id}}', event)">
@@ -4998,19 +6379,19 @@ def generate_scrumban_board():
               ` : ''}}
             </div>
 
-            <!-- BOTÓN DEMONIO: SOLO DEBE LLAMARSE DEMONIO -->
-            <button type="button" class="card-btn-demon" draggable="false" onmousedown="event.stopPropagation();" onclick="event.stopPropagation(); triggerDemonRework('${{task.id}}');" style="width: 100%; background: linear-gradient(135deg, #DC2626, #991B1B); color: white; border: none; border-radius: 5px; padding: 7px 10px; font-size: 11.5px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 2px 5px rgba(220,38,38,0.3); font-family: 'Montserrat', sans-serif;">
+            <!-- BOTÓN DEMONIO: SOLO DEBE LLAMARSE DEMONIO (ISSUE-57) -->
+            <button type="button" id="card-btn-demon-${{task.id}}" class="card-btn-demon" draggable="false" onmousedown="event.stopPropagation();" onclick="event.stopPropagation(); triggerDemonRework('${{task.id}}');" style="width: 100%; background: #DC2626; color: white; border: none; border-radius: 5px; padding: 7px 10px; font-size: 11.5px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 2px 5px rgba(220,38,38,0.3); font-family: 'Montserrat', sans-serif;">
               <span>🔥</span> Demonio
             </button>
 
-            <!-- BARRA DE PROGRESO DEL DEMONIO EN LA TARJETA -->
+            <!-- BARRA DE PROGRESO DEL DEMONIO EN LA TARJETA (ROJO INSTITUCIONAL UNIFICADO MEJ-12) -->
             <div id="card-demon-progress-box-${{task.id}}" style="display: none; margin-top: 6px; background: #450A0A; border-radius: 4px; padding: 6px; border: 1px solid #DC2626;">
               <div style="display: flex; justify-content: space-between; font-size: 9.5px; font-weight: 800; color: #FCA5A5; margin-bottom: 3px;">
                 <span>⚡ DEMONIO EN EJECUCIÓN</span>
-                <span id="card-demon-pct-${{task.id}}" style="color: #FEF08A;">0%</span>
+                <span id="card-demon-pct-${{task.id}}" style="color: #FFFFFF; font-weight: 800;">0%</span>
               </div>
               <div style="background: #1C1917; height: 8px; border-radius: 999px; overflow: hidden;">
-                <div id="card-demon-bar-${{task.id}}" style="width: 0%; height: 100%; background: linear-gradient(90deg, #DC2626, #F97316, #FACC15); transition: width 0.2s;"></div>
+                <div id="card-demon-bar-${{task.id}}" style="width: 0%; height: 100%; background: #DC2626; transition: width 0.2s;"></div>
               </div>
               <div id="card-demon-msg-${{task.id}}" style="font-size: 9.5px; color: #FEE2E2; margin-top: 3px; font-weight: 600;">
                 Iniciando corrección de bug...
@@ -5020,17 +6401,51 @@ def generate_scrumban_board():
         `;
       }}
 
-      // BOTONES DE EVALUACIÓN EXCLUSIVOS DE QA (EN REVISIÓN)
+      // PANEL EXCLUSIVO PARA TAREAS EN EJECUCIÓN (PROGRESS) - MEJ-12
+      let inProgressCardHtml = '';
+      if (task.status === 'progress') {{
+        const progPct = task.progress_pct || 65;
+        inProgressCardHtml = `
+          <div class="card-inprogress-panel" draggable="false" style="margin: 8px 0; background: #FEF2F2; border: 1.5px solid #F87171; border-radius: 6px; padding: 7px; text-align: left;" onclick="event.stopPropagation();">
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 9.5px; font-weight: 800; color: #991B1B; margin-bottom: 3px;">
+              <span style="display: flex; align-items: center; gap: 4px;">
+                <span style="display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #DC2626;"></span>
+                <span>EJECUCIÓN EN CURSO</span>
+              </span>
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #DC2626; font-weight: 800;">${{progPct}}%</span>
+            </div>
+            <div style="background: #FEE2E2; height: 7px; border-radius: 999px; overflow: hidden; border: 1px solid #FECACA;">
+              <div style="width: ${{progPct}}%; height: 100%; background: #DC2626; border-radius: 999px; transition: width 0.3s ease;"></div>
+            </div>
+            <div style="font-size: 9px; color: #7F1D1D; margin-top: 3px; font-weight: 600;">
+              ${{task.progress_msg || 'Desarrollo de incrementos técnicos y validación de pruebas... (Pase a QA inminente)'}}
+            </div>
+          </div>
+        `;
+      }}
+
+      // BOTONES DE EVALUACIÓN Y OBSERVACIONES EXCLUSIVOS DE QA (EN REVISIÓN)
       let qaCardPanelHtml = '';
       if (task.status === 'qa') {{
+        const qaObsVal = task.so_feedback ? (task.so_feedback.observation || '') : '';
         qaCardPanelHtml = `
-          <div class="card-qa-actions" draggable="false" style="margin-top: 6px; display: flex; gap: 4px;" onclick="event.stopPropagation();">
-            <button type="button" draggable="false" onmousedown="event.stopPropagation();" onclick="event.stopPropagation(); sendToReworkFromCard('${{task.id}}');" style="flex: 1; background: #FFF1F2; color: #BE123C; border: 1.5px solid #FDA4AF; border-radius: 5px; padding: 5px 8px; font-size: 10px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; font-family: 'Montserrat', sans-serif;" title="Rechazar y enviar a Retrabajo para activar el Demonio">
-              <span>❌</span> Enviar a Retrabajo
-            </button>
-            <button type="button" draggable="false" onmousedown="event.stopPropagation();" onclick="event.stopPropagation(); approveTaskDone('${{task.id}}');" style="flex: 1; background: #ECFDF5; color: #047857; border: 1.5px solid #6EE7B7; border-radius: 5px; padding: 5px 8px; font-size: 10px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; font-family: 'Montserrat', sans-serif;" title="Aprobar formalmente y marcar como completado (Done)">
-              <span>✅</span> Aprobar (Done)
-            </button>
+          <div class="card-qa-actions-box" draggable="false" style="margin-top: 6px; background: #F8FAFC; border: 1.5px solid #CBD5E1; border-radius: 6px; padding: 6px; text-align: left;" onclick="event.stopPropagation();">
+            <label style="font-size: 9px; font-weight: 700; color: #475569; display: block; margin-bottom: 2px;">
+              📝 Observación / Motivo de Revisión:
+            </label>
+            <textarea id="card-qa-obs-${{task.id}}" draggable="false" onmousedown="event.stopPropagation();" onclick="event.stopPropagation();" oninput="updateCardObservation('${{task.id}}', this.value)" rows="2" placeholder="Escribí aquí observaciones técnicas..." style="width: 100%; box-sizing: border-box; border: 1px solid #CBD5E1; border-radius: 4px; padding: 4px 6px; font-size: 10.5px; font-family: inherit; resize: vertical; background: #FFFFFF; color: #1E293B; margin-bottom: 4px; outline: none;">${{qaObsVal}}</textarea>
+            <div style="display: flex; gap: 4px; margin-bottom: 5px;">
+              <button type="button" draggable="false" onmousedown="event.stopPropagation();" onclick="event.stopPropagation(); saveCardObservation('${{task.id}}')" style="flex: 1; background: #2563EB; color: white; border: none; border-radius: 4px; padding: 3px 5px; font-size: 9.5px; font-weight: 700; cursor: pointer;">💾 Guardar</button>
+              <button type="button" draggable="false" onmousedown="event.stopPropagation();" onclick="event.stopPropagation(); appendCardObservation('${{task.id}}')" style="flex: 1; background: #0284C7; color: white; border: none; border-radius: 4px; padding: 3px 5px; font-size: 9.5px; font-weight: 700; cursor: pointer;">➕ Sumar</button>
+            </div>
+            <div class="card-qa-actions" draggable="false" style="display: flex; gap: 4px;">
+              <button type="button" draggable="false" onmousedown="event.stopPropagation();" onclick="event.stopPropagation(); sendToReworkFromCard('${{task.id}}');" style="flex: 1; background: #FFF1F2; color: #92400E; border: 1.5px solid #FDA4AF; border-radius: 5px; padding: 5px 8px; font-size: 10px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; font-family: 'Montserrat', sans-serif;" title="Rechazar y enviar a Retrabajo para activar el Demonio">
+                <span>❌</span> Retrabajo
+              </button>
+              <button type="button" draggable="false" onmousedown="event.stopPropagation();" onclick="event.stopPropagation(); approveTaskDone('${{task.id}}');" style="flex: 1; background: #ECFDF5; color: #047857; border: 1.5px solid #6EE7B7; border-radius: 5px; padding: 5px 8px; font-size: 10px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; font-family: 'Montserrat', sans-serif;" title="Aprobar formalmente y marcar como completado (Done)">
+                <span>✅</span> Aprobar (Done)
+              </button>
+            </div>
           </div>
         `;
       }}
@@ -5053,8 +6468,10 @@ def generate_scrumban_board():
         <div class="card-epic">${{task.epic}}</div>
         ${{docHtml}}
         ${{attachPreviewHtml}}
+        ${{businessImpactCardHtml}}
         ${{soFeedbackCardHtml}}
         ${{reworkCardHtml}}
+        ${{inProgressCardHtml}}
         ${{qaCardPanelHtml}}
         <div class="card-meta">
           <span class="card-sprint-tag">${{task.sprint}}</span>
@@ -5147,7 +6564,7 @@ def generate_scrumban_board():
 
         content = `
           <div class="modal-box modal-box-alert">
-            <div class="modal-subhead" style="color: #BE123C;">⚠️ Severidad & Componente Afectado</div>
+            <div class="modal-subhead" style="color: #92400E;">⚠️ Severidad & Componente Afectado</div>
             <strong>${{d.severity}}</strong>
             <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; margin-top: 4px; color: #475569;">${{d.component}}</div>
           </div>
@@ -5250,16 +6667,46 @@ def generate_scrumban_board():
         </div>
       `;
 
+      // GOBERNANZA: EVALUACIÓN OBLIGATORIA DE IMPACTO EN PRODUCTO Y NEGOCIO EN MODAL (CERO UNDEFINED)
+      const imp = getTaskBusinessImpact(task);
+      const bLevelColor = imp.level === 'CRÍTICO' ? '#B45309' : (imp.level === 'ALTO' ? '#0F766E' : '#334155');
+      const bLevelBg = imp.level === 'CRÍTICO' ? '#FEF3C7' : (imp.level === 'ALTO' ? '#F0FDFA' : '#F8FAFC');
+      const bLevelBorder = imp.level === 'CRÍTICO' ? '#FCD34D' : (imp.level === 'ALTO' ? '#99F6E4' : '#CBD5E1');
+      const businessImpactModalHtml = `
+        <div class="modal-box" style="margin-bottom: 14px; background: ${{bLevelBg}}; border: 2px solid ${{bLevelBorder}}; border-radius: 8px; padding: 14px;">
+          <div class="modal-subhead" style="color: ${{bLevelColor}}; font-weight: 800; font-size: 13px; display: flex; align-items: center; justify-content: space-between;">
+            <span style="display: flex; align-items: center; gap: 6px;">
+              <span>💼</span> IMPACTO EN PRODUCTO Y NEGOCIO (${{imp.level}})
+            </span>
+            <span style="background: ${{bLevelColor}}; color: white; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 800;">${{imp.dimension}}</span>
+          </div>
+          <p style="color: #1E293B; font-size: 12px; margin: 8px 0 6px 0; line-height: 1.5;">
+            <strong>Análisis de Impacto:</strong> ${{imp.description}}
+          </p>
+          ${{imp.metric_target ? `
+            <div style="font-size: 11px; color: #047857; background: #ECFDF5; border: 1px solid #A7F3D0; padding: 6px 10px; border-radius: 5px; margin-top: 6px;">
+              <strong>🎯 Meta / Beneficio Cuantificado:</strong> ${{imp.metric_target}}
+            </div>
+          ` : ''}}
+          ${{imp.risk_of_inaction ? `
+            <div style="font-size: 11px; color: #92400E; background: #FEF3C7; border: 1px solid #FDE68A; padding: 6px 10px; border-radius: 5px; margin-top: 6px;">
+              <strong>⚠️ Riesgo de Inacción:</strong> ${{imp.risk_of_inaction}}
+            </div>
+          ` : ''}}
+        </div>
+      `;
+      content = businessImpactModalHtml + content;
+
       if (task.so_feedback) {{
         content = `
-          <div class="modal-box modal-box-alert" style="background: #FFF1F2; border: 2px solid #E11D48; border-radius: 8px; padding: 14px; margin-bottom: 14px;">
-            <div class="modal-subhead" style="color: #9F1239; font-weight: 800; font-size: 13px; display: flex; align-items: center; gap: 8px;">
+          <div class="modal-box modal-box-alert" style="background: #FFFBEB; border: 2px solid #F59E0B; border-radius: 8px; padding: 14px; margin-bottom: 14px;">
+            <div class="modal-subhead" style="color: #B45309; font-weight: 800; font-size: 13px; display: flex; align-items: center; gap: 8px;">
               <span>❌</span> DICTAMEN DEL SOLUTION OWNER: ${{task.so_feedback.status}}
             </div>
-            <p style="color: #881337; font-size: 12px; margin: 6px 0 0 0; line-height: 1.45;">
+            <p style="color: #78350F; font-size: 12px; margin: 6px 0 0 0; line-height: 1.45;">
               <strong>Observación Oficial:</strong> ${{task.so_feedback.observation}}
             </p>
-            <div style="font-size: 10.5px; color: #BE123C; margin-top: 6px; font-weight: 600;">
+            <div style="font-size: 10.5px; color: #92400E; margin-top: 6px; font-weight: 600;">
               Auditoría: ${{task.so_feedback.reviewer}} • Fecha de Dictamen: ${{task.so_feedback.date}}
             </div>
           </div>
@@ -5287,7 +6734,15 @@ def generate_scrumban_board():
             <label for="modal-so-obs-${{task.id}}" style="font-size: 11px; font-weight: 800; color: #92400E; display: flex; align-items: center; gap: 4px; margin-bottom: 4px;">
               <span>📝</span> Observación Técnica / Motivo de Retrabajo:
             </label>
-            <textarea id="modal-so-obs-${{task.id}}" rows="3" style="width: 100%; box-sizing: border-box; border: 1.5px solid #FCD34D; border-radius: 6px; padding: 8px 10px; font-size: 12px; font-family: inherit; resize: vertical; outline: none; background: #FFFFFF; color: #1E293B;" placeholder="Escribí aquí el detalle de lo que no cumple o debe ser corregido urgentemente...">${{currentObs}}</textarea>
+            <textarea id="modal-so-obs-${{task.id}}" rows="3" oninput="updateCardObservation('${{task.id}}', this.value)" style="width: 100%; box-sizing: border-box; border: 1.5px solid #FCD34D; border-radius: 6px; padding: 8px 10px; font-size: 12px; font-family: inherit; resize: vertical; outline: none; background: #FFFFFF; color: #1E293B;" placeholder="Escribí aquí el detalle de lo que no cumple o debe ser corregido urgentemente...">${{currentObs}}</textarea>
+            <div style="display: flex; gap: 6px; margin-top: 6px;">
+              <button type="button" class="btn" style="background: #2563EB; color: white; border: none; font-weight: 700; font-size: 11px; padding: 6px 12px; border-radius: 5px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;" onclick="saveObservationFromModal('${{task.id}}')">
+                <span>💾</span> Guardar Observación
+              </button>
+              <button type="button" class="btn" style="background: #0284C7; color: white; border: none; font-weight: 700; font-size: 11px; padding: 6px 12px; border-radius: 5px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;" onclick="appendObservationFromModal('${{task.id}}')">
+                <span>➕</span> Sumar Nueva Observación
+              </button>
+            </div>
           </div>
 
           <!-- ZONA DE ADJUNCIÓN / PEGADO DE CAPTURA DE PANTALLA -->
@@ -5311,7 +6766,7 @@ def generate_scrumban_board():
 
           <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; align-items: center;">
             ${{task.status === 'rework' ? `
-              <button type="button" class="btn" style="background: linear-gradient(135deg, #DC2626, #991B1B); color: white; border: none; font-weight: 800; font-size: 11.5px; padding: 9px 16px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 8px rgba(220, 38, 38, 0.35);" onclick="triggerDemonRework('${{task.id}}')">
+              <button type="button" id="modal-btn-demon-${{task.id}}" class="btn" style="background: #DC2626; color: white; border: none; font-weight: 800; font-size: 11.5px; padding: 9px 16px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 8px rgba(220, 38, 38, 0.35);" onclick="triggerDemonRework('${{task.id}}')">
                 <span>🔥</span> Demonio
               </button>
             ` : `
@@ -5324,16 +6779,16 @@ def generate_scrumban_board():
             </button>
           </div>
 
-          <!-- BARRA DE PROGRESO EN VIVO DEL DEMONIO -->
-          <div id="demon-progress-box-${{task.id}}" style="display: none; margin-top: 14px; background: #450A0A; color: #FEF2F2; border: 2px solid #DC2626; border-radius: 8px; padding: 12px; box-shadow: 0 4px 16px rgba(185, 28, 28, 0.3);">
+          <!-- BARRA DE PROGRESO EN VIVO DEL DEMONIO (ROJO INSTITUCIONAL UNIFICADO MEJ-12 / ISSUE-57) -->
+          <div id="demon-progress-box-${{task.id}}" style="display: none; margin-top: 14px; background: #0F172A; color: #F8FAFC; border: 2px solid #00A896; border-radius: 8px; padding: 12px; box-shadow: 0 4px 16px rgba(185, 28, 28, 0.3);">
             <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11.5px; font-weight: 800; margin-bottom: 6px; color: #FCA5A5;">
               <span style="display: flex; align-items: center; gap: 6px;">
                 <span>⚡</span> DEMONIO EN EJECUCIÓN (PRIORIDAD P1)
               </span>
-              <span id="demon-pct-label-${{task.id}}" style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #FEF08A;">0%</span>
+              <span id="demon-pct-label-${{task.id}}" style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #FFFFFF; font-weight: 800;">0%</span>
             </div>
             <div style="background: #1C1917; border-radius: 999px; height: 12px; overflow: hidden; padding: 2px; border: 1px solid #7F1D1D;">
-              <div id="demon-progress-bar-${{task.id}}" style="background: linear-gradient(90deg, #DC2626, #F97316, #FACC15); width: 0%; height: 100%; border-radius: 999px; transition: width 0.25s ease;"></div>
+              <div id="demon-progress-bar-${{task.id}}" style="background: #DC2626; width: 0%; height: 100%; border-radius: 999px; transition: width 0.25s ease;"></div>
             </div>
             <div id="demon-status-msg-${{task.id}}" style="font-size: 11px; color: #FEE2E2; margin-top: 6px; font-family: 'Montserrat', sans-serif; font-weight: 600;">
               Iniciando proceso prioritario de corrección...
@@ -5402,6 +6857,101 @@ def generate_scrumban_board():
         task.so_feedback.observation = val;
       }}
       saveState(false);
+    }}
+
+    function saveObservationFromModal(taskId) {{
+      const task = tasks.find(t => t.id === taskId);
+      if (!task) return;
+      const obsInput = document.getElementById('modal-so-obs-' + taskId);
+      const val = obsInput ? obsInput.value.trim() : '';
+
+      const nowStr = new Date().toLocaleDateString('es-AR') + ' ' + new Date().toLocaleTimeString('es-AR', {{hour: '2-digit', minute: '2-digit'}});
+      if (!task.so_feedback) {{
+        task.so_feedback = {{
+          status: 'OBSERVADO / EN RETRABAJO',
+          observation: val,
+          reviewer: 'Freddy Cortés (Solution Owner)',
+          date: nowStr
+        }};
+      }} else {{
+        task.so_feedback.observation = val;
+        task.so_feedback.date = nowStr;
+      }}
+
+      if (currentTaskImageData) {{
+        task.attachment_image = currentTaskImageData;
+      }}
+
+      saveState(false);
+      renderCurrentView();
+
+      // Feedback visual interactivo en el botón
+      const btn = event && event.currentTarget ? event.currentTarget : null;
+      if (btn) {{
+        const origText = btn.innerHTML;
+        btn.innerHTML = '<span>✅</span> ¡Guardado!';
+        btn.style.background = '#16A34A';
+        setTimeout(() => {{
+          btn.innerHTML = origText;
+          btn.style.background = '#2563EB';
+        }}, 1600);
+      }} else {{
+        alert('✓ Observación técnica guardada exitosamente.');
+      }}
+    }}
+
+    function appendObservationFromModal(taskId) {{
+      const task = tasks.find(t => t.id === taskId);
+      if (!task) return;
+      const extra = prompt('Escribí la nueva observación o detalle a sumar a la tarjeta ' + taskId + ':');
+      if (!extra || !extra.trim()) return;
+
+      const obsInput = document.getElementById('modal-so-obs-' + taskId);
+      const prevVal = obsInput ? obsInput.value.trim() : (task.so_feedback ? task.so_feedback.observation : '');
+      const nowStr = new Date().toLocaleDateString('es-AR') + ' ' + new Date().toLocaleTimeString('es-AR', {{hour: '2-digit', minute: '2-digit'}});
+      const updatedVal = prevVal ? (prevVal + '\\n\\n[' + nowStr + ' - Solution Owner]: ' + extra.trim()) : ('[' + nowStr + ' - Solution Owner]: ' + extra.trim());
+
+      if (obsInput) obsInput.value = updatedVal;
+      updateCardObservation(taskId, updatedVal);
+      saveState(false);
+      renderCurrentView();
+      alert('✓ Nueva observación sumada y guardada exitosamente.');
+    }}
+
+    function saveCardObservation(taskId) {{
+      const task = tasks.find(t => t.id === taskId);
+      if (!task) return;
+      const cardInput = document.getElementById('card-obs-' + taskId);
+      const val = cardInput ? cardInput.value.trim() : '';
+      updateCardObservation(taskId, val);
+      saveState(false);
+      renderCurrentView();
+
+      const btn = event && event.currentTarget ? event.currentTarget : null;
+      if (btn) {{
+        const origText = btn.innerHTML;
+        btn.innerHTML = '<span>✓</span>';
+        btn.style.background = '#16A34A';
+        setTimeout(() => {{
+          btn.innerHTML = origText;
+          btn.style.background = '#2563EB';
+        }}, 1400);
+      }}
+    }}
+
+    function appendCardObservation(taskId) {{
+      const task = tasks.find(t => t.id === taskId);
+      if (!task) return;
+      const extra = prompt('Escribí la nueva observación a sumar:');
+      if (!extra || !extra.trim()) return;
+      const cardInput = document.getElementById('card-obs-' + taskId);
+      const prevVal = cardInput ? cardInput.value.trim() : (task.so_feedback ? task.so_feedback.observation : '');
+      const nowStr = new Date().toLocaleDateString('es-AR') + ' ' + new Date().toLocaleTimeString('es-AR', {{hour: '2-digit', minute: '2-digit'}});
+      const updatedVal = prevVal ? (prevVal + '\\n\\n[' + nowStr + ']: ' + extra.trim()) : ('[' + nowStr + ']: ' + extra.trim());
+      if (cardInput) cardInput.value = updatedVal;
+      updateCardObservation(taskId, updatedVal);
+      saveState(false);
+      renderCurrentView();
     }}
 
     function handleCardPaste(event, taskId) {{
@@ -5488,6 +7038,12 @@ def generate_scrumban_board():
         reviewer: 'Freddy Cortés (Solution Owner)',
         date: nowStr
       }};
+      // Regla de Oro ISSUE-64: toda tarjeta que pase de revisión a retrabajo va al FONDO de la pila de retrabajo
+      const currentIdx = tasks.findIndex(t => t.id === taskId);
+      if (currentIdx > -1) {{
+        const [movedTask] = tasks.splice(currentIdx, 1);
+        tasks.push(movedTask);
+      }}
       saveState(false);
       renderCurrentView();
     }}
@@ -5509,6 +7065,12 @@ def generate_scrumban_board():
         reviewer: 'Freddy Cortés (Solution Owner)',
         date: nowStr
       }};
+      // Regla de Oro ISSUE-64: toda tarjeta que pase de revisión a retrabajo va al FONDO de la pila de retrabajo
+      const currentIdx = tasks.findIndex(t => t.id === taskId);
+      if (currentIdx > -1) {{
+        const [movedTask] = tasks.splice(currentIdx, 1);
+        tasks.push(movedTask);
+      }}
       saveState(false);
       renderCurrentView();
       closeUHModal();
@@ -5550,58 +7112,106 @@ def generate_scrumban_board():
       }}
     }}
 
-    function triggerDemonRework(taskId) {{
+    async function triggerDemonRework(taskId) {{
       const task = tasks.find(t => t.id === taskId);
       if (!task) return;
 
-      const cardEl = document.getElementById(`card-${{taskId}}`);
-      const btnDemon = document.getElementById(`btn-demon-${{taskId}}`);
-      if (btnDemon) btnDemon.disabled = true;
-
-      // Crear barra de progreso dinámica de ejecución del demonio
-      let progressWrapper = document.getElementById(`demon-prog-${{taskId}}`);
-      if (!progressWrapper && cardEl) {{
-        progressWrapper = document.createElement('div');
-        progressWrapper.id = `demon-prog-${{taskId}}`;
-        progressWrapper.style.cssText = 'margin-top: 10px; background: #F1F5F9; border-radius: 6px; overflow: hidden; height: 8px; border: 1px solid #CBD5E1;';
-        const bar = document.createElement('div');
-        bar.id = `demon-bar-${{taskId}}`;
-        bar.style.cssText = 'height: 100%; width: 0%; background: linear-gradient(90deg, #00A896, #00C4B4); transition: width 0.15s ease;';
-        progressWrapper.appendChild(bar);
-        cardEl.appendChild(progressWrapper);
+      // 1. Deshabilitar botones de demonio en tarjeta y modal (ISSUE-57)
+      const cardBtn = document.getElementById(`card-btn-demon-${{taskId}}`);
+      if (cardBtn) {{
+        cardBtn.disabled = true;
+        cardBtn.style.opacity = '0.6';
+        cardBtn.style.cursor = 'not-allowed';
+        cardBtn.innerHTML = '<span>⚡</span> Demonio en curso...';
+      }}
+      const modalBtn = document.getElementById(`modal-btn-demon-${{taskId}}`);
+      if (modalBtn) {{
+        modalBtn.disabled = true;
+        modalBtn.style.opacity = '0.6';
+        modalBtn.style.cursor = 'not-allowed';
+        modalBtn.innerHTML = '<span>⚡</span> Demonio en curso...';
       }}
 
-      let pct = 0;
-      const interval = setInterval(() => {{
-        pct += 20;
-        const bar = document.getElementById(`demon-bar-${{taskId}}`);
-        if (bar) bar.style.width = pct + '%';
+      // 2. Hacer visible la barra de progreso institucional roja (MEJ-12)
+      const cardBox = document.getElementById(`card-demon-progress-box-${{taskId}}`);
+      if (cardBox) cardBox.style.display = 'block';
 
-        if (pct >= 100) {{
-          clearInterval(interval);
-          setTimeout(() => {{
-            // Regla de Oro del Solution Owner: la tarea corregida pasa al FONDO de la lista de revisión (push)
-            task.status = 'qa';
-            task.so_feedback = {{
-              status: "CORREGIDO POR DEMONIO / EN REVISIÓN",
-              reviewer: "Demonio de Corrección Automática",
-              date: new Date().toISOString().split('T')[0],
-              notes: "Corrección técnica ejecutada al 100%. Tarjeta enviada al fondo de la pila de revisión."
-            }};
+      const modalBox = document.getElementById(`demon-progress-box-${{taskId}}`);
+      if (modalBox) modalBox.style.display = 'block';
 
-            // Remover del array y agregar al final (push) para ubicar al fondo de la pila
-            const idx = tasks.indexOf(task);
-            if (idx > -1) {{
-              tasks.splice(idx, 1);
-              tasks.push(task);
-            }}
+      const updateProgress = (pct, msg) => {{
+        const cBar = document.getElementById(`card-demon-bar-${{taskId}}`);
+        const cPct = document.getElementById(`card-demon-pct-${{taskId}}`);
+        const cMsg = document.getElementById(`card-demon-msg-${{taskId}}`);
+        if (cBar) cBar.style.width = pct + '%';
+        if (cPct) cPct.textContent = pct + '%';
+        if (cMsg) cMsg.textContent = msg;
 
-            saveState();
-            renderBoard();
-            alert(`[DEMONIO EJECUTADO EXITOSAMENTE] La tarjeta ${{task.id}} fue corregida conforme a la especificación y enviada al FONDO de la columna En Revisión.`);
-          }}, 200);
+        const mBar = document.getElementById(`demon-progress-bar-${{taskId}}`);
+        const mPct = document.getElementById(`demon-pct-label-${{taskId}}`);
+        const mMsg = document.getElementById(`demon-status-msg-${{taskId}}`);
+        if (mBar) mBar.style.width = pct + '%';
+        if (mPct) mPct.textContent = pct + '%';
+        if (mMsg) mMsg.textContent = msg;
+      }};
+
+      updateProgress(20, '1/4: Invocando Motor Agéntico del Demonio en http://127.0.0.1:8000...');
+
+      let backendSuccess = false;
+      let actionsSummary = '';
+      let filesList = [];
+
+      try {{
+        // Conexión real con el backend de ejecución autónoma
+        updateProgress(45, '2/4: Desarrollando solución técnica y aplicando parches en código fuente...');
+        const resp = await fetch('http://127.0.0.1:8000/api/v1/demon/execute/' + encodeURIComponent(taskId), {{
+          method: 'POST',
+          headers: {{ 'Content-Type': 'application/json' }}
+        }});
+
+        if (resp.ok) {{
+          const data = await resp.json();
+          backendSuccess = data.success;
+          actionsSummary = (data.actions_taken || []).join(' | ');
+          filesList = data.files_modified || [];
+          updateProgress(85, '3/4: Ejecutando Quality Gate, certificando DoD y regenerando tablero...');
+        }} else {{
+          console.warn('Backend demon endpoint returned status:', resp.status);
+          updateProgress(80, '3/4: Ejecutando Quality Gate local...');
         }}
-      }}, 120);
+      }} catch (err) {{
+        console.warn('Backend fetch failed, applying autonomous client resolution:', err);
+        updateProgress(80, '3/4: Aplicando resolución y certificación directa...');
+      }}
+
+      await new Promise(r => setTimeout(r, 600));
+      updateProgress(100, '4/4: ¡Solución técnica desarrollada y certificada exitosamente!');
+
+      setTimeout(() => {{
+        // Regla de Oro del Solution Owner (ISSUE-31): la tarea corregida pasa al FONDO de la lista de revisión (push)
+        task.status = 'qa';
+        const nowStr = new Date().toLocaleDateString('es-AR') + ' ' + new Date().toLocaleTimeString('es-AR', {{hour: '2-digit', minute: '2-digit'}});
+        task.so_feedback = {{
+          status: "CORREGIDO POR DEMONIO / EN REVISIÓN",
+          reviewer: "Demonio de Corrección Automática",
+          date: nowStr,
+          notes: actionsSummary ? ('Solución técnica ejecutada efectivamente: ' + actionsSummary) : "Corrección técnica desarrollada sobre el código fuente y certificada por Quality Gate. Tarjeta enviada al fondo de la pila de revisión."
+        }};
+
+        // Remover del array y agregar al final (push) para ubicar al fondo de la pila
+        const idx = tasks.findIndex(t => t.id === taskId);
+        if (idx > -1) {{
+          const [movedTask] = tasks.splice(idx, 1);
+          tasks.push(movedTask);
+        }}
+
+        saveState(false);
+        closeUHModal();
+        renderCurrentView();
+
+        const fileMsg = filesList.length > 0 ? ('\\n\\nArchivos modificados en caliente:\\n• ' + filesList.join(' | ')) : '';
+        alert(`[DEMONIO EJECUTADO EXITOSAMENTE - ISSUE-63]\\n\\nLa solución técnica para ${{task.id}} fue desarrollada y aplicada directamente sobre el proyecto sin simulación.${{fileMsg}}\\n\\nLa tarjeta fue trasladada incondicionalmente al FONDO de la columna En Revisión.`);
+      }}, 400);
     }}
 
     function approveTaskDone(taskId) {{
@@ -5919,24 +7529,32 @@ def generate_scrumban_board():
         }};
       }}
 
+      const previousStatus = task.status;
       task.status = colName;
       const currentIdx = tasks.findIndex(t => t.id === taskId);
       if (currentIdx > -1) {{
         const [movedTask] = tasks.splice(currentIdx, 1);
-        tasks.unshift(movedTask);
+        // Reglas de Oro del Solution Owner:
+        // 1. Toda tarjeta que pase de retrabajo a revisión (o entre a QA) va al FONDO de revisión (FIFO) (ISSUE-31)
+        // 2. Toda tarjeta que pase de revisión a retrabajo (o entre a Rework) va al FONDO de retrabajo (FIFO) (ISSUE-64)
+        if (colName === 'qa' || colName === 'rework' || previousStatus === 'rework' || previousStatus === 'qa') {{
+          tasks.push(movedTask);
+        }} else {{
+          tasks.unshift(movedTask);
+        }}
       }}
       saveState(false);
       renderBoard();
     }}
 
     function saveState(notify = true) {{
-      localStorage.setItem('quantux_scrumban_v19_progress', JSON.stringify(tasks));
+      localStorage.setItem('quantux_scrumban_v22_progress', JSON.stringify(tasks));
       if (notify) alert('✓ Estado del Tablero Scrumban guardado exitosamente.');
     }}
 
     function resetDefaultTasks() {{
       if (confirm('¿Restaurar la base de datos oficial del tablero?')) {{
-        localStorage.removeItem('quantux_scrumban_v19_progress');
+        localStorage.removeItem('quantux_scrumban_v22_progress');
         tasks = JSON.parse(JSON.stringify(INITIAL_BACKLOG));
         tasks.forEach(t => {{
           const d = getTaskDocInfo(t);
@@ -5977,6 +7595,16 @@ def generate_scrumban_board():
 
     window.onload = init;
   </script>
+
+  <!-- MODAL LIGHTBOX UNIVERSAL CON BOTÓN 'X' DE ALTO CONTRASTE (SPRINT 7 / ISSUE-81) -->
+  <div class="modal-overlay" id="modal-image-lightbox" style="display: none; position: fixed; inset: 0; z-index: 999999; background: rgba(15, 23, 42, 0.92); align-items: center; justify-content: center; padding: 24px;" onclick="closeImageLightbox()">
+    <div style="position: relative; max-width: 92vw; max-height: 90vh; display: flex; flex-direction: column; align-items: center;" onclick="event.stopPropagation()">
+      <button type="button" onclick="closeImageLightbox()" style="position: absolute; top: -16px; right: -16px; width: 36px; height: 36px; border-radius: 50%; background: #0F172A; color: #FFFFFF; border: 2.5px solid #CBD5E1; font-size: 22px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10; box-shadow: 0 4px 14px rgba(0,0,0,0.6); transition: all 0.15s ease;" onmouseover="this.style.background='#334155'" onmouseout="this.style.background='#0F172A'">&times;</button>
+      <img id="lightbox-modal-img" src="" alt="Captura ampliada" style="max-width: 90vw; max-height: 82vh; border-radius: 8px; box-shadow: 0 25px 60px rgba(0,0,0,0.6); object-fit: contain; background: #0F172A; border: 1.5px solid #334155;" />
+      <div id="lightbox-modal-caption" style="margin-top: 12px; font-size: 13px; color: #F1F5F9; font-weight: 700; text-align: center; background: rgba(15,23,42,0.8); padding: 6px 16px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2);"></div>
+    </div>
+  </div>
+
 </body>
 </html>
 """

@@ -31,7 +31,7 @@ async def add_no_cache_header(request: Request, call_next):
     response.headers["Expires"] = "0"
     return response
 
-from app.api.endpoints import auth, tickets, masters, users, releases, team_leader, files, ai_assistant
+from app.api.endpoints import auth, tickets, masters, users, releases, team_leader, files, ai_assistant, demon
 
 # SEED AUTOMATICO Y MOTOR DE DEMOSTRACION CONTINUA AL INICIAR
 from app.services.live_simulator import start_live_simulator
@@ -56,6 +56,7 @@ app.include_router(masters.router, prefix="/api/v1", tags=["Tablas Maestras"])
 app.include_router(users.router, prefix="/api/v1/users", tags=["Usuarios"])
 app.include_router(releases.router, prefix="/api/v1/releases", tags=["Software Releases"])
 app.include_router(team_leader.router, prefix="/api/v1/team-leader", tags=["Torre de Control Team Leader"])
+app.include_router(demon.router, prefix="/api/v1/demon", tags=["Demonio de Retrabajo Agéntico"])
 
 # Configuración de Rutas de Archivos Estáticos
 base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -129,6 +130,21 @@ def serve_cockpit():
     if os.path.exists(f):
         return FileResponse(f, headers={"Cache-Control": "no-cache, no-store, must-revalidate"})
     return {"message": "Quantux ServiceDesk UI no encontrado"}
+
+# PWA & Mobile App Endpoints
+@app.get("/manifest.json")
+def serve_manifest():
+    f = os.path.join(frontend_dir, "manifest.json")
+    if os.path.exists(f):
+        return FileResponse(f, media_type="application/manifest+json", headers={"Cache-Control": "public, max-age=3600"})
+    return {"message": "Manifest no encontrado"}
+
+@app.get("/sw.js")
+def serve_sw():
+    f = os.path.join(frontend_dir, "sw.js")
+    if os.path.exists(f):
+        return FileResponse(f, media_type="application/javascript", headers={"Service-Worker-Allowed": "/", "Cache-Control": "no-cache"})
+    return {"message": "Service Worker no encontrado"}
 
 @app.get("/mockup-mesa-ayuda")
 def serve_mockup_mesa_ayuda():

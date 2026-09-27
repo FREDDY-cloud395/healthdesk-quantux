@@ -7,6 +7,15 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <title>Quantux ServiceDesk Enterprise — v4.3.5 (Mando Operativo Unificado)</title>
+  <!-- PWA Mobile App Support & Icons -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#00A896">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Quantux">
+  <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/assets/icons/icon-192.png">
   <link rel="stylesheet" href="/css/styles.css?v=4.3.5_instant_live">
   <style>
     /* Inlined Critical Grid & Senior UX UI Styles */
@@ -345,7 +354,7 @@
           </div>
 
           <!-- UH-69: Ocultados del menú lateral por instrucción del Solution Owner (manteniendo funcionalidades intactas) -->
-          <div class="nav-link-item nav-hub-tab nav-link-dashboard" data-view="dashboard" id="tab-dashboard" title="Tablero de Control" data-tooltip="Tablero de Control" style="display: none !important;">
+          <div class="nav-link-item nav-hub-tab nav-link-dashboard" data-view="dashboard" id="tab-dashboard" style="display: none !important;" style="display: none !important;" style="display: none !important;" style="display: none !important;" title="Tablero de Control" data-tooltip="Tablero de Control" style="display: none !important;">
             <div class="nav-indicator-pill"></div>
             <div class="nav-link-left">
               <svg class="nav-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px;"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect></svg>
@@ -354,7 +363,7 @@
           </div>
 
           <!-- Torre de Control (Icono de Torre de Control Real Lucide) -->
-          <div class="nav-link-item nav-hub-tab nav-link-team-leader" data-view="team-leader" id="tab-team-leader" title="Torre de Control" data-tooltip="Torre de Control" style="display: none !important;">
+          <div class="nav-link-item nav-hub-tab nav-link-team-leader" data-view="team-leader" id="tab-team-leader" style="display: none !important;" style="display: none !important;" style="display: none !important;" style="display: none !important;" title="Torre de Control" data-tooltip="Torre de Control" style="display: none !important;">
             <div class="nav-indicator-pill"></div>
             <div class="nav-link-left">
               <svg class="nav-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px;">
@@ -415,7 +424,7 @@
             </div>
           </div>
 
-          <div class="nav-link-item nav-hub-tab" data-view="config" id="tab-config" data-tooltip="Configuración">
+          <div class="nav-link-item nav-hub-tab" data-view="config" id="tab-config" style="display: none !important;" data-tooltip="Configuración">
             <div class="nav-indicator-pill"></div>
             <div class="nav-link-left">
               <svg class="nav-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px;"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
@@ -492,6 +501,11 @@
           </div>
 
           <!-- Botón Primario: Crear Ticket (Agentes de Soporte N1/N2/Admin) -->
+          <!-- Botón de Descarga / Instalación App Móvil PWA -->
+          <button type="button" id="btn-pwa-install" onclick="triggerPwaInstallPrompt()" style="display: inline-flex; align-items: center; gap: 6px; background: #0F766E; color: #FFFFFF; border: none; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.25); transition: all 0.15s ease;" title="Descargar e instalar App Móvil Quantux en su dispositivo">
+            <span>📲 App Móvil</span>
+          </button>
+
           <button type="button" class="btn-create-ticket-top" id="jira-btn-add-ticket" onclick="openCreateTicketModal()" style="display: inline-flex; align-items: center; gap: 6px; background: #00A896; color: #FFFFFF; border: none; padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.25); transition: all 0.15s ease;" onmouseover="this.style.background='#008F80'" onmouseout="this.style.background='#00A896'" title="Crear nueva solicitud en la cola de soporte operativo">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 14px; height: 14px;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
             <span id="jira-btn-add-ticket-text">Crear ticket</span>
@@ -792,8 +806,8 @@
         <!-- ===================================================================
              VISTA 1.5: CENTRO DE ASISTENCIA (EXCLUSIVA ROL SOLICITANTE)
              =================================================================== -->
-        <section class="app-view" id="view-requester-portal">
-          <div id="requester-clinical-portal" style="width: 100% !important; height: 100% !important; min-height: 100% !important; flex: 1 1 0% !important; display: flex !important; flex-direction: column !important; justify-content: center !important; align-items: center !important; padding: 24px !important; box-sizing: border-box !important; position: relative !important; background: #F8FAFC !important;">
+        <section class="app-view" id="view-requester-portal" style="overflow-y: auto !important;">
+          <div id="requester-clinical-portal" style="width: 100% !important; min-height: 100% !important; flex: 1 1 auto !important; display: flex !important; flex-direction: column !important; justify-content: center !important; align-items: center !important; padding: 24px !important; box-sizing: border-box !important; position: relative !important; background: #F8FAFC !important; overflow-y: auto !important;">
 
             <!-- STREAM DE MENSAJES: OCULTO INICIALMENTE PARA CENTRADO ABSOLUTO (CRUCE DE DIAGONALES 50%-50%) -->
             <div id="requester-inline-chat-stream" style="display: none; width: 100% !important; max-width: 860px !important; max-height: calc(100vh - 220px) !important; overflow-y: auto !important; padding: 18px 22px !important; flex-direction: column !important; gap: 14px !important; scroll-behavior: smooth !important; background: #FFFFFF !important; border: 1.5px solid #E2E8F0 !important; border-radius: 16px !important; box-shadow: 0 4px 20px rgba(10, 28, 62, 0.05) !important; margin-bottom: 16px !important;">
@@ -832,8 +846,8 @@
                 </p>
               </div>
 
-              <!-- DESPLEGABLE PREDICTIVO (TYPEAHEAD OFICIAL CD2 - DESPLIEGUE HACIA ABAJO) -->
-              <div id="requester-typeahead-dropdown" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: #FFFFFF; border: 1.5px solid #CBD5E1; border-radius: 12px; margin-top: 8px; box-shadow: 0 10px 25px rgba(10, 28, 62, 0.12); z-index: 9999; max-height: 280px; overflow-y: auto;">
+              <!-- DESPLEGABLE PREDICTIVO (TYPEAHEAD OFICIAL CD2 - DESPLIEGUE HACIA ABAJO CON SCROLL FLUIDO) -->
+              <div id="requester-typeahead-dropdown" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: #FFFFFF; border: 1.5px solid #CBD5E1; border-radius: 12px; margin-top: 8px; box-shadow: 0 10px 25px rgba(10, 28, 62, 0.12); z-index: 9999; max-height: min(320px, calc(100vh - 380px)); min-height: 160px; overflow-y: auto !important; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;">
               </div>
 
               <!-- CÁPSULA DE ENTRADA CENTRADA CON RESALTE QUANTUX -->
@@ -1030,7 +1044,7 @@
                 <div style="font-size: 11px; color: #0F172A; font-weight: 600;">En curso y asignados</div>
               </div>
 
-              <div style="background: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 12px; padding: 14px 18px; box-shadow: 0 1px 3px rgba(220,38,38,0.05);">
+              <div style="background: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 12px; padding: 14px 18px; box-shadow: 0 1px 3px rgba(15,23,42,0.05);">
                 <div style="font-size: 11px; font-weight: 700; color: #0F172A; text-transform: uppercase;">Emergencias Críticas P1</div>
                 <div style="font-size: 26px; font-weight: 900; color: #0F172A; margin: 4px 0;" id="tl-kpi-p1">0</div>
                 <div style="font-size: 11px; color: #0F172A; font-weight: 600;">Atención inmediata requerida</div>
@@ -1189,7 +1203,7 @@
               <span style="font-size: 9px; font-weight: 700; color: #0F172A; background: #ECFDF5; padding: 2px 5px; border-radius: 4px;">En Curso</span>
             </div>
 
-            <div style="background: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 8px; padding: 8px 12px; box-shadow: 0 1px 2px rgba(220,38,38,0.04); display: flex; justify-content: space-between; align-items: center;">
+            <div style="background: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 8px; padding: 8px 12px; box-shadow: 0 1px 2px rgba(15,23,42,0.04); display: flex; justify-content: space-between; align-items: center;">
               <div>
                 <div style="font-size: 9.5px; font-weight: 800; color: #0F172A; text-transform: uppercase;">P1 Críticos</div>
                 <div style="font-size: 20px; font-weight: 900; color: #0F172A; line-height: 1.1;" id="uh-kpi-p1">0</div>
@@ -1698,26 +1712,22 @@
             <!-- NAVEGACIÓN POR SUB-PESTAÑAS DE LA VISTA (Senior UX: Fila Única y Acciones Contextuales) -->
             <div class="platforms-subtabs-toolbar" style="padding: 6px 14px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; background: #FFFFFF; border-radius: 8px; border: 1px solid #E2E8F0; gap: 12px;">
               <div style="display: flex; gap: 8px; overflow-x: auto; align-items: center; flex-shrink: 1;">
-                <button type="button" class="dash-tab-btn active" id="btn-subtab-inst" onclick="switchPlatformsSubTab('institutions')" title="Ver catálogo de instituciones de salud clientes" style="padding: 5px 12px; font-size: 11.5px; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; white-space: nowrap;">
-                  <span>🏥</span>
-                  <span style="font-weight: 700;">Instituciones Sanitarias</span>
+                <button type="button" class="dash-tab-btn active" id="btn-subtab-inst" onclick="switchPlatformsSubTab('institutions')" title="Ver catálogo de instituciones clientes" style="padding: 5px 12px; font-size: 11.5px; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; white-space: nowrap;">
+                  <span style="font-weight: 700;">Instituciones</span>
                   <span id="subtab-badge-inst" style="font-size: 9.5px; background: rgba(15,118,110,0.15); color: #0F766E; padding: 1px 6px; border-radius: 10px; font-weight: 800;">14</span>
                 </button>
 
-                <button type="button" class="dash-tab-btn" id="btn-subtab-plat" onclick="switchPlatformsSubTab('platforms')" title="Ver catálogo de plataformas y módulos clínicos" style="padding: 5px 12px; font-size: 11.5px; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; white-space: nowrap;">
-                  <span>💻</span>
-                  <span style="font-weight: 700;">Módulos Clínicos</span>
+                <button type="button" class="dash-tab-btn" id="btn-subtab-plat" onclick="switchPlatformsSubTab('platforms')" title="Ver catálogo de plataformas y módulos de soporte" style="padding: 5px 12px; font-size: 11.5px; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; white-space: nowrap;">
+                  <span style="font-weight: 700;">Módulos de soporte</span>
                   <span id="subtab-badge-plat" style="font-size: 9.5px; background: rgba(71,85,105,0.12); color: #334155; padding: 1px 6px; border-radius: 10px; font-weight: 800;">9</span>
                 </button>
 
-                <button type="button" class="dash-tab-btn" id="btn-subtab-matrix" onclick="switchPlatformsSubTab('matrix')" title="Conmutador de habilitación institucional en vivo" style="padding: 5px 12px; font-size: 11.5px; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; white-space: nowrap;">
-                  <span>🎛️</span>
-                  <span style="font-weight: 700;">Habilitación Institucional</span>
+                <button type="button" class="dash-tab-btn" id="btn-subtab-matrix" onclick="switchPlatformsSubTab('matrix')" title="Grilla: Institución/Módulo" style="padding: 5px 12px; font-size: 11.5px; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; white-space: nowrap;">
+                  <span style="font-weight: 700;">Grilla: Institución/Módulo</span>
                   <span style="font-size: 9px; background: #DCFCE7; color: #166534; padding: 1px 6px; border-radius: 10px; font-weight: 800; border: 1px solid #BBF7D0;">En Vivo</span>
                 </button>
 
-                <button type="button" class="dash-tab-btn" id="btn-subtab-helpdesks" onclick="switchPlatformsSubTab('helpdesks')" title="Configurar niveles de soporte ITIL y SLAs" style="padding: 5px 12px; font-size: 11.5px; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; white-space: nowrap;">
-                  <span>🛡️</span>
+                <button type="button" class="dash-tab-btn" id="btn-subtab-helpdesks" style="display: none !important;" onclick="switchPlatformsSubTab('helpdesks')" title="Configurar niveles de soporte ITIL y SLAs" style="display: none !important; padding: 5px 12px; font-size: 11.5px; border-radius: 6px; align-items: center; gap: 6px; cursor: pointer; white-space: nowrap;">
                   <span style="font-weight: 700;">Niveles ITIL</span>
                   <span style="font-size: 9px; background: #EFF6FF; color: #0284C7; padding: 1px 6px; border-radius: 10px; font-weight: 800; border: 1px solid #BFDBFE;">N1 / N2 / N3</span>
                 </button>
@@ -1725,14 +1735,14 @@
 
               <!-- Botón de Acción Contextual Único por Módulo (Senior UX Quantux) -->
               <div class="platforms-context-actions" style="display: flex; gap: 8px; align-items: center; flex-shrink: 0;">
-                <button type="button" id="btn-action-new-inst" class="btn-pri" onclick="openCreateInstitutionModal()" title="Dar de alta una nueva institución sanitaria" style="font-size: 11px; padding: 5px 13px; font-weight: 800; border-radius: 6px; background: #00A896; border: none; color: #FFF; display: inline-flex; align-items: center; gap: 5px; cursor: pointer; box-shadow: 0 1px 3px rgba(0,168,150,0.25); white-space: nowrap;">
-                  <span>🏥</span> + Nueva Institución
+                <button type="button" id="btn-action-new-inst" class="btn-pri" onclick="openCreateInstitutionModal()" title="Dar de alta una nueva institución" style="font-size: 11px; padding: 5px 13px; font-weight: 800; border-radius: 6px; background: #00A896; border: none; color: #FFF; display: inline-flex; align-items: center; gap: 5px; cursor: pointer; box-shadow: 0 1px 3px rgba(0,168,150,0.25); white-space: nowrap;">
+                  + Nueva Institución
                 </button>
-                <button type="button" id="btn-action-new-plat" class="btn-pri" onclick="openCreatePlatformModal()" title="Registrar un nuevo módulo clínico" style="font-size: 11px; padding: 5px 13px; font-weight: 800; border-radius: 6px; background: #00A896; border: none; color: #FFF; display: none; align-items: center; gap: 5px; cursor: pointer; box-shadow: 0 1px 3px rgba(0,168,150,0.25); white-space: nowrap;">
-                  <span>💻</span> + Nuevo Módulo
+                <button type="button" id="btn-action-new-plat" class="btn-pri" onclick="openCreatePlatformModal()" title="Registrar un nuevo módulo" style="font-size: 11px; padding: 5px 13px; font-weight: 800; border-radius: 6px; background: #00A896; border: none; color: #FFF; display: none; align-items: center; gap: 5px; cursor: pointer; box-shadow: 0 1px 3px rgba(0,168,150,0.25); white-space: nowrap;">
+                  + Nuevo Módulo
                 </button>
                 <button type="button" id="btn-action-export-matrix" class="btn-sec" onclick="exportTenantMatrixCsv()" title="Exportar matriz de habilitación a CSV" style="font-size: 11px; padding: 5px 11px; font-weight: 700; border-radius: 6px; display: none; align-items: center; gap: 5px; cursor: pointer; white-space: nowrap;">
-                  <span>⬇️</span> Exportar Matriz
+                  Exportar Matriz
                 </button>
               </div>
             </div>
@@ -1810,8 +1820,7 @@
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px solid #E2E8F0;">
                   <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
                     <div style="position: relative; width: 320px;">
-                      <input type="text" id="input-tenant-matrix-search" placeholder="Buscar institución sanitaria o código..." oninput="onTenantMatrixSearchInput(this.value)" onfocus="openTenantMatrixPredictive()" autocomplete="off" style="padding: 7px 30px 7px 32px; border: 1.5px solid #CBD5E1; border-radius: 6px; font-size: 12px; width: 100%; box-sizing: border-box; outline: none; transition: border-color 0.15s;" onfocus="this.style.borderColor='#00C4B4'" onblur="this.style.borderColor='#CBD5E1'">
-                      <span style="position: absolute; left: 10px; top: 8px; font-size: 12px; color: #94A3B8; pointer-events: none;">🔍</span>
+                      <input type="text" id="input-tenant-matrix-search" placeholder="Buscar institución sanitaria o código..." oninput="onTenantMatrixSearchInput(this.value)" onfocus="openTenantMatrixPredictive()" autocomplete="off" style="padding: 7px 14px; border: 1.5px solid #CBD5E1; border-radius: 6px; font-size: 12px; width: 100%; box-sizing: border-box; outline: none; transition: border-color 0.15s;" onfocus="this.style.borderColor='#00C4B4'" onblur="this.style.borderColor='#CBD5E1'">
                       <button type="button" id="btn-tenant-matrix-search-clear" onclick="clearTenantMatrixSearch()" style="display: none; position: absolute; right: 8px; top: 6px; background: none; border: none; font-size: 12px; color: #94A3B8; cursor: pointer; padding: 2px 6px;" title="Limpiar y mostrar todas las instituciones">✕</button>
                       
                       <!-- DESPLEGABLE PREDICTIVO MULTI-TENANT -->
@@ -1819,15 +1828,15 @@
                       </div>
                     </div>
 
-                    <button type="button" class="btn-sec" onclick="clearTenantMatrixSearch()" style="font-size: 11.5px; padding: 6px 12px; font-weight: 700; border-radius: 6px; display: inline-flex; align-items: center; gap: 5px; border: 1px solid #CBD5E1; background: #FFFFFF; color: #334155; cursor: pointer;" title="Restablecer filtro y mostrar todas las instituciones">
-                      <span>🌐</span> Mostrar Todas
+                    <button type="button" class="btn-sec" onclick="clearTenantMatrixSearch()" style="font-size: 11.5px; padding: 6px 12px; font-weight: 700; border-radius: 6px; display: inline-flex; align-items: center; border: 1px solid #CBD5E1; background: #FFFFFF; color: #334155; cursor: pointer;" title="Restablecer filtro y mostrar todas las instituciones">
+                      Mostrar Todas
                     </button>
                   </div>
 
                   <div style="display: flex; align-items: center; gap: 8px;">
                     <span id="tenant-matrix-count-badge" style="font-size: 11.5px; font-weight: 700; color: #64748B;">Mostrando instituciones...</span>
-                    <button type="button" class="btn-sec" onclick="exportTenantMatrixCSV()" style="font-size: 11.5px; padding: 6px 12px; font-weight: 700; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px; cursor: pointer;">
-                      <span>📥</span> Exportar CSV
+                    <button type="button" class="btn-sec" onclick="exportTenantMatrixCSV()" style="font-size: 11.5px; padding: 6px 12px; font-weight: 700; border-radius: 6px; display: inline-flex; align-items: center; cursor: pointer;">
+                      Exportar CSV
                     </button>
                   </div>
                 </div>
@@ -1845,7 +1854,7 @@
             <!-- ===============================================================
                  SUB-VISTA 4: MESAS DE AYUDA Y NIVELES DE ATENCIÓN ITIL (N1 / N2 / N3)
                  =============================================================== -->
-            <div class="platforms-subview" id="platforms-subview-helpdesks" style="display: none;">
+            <div class="platforms-subview" id="platforms-subview-helpdesks" style="display: none !important;" style="display: none !important;">
               <div style="background: #FFFFFF; border: 1.5px solid #CBD5E1; border-radius: 12px; padding: 18px; margin-bottom: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.03);">
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px solid #E2E8F0;">
                   <div>
@@ -2847,8 +2856,8 @@
           <button type="button" id="btn-cancel-auth-login" class="btn-sec" onclick="closeAuthModal()" style="font-size: 11.5px; padding: 6px 12px; border-radius: 6px;">
             Continuar trabajando
           </button>
-          <button type="button" onclick="handleLogout()" class="btn-clean-action" style="font-size: 11.5px; color: #334155; font-weight: 700; background: none; border: none; cursor: pointer; display: flex; align-items: center; gap: 4px;">
-            <span>🚪 Cerrar Sesión</span>
+          <button type="button" onclick="handleLogout()" style="font-size: 11.5px; color: #475569; font-weight: 700; background: #F1F5F9; border: 1px solid #CBD5E1; border-radius: 6px; padding: 6px 12px; cursor: pointer; display: flex; align-items: center; gap: 4px;" onmouseover="this.style.background='#E2E8F0'" onmouseout="this.style.background='#F1F5F9'">
+            <span>Cerrar Sesión</span>
           </button>
         </div>
 
@@ -3183,8 +3192,8 @@
               <div class="ws-desc-content" id="ws-desc-text">
                 Descripción del incidente o requerimiento operativo.
               </div>
-              <!-- Evidencia Técnica Adjunta (Explicación clara y botón directo de descarga) -->
-              <div id="ws-desc-attachment-wrapper" style="margin-top: 10px; display: none; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 10px 12px;">
+              <!-- Evidencia Técnica Adjunta (Explicación clara, botón directo y previsualización de imagen) -->
+              <div id="ws-desc-attachment-wrapper" style="margin-top: 10px; display: none; background: #F8FAFC; border: 1px solid #CBD5E1; border-radius: 8px; padding: 12px 14px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap;">
                   <div style="display: flex; align-items: center; gap: 10px; min-width: 0;">
                     <div style="width: 32px; height: 32px; border-radius: 6px; background: #E0F7F5; border: 1px solid #80DFD5; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800; color: #00A896; flex-shrink: 0; font-family: monospace;">
@@ -3197,15 +3206,28 @@
                       </div>
                     </div>
                   </div>
-                  <a href="#" target="_blank" id="ws-desc-attachment-link" class="btn-clean-action" style="background: #00A896 !important; color: #FFFFFF !important; border: none !important; padding: 5px 12px !important; border-radius: 6px !important; font-size: 11px !important; font-weight: 700 !important; text-decoration: none !important; display: inline-flex !important; align-items: center !important; gap: 4px !important; white-space: nowrap !important; cursor: pointer !important;">
-                    <span>Descargar Log / Evidencia</span>
+                  <a href="#" target="_blank" id="ws-desc-attachment-link" class="btn-clean-action" style="background: #00A896 !important; color: #FFFFFF !important; border: none !important; padding: 6px 14px !important; border-radius: 6px !important; font-size: 11px !important; font-weight: 700 !important; text-decoration: none !important; display: inline-flex !important; align-items: center !important; gap: 6px !important; white-space: nowrap !important; cursor: pointer !important;">
+                    <span>Descargar Evidencia</span>
                   </a>
+                </div>
+                <!-- Previsualización de Imagen / Captura Integrada con Zoom Lightbox -->
+                <div id="ws-desc-attachment-img-box" style="margin-top: 10px; display: none; border-radius: 6px; overflow: hidden; border: 1px solid #CBD5E1; background: #F8FAFC; text-align: center; cursor: pointer;" onclick="if(document.getElementById('ws-desc-attachment-img').src) openImageLightbox(document.getElementById('ws-desc-attachment-img').src, document.getElementById('ws-desc-attachment-name').textContent)">
+                  <img id="ws-desc-attachment-img" src="" alt="Captura de Evidencia Técnica" style="max-width: 100%; max-height: 280px; object-fit: contain; display: block; margin: 0 auto;" />
+                  <div style="background: #F1F5F9; padding: 5px 10px; font-size: 11px; font-weight: 700; color: #334155; border-top: 1px solid #E2E8F0; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                    <span>Haga clic para ver la captura completa en alta resolución</span>
+                  </div>
                 </div>
               </div>
             </div>
 
+            <!-- BANNER INMUTABILIDAD CASO CERRADO (ITIL v4) -->
+            <div id="ws-closed-immutable-banner" style="display: none; padding: 16px 20px; background: #F8FAFC; border: 1.5px solid #CBD5E1; border-radius: 8px; text-align: center; margin: 14px 0;">
+              <div style="font-weight: 800; font-size: 13px; color: #1E293B; letter-spacing: 0.3px;">CASO CERRADO — REGISTRO HISTÓRICO INMUTABLE</div>
+              <div style="font-size: 11.5px; color: #64748B; margin-top: 5px; line-height: 1.5;">Este ticket ha sido cerrado de forma definitiva con validación de conformidad. Conforme a las normas ITIL v4 de gobernanza, el ciclo de vida ha concluido y no admite modificaciones, reaperturas ni nuevos comentarios.</div>
+            </div>
+
             <!-- CAJA DE RESPUESTA DEL AGENTE (CENTRO OPERATIVO INVGATE) -->
-            <div class="ws-reply-container">
+            <div class="ws-reply-container" id="ws-reply-container">
               <div class="ws-reply-avatar" id="ws-reply-user-avatar">FC</div>
               
               <div class="ws-reply-panel">
@@ -3262,12 +3284,12 @@
                       <span>Interno</span>
                     </label>
 
-                    <!-- Botonera Dual: Responder / Responder y Resolver -->
-                    <div style="display: inline-flex; border-radius: 6px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                      <button type="button" class="btn-pri ws-btn-submit-reply" id="ws-btn-send-reply" onclick="submitAgentWorkspaceReply(false)" style="border-radius: 0; padding: 6px 14px; font-weight: 700; font-size: 11.5px; border-right: 1px solid rgba(255,255,255,0.2);">
+                    <!-- Botonera Dual: Responder / Responder y Resolver (Estilo Quantux: Paleta Esmeralda Limpia, Sin Fondos Negros) -->
+                    <div style="display: inline-flex; border-radius: 6px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.12); border: 1px solid #0D9488;">
+                      <button type="button" class="btn-pri ws-btn-submit-reply" id="ws-btn-send-reply" onclick="submitAgentWorkspaceReply(false)" style="background: #00A896; color: #FFFFFF; border: none; border-radius: 0; padding: 7px 15px; font-weight: 700; font-size: 12px; border-right: 1px solid rgba(255,255,255,0.3); cursor: pointer; transition: background 0.15s ease;" onmouseover="this.style.background='#0F766E'" onmouseout="this.style.background='#00A896'" title="Enviar respuesta manteniendo el ticket en su estado actual">
                         Responder
                       </button>
-                      <button type="button" class="btn-clean-action" id="ws-btn-send-resolve" onclick="submitAgentWorkspaceReply(true)" title="Enviar respuesta y marcar el ticket como Resuelto" style="background: #00A896 !important; color: #FFFFFF !important; border: none !important; border-radius: 0 !important; padding: 6px 12px !important; font-weight: 700 !important; font-size: 11.5px !important; cursor: pointer !important; white-space: nowrap !important; transition: background 0.15s ease;">
+                      <button type="button" id="ws-btn-send-resolve" onclick="submitAgentWorkspaceReply(true)" title="Enviar respuesta y marcar el ticket como Resuelto" style="background: #059669; color: #FFFFFF; border: none; border-radius: 0; padding: 7px 15px; font-weight: 700; font-size: 12px; cursor: pointer; white-space: nowrap; transition: background 0.15s ease;" onmouseover="this.style.background='#047857'" onmouseout="this.style.background='#059669'">
                         Responder y Resolver
                       </button>
                     </div>
@@ -3325,7 +3347,7 @@
           <div class="ws-side-section" style="border: 1px solid #CBD5E1; background: #F8FAFC; border-radius: 8px; padding: 12px; margin-bottom: 12px;">
             <div class="ws-side-section-header" style="margin-bottom: 8px; border-bottom: 1px solid #E2E8F0; padding-bottom: 6px;">
               <span style="font-weight: 700; font-size: 12px; color: #0F172A; display: flex; align-items: center; gap: 6px;">
-                ⚡ Acciones del Ticket
+                Acciones del Ticket
               </span>
             </div>
 
@@ -3364,18 +3386,13 @@
        6.B. MODAL POPUP: DETALLE DE PARTICIPANTES DE LA SOLICITUD (V7.0)
        ========================================================================= -->
   <div class="modal-overlay" id="modal-participants-details">
-    <div class="modal-box modal-box-senior" style="max-width: 600px; padding: 24px; border-radius: 16px; background: #FFFFFF; border: none; box-shadow: 0 10px 30px rgba(10,28,62,0.15);">
-      <div class="modal-header modal-header-senior" style="display: flex; justify-content: space-between; align-items: center; background: #F1F5F9; color: #00A896; border: 1px solid #99F6E4; margin: -24px -24px 0 -24px; padding: 20px 24px; border-top-left-radius: 16px; border-top-right-radius: 16px; border-bottom: 1px solid rgba(255,255,255,0.08);">
-        <div style="display: flex; align-items: center; gap: 12px;">
-          <div style="width: 38px; height: 38px; border-radius: 10px; background: #00A896; display: flex; align-items: center; justify-content: center; color: #FFFFFF; box-shadow: 0 2px 6px rgba(15,23,42,0.3);">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 18px; height: 18px;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-          </div>
-          <div style="text-align: left;">
-            <h3 style="margin: 0; font-size: 15.5px; font-weight: 800; color: #FFFFFF; letter-spacing: 0.3px;">Participantes Involucrados</h3>
-            <p style="margin: 3px 0 0 0; font-size: 11.5px; color: #94A3B8;">Personal clínico y de soporte asignado al caso.</p>
-          </div>
+    <div class="modal-box modal-box-senior" style="max-width: 600px; padding: 24px; border-radius: 16px; background: #FFFFFF; border: 1px solid #E2E8F0; box-shadow: 0 10px 30px rgba(10,28,62,0.15);">
+      <div class="modal-header modal-header-senior" style="display: flex; justify-content: space-between; align-items: center; background: #F8FAFC; border-bottom: 1px solid #E2E8F0; margin: -24px -24px 0 -24px; padding: 18px 24px; border-top-left-radius: 16px; border-top-right-radius: 16px;">
+        <div style="text-align: left;">
+          <h3 style="margin: 0; font-size: 15.5px; font-weight: 800; color: #0F172A; letter-spacing: 0.2px;">Participantes Involucrados</h3>
+          <p style="margin: 3px 0 0 0; font-size: 11.5px; color: #64748B;">Personal clínico y de soporte asignado al caso.</p>
         </div>
-        <button type="button" class="modal-close-btn" onclick="closeParticipantsModal()" style="color: #FFFFFF; background: none; border: none; font-size: 26px; cursor: pointer; opacity: 0.8; transition: opacity 0.15s ease; line-height: 1; padding: 4px; margin-right: -4px;">&times;</button>
+        <button type="button" class="modal-close-btn" onclick="closeParticipantsModal()" style="color: #475569; background: #F1F5F9; border: 1px solid #CBD5E1; border-radius: 8px; width: 32px; height: 32px; font-size: 20px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1; transition: all 0.15s ease;" onmouseover="this.style.background='#E2E8F0'; this.style.color='#0F172A';" onmouseout="this.style.background='#F1F5F9'; this.style.color='#475569';" title="Cerrar ventana">&times;</button>
       </div>
 
       <div class="modal-body modal-body-senior" id="participants-modal-body" style="padding: 20px 0 0 0; display: flex; flex-direction: column; gap: 14px; max-height: 420px; overflow-y: auto;">
@@ -3941,24 +3958,24 @@
   <div class="modal-overlay" id="modal-institution-detail">
     <div class="modal-box" style="max-width: 780px; width: 92%; border-radius: 14px; overflow: hidden; box-shadow: 0 15px 40px rgba(15, 23, 42, 0.3); max-height: 90vh; display: flex; flex-direction: column;">
       
-      <!-- Modal Header Dinámico -->
-      <div id="modal-inst-detail-header" style="background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%); color: #FFFFFF; padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;">
+      <!-- Modal Header Dinámico (Paleta Limpia Quantux - Sin Colores Pesados/Oscuros) -->
+      <div id="modal-inst-detail-header" style="background: #F8FAFC; border-bottom: 1.5px solid #E2E8F0; color: #0F172A; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;">
         <!-- Inyectado dinámicamente -->
       </div>
 
-      <!-- Navegación por Pestañas Internas del Modal -->
+      <!-- Navegación por Pestañas Internas del Modal (white-space: nowrap) -->
       <div style="display: flex; gap: 4px; background: #F8FAFC; border-bottom: 1.5px solid #E2E8F0; padding: 8px 20px 0 20px; flex-shrink: 0; overflow-x: auto;">
-        <button type="button" class="dash-tab-btn active" id="btn-inst-tab-overview" onclick="switchInstModalTab('overview')" style="font-size: 12px; font-weight: 800; padding: 8px 14px; border-radius: 6px 6px 0 0;">
-          🏛️ Información & SLA
+        <button type="button" class="dash-tab-btn active" id="btn-inst-tab-overview" onclick="switchInstModalTab('overview')" style="font-size: 12px; font-weight: 800; padding: 8px 14px; border-radius: 6px 6px 0 0; white-space: nowrap;">
+          Información & SLA
         </button>
-        <button type="button" class="dash-tab-btn" id="btn-inst-tab-modules" onclick="switchInstModalTab('modules')" style="font-size: 12px; font-weight: 800; padding: 8px 14px; border-radius: 6px 6px 0 0;">
-          ⚙️ Plataformas & Software
+        <button type="button" class="dash-tab-btn" id="btn-inst-tab-modules" onclick="switchInstModalTab('modules')" style="font-size: 12px; font-weight: 800; padding: 8px 14px; border-radius: 6px 6px 0 0; white-space: nowrap;">
+          Plataformas & Software
         </button>
-        <button type="button" class="dash-tab-btn" id="btn-inst-tab-incidents" onclick="switchInstModalTab('incidents')" style="font-size: 12px; font-weight: 800; padding: 8px 14px; border-radius: 6px 6px 0 0;">
-          🚨 Incidentes en Curso (<span id="modal-inst-incidents-count">0</span>)
+        <button type="button" class="dash-tab-btn" id="btn-inst-tab-incidents" onclick="switchInstModalTab('incidents')" style="font-size: 12px; font-weight: 800; padding: 8px 14px; border-radius: 6px 6px 0 0; white-space: nowrap;">
+          Incidentes en Curso (<span id="modal-inst-incidents-count">0</span>)
         </button>
-        <button type="button" class="dash-tab-btn" id="btn-inst-tab-members" onclick="switchInstModalTab('members')" style="font-size: 12px; font-weight: 800; padding: 8px 14px; border-radius: 6px 6px 0 0;">
-          👥 Personal & Miembros (<span id="zd-org-members-count">0</span>)
+        <button type="button" class="dash-tab-btn" id="btn-inst-tab-members" onclick="switchInstModalTab('members')" style="font-size: 12px; font-weight: 800; padding: 8px 14px; border-radius: 6px 6px 0 0; white-space: nowrap;">
+          Personal & Miembros (<span id="zd-org-members-count">0</span>)
         </button>
       </div>
 
@@ -4926,6 +4943,72 @@ Muchas gracias.</textarea>
       </div>
       <button type="button" onclick="submitTLTriageExpress()" style="width: 100%; background: #00A896; color: #FFFFFF; border: none; border-radius: 8px; font-size: 12px; font-weight: 800; padding: 12px; cursor: pointer; box-shadow: 0 2px 4px rgba(15,23,42,0.2); transition: background 0.15s ease; flex-shrink: 0;" onmouseover="this.style.background='#008F80'" onmouseout="this.style.background='#00A896'">
         Guardar y Asignar Express
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL LIGHTBOX UNIVERSAL PARA PREVISUALIZACIÓN Y ZOOM DE CAPTURAS / EVIDENCIAS -->
+  <div class="modal-overlay" id="modal-image-lightbox" style="display: none; position: fixed; inset: 0; z-index: 99999; background: rgba(15, 23, 42, 0.9); align-items: center; justify-content: center; padding: 24px;" onclick="closeImageLightbox()">
+    <div style="position: relative; max-width: 92vw; max-height: 90vh; display: flex; flex-direction: column; align-items: center;" onclick="event.stopPropagation()">
+      <button type="button" onclick="closeImageLightbox()" style="position: absolute; top: -16px; right: -16px; width: 34px; height: 34px; border-radius: 50%; background: #FFFFFF; color: #0F172A; border: 2px solid #94A3B8; font-size: 20px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10; box-shadow: 0 4px 12px rgba(0,0,0,0.5); transition: all 0.15s ease;" onmouseover="this.style.background='#F1F5F9'" onmouseout="this.style.background='#FFFFFF'">&times;</button>
+      <img id="lightbox-modal-img" src="" alt="Captura ampliada" style="max-width: 90vw; max-height: 82vh; border-radius: 8px; box-shadow: 0 25px 60px rgba(0,0,0,0.6); object-fit: contain; background: #F8FAFC; border: 1.5px solid #CBD5E1;" />
+      <div id="lightbox-modal-caption" style="margin-top: 12px; font-size: 13px; color: #F1F5F9; font-weight: 700; text-align: center; background: rgba(15,23,42,0.7); padding: 6px 16px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.15);"></div>
+    </div>
+  </div>
+
+  <!-- BARRA DE NAVEGACIÓN MÓVIL INFERIOR (TAB BAR TOUCH) -->
+  <nav class="quantux-mobile-bottom-nav" id="quantux-mobile-bottom-nav" aria-label="Navegación Móvil">
+    <button type="button" class="mobile-nav-btn active" id="mob-nav-hub" onclick="switchView('unified-hub'); setMobileActiveNav(this);">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+      <span>Mando</span>
+    </button>
+    <button type="button" class="mobile-nav-btn" id="mob-nav-tickets" onclick="switchView('tickets'); setMobileActiveNav(this);">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+      <span>Tickets</span>
+    </button>
+    <button type="button" class="mobile-nav-btn mobile-nav-action-center" onclick="openCreateTicketModal();" title="Nuevo Ticket">
+      <div class="mobile-nav-circle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 22px; height: 22px; color: #FFFFFF;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      </div>
+      <span>Nuevo</span>
+    </button>
+    <button type="button" class="mobile-nav-btn" id="mob-nav-articles" onclick="switchView('articles'); setMobileActiveNav(this);">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px;"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+      <span>Guías</span>
+    </button>
+    <button type="button" class="mobile-nav-btn" id="mob-nav-install" onclick="triggerPwaInstallPrompt();" title="Descargar App Móvil">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px;"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+      <span>Descargar</span>
+    </button>
+  </nav>
+
+  <!-- MODAL DE DESCARGA E INSTALACIÓN DE APP MÓVIL (PWA) -->
+  <div class="modal-overlay" id="modal-pwa-install" style="display: none; position: fixed; inset: 0; z-index: 99999; background: rgba(15, 23, 42, 0.7); align-items: center; justify-content: center; padding: 20px;" onclick="closePwaInstallModal()">
+    <div style="background: #FFFFFF; border-radius: 14px; max-width: 440px; width: 100%; padding: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.25); border: 1.5px solid #CBD5E1; text-align: center;" onclick="event.stopPropagation()">
+      <div style="width: 64px; height: 64px; margin: 0 auto 14px auto; border-radius: 16px; background: #00A896; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 18px rgba(0,168,150,0.35);">
+        <img src="/assets/icons/icon-192.png" alt="Quantux App" style="width: 52px; height: 52px; border-radius: 12px;" />
+      </div>
+      <h3 style="margin: 0 0 6px 0; font-size: 18px; font-weight: 800; color: #0F172A;">HealthDesk Quantux Móvil</h3>
+      <p style="margin: 0 0 16px 0; font-size: 13px; color: #475569; line-height: 1.5;">
+        Instale la aplicación en su dispositivo móvil para acceso instantáneo, notificaciones operativas y funcionamiento ágil sin conexión.
+      </p>
+
+      <div id="pwa-install-native-box" style="margin-bottom: 16px;">
+        <button type="button" id="btn-pwa-do-install" onclick="executePwaInstall()" style="width: 100%; background: #00A896; color: #FFFFFF; border: none; padding: 12px 18px; border-radius: 8px; font-size: 14px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(0,168,150,0.3);">
+          <span>📲 Instalar Aplicación Ahora</span>
+        </button>
+      </div>
+
+      <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px; padding: 12px 14px; text-align: left; font-size: 12px; color: #334155; line-height: 1.5; margin-bottom: 16px;">
+        <div style="font-weight: 800; margin-bottom: 4px; color: #0F172A;">Instrucciones para iOS / Safari (iPhone):</div>
+        <div>1. Toque el botón <strong>Compartir</strong> (icono de cuadrado con flecha hacia arriba) en Safari.</div>
+        <div>2. Deslice hacia abajo y seleccione <strong>"Añadir a pantalla de inicio"</strong>.</div>
+        <div style="margin-top: 6px; font-weight: 800; color: #0F172A;">Para Android / Chrome:</div>
+        <div>Presione el botón verde superior o elija <strong>"Instalar aplicación"</strong> en el menú de Chrome.</div>
+      </div>
+
+      <button type="button" onclick="closePwaInstallModal()" style="background: transparent; border: 1.5px solid #CBD5E1; color: #475569; padding: 8px 18px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; width: 100%;">
+        Cerrar
       </button>
     </div>
   </div>

@@ -208,3 +208,15 @@ Para garantizar la integridad transaccional y la disponibilidad de datos de prue
 * **Progresión de Ciclo FSM:** Ejecuta transiciones programadas de `NUEVO` a `ASIGNADO` y `EN_CURSO`.
 * **Resolución y Cierre con CSAT:** Simula cierres auditables con notas técnicas estructuradas y métricas de satisfacción del usuario.
 * **Garantía de Consistencia Temporal:** Mantiene una distribución balanceada de tickets en distintos estados operativos para verificar el comportamiento de los índices relacionales y la latencia de agregación del Cockpit.
+
+---
+
+## 11. GOBERNANZA DE CONFIGURACIÓN ITIL v4 Y DESACOPLAMIENTO DE NIVELES (SPRINT 7)
+
+> ### 📌 DIRECTIVA DE ARQUITECTURA ITIL v4: PARAMETRIZACIÓN INICIAL POR BASE DE DATOS
+> En concordancia con las mejores prácticas internacionales de gestión de servicios de tecnología en salud (**ITIL v4 Service Management Framework**), la funcionalidad interactiva de edición y parametrización de **Niveles de Atención ITIL (N1 / N2 / N3)** y el módulo global de **Configuración de Sistema** se encuentran deliberadamente **ocultos y protegidos** en la interfaz de usuario para la totalidad de los roles y perfiles operativos.
+> 
+> **Fundamentación y Criterios Técnicos:**
+> 1. **Inmutabilidad y Consistencia Operativa:** La matriz de niveles de soporte (Nivel 1 Triage Asistencial/FCR, Nivel 2 Especialistas de Plataformas Clínicas HIS/EHR/Facturación, Nivel 3 Infraestructura de Red & Pasarelas Sanitarias SISA/OSDE) se provisiona y versiona directamente a nivel de base de datos (`seed_database_v4.py` / tablas relacionales de soporte), garantizando coherencia formal ante auditorías hospitalarias.
+> 2. **Prevención de Desalineación Operativa:** Se neutraliza el riesgo de modificaciones no autorizadas o accidentales de matrices de escalamiento clínico desde la interfaz de usuario.
+> 3. **Desacoplamiento de Responsabilidades:** La política de niveles de servicio (SLA) se administra en la capa de persistencia institucional centralizada, mientras el front-end consume de forma reactiva y auditable las métricas de respuesta y resolución en tiempo real.
